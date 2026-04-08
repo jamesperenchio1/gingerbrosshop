@@ -1,0 +1,23 @@
+# Environment files
+.env
+.env.local
+.env.production
+
+# Data volumes
+data/
+
+# Node
+node_modules/
+.next/
+.medusa/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Backups (stored on HDD, not in repo)
+*.sql.gz
+*.tar.gz
