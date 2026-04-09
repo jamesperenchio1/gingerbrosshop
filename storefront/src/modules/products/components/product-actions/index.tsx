@@ -40,10 +40,13 @@ export default function ProductActions({
   const [isAdding, setIsAdding] = useState(false)
   const countryCode = useParams().countryCode as string
 
-  // Auto-select variant: use v_id from URL if present, otherwise first variant
+  // Auto-select variant on mount: use v_id from URL if present, otherwise first variant
+  const hasAutoSelected = useRef(false)
   useEffect(() => {
+    if (hasAutoSelected.current) return
     if (!product.variants?.length) return
 
+    hasAutoSelected.current = true
     const urlVariantId = searchParams.get("v_id")
     const targetVariant = urlVariantId
       ? product.variants.find((v) => v.id === urlVariantId) ?? product.variants[0]
@@ -51,7 +54,7 @@ export default function ProductActions({
 
     const variantOptions = optionsAsKeymap(targetVariant.options)
     setOptions(variantOptions ?? {})
-  }, [product.variants, searchParams])
+  }, [product.variants])
 
   const selectedVariant = useMemo(() => {
     if (!product.variants || product.variants.length === 0) {
