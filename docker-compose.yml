@@ -1,0 +1,87 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    mem_limit: 512m
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    volumes:
+      - ./data/postgres:/var/lib/postgresql/data
+      - ./data/wal-archive:/wal-archive
+    ports:
+      - "127.0.0.1:5433:5432"
+    command: >
+      postgres
+      -c archive_mode=on
+      -c archive_command='cp %p /wal-archive/%f'
+      -c wal_level=replica
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -d $${POSTGRES_DB} -U $${POSTGRES_USER}"]
+      start_period: 20s
+      interval: 30s
+      retries: 5
+      timeout: 5s
+    networks:
+      - gingerbros
+
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    mem_limit: 256m
+    volumes:
+      - ./data/redis:/data
+    ports:
+      - "127.0.0.1:6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+    networks:
+      - gingerbros
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    mem_limit: 1g
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    env_file: .env
+    environment:
+      NODE_ENV: production
+      DATABASE_URL: postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}
+      REDIS_URL: redis://redis:6379
+    ports:
+      - "127.0.0.1:9001:9000"
+    volumes:
+      - ./data/uploads:/app/uploads
+      - ./data/static:/app/server/static
+    networks:
+      - gingerbros
+
+  storefront:
+    build:
+      context: ./storefront
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    mem_limit: 512m
+    depends_on:
+      - backend
+    env_file: ./storefront/.env.local
+    environment:
+      MEDUSA_BACKEND_URL: http://backend:9000
+    ports:
+      - "127.0.0.1:8000:8000"
+    networks:
+      - gingerbros
+
+networks:
+  gingerbros:
+    driver: bridge

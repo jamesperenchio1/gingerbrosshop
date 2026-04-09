@@ -21,3 +21,6 @@ Thumbs.db
 # Backups (stored on HDD, not in repo)
 *.sql.gz
 *.tar.gz
+
+# Yarn releases
+.yarn/
