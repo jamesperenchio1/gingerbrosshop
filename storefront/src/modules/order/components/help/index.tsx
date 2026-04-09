@@ -4,17 +4,25 @@ import React from "react"
 
 const Help = () => {
   return (
-    <div className="mt-6">
-      <Heading className="text-base-semi">Need help?</Heading>
-      <div className="text-base-regular my-2">
+    <div className="mt-6 bg-gray-50 rounded-xl p-5">
+      <Heading className="text-base-semi mb-2">Need help?</Heading>
+      <div className="text-base-regular text-ui-fg-subtle">
+        <p className="mb-2">
+          If you have any questions about your order, we&apos;re here to help.
+        </p>
         <ul className="gap-y-2 flex flex-col">
           <li>
-            <LocalizedClientLink href="/contact">Contact</LocalizedClientLink>
+            <LocalizedClientLink href="/customer-service" className="text-[#C8702A] hover:underline">
+              Customer Service & FAQ
+            </LocalizedClientLink>
           </li>
           <li>
-            <LocalizedClientLink href="/contact">
-              Returns & Exchanges
-            </LocalizedClientLink>
+            <span className="text-ui-fg-subtle">
+              Email us at{" "}
+              <a href="mailto:support@gingerbrosshop.com" className="text-[#C8702A] hover:underline">
+                support@gingerbrosshop.com
+              </a>
+            </span>
           </li>
         </ul>
       </div>

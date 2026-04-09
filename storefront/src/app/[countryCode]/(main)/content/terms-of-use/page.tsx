@@ -8,15 +8,16 @@ export const metadata: Metadata = {
 
 export default function TermsOfUsePage() {
   return (
-    <div className="content-container py-12 max-w-3xl mx-auto">
+    <div className="content-container py-12 max-w-3xl mx-auto px-4 sm:px-6">
+      <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-8 sm:p-12">
       <Heading level="h1" className="text-3xl font-display font-bold text-dark mb-2">
         Terms of Use
       </Heading>
       <Text className="text-ui-fg-muted mb-8">Last updated: April 2026</Text>
 
-      <div className="flex flex-col gap-y-8 text-ui-fg-subtle leading-relaxed">
+      <div className="flex flex-col gap-y-10 text-ui-fg-subtle leading-relaxed">
         <section>
-          <Heading level="h2" className="text-xl font-semibold text-dark mb-3">
+          <Heading level="h2" className="text-lg font-semibold text-dark mb-3 pb-2 border-b border-gray-100">
             1. General
           </Heading>
           <Text>
@@ -27,7 +28,7 @@ export default function TermsOfUsePage() {
         </section>
 
         <section>
-          <Heading level="h2" className="text-xl font-semibold text-dark mb-3">
+          <Heading level="h2" className="text-lg font-semibold text-dark mb-3 pb-2 border-b border-gray-100">
             2. Products & Pricing
           </Heading>
           <Text>
@@ -39,7 +40,7 @@ export default function TermsOfUsePage() {
         </section>
 
         <section>
-          <Heading level="h2" className="text-xl font-semibold text-dark mb-3">
+          <Heading level="h2" className="text-lg font-semibold text-dark mb-3 pb-2 border-b border-gray-100">
             3. Orders & Payment
           </Heading>
           <Text>
@@ -52,7 +53,7 @@ export default function TermsOfUsePage() {
         </section>
 
         <section>
-          <Heading level="h2" className="text-xl font-semibold text-dark mb-3">
+          <Heading level="h2" className="text-lg font-semibold text-dark mb-3 pb-2 border-b border-gray-100">
             4. Shipping & Delivery
           </Heading>
           <Text>
@@ -64,7 +65,7 @@ export default function TermsOfUsePage() {
         </section>
 
         <section>
-          <Heading level="h2" className="text-xl font-semibold text-dark mb-3">
+          <Heading level="h2" className="text-lg font-semibold text-dark mb-3 pb-2 border-b border-gray-100">
             5. Returns & Refunds
           </Heading>
           <Text>
@@ -76,7 +77,7 @@ export default function TermsOfUsePage() {
         </section>
 
         <section>
-          <Heading level="h2" className="text-xl font-semibold text-dark mb-3">
+          <Heading level="h2" className="text-lg font-semibold text-dark mb-3 pb-2 border-b border-gray-100">
             6. Accounts
           </Heading>
           <Text>
@@ -88,7 +89,7 @@ export default function TermsOfUsePage() {
         </section>
 
         <section>
-          <Heading level="h2" className="text-xl font-semibold text-dark mb-3">
+          <Heading level="h2" className="text-lg font-semibold text-dark mb-3 pb-2 border-b border-gray-100">
             7. Intellectual Property
           </Heading>
           <Text>
@@ -99,7 +100,7 @@ export default function TermsOfUsePage() {
         </section>
 
         <section>
-          <Heading level="h2" className="text-xl font-semibold text-dark mb-3">
+          <Heading level="h2" className="text-lg font-semibold text-dark mb-3 pb-2 border-b border-gray-100">
             8. Limitation of Liability
           </Heading>
           <Text>
@@ -110,7 +111,7 @@ export default function TermsOfUsePage() {
         </section>
 
         <section>
-          <Heading level="h2" className="text-xl font-semibold text-dark mb-3">
+          <Heading level="h2" className="text-lg font-semibold text-dark mb-3 pb-2 border-b border-gray-100">
             9. Governing Law
           </Heading>
           <Text>
@@ -120,16 +121,17 @@ export default function TermsOfUsePage() {
         </section>
 
         <section>
-          <Heading level="h2" className="text-xl font-semibold text-dark mb-3">
+          <Heading level="h2" className="text-lg font-semibold text-dark mb-3 pb-2 border-b border-gray-100">
             10. Contact
           </Heading>
           <Text>
             For questions about these terms, contact us at{" "}
-            <a href="mailto:support@gingerbrosshop.com" className="text-primary underline">
+            <a href="mailto:support@gingerbrosshop.com" className="text-[#C8702A] hover:underline">
               support@gingerbrosshop.com
             </a>.
           </Text>
         </section>
+      </div>
       </div>
     </div>
   )

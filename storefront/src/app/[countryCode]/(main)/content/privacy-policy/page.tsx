@@ -8,15 +8,16 @@ export const metadata: Metadata = {
 
 export default function PrivacyPolicyPage() {
   return (
-    <div className="content-container py-12 max-w-3xl mx-auto">
+    <div className="content-container py-12 max-w-3xl mx-auto px-4 sm:px-6">
+      <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-8 sm:p-12">
       <Heading level="h1" className="text-3xl font-display font-bold text-dark mb-2">
         Privacy Policy
       </Heading>
       <Text className="text-ui-fg-muted mb-8">Last updated: April 2026</Text>
 
-      <div className="flex flex-col gap-y-8 text-ui-fg-subtle leading-relaxed">
+      <div className="flex flex-col gap-y-10 text-ui-fg-subtle leading-relaxed">
         <section>
-          <Heading level="h2" className="text-xl font-semibold text-dark mb-3">
+          <Heading level="h2" className="text-lg font-semibold text-dark mb-3 pb-2 border-b border-gray-100">
             1. Information We Collect
           </Heading>
           <Text>When you use Gingerbros, we may collect the following information:</Text>
@@ -29,7 +30,7 @@ export default function PrivacyPolicyPage() {
         </section>
 
         <section>
-          <Heading level="h2" className="text-xl font-semibold text-dark mb-3">
+          <Heading level="h2" className="text-lg font-semibold text-dark mb-3 pb-2 border-b border-gray-100">
             2. How We Use Your Information
           </Heading>
           <Text>We use your information to:</Text>
@@ -43,7 +44,7 @@ export default function PrivacyPolicyPage() {
         </section>
 
         <section>
-          <Heading level="h2" className="text-xl font-semibold text-dark mb-3">
+          <Heading level="h2" className="text-lg font-semibold text-dark mb-3 pb-2 border-b border-gray-100">
             3. Information Sharing
           </Heading>
           <Text>
@@ -57,7 +58,7 @@ export default function PrivacyPolicyPage() {
         </section>
 
         <section>
-          <Heading level="h2" className="text-xl font-semibold text-dark mb-3">
+          <Heading level="h2" className="text-lg font-semibold text-dark mb-3 pb-2 border-b border-gray-100">
             4. Data Security
           </Heading>
           <Text>
@@ -68,7 +69,7 @@ export default function PrivacyPolicyPage() {
         </section>
 
         <section>
-          <Heading level="h2" className="text-xl font-semibold text-dark mb-3">
+          <Heading level="h2" className="text-lg font-semibold text-dark mb-3 pb-2 border-b border-gray-100">
             5. Cookies
           </Heading>
           <Text>
@@ -78,7 +79,7 @@ export default function PrivacyPolicyPage() {
         </section>
 
         <section>
-          <Heading level="h2" className="text-xl font-semibold text-dark mb-3">
+          <Heading level="h2" className="text-lg font-semibold text-dark mb-3 pb-2 border-b border-gray-100">
             6. Your Rights
           </Heading>
           <Text>You have the right to:</Text>
@@ -90,14 +91,14 @@ export default function PrivacyPolicyPage() {
           </ul>
           <Text className="mt-2">
             To exercise any of these rights, contact us at{" "}
-            <a href="mailto:support@gingerbrosshop.com" className="text-primary underline">
+            <a href="mailto:support@gingerbrosshop.com" className="text-[#C8702A] hover:underline">
               support@gingerbrosshop.com
             </a>.
           </Text>
         </section>
 
         <section>
-          <Heading level="h2" className="text-xl font-semibold text-dark mb-3">
+          <Heading level="h2" className="text-lg font-semibold text-dark mb-3 pb-2 border-b border-gray-100">
             7. Changes to This Policy
           </Heading>
           <Text>
@@ -107,16 +108,17 @@ export default function PrivacyPolicyPage() {
         </section>
 
         <section>
-          <Heading level="h2" className="text-xl font-semibold text-dark mb-3">
+          <Heading level="h2" className="text-lg font-semibold text-dark mb-3 pb-2 border-b border-gray-100">
             8. Contact
           </Heading>
           <Text>
             For questions about this privacy policy, email us at{" "}
-            <a href="mailto:support@gingerbrosshop.com" className="text-primary underline">
+            <a href="mailto:support@gingerbrosshop.com" className="text-[#C8702A] hover:underline">
               support@gingerbrosshop.com
             </a>.
           </Text>
         </section>
+      </div>
       </div>
     </div>
   )
