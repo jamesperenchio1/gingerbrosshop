@@ -31,10 +31,13 @@ export const convertToLocale = ({
     ? 1
     : 100
 
-  return new Intl.NumberFormat(locale, {
+  // Use Thai locale for THB to get ฿ symbol instead of "THB"
+  const effectiveLocale = currency_code.toLowerCase() === "thb" ? "th-TH" : locale
+
+  return new Intl.NumberFormat(effectiveLocale, {
     style: "currency",
     currency: currency_code,
-    minimumFractionDigits,
-    maximumFractionDigits,
+    minimumFractionDigits: minimumFractionDigits ?? 0,
+    maximumFractionDigits: maximumFractionDigits ?? 0,
   }).format(amount / divisor)
 }

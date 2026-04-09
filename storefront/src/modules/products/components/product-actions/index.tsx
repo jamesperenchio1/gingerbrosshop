@@ -40,13 +40,18 @@ export default function ProductActions({
   const [isAdding, setIsAdding] = useState(false)
   const countryCode = useParams().countryCode as string
 
-  // If there is only 1 variant, preselect the options
+  // Auto-select variant: use v_id from URL if present, otherwise first variant
   useEffect(() => {
-    if (product.variants?.length === 1) {
-      const variantOptions = optionsAsKeymap(product.variants[0].options)
-      setOptions(variantOptions ?? {})
-    }
-  }, [product.variants])
+    if (!product.variants?.length) return
+
+    const urlVariantId = searchParams.get("v_id")
+    const targetVariant = urlVariantId
+      ? product.variants.find((v) => v.id === urlVariantId) ?? product.variants[0]
+      : product.variants[0]
+
+    const variantOptions = optionsAsKeymap(targetVariant.options)
+    setOptions(variantOptions ?? {})
+  }, [product.variants, searchParams])
 
   const selectedVariant = useMemo(() => {
     if (!product.variants || product.variants.length === 0) {
@@ -176,7 +181,7 @@ export default function ProductActions({
           isLoading={isAdding}
           data-testid="add-product-button"
         >
-          {!selectedVariant && !options
+          {!selectedVariant && Object.keys(options).length === 0
             ? "Select variant"
             : !inStock || !isValidVariant
             ? "Out of stock"

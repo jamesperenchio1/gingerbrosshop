@@ -4,6 +4,7 @@ import { CreditCard } from "@medusajs/icons"
 import Ideal from "@modules/common/icons/ideal"
 import Bancontact from "@modules/common/icons/bancontact"
 import PayPal from "@modules/common/icons/paypal"
+import PromptPay from "@modules/common/icons/promptpay"
 
 /* Map of payment provider_id to their title and icon. Add in any payment providers you want to use. */
 export const paymentInfoMap: Record<
@@ -30,11 +31,14 @@ export const paymentInfoMap: Record<
     title: "PayPal",
     icon: <PayPal />,
   },
+  "pp_stripe-promptpay_stripe": {
+    title: "PromptPay",
+    icon: <PromptPay />,
+  },
   pp_system_default: {
     title: "Manual Payment",
     icon: <CreditCard />,
   },
-  // Add more payment providers here
 }
 
 // This only checks if it is native stripe or medusa payments for card payments, it ignores the other stripe-based providers

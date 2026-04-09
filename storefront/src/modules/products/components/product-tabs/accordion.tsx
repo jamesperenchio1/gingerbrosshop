@@ -53,21 +53,17 @@ const Item: React.FC<AccordionItemProps> = ({
       )}
     >
       <AccordionPrimitive.Header className="px-1">
-        <div className="flex flex-col">
-          <div className="flex w-full items-center justify-between">
-            <div className="flex items-center gap-4">
-              <Text className="text-ui-fg-subtle text-sm">{title}</Text>
-            </div>
-            <AccordionPrimitive.Trigger>
-              {customTrigger || <MorphingTrigger />}
-            </AccordionPrimitive.Trigger>
+        <AccordionPrimitive.Trigger className="flex w-full items-center justify-between py-1 cursor-pointer group/trigger">
+          <div className="flex items-center gap-4">
+            <Text className="text-ui-fg-subtle text-sm group-hover/trigger:text-ui-fg-base transition-colors">{title}</Text>
           </div>
-          {subtitle && (
-            <Text as="span" size="small" className="mt-1">
-              {subtitle}
-            </Text>
-          )}
-        </div>
+          {customTrigger || <MorphingTrigger />}
+        </AccordionPrimitive.Trigger>
+        {subtitle && (
+          <Text as="span" size="small" className="mt-1">
+            {subtitle}
+          </Text>
+        )}
       </AccordionPrimitive.Header>
       <AccordionPrimitive.Content
         forceMount={forceMountContent}

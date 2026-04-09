@@ -12,6 +12,7 @@ COPY . .
 RUN npx medusa build
 
 FROM base AS runner
+RUN apk add --no-cache libheif-tools
 ENV NODE_ENV=production
 WORKDIR /app/server
 COPY --from=builder /app/.medusa/server /app/server

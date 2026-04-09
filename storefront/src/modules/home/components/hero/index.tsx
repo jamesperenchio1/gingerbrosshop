@@ -32,12 +32,6 @@ const Hero = () => {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
               </svg>
             </LocalizedClientLink>
-            <LocalizedClientLink
-              href="/store"
-              className="inline-flex items-center px-8 py-4 border-2 border-dark/20 text-dark font-nunito font-semibold rounded-full hover:border-primary hover:text-primary transition-all duration-300"
-            >
-              Our Story
-            </LocalizedClientLink>
           </div>
         </div>
       </div>

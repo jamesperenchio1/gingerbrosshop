@@ -85,31 +85,32 @@ const ShippingInfoTab = () => {
         <div className="flex items-start gap-x-2">
           <FastDelivery />
           <div>
-            <span className="font-semibold">Fast delivery</span>
+            <span className="font-semibold">Shipping within Thailand</span>
             <p className="max-w-sm">
-              Your package will arrive in 3-5 business days at your pick up
-              location or in the comfort of your home.
+              We ship nationwide across Thailand. Standard delivery takes
+              3-5 business days. Orders are carefully packed to ensure
+              your bottles arrive safely.
             </p>
           </div>
         </div>
         <div className="flex items-start gap-x-2">
           <Refresh />
           <div>
-            <span className="font-semibold">Simple exchanges</span>
+            <span className="font-semibold">Shipping rates</span>
             <p className="max-w-sm">
-              Is the fit not quite right? No worries - we&apos;ll exchange your
-              product for a new one.
+              Flat rate of ฿50 for single bottles. Free shipping on all
+              6-packs. Shipping costs are calculated at checkout.
             </p>
           </div>
         </div>
         <div className="flex items-start gap-x-2">
           <Back />
           <div>
-            <span className="font-semibold">Easy returns</span>
+            <span className="font-semibold">Damaged orders</span>
             <p className="max-w-sm">
-              Just return your product and we&apos;ll refund your money. No
-              questions asked – we&apos;ll do our best to make sure your return
-              is hassle-free.
+              Due to the perishable nature of our beverages, we do not accept
+              returns or exchanges. If your order arrives damaged, contact us
+              within 48 hours with photos and we&apos;ll arrange a replacement.
             </p>
           </div>
         </div>

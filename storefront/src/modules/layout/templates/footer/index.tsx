@@ -128,28 +128,6 @@ export default async function Footer() {
                 </ul>
               </div>
             )}
-            <div className="flex flex-col gap-y-2">
-              <span className="font-nunito font-semibold text-white text-sm tracking-wide uppercase">
-                Company
-              </span>
-              <ul className="grid grid-cols-1 gap-y-2 text-white/60 font-nunito text-sm mt-2">
-                <li>
-                  <span className="hover:text-primary transition-colors duration-200 cursor-pointer">
-                    About Us
-                  </span>
-                </li>
-                <li>
-                  <span className="hover:text-primary transition-colors duration-200 cursor-pointer">
-                    Contact
-                  </span>
-                </li>
-                <li>
-                  <span className="hover:text-primary transition-colors duration-200 cursor-pointer">
-                    Shipping Info
-                  </span>
-                </li>
-              </ul>
-            </div>
           </div>
         </div>
         <div className="flex w-full py-8 justify-between border-t border-white/10">

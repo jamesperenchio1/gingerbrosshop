@@ -26,6 +26,7 @@
     "@medusajs/cli": "2.13.1",
     "@medusajs/framework": "2.13.1",
     "@medusajs/medusa": "2.13.1",
+    "resend": "^4.0.0",
     "sharp": "^0.34.5"
   },
   "devDependencies": {

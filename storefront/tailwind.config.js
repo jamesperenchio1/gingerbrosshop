@@ -65,6 +65,7 @@ module.exports = {
       },
       fontFamily: {
         sans: [
+          "var(--font-nunito)",
           "Nunito",
           "Inter",
           "-apple-system",
@@ -74,11 +75,13 @@ module.exports = {
           "sans-serif",
         ],
         display: [
+          "var(--font-playfair)",
           "Playfair Display",
           "Georgia",
           "serif",
         ],
         nunito: [
+          "var(--font-nunito)",
           "Nunito",
           "sans-serif",
         ],
