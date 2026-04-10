@@ -8,22 +8,42 @@ export default async function ProductPreview({
   product,
   isFeatured,
   region,
+  variant: variantProp,
 }: {
   product: HttpTypes.StoreProduct
   isFeatured?: boolean
   region: HttpTypes.StoreRegion
+  variant?: any
 }) {
   const variants = (product.variants || []) as any[]
+  const variant = variantProp ?? variants[0]
+
+  const price = variant?.calculated_price?.calculated_amount
+  const originalPrice = variant?.calculated_price?.original_amount
+  const currency = variant?.calculated_price?.currency_code
+
+  const priceLabel =
+    price != null && currency
+      ? convertToLocale({ amount: price, currency_code: currency })
+      : null
+
+  const hasDiscount =
+    originalPrice != null && price != null && originalPrice > price
+  const originalPriceLabel =
+    hasDiscount && currency
+      ? convertToLocale({ amount: originalPrice, currency_code: currency })
+      : null
+
+  const href = variantProp
+    ? `/products/${product.handle}?v_id=${variant.id}`
+    : `/products/${product.handle}`
 
   return (
     <div
       data-testid="product-wrapper"
-      className="bg-white rounded-large overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 group"
+      className="bg-white rounded-large overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 group flex flex-col"
     >
-      <LocalizedClientLink
-        href={`/products/${product.handle}`}
-        className="block"
-      >
+      <LocalizedClientLink href={href} className="block flex-1">
         <div className="overflow-hidden">
           <Thumbnail
             thumbnail={product.thumbnail}
@@ -33,56 +53,32 @@ export default async function ProductPreview({
             priority={isFeatured}
           />
         </div>
-        <div className="px-4 pt-4 pb-2">
+        <div className="px-4 pt-4 pb-4">
           <Text
             className="font-display text-lg font-semibold text-dark group-hover:text-primary transition-colors duration-200"
             data-testid="product-title"
           >
             {product.title}
           </Text>
-        </div>
-      </LocalizedClientLink>
-
-      {variants.length > 1 && (
-        <div className="px-4 pb-4 flex gap-2">
-          {variants.map((variant: any) => {
-            const price = variant.calculated_price?.calculated_amount
-            const currency = variant.calculated_price?.currency_code
-            const priceLabel =
-              price != null && currency
-                ? convertToLocale({ amount: price, currency_code: currency })
-                : ""
-
-            return (
-              <LocalizedClientLink
-                key={variant.id}
-                href={`/products/${product.handle}?v_id=${variant.id}`}
-                className="flex-1 text-center py-2 px-3 rounded-rounded border border-primary/30 text-sm font-medium text-dark hover:bg-primary hover:text-white transition-colors duration-200"
-              >
-                <span className="block font-semibold">{variant.title}</span>
-                {priceLabel && (
-                  <span className="block text-xs mt-0.5 opacity-80">
-                    {priceLabel}
-                  </span>
-                )}
-              </LocalizedClientLink>
-            )
-          })}
-        </div>
-      )}
-
-      {variants.length <= 1 && (
-        <div className="px-4 pb-4">
-          {variants[0]?.calculated_price && (
-            <Text className="text-ui-fg-muted text-sm">
-              {convertToLocale({
-                amount: variants[0].calculated_price.calculated_amount,
-                currency_code: variants[0].calculated_price.currency_code,
-              })}
+          {variantProp && (
+            <Text className="font-nunito text-xs text-dark/50 uppercase tracking-wider mt-1">
+              {variant.title}
             </Text>
           )}
+          {priceLabel && (
+            <div className="mt-2 flex items-baseline gap-2">
+              <p className="font-nunito text-xl font-bold text-primary">
+                {priceLabel}
+              </p>
+              {originalPriceLabel && (
+                <p className="font-nunito text-sm text-dark/40 line-through">
+                  {originalPriceLabel}
+                </p>
+              )}
+            </div>
+          )}
         </div>
-      )}
+      </LocalizedClientLink>
     </div>
   )
 }

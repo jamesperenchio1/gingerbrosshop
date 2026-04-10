@@ -66,16 +66,32 @@ export default async function PaginatedProducts({
 
   const totalPages = Math.ceil(count / PRODUCT_LIMIT)
 
+  // Expand each product into one card per variant so Singles and 6-Packs
+  // appear as separate listings instead of stacked variant buttons.
+  const variantOrder = ["single", "6-pack"]
+  const productVariantPairs = products.flatMap((p) => {
+    const variants = ((p.variants || []) as any[]).slice().sort((a, b) => {
+      const ai = variantOrder.indexOf((a.title || "").toLowerCase())
+      const bi = variantOrder.indexOf((b.title || "").toLowerCase())
+      return (ai === -1 ? 99 : ai) - (bi === -1 ? 99 : bi)
+    })
+    return variants.map((v) => ({ product: p, variant: v }))
+  })
+
   return (
     <>
       <ul
         className="grid grid-cols-2 w-full small:grid-cols-3 medium:grid-cols-4 gap-x-6 gap-y-8"
         data-testid="products-list"
       >
-        {products.map((p) => {
+        {productVariantPairs.map(({ product, variant }) => {
           return (
-            <li key={p.id}>
-              <ProductPreview product={p} region={region} />
+            <li key={`${product.id}-${variant.id}`}>
+              <ProductPreview
+                product={product}
+                region={region}
+                variant={variant}
+              />
             </li>
           )
         })}
