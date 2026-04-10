@@ -8,7 +8,6 @@ import { CheckCircleSolid, Loader } from "@medusajs/icons"
 import { HttpTypes } from "@medusajs/types"
 import { Button, clx, Heading, Text } from "@medusajs/ui"
 import ErrorMessage from "@modules/checkout/components/error-message"
-import Divider from "@modules/common/components/divider"
 import MedusaRadio from "@modules/common/components/radio"
 import { usePathname, useRouter, useSearchParams } from "next/navigation"
 import { useEffect, useState } from "react"
@@ -154,7 +153,7 @@ const Shipping: React.FC<ShippingProps> = ({
         <Heading
           level="h2"
           className={clx(
-            "flex flex-row text-3xl-regular gap-x-2 items-baseline",
+            "flex flex-row text-2xl font-display text-dark gap-x-2 items-baseline",
             {
               "opacity-50 pointer-events-none select-none":
                 !isOpen && cart.shipping_methods?.length === 0,
@@ -211,9 +210,9 @@ const Shipping: React.FC<ShippingProps> = ({
                       value={PICKUP_OPTION_ON}
                       data-testid="delivery-option-radio"
                       className={clx(
-                        "flex items-center justify-between text-small-regular cursor-pointer py-4 border rounded-rounded px-8 mb-2 hover:shadow-borders-interactive-with-active",
+                        "flex items-center justify-between text-small-regular cursor-pointer py-4 border border-gray-200 rounded-2xl px-6 mb-3 transition-all hover:border-[#C8702A]/40 hover:bg-[#FDF6EC]/40",
                         {
-                          "border-ui-border-interactive":
+                          "border-[#C8702A] bg-[#FDF6EC]/60":
                             showPickupOptions === PICKUP_OPTION_ON,
                         }
                       )}
@@ -253,9 +252,9 @@ const Shipping: React.FC<ShippingProps> = ({
                         data-testid="delivery-option-radio"
                         disabled={isDisabled}
                         className={clx(
-                          "flex items-center justify-between text-small-regular cursor-pointer py-4 border rounded-rounded px-8 mb-2 hover:shadow-borders-interactive-with-active",
+                          "flex items-center justify-between text-small-regular cursor-pointer py-4 border border-gray-200 rounded-2xl px-6 mb-3 transition-all hover:border-[#C8702A]/40 hover:bg-[#FDF6EC]/40",
                           {
-                            "border-ui-border-interactive":
+                            "border-[#C8702A] bg-[#FDF6EC]/60":
                               option.id === shippingMethodId,
                             "hover:shadow-brders-none cursor-not-allowed":
                               isDisabled,
@@ -323,9 +322,9 @@ const Shipping: React.FC<ShippingProps> = ({
                           disabled={option.insufficient_inventory}
                           data-testid="delivery-option-radio"
                           className={clx(
-                            "flex items-center justify-between text-small-regular cursor-pointer py-4 border rounded-rounded px-8 mb-2 hover:shadow-borders-interactive-with-active",
+                            "flex items-center justify-between text-small-regular cursor-pointer py-4 border border-gray-200 rounded-2xl px-6 mb-3 transition-all hover:border-[#C8702A]/40 hover:bg-[#FDF6EC]/40",
                             {
-                              "border-ui-border-interactive":
+                              "border-[#C8702A] bg-[#FDF6EC]/60":
                                 option.id === shippingMethodId,
                               "hover:shadow-brders-none cursor-not-allowed":
                                 option.insufficient_inventory,
@@ -370,7 +369,7 @@ const Shipping: React.FC<ShippingProps> = ({
             />
             <Button
               size="large"
-              className="mt"
+              className="mt-2 h-12 rounded-full bg-[#C8702A] hover:bg-[#A85C20] border-none transition-colors px-8"
               onClick={handleSubmit}
               isLoading={isLoading}
               disabled={!cart.shipping_methods?.[0]}
@@ -400,7 +399,6 @@ const Shipping: React.FC<ShippingProps> = ({
           </div>
         </div>
       )}
-      <Divider className="mt-8" />
     </div>
   )
 }

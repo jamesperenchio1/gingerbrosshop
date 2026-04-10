@@ -2,6 +2,28 @@
 @import "tailwindcss/components";
 @import "tailwindcss/utilities";
 
+/*
+ * Override Medusa UI preset typography classes (.txt-*) which hardcode
+ * font-family: Inter. Force them to inherit our Nunito brand font.
+ */
+[class*="txt-"],
+.text-3xl-regular,
+.text-3xl-semi,
+.text-2xl-regular,
+.text-2xl-semi,
+.text-xl-regular,
+.text-xl-semi,
+.text-large-regular,
+.text-large-semi,
+.text-base-regular,
+.text-base-semi,
+.text-small-regular,
+.text-small-semi,
+.text-xsmall-regular {
+  font-family: var(--font-nunito), Nunito, ui-sans-serif, system-ui, -apple-system,
+    BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important;
+}
+
 @layer utilities {
   /* Chrome, Safari and Opera */
   .no-scrollbar::-webkit-scrollbar {

@@ -88,8 +88,20 @@ const ShippingInfoTab = () => {
             <span className="font-semibold">Shipping within Thailand</span>
             <p className="max-w-sm">
               We ship nationwide across Thailand. Standard delivery takes
-              3-5 business days. Orders are carefully packed to ensure
-              your bottles arrive safely.
+              3&ndash;5 business days. Orders are carefully packed to keep
+              your bottles safe in transit.
+            </p>
+          </div>
+        </div>
+        <div className="flex items-start gap-x-2">
+          <FastDelivery />
+          <div>
+            <span className="font-semibold">Cool Delivery (refrigerated)</span>
+            <p className="max-w-sm">
+              For our unpasteurized ginger beer we offer temperature-controlled
+              cool delivery for an extra ฿120. It&apos;s required on
+              made-to-order products to keep the live cultures happy. Pick it
+              at checkout if your order needs the cold chain.
             </p>
           </div>
         </div>
@@ -98,8 +110,9 @@ const ShippingInfoTab = () => {
           <div>
             <span className="font-semibold">Shipping rates</span>
             <p className="max-w-sm">
-              Flat rate of ฿50 for single bottles. Free shipping on all
-              6-packs. Shipping costs are calculated at checkout.
+              Flat ฿60 standard shipping. Free standard shipping on orders
+              over ฿500. Cool delivery is +฿120 on top. Final shipping is
+              calculated at checkout.
             </p>
           </div>
         </div>
@@ -108,9 +121,9 @@ const ShippingInfoTab = () => {
           <div>
             <span className="font-semibold">Damaged orders</span>
             <p className="max-w-sm">
-              Due to the perishable nature of our beverages, we do not accept
-              returns or exchanges. If your order arrives damaged, contact us
-              within 48 hours with photos and we&apos;ll arrange a replacement.
+              Because our beverages are perishable, we don&apos;t accept
+              returns or exchanges. If your order arrives damaged, message us
+              within 48 hours with photos and we&apos;ll sort a replacement.
             </p>
           </div>
         </div>

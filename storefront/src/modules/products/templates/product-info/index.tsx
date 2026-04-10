@@ -7,6 +7,8 @@ type ProductInfoProps = {
 }
 
 const ProductInfo = ({ product }: ProductInfoProps) => {
+  const isMadeToOrder = product.handle === "unpasteurized-ginger-beer"
+
   return (
     <div id="product-info">
       <div className="flex flex-col gap-y-4 lg:max-w-[500px] mx-auto">
@@ -25,6 +27,16 @@ const ProductInfo = ({ product }: ProductInfoProps) => {
         >
           {product.title}
         </Heading>
+
+        {isMadeToOrder && (
+          <div
+            className="inline-flex items-center gap-x-2 self-start rounded-full bg-[#FDF6EC] border border-[#C8702A]/30 px-4 py-2 text-sm font-medium text-[#A85C20]"
+            data-testid="made-to-order-badge"
+          >
+            <span className="inline-block h-2 w-2 rounded-full bg-[#C8702A]" />
+            Brewed to order &middot; Ships within 5&ndash;7 days
+          </div>
+        )}
 
         <Text
           className="text-medium text-ui-fg-subtle whitespace-pre-line"

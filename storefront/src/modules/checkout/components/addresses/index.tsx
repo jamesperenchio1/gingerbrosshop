@@ -5,7 +5,6 @@ import compareAddresses from "@lib/util/compare-addresses"
 import { CheckCircleSolid } from "@medusajs/icons"
 import { HttpTypes } from "@medusajs/types"
 import { Heading, Text, useToggleState } from "@medusajs/ui"
-import Divider from "@modules/common/components/divider"
 import Spinner from "@modules/common/icons/spinner"
 import { usePathname, useRouter, useSearchParams } from "next/navigation"
 import { useActionState } from "react"
@@ -44,7 +43,7 @@ const Addresses = ({
       <div className="flex flex-row items-center justify-between mb-6">
         <Heading
           level="h2"
-          className="flex flex-row text-3xl-regular gap-x-2 items-baseline"
+          className="flex flex-row text-2xl font-display text-dark gap-x-2 items-baseline"
         >
           Shipping Address
           {!isOpen && <CheckCircleSolid />}
@@ -75,7 +74,7 @@ const Addresses = ({
               <div>
                 <Heading
                   level="h2"
-                  className="text-3xl-regular gap-x-4 pb-6 pt-8"
+                  className="text-xl font-display text-dark gap-x-4 pb-6 pt-8"
                 >
                   Billing address
                 </Heading>
@@ -83,7 +82,10 @@ const Addresses = ({
                 <BillingAddress cart={cart} />
               </div>
             )}
-            <SubmitButton className="mt-6" data-testid="submit-address-button">
+            <SubmitButton
+              className="mt-6 h-12 rounded-full bg-[#C8702A] hover:bg-[#A85C20] border-none transition-colors px-8"
+              data-testid="submit-address-button"
+            >
               Continue to delivery
             </SubmitButton>
             <ErrorMessage error={message} data-testid="address-error-message" />
@@ -176,7 +178,6 @@ const Addresses = ({
           </div>
         </div>
       )}
-      <Divider className="mt-8" />
     </div>
   )
 }
