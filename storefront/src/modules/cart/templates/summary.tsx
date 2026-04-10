@@ -39,7 +39,9 @@ const Summary = ({ cart }: SummaryProps) => {
         href={"/checkout?step=" + step}
         data-testid="checkout-button"
       >
-        <Button className="w-full h-10">Go to checkout</Button>
+        <Button className="w-full h-12 rounded-full bg-[#C8702A] hover:bg-[#A85C20] border-none transition-colors">
+          Go to checkout
+        </Button>
       </LocalizedClientLink>
     </div>
   )
