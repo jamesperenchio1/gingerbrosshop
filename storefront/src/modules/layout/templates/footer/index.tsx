@@ -1,8 +1,68 @@
 import { listCategories } from "@lib/data/categories"
 import { listCollections } from "@lib/data/collections"
-import { Text, clx } from "@medusajs/ui"
 
 import LocalizedClientLink from "@modules/common/components/localized-client-link"
+
+const SOCIAL_LINKS = [
+  {
+    label: "Instagram",
+    href: "#",
+    icon: (
+      <svg
+        width={16}
+        height={16}
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth={1.6}
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      >
+        <rect x="3" y="3" width="18" height="18" rx="5" />
+        <circle cx="12" cy="12" r="4" />
+        <circle cx="17.5" cy="6.5" r="1" fill="currentColor" />
+      </svg>
+    ),
+  },
+  {
+    label: "TikTok",
+    href: "#",
+    icon: (
+      <svg
+        width={16}
+        height={16}
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth={1.6}
+        strokeLinecap="round"
+      >
+        <path d="M15 4v10a4 4 0 1 1-4-4" />
+        <path d="M15 4c0 2.5 2 4.5 4.5 4.5" />
+      </svg>
+    ),
+  },
+  {
+    label: "LINE",
+    href: "#",
+    icon: (
+      <svg
+        width={16}
+        height={16}
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth={1.6}
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      >
+        <rect x="3" y="4" width="18" height="14" rx="4" />
+        <path d="M8 18l-1 3 4-3" />
+        <path d="M7 9v4M10 9v4M10 9h1.5a1 1 0 0 1 1 1v3M15 9v4M17 9h-2v4h2" />
+      </svg>
+    ),
+  },
+]
 
 export default async function Footer() {
   const { collections } = await listCollections({
@@ -11,132 +71,406 @@ export default async function Footer() {
   const productCategories = await listCategories()
 
   return (
-    <footer className="bg-dark text-white/80 w-full">
+    <footer
+      style={{
+        background: "#2C1810",
+        color: "rgba(255,255,255,0.8)",
+        width: "100%",
+      }}
+    >
       {/* Wave top */}
-      <div className="relative -mt-1">
-        <svg
-          viewBox="0 0 1440 80"
-          fill="none"
-          xmlns="http://www.w3.org/2000/svg"
-          className="w-full h-auto"
-          preserveAspectRatio="none"
-        >
-          <path
-            d="M0 40C360 80 720 0 1080 40C1260 60 1380 50 1440 40V80H0V40Z"
-            fill="#2C1810"
-          />
-        </svg>
-      </div>
+      <svg
+        viewBox="0 0 1440 80"
+        preserveAspectRatio="none"
+        style={{ display: "block", width: "100%", height: 60 }}
+      >
+        <path
+          d="M0 40C360 80 720 0 1080 40C1260 60 1380 50 1440 40V80H0V40Z"
+          fill="#2C1810"
+        />
+      </svg>
 
-      <div className="content-container flex flex-col w-full">
-        <div className="flex flex-col gap-y-8 xsmall:flex-row items-start justify-between py-16">
-          <div className="max-w-xs">
-            <LocalizedClientLink
-              href="/"
-              className="inline-block mb-4"
+      <div
+        style={{ maxWidth: 1440, margin: "0 auto", padding: "0 40px" }}
+      >
+        {/* Newsletter */}
+        <div
+          style={{
+            padding: "48px 0 40px",
+            borderBottom: "1px solid rgba(255,255,255,0.1)",
+            display: "grid",
+            gridTemplateColumns: "1fr 1fr",
+            gap: 60,
+            alignItems: "center",
+          }}
+        >
+          <div>
+            <h3
+              style={{
+                fontFamily: "Playfair Display, serif",
+                fontSize: 36,
+                fontWeight: 700,
+                color: "#fff",
+                margin: 0,
+                letterSpacing: "-0.01em",
+              }}
             >
-              <span className="font-display text-3xl font-bold text-white tracking-tight">
-                Ginger<span className="text-primary">bros</span>
+              Recipes, restocks, and the occasional{" "}
+              <span style={{ fontStyle: "italic", color: "#C8893C" }}>
+                misfit batch.
               </span>
-            </LocalizedClientLink>
-            <p className="font-nunito text-white/60 text-sm leading-relaxed">
-              Handcrafted ginger beverages from Thailand. Bold flavors, natural ingredients, brewed with love.
+            </h3>
+            <p
+              style={{
+                fontFamily: "Nunito, sans-serif",
+                fontSize: 14,
+                color: "rgba(255,255,255,0.6)",
+                margin: "10px 0 0",
+              }}
+            >
+              One email a month. No spam. ฿50 off your next order.
             </p>
           </div>
-          <div className="text-small-regular gap-10 md:gap-x-16 grid grid-cols-2 sm:grid-cols-3">
-            {productCategories && productCategories?.length > 0 && (
-              <div className="flex flex-col gap-y-2">
-                <span className="font-nunito font-semibold text-white text-sm tracking-wide uppercase">
-                  Categories
-                </span>
-                <ul
-                  className="grid grid-cols-1 gap-2 mt-2"
-                  data-testid="footer-categories"
-                >
-                  {productCategories?.slice(0, 6).map((c) => {
-                    if (c.parent_category) {
-                      return
-                    }
+          <form
+            onSubmit={(e) => e.preventDefault()}
+            style={{
+              display: "flex",
+              gap: 8,
+              alignItems: "center",
+              background: "rgba(255,255,255,0.06)",
+              padding: 6,
+              borderRadius: 9999,
+              border: "1px solid rgba(255,255,255,0.1)",
+            }}
+          >
+            <input
+              type="email"
+              placeholder="you@example.com"
+              style={{
+                flex: 1,
+                background: "transparent",
+                border: 0,
+                outline: "none",
+                color: "#fff",
+                padding: "12px 18px",
+                fontFamily: "Nunito, sans-serif",
+                fontSize: 14,
+              }}
+            />
+            <button
+              type="submit"
+              style={{
+                padding: "12px 22px",
+                background: "#C8893C",
+                color: "#fff",
+                border: 0,
+                borderRadius: 9999,
+                fontFamily: "Nunito, sans-serif",
+                fontWeight: 600,
+                fontSize: 14,
+                cursor: "pointer",
+                whiteSpace: "nowrap",
+              }}
+            >
+              Subscribe
+            </button>
+          </form>
+        </div>
 
-                    const children =
-                      c.category_children?.map((child) => ({
-                        name: child.name,
-                        handle: child.handle,
-                        id: child.id,
-                      })) || null
-
-                    return (
-                      <li
-                        className="flex flex-col gap-2 text-white/60 font-nunito text-sm"
-                        key={c.id}
-                      >
-                        <LocalizedClientLink
-                          className={clx(
-                            "hover:text-primary transition-colors duration-200",
-                            children && "font-medium"
-                          )}
-                          href={`/categories/${c.handle}`}
-                          data-testid="category-link"
-                        >
-                          {c.name}
-                        </LocalizedClientLink>
-                        {children && (
-                          <ul className="grid grid-cols-1 ml-3 gap-2">
-                            {children &&
-                              children.map((child) => (
-                                <li key={child.id}>
-                                  <LocalizedClientLink
-                                    className="hover:text-primary transition-colors duration-200"
-                                    href={`/categories/${child.handle}`}
-                                    data-testid="category-link"
-                                  >
-                                    {child.name}
-                                  </LocalizedClientLink>
-                                </li>
-                              ))}
-                          </ul>
-                        )}
-                      </li>
-                    )
-                  })}
-                </ul>
-              </div>
-            )}
-            {collections && collections.length > 0 && (
-              <div className="flex flex-col gap-y-2">
-                <span className="font-nunito font-semibold text-white text-sm tracking-wide uppercase">
-                  Collections
-                </span>
-                <ul
-                  className={clx(
-                    "grid grid-cols-1 gap-2 text-white/60 font-nunito text-sm mt-2",
-                    {
-                      "grid-cols-2": (collections?.length || 0) > 3,
-                    }
-                  )}
+        {/* Links grid */}
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns: "1.3fr 1fr 1fr 1fr",
+            gap: 36,
+            padding: "56px 0",
+          }}
+        >
+          {/* Brand */}
+          <div style={{ maxWidth: 280 }}>
+            <LocalizedClientLink href="/" style={{ textDecoration: "none" }}>
+              <span
+                style={{
+                  fontFamily: "Playfair Display, serif",
+                  fontWeight: 700,
+                  fontSize: 30,
+                  color: "#fff",
+                  letterSpacing: "-0.01em",
+                }}
+              >
+                Ginger
+                <span style={{ color: "#C8893C" }}>bros</span>
+              </span>
+            </LocalizedClientLink>
+            <p
+              style={{
+                fontFamily: "Nunito, sans-serif",
+                color: "rgba(255,255,255,0.6)",
+                fontSize: 13,
+                lineHeight: 1.65,
+                margin: "16px 0 20px",
+              }}
+            >
+              Handcrafted ginger beverages from Thailand. Real root, real
+              ferment, real small-batch.
+            </p>
+            {/* Socials */}
+            <div style={{ display: "flex", gap: 14 }}>
+              {SOCIAL_LINKS.map((s) => (
+                <a
+                  key={s.label}
+                  href={s.href}
+                  aria-label={s.label}
+                  style={{
+                    color: "rgba(255,255,255,0.7)",
+                    width: 36,
+                    height: 36,
+                    borderRadius: "50%",
+                    border: "1px solid rgba(255,255,255,0.3)",
+                    display: "inline-flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    transition: "all 200ms",
+                    textDecoration: "none",
+                  }}
+                  onMouseEnter={(e) => {
+                    const el = e.currentTarget as HTMLAnchorElement
+                    el.style.background = "#C8893C"
+                    el.style.borderColor = "#C8893C"
+                    el.style.color = "#fff"
+                  }}
+                  onMouseLeave={(e) => {
+                    const el = e.currentTarget as HTMLAnchorElement
+                    el.style.background = "transparent"
+                    el.style.borderColor = "rgba(255,255,255,0.3)"
+                    el.style.color = "rgba(255,255,255,0.7)"
+                  }}
                 >
-                  {collections?.slice(0, 6).map((c) => (
-                    <li key={c.id}>
-                      <LocalizedClientLink
-                        className="hover:text-primary transition-colors duration-200"
-                        href={`/collections/${c.handle}`}
-                      >
-                        {c.title}
-                      </LocalizedClientLink>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            )}
+                  {s.icon}
+                </a>
+              ))}
+            </div>
+          </div>
+
+          {/* Shop */}
+          <div>
+            <div
+              style={{
+                fontFamily: "Nunito, sans-serif",
+                fontWeight: 700,
+                color: "#C8893C",
+                fontSize: 12,
+                letterSpacing: "0.24em",
+                textTransform: "uppercase",
+                marginBottom: 18,
+              }}
+            >
+              Shop
+            </div>
+            <ul
+              style={{
+                listStyle: "none",
+                padding: 0,
+                margin: 0,
+                display: "grid",
+                gap: 10,
+              }}
+            >
+              {["All brews", "Ginger Beer", "Ginger Ale", "Ginger Shot", "Unpasteurized", "Build a 6-pack"].map(
+                (item) => (
+                  <li key={item}>
+                    <LocalizedClientLink
+                      href="/store"
+                      style={{
+                        color: "rgba(255,255,255,0.65)",
+                        fontFamily: "Nunito, sans-serif",
+                        fontSize: 13,
+                        textDecoration: "none",
+                        transition: "color 200ms",
+                      }}
+                      onMouseEnter={(e) => {
+                        ;(e.currentTarget as HTMLAnchorElement).style.color =
+                          "#C8893C"
+                      }}
+                      onMouseLeave={(e) => {
+                        ;(e.currentTarget as HTMLAnchorElement).style.color =
+                          "rgba(255,255,255,0.65)"
+                      }}
+                    >
+                      {item}
+                    </LocalizedClientLink>
+                  </li>
+                )
+              )}
+              {productCategories?.slice(0, 3).map((c) => (
+                <li key={c.id}>
+                  <LocalizedClientLink
+                    href={`/categories/${c.handle}`}
+                    style={{
+                      color: "rgba(255,255,255,0.65)",
+                      fontFamily: "Nunito, sans-serif",
+                      fontSize: 13,
+                      textDecoration: "none",
+                    }}
+                  >
+                    {c.name}
+                  </LocalizedClientLink>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          {/* Learn */}
+          <div>
+            <div
+              style={{
+                fontFamily: "Nunito, sans-serif",
+                fontWeight: 700,
+                color: "#C8893C",
+                fontSize: 12,
+                letterSpacing: "0.24em",
+                textTransform: "uppercase",
+                marginBottom: 18,
+              }}
+            >
+              Learn
+            </div>
+            <ul
+              style={{
+                listStyle: "none",
+                padding: 0,
+                margin: 0,
+                display: "grid",
+                gap: 10,
+              }}
+            >
+              {[
+                ["Our story", "/store"],
+                ["Brewing process", "/store"],
+                ["Sourcing", "/store"],
+                ["Press", "/store"],
+              ].map(([label, href]) => (
+                <li key={label}>
+                  <LocalizedClientLink
+                    href={href}
+                    style={{
+                      color: "rgba(255,255,255,0.65)",
+                      fontFamily: "Nunito, sans-serif",
+                      fontSize: 13,
+                      textDecoration: "none",
+                    }}
+                  >
+                    {label}
+                  </LocalizedClientLink>
+                </li>
+              ))}
+              {collections?.slice(0, 3).map((c) => (
+                <li key={c.id}>
+                  <LocalizedClientLink
+                    href={`/collections/${c.handle}`}
+                    style={{
+                      color: "rgba(255,255,255,0.65)",
+                      fontFamily: "Nunito, sans-serif",
+                      fontSize: 13,
+                      textDecoration: "none",
+                    }}
+                  >
+                    {c.title}
+                  </LocalizedClientLink>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          {/* Help */}
+          <div>
+            <div
+              style={{
+                fontFamily: "Nunito, sans-serif",
+                fontWeight: 700,
+                color: "#C8893C",
+                fontSize: 12,
+                letterSpacing: "0.24em",
+                textTransform: "uppercase",
+                marginBottom: 18,
+              }}
+            >
+              Help
+            </div>
+            <ul
+              style={{
+                listStyle: "none",
+                padding: 0,
+                margin: 0,
+                display: "grid",
+                gap: 10,
+              }}
+            >
+              {[
+                ["Shipping info", "/store"],
+                ["Track my order", "/account"],
+                ["Returns", "/store"],
+                ["FAQ", "/store"],
+                ["Contact us", "/store"],
+                ["Refer a friend", "/store"],
+              ].map(([label, href]) => (
+                <li key={label}>
+                  <LocalizedClientLink
+                    href={href}
+                    style={{
+                      color: "rgba(255,255,255,0.65)",
+                      fontFamily: "Nunito, sans-serif",
+                      fontSize: 13,
+                      textDecoration: "none",
+                    }}
+                  >
+                    {label}
+                  </LocalizedClientLink>
+                </li>
+              ))}
+            </ul>
           </div>
         </div>
-        <div className="flex w-full py-8 justify-between border-t border-white/10">
-          <Text className="font-nunito text-white/40 text-xs">
-            &copy; {new Date().getFullYear()} Gingerbros. All rights reserved.
-          </Text>
-          <Text className="font-nunito text-white/40 text-xs">
-            Brewed in Thailand
-          </Text>
+
+        {/* Bottom bar */}
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            padding: "24px 0",
+            borderTop: "1px solid rgba(255,255,255,0.1)",
+            fontFamily: "Nunito, sans-serif",
+            fontSize: 12,
+            color: "rgba(255,255,255,0.4)",
+            flexWrap: "wrap",
+            gap: 10,
+          }}
+        >
+          <span>
+            &copy; {new Date().getFullYear()} Gingerbros · All rights reserved
+          </span>
+          <div style={{ display: "flex", gap: 20 }}>
+            <a
+              href="#"
+              style={{ color: "inherit", textDecoration: "none" }}
+            >
+              Privacy
+            </a>
+            <a
+              href="#"
+              style={{ color: "inherit", textDecoration: "none" }}
+            >
+              Terms
+            </a>
+            <a
+              href="#"
+              style={{ color: "inherit", textDecoration: "none" }}
+            >
+              Cookies
+            </a>
+          </div>
+          <span>Brewed in Bangkok 🇹🇭</span>
         </div>
       </div>
     </footer>

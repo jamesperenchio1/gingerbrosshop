@@ -1,14 +1,22 @@
 import { Metadata } from "next"
 
 import Hero from "@modules/home/components/hero"
-import ProductSectionCard from "@modules/home/components/product-section-card"
+import ShopSection, {
+  ShopProduct,
+} from "@modules/home/components/shop-section"
+import TasteGuide from "@modules/home/components/taste-guide"
+import BundleBuilder from "@modules/home/components/bundle-builder"
+import StoryStrip from "@modules/home/components/story-strip"
+import SubscriptionBlock from "@modules/home/components/subscription-block"
+
 import { listProducts } from "@lib/data/products"
 import { getRegion } from "@lib/data/regions"
+import { getProductMeta, inferFlavor } from "@lib/product-metadata"
 
 export const metadata: Metadata = {
-  title: "Gingerbros - Thai Craft Ginger Beverages",
+  title: "Gingerbros — Thai Craft Ginger Beverages",
   description:
-    "Handcrafted ginger beverages from Thailand. Bold flavors, natural ingredients, brewed with love.",
+    "Fresh ginger, real fermentation, no syrupy shortcuts. Small-batch ginger beer, ale, and shots brewed in Bangkok.",
 }
 
 export default async function Home(props: {
@@ -20,7 +28,7 @@ export default async function Home(props: {
   const region = await getRegion(countryCode)
 
   if (!region) {
-    return null
+    return <Hero />
   }
 
   const {
@@ -29,95 +37,173 @@ export default async function Home(props: {
     regionId: region.id,
     queryParams: {
       fields: "*variants.calculated_price",
-      limit: 12,
+      limit: 20,
     },
   })
 
-  if (!products || products.length === 0) {
-    return (
-      <>
-        <Hero />
-      </>
-    )
-  }
+  // Transform Medusa products → ShopProduct format
+  const shopProducts: ShopProduct[] = (products ?? []).map((p) => {
+    const meta = getProductMeta(p.handle)
+    const variants = (p.variants ?? []) as any[]
 
-  // Filter to products that have the relevant variant
-  const productsWithSingle = products.filter((p) =>
-    (p.variants || []).some(
-      (v: any) => v.title?.toLowerCase() === "single"
+    const singleV = variants.find(
+      (v) => v.title?.toLowerCase() === "single"
     )
-  )
+    const sixpackV = variants.find(
+      (v) => v.title?.toLowerCase() === "6-pack"
+    )
 
-  const productsWithSixPack = products.filter((p) =>
-    (p.variants || []).some(
-      (v: any) => v.title?.toLowerCase() === "6-pack"
-    )
-  )
+    const currency =
+      singleV?.calculated_price?.currency_code ??
+      sixpackV?.calculated_price?.currency_code ??
+      region.currency_code
+
+    return {
+      id: p.id ?? "",
+      handle: p.handle ?? "",
+      title: p.title ?? "",
+      flavor: meta.flavor ?? inferFlavor(p.handle),
+      singlePrice: singleV?.calculated_price?.calculated_amount ?? undefined,
+      sixpackPrice: sixpackV?.calculated_price?.calculated_amount ?? undefined,
+      singleVariantId: singleV?.id ?? undefined,
+      sixpackVariantId: sixpackV?.id ?? undefined,
+      currency,
+      heat: meta.heat,
+      rating: meta.rating,
+      reviews: meta.reviews,
+      tag: meta.tag,
+      tagColor: meta.tagColor,
+      filterTags: meta.filterTags,
+      blurb: meta.blurb,
+      lowStock: meta.lowStock,
+    }
+  })
+
+  const tasteProducts = shopProducts.map((p) => {
+    const meta = getProductMeta(p.handle)
+    return {
+      handle: p.handle,
+      title: p.title,
+      flavor: p.flavor,
+      heat: p.heat,
+      blurb: meta.blurb,
+      tasteGuideLabel: meta.tasteGuideLabel,
+    }
+  })
+
+  const bundleProducts = shopProducts.map((p) => ({
+    handle: p.handle,
+    title: p.title,
+    flavor: p.flavor,
+    singlePrice: p.singlePrice,
+  }))
 
   return (
     <>
       <Hero />
 
-      {/* Singles Section */}
-      {productsWithSingle.length > 0 && (
-        <section className="py-16 bg-white">
-          <div className="content-container">
-            <div className="text-center mb-12">
-              <p className="text-primary font-nunito font-semibold tracking-[0.2em] uppercase text-sm mb-3">
-                Try Our Flavors
-              </p>
-              <h2 className="font-display text-3xl small:text-4xl font-bold text-dark">
-                Shop Singles
-              </h2>
-              <p className="font-nunito text-dark/60 mt-3 max-w-lg mx-auto">
-                Perfect for trying something new. Pick your favorite ginger brew.
-              </p>
-            </div>
-            <ul className="grid grid-cols-1 xsmall:grid-cols-2 small:grid-cols-3 gap-6 small:gap-8">
-              {productsWithSingle.map((product) => (
-                <li key={product.id}>
-                  <ProductSectionCard
-                    product={product}
-                    variantType="Single"
-                    region={region}
-                  />
-                </li>
-              ))}
-            </ul>
-          </div>
-        </section>
+      {shopProducts.length > 0 && (
+        <ShopSection products={shopProducts} countryCode={countryCode} />
       )}
 
-      {/* 6-Packs Section */}
-      {productsWithSixPack.length > 0 && (
-        <section className="py-16 bg-background">
-          <div className="content-container">
-            <div className="text-center mb-12">
-              <p className="text-accent font-nunito font-semibold tracking-[0.2em] uppercase text-sm mb-3">
-                Better Value
-              </p>
-              <h2 className="font-display text-3xl small:text-4xl font-bold text-dark">
-                Save More with 6-Packs
-              </h2>
-              <p className="font-nunito text-dark/60 mt-3 max-w-lg mx-auto">
-                Stock up and save. The perfect way to keep your favorites on hand.
-              </p>
-            </div>
-            <ul className="grid grid-cols-1 xsmall:grid-cols-2 small:grid-cols-3 gap-6 small:gap-8">
-              {productsWithSixPack.map((product) => (
-                <li key={product.id}>
-                  <ProductSectionCard
-                    product={product}
-                    variantType="6-Pack"
-                    region={region}
-                    showSavings
-                  />
-                </li>
-              ))}
-            </ul>
-          </div>
-        </section>
+      {tasteProducts.length > 0 && (
+        <TasteGuide products={tasteProducts} countryCode={countryCode} />
       )}
+
+      {bundleProducts.length > 0 && (
+        <BundleBuilder products={bundleProducts} countryCode={countryCode} />
+      )}
+
+      <StoryStrip />
+
+      <SubscriptionBlock />
+
+      {/* Tracking CTA */}
+      <section
+        style={{
+          padding: "80px 0",
+          background: "#FDF6EC",
+          textAlign: "center",
+          position: "relative",
+        }}
+      >
+        <div
+          style={{
+            maxWidth: 720,
+            margin: "0 auto",
+            padding: "0 40px",
+          }}
+        >
+          <h2
+            style={{
+              fontFamily: "Playfair Display, serif",
+              fontSize: 44,
+              fontWeight: 700,
+              color: "#2C1810",
+              margin: "0 0 14px",
+              lineHeight: 1.1,
+              letterSpacing: "-0.02em",
+            }}
+          >
+            Already ordered?{" "}
+            <span style={{ fontStyle: "italic", color: "#C8893C" }}>
+              Track your brew.
+            </span>
+          </h2>
+          <p
+            style={{
+              fontFamily: "Nunito, sans-serif",
+              fontSize: 16,
+              color: "rgba(44,24,16,0.7)",
+              margin: "0 0 28px",
+            }}
+          >
+            Live timeline from bottle-line to your door. Because
+            &quot;it&apos;ll get there&quot; isn&apos;t an update.
+          </p>
+          <a
+            href={`/${countryCode}/account`}
+            style={{
+              display: "inline-flex",
+              alignItems: "center",
+              gap: 8,
+              padding: "14px 28px",
+              background: "transparent",
+              color: "#C8893C",
+              border: "2px solid #C8893C",
+              borderRadius: 9999,
+              fontFamily: "Nunito, sans-serif",
+              fontWeight: 600,
+              fontSize: 15,
+              textDecoration: "none",
+              transition: "all 200ms",
+            }}
+            onMouseEnter={(e) => {
+              const el = e.currentTarget as HTMLAnchorElement
+              el.style.background = "#C8893C"
+              el.style.color = "#fff"
+            }}
+            onMouseLeave={(e) => {
+              const el = e.currentTarget as HTMLAnchorElement
+              el.style.background = "transparent"
+              el.style.color = "#C8893C"
+            }}
+          >
+            Track an order
+            <svg
+              width={14}
+              height={14}
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth={2}
+              strokeLinecap="round"
+            >
+              <path d="M5 12h14M13 6l6 6-6 6" />
+            </svg>
+          </a>
+        </div>
+      </section>
     </>
   )
 }
