@@ -115,11 +115,10 @@ export default function ProductSectionCard({
       </div>
 
       {/* Image area */}
-      <LocalizedClientLink href={href} className="block">
-        <div
-          className="relative overflow-hidden flex items-center justify-center"
-          style={{ height: 280, background: "linear-gradient(145deg, #F5E6D3, #FDF6EC)" }}
-        >
+      <div
+        className="relative overflow-hidden flex items-center justify-center"
+        style={{ height: 280, background: "linear-gradient(145deg, #F5E6D3, #FDF6EC)" }}
+      >
           {/* Glow */}
           <div className="absolute w-[200px] h-[200px] rounded-full bg-primary/[0.12] blur-[40px]" />
           {hasThumbnail ? (
@@ -154,7 +153,6 @@ export default function ProductSectionCard({
             </LocalizedClientLink>
           </div>
         </div>
-      </LocalizedClientLink>
 
       {/* Info */}
       <LocalizedClientLink href={href} className="block px-[22px] pt-5 pb-[22px]">

@@ -5,11 +5,9 @@ import { cache } from "react"
 
 export const retrieveOrder = cache(async function (id: string) {
   return sdk.store.order
-    .retrieve(
-      id,
-      { fields: "+items, +customer, +payment_collections.payments, *items.variant.product" },
-      { next: { tags: ["order"] } }
-    )
+    .retrieve(id, {
+      fields: "+items, +customer, +payment_collections.payments, *items.variant.product",
+    })
     .then(({ order }) => order)
     .catch(() => null)
 })
@@ -20,10 +18,12 @@ export const listOrders = cache(async function (
   filters?: Record<string, any>
 ) {
   return sdk.store.order
-    .list(
-      { limit, offset, fields: "+items, +customer, +payment_collections.payments", ...filters },
-      { next: { tags: ["orders"] } }
-    )
+    .list({
+      limit,
+      offset,
+      fields: "+items, +customer, +payment_collections.payments",
+      ...filters,
+    })
     .then(({ orders }) => orders)
     .catch(() => null)
 })

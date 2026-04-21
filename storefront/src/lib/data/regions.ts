@@ -4,14 +4,14 @@ import { cache } from "react"
 
 export const listRegions = cache(async function () {
   return sdk.store.region
-    .list({}, { next: { tags: ["regions"] } })
+    .list({})
     .then(({ regions }) => regions)
     .catch(() => null)
 })
 
 export const retrieveRegion = cache(async function (id: string) {
   return sdk.store.region
-    .retrieve(id, {}, { next: { tags: ["regions"] } })
+    .retrieve(id, {})
     .then(({ region }) => region)
     .catch(() => null)
 })
@@ -22,9 +22,7 @@ export const getRegion = cache(async function (countryCode: string) {
 
   return (
     regions.find((region) =>
-      region.countries?.some(
-        (c) => c.iso_2 === countryCode
-      )
+      region.countries?.some((c) => c.iso_2 === countryCode)
     ) ?? null
   )
 })

@@ -16,17 +16,13 @@ export const listProducts = cache(async function ({
   const limit = queryParams?.limit ?? 12
   const offset = ((pageParam ?? 1) - 1) * limit
 
-  const { products, count } = await sdk.store.product.list(
-    {
-      limit,
-      offset,
-      region_id: regionId,
-      fields:
-        "*variants.calculated_price,+variants.inventory_quantity,+metadata",
-      ...queryParams,
-    },
-    { next: { tags: ["products"] } }
-  )
+  const { products, count } = await sdk.store.product.list({
+    limit,
+    offset,
+    region_id: regionId,
+    fields: "*variants.calculated_price,+variants.inventory_quantity,+metadata",
+    ...queryParams,
+  })
 
   return {
     response: { products, count },
@@ -39,15 +35,11 @@ export const getProductByHandle = cache(async function (
   handle: string,
   regionId: string
 ) {
-  const { products } = await sdk.store.product.list(
-    {
-      handle,
-      region_id: regionId,
-      fields:
-        "*variants.calculated_price,+variants.inventory_quantity,+metadata",
-    },
-    { next: { tags: ["products"] } }
-  )
+  const { products } = await sdk.store.product.list({
+    handle,
+    region_id: regionId,
+    fields: "*variants.calculated_price,+variants.inventory_quantity,+metadata",
+  })
 
   return products[0] ?? null
 })
@@ -57,15 +49,10 @@ export const getProductById = cache(async function (
   regionId: string
 ) {
   return sdk.store.product
-    .retrieve(
-      id,
-      {
-        region_id: regionId,
-        fields:
-          "*variants.calculated_price,+variants.inventory_quantity,+metadata",
-      },
-      { next: { tags: ["products"] } }
-    )
+    .retrieve(id, {
+      region_id: regionId,
+      fields: "*variants.calculated_price,+variants.inventory_quantity,+metadata",
+    })
     .then(({ product }) => product)
     .catch(() => null)
 })
@@ -78,14 +65,11 @@ export const getProductsById = cache(async function ({
   regionId: string
 }) {
   return sdk.store.product
-    .list(
-      {
-        id: ids,
-        region_id: regionId,
-        fields: "*variants.calculated_price",
-      },
-      { next: { tags: ["products"] } }
-    )
+    .list({
+      id: ids,
+      region_id: regionId,
+      fields: "*variants.calculated_price",
+    })
     .then(({ products }) => products)
     .catch(() => null)
 })
@@ -109,19 +93,13 @@ export const listProductsWithSort = cache(async function ({
     response: { products, count },
   } = await listProducts({
     pageParam: page + 1,
-    queryParams: {
-      ...queryParams,
-      limit,
-    },
+    queryParams: { ...queryParams, limit },
     countryCode,
     regionId,
   })
 
   return {
-    response: {
-      products,
-      count,
-    },
+    response: { products, count },
     nextPage: count > page * limit + limit ? page + 1 : null,
     queryParams,
   }

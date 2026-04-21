@@ -6,18 +6,17 @@ import { HttpTypes } from "@medusajs/types"
 import { revalidateTag } from "next/cache"
 import { redirect } from "next/navigation"
 import { transferCart } from "./cart"
-export { transferCart } from "./cart"
 
 export const retrieveCustomer = async () => {
   return sdk.store.customer
-    .retrieve({}, { next: { tags: ["customer"] } })
+    .retrieve({})
     .then(({ customer }) => customer)
     .catch(() => null)
 }
 
 export const updateCustomer = async (body: HttpTypes.StoreUpdateCustomer) => {
   const updateRes = await sdk.store.customer
-    .update(body, {}, { next: { tags: ["customer"] } })
+    .update(body, {})
     .catch(medusaError)
 
   const customer = updateRes.customer

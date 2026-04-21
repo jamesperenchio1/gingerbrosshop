@@ -56,8 +56,7 @@ export default async function Footer() {
               One email a month. No spam. ฿50 off your next order.
             </p>
           </div>
-          <form
-            onSubmit={(e) => e.preventDefault()}
+          <div
             className="flex gap-2 items-center p-1.5 rounded-full border"
             style={{ background: "rgba(255,255,255,0.06)", borderColor: "rgba(255,255,255,0.1)" }}
           >
@@ -67,12 +66,12 @@ export default async function Footer() {
               className="flex-1 bg-transparent border-0 outline-none text-white placeholder-white/40 px-[18px] py-3 font-sans text-sm"
             />
             <button
-              type="submit"
+              type="button"
               className="px-[22px] py-3 bg-primary text-white rounded-full font-sans font-semibold text-sm hover:bg-[#B57A2F] transition-colors whitespace-nowrap"
             >
               Subscribe
             </button>
-          </form>
+          </div>
         </div>
 
         {/* Main columns */}

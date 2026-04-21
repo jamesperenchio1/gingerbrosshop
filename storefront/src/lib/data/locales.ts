@@ -4,7 +4,7 @@ import { cache } from "react"
 
 export const listLocales = cache(async function () {
   return sdk.store.locale
-    .list({ next: { tags: ["locales"] } })
+    .list()
     .then(({ locales }) => locales)
     .catch(() => null)
 })
