@@ -71,9 +71,27 @@
   }
 }
 
+/* GB keyframes */
+@keyframes gbMarquee { to { transform: translateX(-50%); } }
+@keyframes gbPulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
+
 @layer components {
   .content-container {
     @apply max-w-[1440px] w-full mx-auto px-6;
+  }
+
+  /* Gingerbros button system */
+  .gb-btn {
+    @apply inline-flex items-center gap-2 px-7 py-3.5 rounded-full font-sans font-semibold text-base cursor-pointer transition-all duration-300 no-underline border-0 leading-none whitespace-nowrap;
+  }
+  .gb-btn--primary {
+    @apply bg-primary text-white hover:bg-[#B57A2F] hover:shadow-lg hover:shadow-primary/25 hover:-translate-y-0.5;
+  }
+  .gb-btn--outline {
+    @apply bg-transparent text-primary border-2 border-primary px-[26px] py-[12px] hover:bg-primary hover:text-white;
+  }
+  .gb-btn--ghost {
+    @apply bg-transparent text-dark hover:text-primary;
   }
 
   .contrast-btn {
