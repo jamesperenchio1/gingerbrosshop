@@ -71,10 +71,6 @@
   }
 }
 
-@keyframes gbMarquee {
-  to { transform: translateX(-50%); }
-}
-
 @layer components {
   .content-container {
     @apply max-w-[1440px] w-full mx-auto px-6;
