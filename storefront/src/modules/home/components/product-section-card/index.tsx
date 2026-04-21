@@ -2,8 +2,8 @@
 
 import { useState } from "react"
 import { HttpTypes } from "@medusajs/types"
+import Image from "next/image"
 import LocalizedClientLink from "@modules/common/components/localized-client-link"
-import Thumbnail from "@modules/products/components/thumbnail"
 import GbBottle, { detectFlavor } from "@modules/common/components/gb-bottle"
 import { convertToLocale } from "@lib/util/money"
 
@@ -123,10 +123,17 @@ export default function ProductSectionCard({
           <div className="absolute w-[200px] h-[200px] rounded-full bg-primary/[0.12] blur-[40px]" />
           {hasThumbnail ? (
             <div
-              className="relative transition-transform duration-400"
-              style={{ transform: hovered ? "translateY(-6px) rotate(-2deg)" : "translateY(0)" }}
+              className="absolute inset-0 transition-transform duration-400"
+              style={{ transform: hovered ? "translateY(-6px)" : "translateY(0)" }}
             >
-              <Thumbnail thumbnail={product.thumbnail} images={product.images} size="full" priority />
+              <Image
+                src={product.thumbnail!}
+                alt={product.title ?? "Product"}
+                fill
+                className="object-contain object-center p-6"
+                sizes="(max-width: 768px) 100vw, 400px"
+                priority
+              />
             </div>
           ) : (
             <div
