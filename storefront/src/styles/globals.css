@@ -2,6 +2,11 @@
 @import "tailwindcss/components";
 @import "tailwindcss/utilities";
 
+html, body {
+  overflow-x: hidden;
+  max-width: 100vw;
+}
+
 /*
  * Override Medusa UI preset typography classes (.txt-*) which hardcode
  * font-family: Inter. Force them to inherit our Nunito brand font.

@@ -35,7 +35,7 @@ export const retrieveCart = async () => {
   return sdk.store.cart
     .retrieve(cartId, {
       fields:
-        "+items, +region, +items.product.*, +items.variant.*, +items.thumbnail, +items.metadata, *items.variant.product.variants",
+        "*items, *region, *items.product.*, *items.variant.*, +items.thumbnail, +items.metadata, *items.variant.product.variants, +items.total, +items.subtotal, +items.original_total, +items.original_subtotal, +items.unit_price, +items.tax_total, +items.discount_total, +total, +subtotal, +tax_total, +discount_total, +shipping_total, +shipping_subtotal, +gift_card_total, +original_total, +original_subtotal, +original_tax_total, +original_item_subtotal, +original_shipping_subtotal, +original_shipping_total",
     })
     .then(({ cart }) => cart)
     .catch(() => {
@@ -278,7 +278,7 @@ export const placeOrder = async (cartId?: string) => {
     const countryCode =
       cartRes.order.shipping_address?.country_code?.toLowerCase()
     await removeCartId()
-    redirect(`/${countryCode}/order/confirmed/${cartRes?.order.id}`)
+    redirect(`/${countryCode}/order/${cartRes?.order.id}/confirmed`)
   }
 
   return cartRes

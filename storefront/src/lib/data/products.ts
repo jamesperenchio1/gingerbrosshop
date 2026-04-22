@@ -1,6 +1,7 @@
 import { sdk } from "@lib/config"
 import { HttpTypes } from "@medusajs/types"
 import { cache } from "react"
+import { getRegion } from "@lib/data/regions"
 
 export const listProducts = cache(async function ({
   pageParam = 1,
@@ -16,11 +17,25 @@ export const listProducts = cache(async function ({
   const limit = queryParams?.limit ?? 12
   const offset = ((pageParam ?? 1) - 1) * limit
 
+  let resolvedRegionId = regionId
+  if (!resolvedRegionId && countryCode) {
+    const region = await getRegion(countryCode)
+    resolvedRegionId = region?.id
+  }
+
+  if (!resolvedRegionId) {
+    return {
+      response: { products: [], count: 0 },
+      nextPage: null,
+      queryParams,
+    }
+  }
+
   const { products, count } = await sdk.store.product.list({
     limit,
     offset,
-    region_id: regionId,
-    fields: "*variants.calculated_price,+variants.inventory_quantity,+metadata",
+    region_id: resolvedRegionId,
+    fields: "*variants.calculated_price,+variants.inventory_quantity,+metadata,*images,*options,*options.values,*variants.options,*variants.images",
     ...queryParams,
   })
 
@@ -38,7 +53,7 @@ export const getProductByHandle = cache(async function (
   const { products } = await sdk.store.product.list({
     handle,
     region_id: regionId,
-    fields: "*variants.calculated_price,+variants.inventory_quantity,+metadata",
+    fields: "*variants.calculated_price,+variants.inventory_quantity,+metadata,*images,*options,*options.values,*variants.options,*variants.images",
   })
 
   return products[0] ?? null
@@ -51,7 +66,7 @@ export const getProductById = cache(async function (
   return sdk.store.product
     .retrieve(id, {
       region_id: regionId,
-      fields: "*variants.calculated_price,+variants.inventory_quantity,+metadata",
+      fields: "*variants.calculated_price,+variants.inventory_quantity,+metadata,*images,*options,*options.values,*variants.options,*variants.images",
     })
     .then(({ product }) => product)
     .catch(() => null)

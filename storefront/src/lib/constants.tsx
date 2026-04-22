@@ -41,10 +41,25 @@ export const paymentInfoMap: Record<
   },
 }
 
-// This only checks if it is native stripe or medusa payments for card payments, it ignores the other stripe-based providers
+// Matches any Stripe-based provider (generic card, promptpay, ideal, bancontact, etc.)
 export const isStripeLike = (providerId?: string) => {
+  if (!providerId) return false
   return (
-    providerId?.startsWith("pp_stripe_") || providerId?.startsWith("pp_medusa-")
+    providerId.startsWith("pp_stripe_") ||
+    providerId.startsWith("pp_stripe-") ||
+    providerId.startsWith("pp_medusa-")
+  )
+}
+
+export const isStripePromptPay = (providerId?: string) => {
+  return providerId?.startsWith("pp_stripe-promptpay") ?? false
+}
+
+// True only for Stripe providers that use the Card Element UI (not PromptPay/QR).
+export const isStripeCard = (providerId?: string) => {
+  if (!providerId) return false
+  return (
+    providerId.startsWith("pp_stripe_") || providerId.startsWith("pp_medusa-")
   )
 }
 

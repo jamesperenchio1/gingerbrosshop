@@ -13,6 +13,7 @@ import { useEffect, useRef, useState } from "react"
 
 const CartDropdown = ({ cart: cartState }: { cart?: HttpTypes.StoreCart | null }) => {
   const [open, setOpen] = useState(false)
+  const [mounted, setMounted] = useState(false)
 
   const totalItems =
     cartState?.items?.reduce((acc, item) => acc + item.quantity, 0) || 0
@@ -22,16 +23,26 @@ const CartDropdown = ({ cart: cartState }: { cart?: HttpTypes.StoreCart | null }
   const itemRef = useRef<number>(totalItems || 0)
   const pathname = usePathname()
 
-  // Auto-open when items added (except on cart page)
   useEffect(() => {
-    if (itemRef.current !== totalItems && !pathname.includes("/cart")) {
+    setMounted(true)
+  }, [])
+
+  // Auto-open when items added (except on cart page) — only after initial mount
+  useEffect(() => {
+    if (!mounted) return
+    if (itemRef.current !== totalItems && itemRef.current < totalItems && !pathname.includes("/cart") && !pathname.includes("/checkout")) {
       setOpen(true)
-      const timer = setTimeout(() => setOpen(false), 5000)
+      const timer = setTimeout(() => setOpen(false), 4000)
       itemRef.current = totalItems
       return () => clearTimeout(timer)
     }
     itemRef.current = totalItems
-  }, [totalItems, pathname])
+  }, [totalItems, pathname, mounted])
+
+  // Close drawer on route change
+  useEffect(() => {
+    setOpen(false)
+  }, [pathname])
 
   const freeShipThreshold = 500
   // For THB: subtotal from Medusa may be in smallest unit (satang) or baht — use as-is with convertToLocale
@@ -67,9 +78,10 @@ const CartDropdown = ({ cart: cartState }: { cart?: HttpTypes.StoreCart | null }
 
       {/* Slide-in drawer */}
       <aside
-        className="fixed top-0 right-0 bottom-0 w-[460px] max-w-full bg-background z-[101] flex flex-col shadow-[-20px_0_60px_rgba(44,24,16,0.15)] transition-transform duration-[400ms] ease-[cubic-bezier(0.5,0,0.5,1)]"
-        style={{ transform: open ? "translateX(0)" : "translateX(100%)" }}
+        className="fixed top-0 right-0 bottom-0 w-full sm:w-[460px] bg-background z-[101] flex flex-col shadow-[-20px_0_60px_rgba(44,24,16,0.15)] transition-transform duration-[400ms] ease-[cubic-bezier(0.5,0,0.5,1)]"
+        style={{ transform: open ? "translateX(0)" : "translateX(100%)", visibility: open || mounted ? "visible" : "hidden" }}
         data-testid="nav-cart-dropdown"
+        aria-hidden={!open}
       >
         {/* Header */}
         <header className="px-6 py-5 border-b border-dark/[0.08] bg-white flex justify-between items-center flex-shrink-0">
@@ -152,7 +164,7 @@ const CartDropdown = ({ cart: cartState }: { cart?: HttpTypes.StoreCart | null }
                     </div>
                     <div>
                       <div className="font-display font-semibold text-[15px] text-dark">{item.title}</div>
-                      <LineItemOptions variant={item.variant} data-testid="cart-item-variant" data-value={item.variant} />
+                      <LineItemOptions variant={item.variant} title={item.variant_title} data-testid="cart-item-variant" data-value={item.variant} />
                       <div className="flex items-center gap-[10px] mt-[10px]">
                         <span className="font-sans text-xs text-dark/70" data-testid="cart-item-quantity" data-value={item.quantity}>
                           Qty: {item.quantity}
