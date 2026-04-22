@@ -73,6 +73,11 @@ export default defineConfig({
               automaticPaymentMethods: true,
             },
           },
+          {
+            resolve: "./src/modules/manual-payment",
+            id: "manual",
+            options: {},
+          },
         ],
       },
     },

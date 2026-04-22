@@ -15,6 +15,29 @@ import { useEffect, useState } from "react"
 const PICKUP_OPTION_ON = "__PICKUP_ON"
 const PICKUP_OPTION_OFF = "__PICKUP_OFF"
 
+// Short descriptions shown under each shipping method on the delivery step.
+// Matches on the lowercased option name so new options can be added here
+// without code changes upstream.
+function shippingOptionDescription(name?: string | null): string {
+  const n = (name ?? "").toLowerCase()
+  if (n.includes("free")) {
+    return "3–5 business days. No cost — may be slower in peak season."
+  }
+  if (n.includes("cool") || n.includes("refrig")) {
+    return "Temperature-controlled van. Recommended for unpasteurized bottles and hot-weather delivery."
+  }
+  if (n.includes("standard")) {
+    return "2–4 business days, tracked. Our default for everything except unpasteurized live-culture brews."
+  }
+  if (n.includes("express") || n.includes("same") || n.includes("next")) {
+    return "Same-day within Bangkok, next-business-day elsewhere."
+  }
+  if (n.includes("pickup")) {
+    return "Collect in person from our Bangkok kitchen. We'll email when it's ready."
+  }
+  return "Standard delivery."
+}
+
 type ShippingProps = {
   cart: HttpTypes.StoreCart
   availableShippingMethods: HttpTypes.StoreCartShippingOption[] | null
@@ -261,15 +284,20 @@ const Shipping: React.FC<ShippingProps> = ({
                           }
                         )}
                       >
-                        <div className="flex items-center gap-x-4">
+                        <div className="flex items-center gap-x-4 flex-1 min-w-0">
                           <MedusaRadio
                             checked={option.id === shippingMethodId}
                           />
-                          <span className="text-base-regular">
-                            {option.name}
-                          </span>
+                          <div className="flex flex-col min-w-0">
+                            <span className="text-base-regular font-medium text-dark">
+                              {option.name}
+                            </span>
+                            <span className="text-xs text-dark/60 mt-0.5">
+                              {shippingOptionDescription(option.name)}
+                            </span>
+                          </div>
                         </div>
-                        <span className="justify-self-end text-ui-fg-base">
+                        <span className="justify-self-end text-ui-fg-base whitespace-nowrap ml-4">
                           {option.price_type === "flat" ? (
                             convertToLocale({
                               amount: option.amount!,

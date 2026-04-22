@@ -62,6 +62,7 @@ const Addresses = ({
       </div>
       {isOpen ? (
         <form action={formAction}>
+          <input type="hidden" name="next" value={`${pathname}?step=delivery`} />
           <div className="pb-8">
             <ShippingAddress
               customer={customer}

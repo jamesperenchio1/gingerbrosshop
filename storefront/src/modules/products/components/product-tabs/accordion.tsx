@@ -47,15 +47,23 @@ const Item: React.FC<AccordionItemProps> = ({
     <AccordionPrimitive.Item
       {...props}
       className={clx(
-        "border-grey-20 group border-t last:mb-0 last:border-b",
-        "py-3",
+        "border-dark/[0.1] group border-t last:mb-0 last:border-b",
+        "py-4",
         className
       )}
     >
       <AccordionPrimitive.Header className="px-1">
-        <AccordionPrimitive.Trigger className="flex w-full items-center justify-between py-1 cursor-pointer group/trigger">
+        <AccordionPrimitive.Trigger className="flex w-full items-center justify-between py-2 cursor-pointer group/trigger hover:text-primary transition-colors">
           <div className="flex items-center gap-4">
-            <Text className="text-ui-fg-subtle text-sm group-hover/trigger:text-ui-fg-base transition-colors">{title}</Text>
+            <Text className="font-display font-semibold text-dark text-[17px]">
+              {title}
+            </Text>
+            <Text
+              as="span"
+              className="hidden small:inline text-[11px] tracking-[0.16em] uppercase text-dark/40 font-sans font-semibold group-radix-state-open:hidden"
+            >
+              Tap to expand
+            </Text>
           </div>
           {customTrigger || <MorphingTrigger />}
         </AccordionPrimitive.Trigger>
@@ -84,11 +92,16 @@ Accordion.Item = Item
 
 const MorphingTrigger = () => {
   return (
-    <div className="text-grey-90 hover:bg-grey-5 active:bg-grey-5 active:text-violet-60 focus:border-violet-60 disabled:text-grey-30 bg-transparent disabled:bg-transparent rounded-rounded group relative p-[6px]">
-      <div className="h-5 w-5">
-        <span className="bg-grey-50 rounded-circle group-radix-state-open:rotate-90 absolute inset-y-[31.75%] left-[48%] right-1/2 w-[1.5px] duration-300" />
-        <span className="bg-grey-50 rounded-circle group-radix-state-open:rotate-90 group-radix-state-open:left-1/2 group-radix-state-open:right-1/2 absolute inset-x-[31.75%] top-[48%] bottom-1/2 h-[1.5px] duration-300" />
-      </div>
+    <div
+      className="flex-shrink-0 w-9 h-9 rounded-full flex items-center justify-center transition-all relative bg-primary/10 text-primary group-hover/trigger:bg-primary group-hover/trigger:text-white"
+      aria-hidden="true"
+    >
+      <span
+        className="absolute inset-y-[30%] left-1/2 -translate-x-1/2 w-[2px] rounded-full bg-current group-radix-state-open:rotate-90 duration-300"
+      />
+      <span
+        className="absolute inset-x-[30%] top-1/2 -translate-y-1/2 h-[2px] rounded-full bg-current group-radix-state-open:rotate-90 group-radix-state-open:opacity-0 duration-300"
+      />
     </div>
   )
 }

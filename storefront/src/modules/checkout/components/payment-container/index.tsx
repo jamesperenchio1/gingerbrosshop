@@ -4,7 +4,7 @@ import React, { useContext, useMemo, type JSX } from "react"
 
 import Radio from "@modules/common/components/radio"
 
-import { isManual } from "@lib/constants"
+import { isManual, paymentDescription } from "@lib/constants"
 import SkeletonCardDetails from "@modules/skeletons/components/skeleton-card-details"
 import { CardElement } from "@stripe/react-stripe-js"
 import { StripeCardElementOptions } from "@stripe/stripe-js"
@@ -41,17 +41,24 @@ const PaymentContainer: React.FC<PaymentContainerProps> = ({
         }
       )}
     >
-      <div className="flex items-center justify-between ">
-        <div className="flex items-center gap-x-4">
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-x-4 flex-1 min-w-0">
           <Radio checked={selectedPaymentOptionId === paymentProviderId} />
-          <Text className="text-base-regular">
-            {paymentInfoMap[paymentProviderId]?.title || paymentProviderId}
-          </Text>
+          <div className="flex flex-col min-w-0">
+            <Text className="text-base-regular font-medium text-dark">
+              {paymentInfoMap[paymentProviderId]?.title || paymentProviderId}
+            </Text>
+            {paymentDescription[paymentProviderId] && (
+              <Text className="text-xs text-dark/60 mt-0.5">
+                {paymentDescription[paymentProviderId]}
+              </Text>
+            )}
+          </div>
           {isManual(paymentProviderId) && isDevelopment && (
             <PaymentTest className="hidden small:block" />
           )}
         </div>
-        <span className="justify-self-end text-ui-fg-base">
+        <span className="justify-self-end text-ui-fg-base ml-4">
           {paymentInfoMap[paymentProviderId]?.icon}
         </span>
       </div>

@@ -164,8 +164,17 @@ export const setAddresses = async (currentState: unknown, formData: FormData) =>
     } as HttpTypes.StoreCartAddress
   }
 
-  await sdk.store.cart.update(cartId, data).catch(medusaError)
+  try {
+    await sdk.store.cart.update(cartId, data).catch(medusaError)
+  } catch (e: any) {
+    return e?.message ?? "Could not save address. Please try again."
+  }
   revalidateTag("cart")
+
+  const next = formData.get("next")
+  if (typeof next === "string" && next) {
+    redirect(next)
+  }
 }
 
 export const listCartOptions = async () => {
