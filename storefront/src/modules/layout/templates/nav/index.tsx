@@ -31,21 +31,17 @@ export default async function Nav() {
               Shop
             </LocalizedClientLink>
             <LocalizedClientLink
-              href="/store"
-              className="font-sans text-sm text-dark/75 hover:text-dark transition-colors duration-200 font-medium flex items-center gap-1"
+              href="/#taste-guide"
+              className="font-sans text-sm text-dark/75 hover:text-dark transition-colors duration-200 font-medium"
             >
-              Flavors
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M6 9l6 6 6-6" />
-              </svg>
+              Taste guide
             </LocalizedClientLink>
-            <span className="font-sans text-sm text-dark/75 hover:text-dark transition-colors duration-200 font-medium cursor-pointer">
-              Our Story
-            </span>
-            {/* Mobile menu for small screens */}
-            <div className="small:hidden">
-              <SideMenu regions={regions} locales={locales} currentLocale={currentLocale} />
-            </div>
+            <LocalizedClientLink
+              href="/#story"
+              className="font-sans text-sm text-dark/75 hover:text-dark transition-colors duration-200 font-medium"
+            >
+              Our story
+            </LocalizedClientLink>
           </div>
 
           {/* Mobile: hamburger on the left */}

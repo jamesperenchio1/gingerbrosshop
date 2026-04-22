@@ -78,8 +78,9 @@ export default function ProductSectionCard({
   const href = `/products/${product.handle}?v_id=${variant.id}`
 
   return (
-    <div
-      className="bg-white rounded-[20px] overflow-hidden flex flex-col relative cursor-pointer"
+    <LocalizedClientLink
+      href={href}
+      className="bg-white rounded-[20px] overflow-hidden flex flex-col relative cursor-pointer block"
       style={{
         boxShadow: hovered ? "0 18px 40px -10px rgba(44,24,16,0.16)" : "0 1px 3px rgba(44,24,16,0.06)",
         transition: "box-shadow 300ms, transform 300ms",
@@ -103,15 +104,16 @@ export default function ProductSectionCard({
             </span>
           )}
         </div>
-        <button
-          onClick={(e) => e.stopPropagation()}
-          className="w-8 h-8 rounded-full bg-background/90 flex items-center justify-center text-dark/65 hover:text-primary transition-colors"
+        <span
+          role="button"
           aria-label="Wishlist"
+          onClick={(e) => { e.preventDefault(); e.stopPropagation() }}
+          className="w-8 h-8 rounded-full bg-background/90 flex items-center justify-center text-dark/65 hover:text-primary transition-colors cursor-pointer"
         >
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <path d="M12 21s-7-4.5-9.5-9A5 5 0 0 1 12 6a5 5 0 0 1 9.5 6C19 16.5 12 21 12 21Z" />
           </svg>
-        </button>
+        </span>
       </div>
 
       {/* Image area */}
@@ -140,23 +142,19 @@ export default function ProductSectionCard({
 
           {/* Hover quick-add */}
           <div
-            className="absolute left-3.5 right-3.5 bottom-3.5 transition-all duration-250"
-            style={{ opacity: hovered ? 1 : 0, transform: hovered ? "translateY(0)" : "translateY(8px)", pointerEvents: hovered ? "auto" : "none" }}
+            className="absolute left-3.5 right-3.5 bottom-3.5 transition-all duration-250 flex items-center justify-center gap-2 w-full py-3 px-4 bg-dark text-background rounded-full font-sans font-semibold text-[13px] pointer-events-none"
+            style={{ opacity: hovered ? 1 : 0, transform: hovered ? "translateY(0)" : "translateY(8px)", width: "calc(100% - 28px)" }}
+            aria-hidden="true"
           >
-            <LocalizedClientLink
-              href={href}
-              className="flex items-center justify-center gap-2 w-full py-3 px-4 bg-dark text-background rounded-full font-sans font-semibold text-[13px]"
-            >
-              View product
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M12 5v14M5 12h14" />
-              </svg>
-            </LocalizedClientLink>
+            View product
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M12 5v14M5 12h14" />
+            </svg>
           </div>
         </div>
 
       {/* Info */}
-      <LocalizedClientLink href={href} className="block px-[22px] pt-5 pb-[22px]">
+      <div className="block px-[22px] pt-5 pb-[22px]">
         {/* Rating row */}
         <div className="flex gap-2 items-center mb-2">
           <Stars count={rating} size={12} />
@@ -199,7 +197,7 @@ export default function ProductSectionCard({
             ))}
           </div>
         </div>
-      </LocalizedClientLink>
-    </div>
+      </div>
+    </LocalizedClientLink>
   )
 }

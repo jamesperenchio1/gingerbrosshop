@@ -1,6 +1,23 @@
+import Image from "next/image"
+import fs from "fs"
+import path from "path"
+
+// Drop a real fermenter photo at storefront/public/images/fermenter.jpg (or .webp/.png)
+// to replace the SVG illustration. File is auto-detected at build time.
+function resolveFermenterPhoto(): string | null {
+  try {
+    const dir = path.join(process.cwd(), "public", "images")
+    for (const name of ["fermenter.webp", "fermenter.jpg", "fermenter.png"]) {
+      if (fs.existsSync(path.join(dir, name))) return `/images/${name}`
+    }
+  } catch {}
+  return null
+}
+
 export default function GbStoryStrip() {
+  const fermenterPhoto = resolveFermenterPhoto()
   return (
-    <section className="py-[100px] bg-background relative overflow-hidden">
+    <section id="story" className="py-[100px] bg-background relative overflow-hidden" style={{ scrollMarginTop: 80 }}>
       <div className="content-container">
         <div
           className="grid gap-20 items-center"
@@ -12,6 +29,15 @@ export default function GbStoryStrip() {
               className="absolute inset-0 rounded-[20px] overflow-hidden"
               style={{ background: "linear-gradient(145deg, #3a2418 0%, #8B3A1A 50%, #C8893C 100%)" }}
             >
+              {fermenterPhoto ? (
+                <Image
+                  src={fermenterPhoto}
+                  alt="Fermenter tank on day 9 of active ferment"
+                  fill
+                  sizes="(max-width: 1024px) 100vw, 600px"
+                  className="object-cover"
+                />
+              ) : (
               <svg width="100%" height="100%" viewBox="0 0 480 480" preserveAspectRatio="xMidYMid slice" className="absolute inset-0">
                 <defs>
                   <linearGradient id="tankG" x1="0" x2="0" y1="0" y2="1">
@@ -39,6 +65,7 @@ export default function GbStoryStrip() {
                   FERMENTER · TANK 02
                 </text>
               </svg>
+              )}
               <div className="absolute top-4 left-4 px-3 py-1.5 bg-white/[0.15] backdrop-blur-sm rounded-full font-sans text-[10px] font-bold tracking-[0.2em] text-white uppercase">
                 Day 9 · active ferment
               </div>

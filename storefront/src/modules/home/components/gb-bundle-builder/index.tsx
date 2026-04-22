@@ -2,6 +2,7 @@
 
 import { useState, useTransition } from "react"
 import { HttpTypes } from "@medusajs/types"
+import Image from "next/image"
 import GbBottle, { detectFlavor } from "@modules/common/components/gb-bottle"
 import { addToCart } from "@lib/data/cart"
 import { convertToLocale } from "@lib/util/money"
@@ -106,8 +107,18 @@ export default function GbBundleBuilder({
                     onMouseEnter={(e) => { if (picks.length < MAX) { (e.currentTarget as HTMLElement).style.transform = "translateY(-2px)"; (e.currentTarget as HTMLElement).style.boxShadow = "0 8px 20px rgba(44,24,16,0.08)" } }}
                     onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.transform = "translateY(0)"; (e.currentTarget as HTMLElement).style.boxShadow = "none" }}
                   >
-                    <div className="w-11 h-14 bg-gradient-to-br from-light to-background rounded-lg flex items-center justify-center flex-shrink-0">
-                      <GbBottle flavor={flavor} size={48} />
+                    <div className="w-11 h-14 bg-gradient-to-br from-light to-background rounded-lg flex items-center justify-center flex-shrink-0 relative overflow-hidden">
+                      {p.thumbnail ? (
+                        <Image
+                          src={p.thumbnail}
+                          alt={p.title ?? ""}
+                          fill
+                          sizes="44px"
+                          className="object-cover"
+                        />
+                      ) : (
+                        <GbBottle flavor={flavor} size={48} />
+                      )}
                     </div>
                     <div className="flex-1">
                       <div className="font-display text-[15px] font-semibold text-dark">{p.title}</div>
@@ -153,7 +164,7 @@ export default function GbBundleBuilder({
                   <div
                     key={i}
                     onClick={() => p && removeAt(i)}
-                    className="rounded-[10px] flex items-center justify-center"
+                    className="rounded-[10px] flex items-center justify-center relative overflow-hidden"
                     style={{
                       height: 70,
                       border: p ? "none" : "1px dashed rgba(44,24,16,0.2)",
@@ -162,7 +173,19 @@ export default function GbBundleBuilder({
                     }}
                     title={p ? `Remove ${p.title}` : undefined}
                   >
-                    {p && <GbBottle flavor={flavor} size={52} />}
+                    {p && (
+                      p.thumbnail ? (
+                        <Image
+                          src={p.thumbnail}
+                          alt={p.title ?? ""}
+                          fill
+                          sizes="80px"
+                          className="object-cover"
+                        />
+                      ) : (
+                        <GbBottle flavor={flavor} size={52} />
+                      )
+                    )}
                   </div>
                 )
               })}
