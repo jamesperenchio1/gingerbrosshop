@@ -1,4 +1,3 @@
-import LocalizedClientLink from "@modules/common/components/localized-client-link"
 import GbBottle from "@modules/common/components/gb-bottle"
 
 export default function GbSubscription() {
@@ -60,15 +59,15 @@ export default function GbSubscription() {
             ))}
           </div>
 
-          <LocalizedClientLink
-            href="/store"
+          <a
+            href="mailto:orders@gingerbrosshop.com?subject=Start%20my%20monthly%20crate&body=Hi%20Gingerbros!%20I%27d%20like%20to%20subscribe%20to%20the%20monthly%206-pack%20crate.%20Please%20send%20me%20the%20next%20steps.%0A%0AName%3A%0AAddress%3A%0APhone%3A%0AFlavor%20mix%20preference%3A%0A"
             className="inline-flex items-center gap-[10px] px-[30px] py-4 bg-primary text-white rounded-full font-sans font-semibold text-[15px] hover:bg-[#B57A2F] transition-colors"
           >
             Start a subscription
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <path d="M5 12h14M13 6l6 6-6 6" />
             </svg>
-          </LocalizedClientLink>
+          </a>
         </div>
 
         {/* Right: plan card */}

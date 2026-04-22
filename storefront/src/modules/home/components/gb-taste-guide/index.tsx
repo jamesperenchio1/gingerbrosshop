@@ -2,6 +2,7 @@
 
 import { useRouter } from "next/navigation"
 import { HttpTypes } from "@medusajs/types"
+import Image from "next/image"
 import GbBottle, { detectFlavor } from "@modules/common/components/gb-bottle"
 
 function getUseCase(title: string = ""): string {
@@ -66,8 +67,18 @@ export default function GbTasteGuide({
                 onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.boxShadow = "0 14px 32px rgba(44,24,16,0.08)" }}
                 onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.boxShadow = "none" }}
               >
-                <div className="flex justify-center mb-3">
-                  <GbBottle flavor={flavor} size={120} />
+                <div className="relative w-full aspect-[4/5] mb-4 overflow-hidden rounded-[12px] bg-background flex items-center justify-center">
+                  {product.thumbnail ? (
+                    <Image
+                      src={product.thumbnail}
+                      alt={product.title ?? ""}
+                      fill
+                      sizes="(max-width: 640px) 50vw, 25vw"
+                      className="object-cover"
+                    />
+                  ) : (
+                    <GbBottle flavor={flavor} size={120} />
+                  )}
                 </div>
                 <div className="font-display text-xl font-bold text-dark mb-1">{product.title}</div>
                 <div className="font-sans text-[12px] tracking-[0.14em] uppercase text-primary font-bold mb-3">{useCase}</div>

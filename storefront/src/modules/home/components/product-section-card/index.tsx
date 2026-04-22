@@ -116,25 +116,19 @@ export default function ProductSectionCard({
 
       {/* Image area */}
       <div
-        className="relative overflow-hidden flex items-center justify-center"
-        style={{ height: 280, background: "linear-gradient(145deg, #F5E6D3, #FDF6EC)" }}
+        className="relative overflow-hidden flex items-center justify-center aspect-[4/5]"
+        style={{ background: "linear-gradient(145deg, #F5E6D3, #FDF6EC)" }}
       >
-          {/* Glow */}
-          <div className="absolute w-[200px] h-[200px] rounded-full bg-primary/[0.12] blur-[40px]" />
           {hasThumbnail ? (
-            <div
-              className="absolute inset-0 transition-transform duration-400"
-              style={{ transform: hovered ? "translateY(-6px)" : "translateY(0)" }}
-            >
-              <Image
-                src={product.thumbnail!}
-                alt={product.title ?? "Product"}
-                fill
-                className="object-contain object-center p-6"
-                sizes="(max-width: 768px) 100vw, 400px"
-                priority
-              />
-            </div>
+            <Image
+              src={product.thumbnail!}
+              alt={product.title ?? "Product"}
+              fill
+              className="object-cover object-center transition-transform duration-500"
+              style={{ transform: hovered ? "scale(1.04)" : "scale(1)" }}
+              sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 360px"
+              priority
+            />
           ) : (
             <div
               className="relative transition-transform duration-400"
