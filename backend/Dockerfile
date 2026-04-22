@@ -20,5 +20,8 @@ COPY --from=deps /app/node_modules /app/server/node_modules
 # Increase admin dashboard file upload limit from 1MB to 20MB
 COPY patch-dashboard.sh /tmp/patch-dashboard.sh
 RUN sh /tmp/patch-dashboard.sh && rm /tmp/patch-dashboard.sh
+# Fix Stripe PromptPay + automaticPaymentMethods conflict
+COPY patch-stripe-promptpay.sh /tmp/patch-stripe-promptpay.sh
+RUN sh /tmp/patch-stripe-promptpay.sh && rm /tmp/patch-stripe-promptpay.sh
 EXPOSE 9000
 CMD ["npx", "medusa", "start"]

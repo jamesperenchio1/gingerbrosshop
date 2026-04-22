@@ -3,8 +3,8 @@
 .env.local
 .env.production
 
-# Data volumes
-data/
+# Data volumes (docker postgres/redis/wal-archive at repo root only)
+/data/
 
 # Node
 node_modules/

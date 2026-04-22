@@ -1,67 +1,98 @@
 import { Suspense } from "react"
-
 import { listRegions } from "@lib/data/regions"
 import { listLocales } from "@lib/data/locales"
 import { getLocale } from "@lib/data/locale-actions"
-import { StoreRegion } from "@medusajs/types"
 import LocalizedClientLink from "@modules/common/components/localized-client-link"
 import CartButton from "@modules/layout/components/cart-button"
 import SideMenu from "@modules/layout/components/side-menu"
+import AnnouncementBar from "@modules/layout/components/announcement-bar"
 
 export default async function Nav() {
   const [regions, locales, currentLocale] = await Promise.all([
-    listRegions().then((regions: StoreRegion[]) => regions),
+    listRegions(),
     listLocales(),
     getLocale(),
   ])
 
   return (
-    <div className="sticky top-0 inset-x-0 z-50 group">
-      <header className="relative h-16 mx-auto border-b duration-200 bg-white/95 backdrop-blur-md border-light">
-        <nav className="content-container txt-xsmall-plus flex items-center justify-between w-full h-full text-small-regular">
-          <div className="flex-1 basis-0 h-full flex items-center">
-            <div className="h-full">
+    <div className="sticky top-0 inset-x-0 z-50">
+      <AnnouncementBar />
+      <header className="relative mx-auto border-b bg-[rgba(253,246,236,0.92)] backdrop-blur-[14px] border-light">
+        <nav
+          className="max-w-[1440px] mx-auto px-8 h-[68px] grid items-center"
+          style={{ gridTemplateColumns: "1fr auto 1fr" }}
+        >
+          {/* Left: nav links (desktop only) */}
+          <div className="hidden small:flex items-center gap-7">
+            <LocalizedClientLink
+              href="/store"
+              className="font-sans text-sm text-dark/75 hover:text-dark transition-colors duration-200 font-medium"
+            >
+              Shop
+            </LocalizedClientLink>
+            <LocalizedClientLink
+              href="/store"
+              className="font-sans text-sm text-dark/75 hover:text-dark transition-colors duration-200 font-medium flex items-center gap-1"
+            >
+              Flavors
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M6 9l6 6 6-6" />
+              </svg>
+            </LocalizedClientLink>
+            <span className="font-sans text-sm text-dark/75 hover:text-dark transition-colors duration-200 font-medium cursor-pointer">
+              Our Story
+            </span>
+            {/* Mobile menu for small screens */}
+            <div className="small:hidden">
               <SideMenu regions={regions} locales={locales} currentLocale={currentLocale} />
             </div>
           </div>
 
-          <div className="flex items-center h-full">
+          {/* Mobile: hamburger on the left */}
+          <div className="small:hidden flex items-center">
+            <SideMenu regions={regions} locales={locales} currentLocale={currentLocale} />
+          </div>
+
+          {/* Center: Logo */}
+          <div className="flex justify-center">
             <LocalizedClientLink
               href="/"
-              className="flex items-center gap-2 hover:opacity-80 transition-opacity"
+              className="flex items-center"
               data-testid="nav-store-link"
             >
-              <span className="font-display text-2xl font-bold text-dark tracking-tight">
+              <span className="font-display text-[26px] font-bold text-dark tracking-tight leading-none">
                 Ginger<span className="text-primary">bros</span>
               </span>
             </LocalizedClientLink>
           </div>
 
-          <div className="flex items-center gap-x-6 h-full flex-1 basis-0 justify-end">
-            <div className="hidden small:flex items-center gap-x-6 h-full">
-              <LocalizedClientLink
-                className="font-nunito text-dark/70 hover:text-primary transition-colors duration-200"
-                href="/store"
-              >
-                Shop
-              </LocalizedClientLink>
-              <LocalizedClientLink
-                className="font-nunito text-dark/70 hover:text-primary transition-colors duration-200"
-                href="/account"
-                data-testid="nav-account-link"
-              >
-                Account
-              </LocalizedClientLink>
-            </div>
+          {/* Right: utility icons + cart */}
+          <div className="flex items-center gap-[22px] justify-end">
+            <LocalizedClientLink
+              href="/account"
+              className="hidden small:flex text-dark/75 hover:text-primary transition-colors duration-200 p-0"
+              data-testid="nav-account-link"
+              aria-label="Account"
+            >
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                <circle cx="12" cy="8" r="4" />
+                <path d="M4 21c0-4 4-7 8-7s8 3 8 7" />
+              </svg>
+            </LocalizedClientLink>
+
             <Suspense
               fallback={
-                <LocalizedClientLink
-                  className="font-nunito text-dark/70 hover:text-primary flex gap-2 transition-colors duration-200"
-                  href="/cart"
-                  data-testid="nav-cart-link"
+                <button
+                  className="flex items-center gap-2 bg-dark text-background rounded-full px-4 py-[10px] font-sans text-sm font-semibold"
+                  aria-label="Cart"
                 >
-                  Cart (0)
-                </LocalizedClientLink>
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M6 7h12l-1 13H7L6 7Z" />
+                    <path d="M9 7a3 3 0 1 1 6 0" />
+                  </svg>
+                  <span>Cart</span>
+                  <span className="bg-primary text-white text-[11px] font-bold rounded-full min-w-[20px] h-5 flex items-center justify-center px-1.5">0</span>
+                </button>
               }
             >
               <CartButton />

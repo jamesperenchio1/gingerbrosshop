@@ -1,6 +1,17 @@
 import { getLocaleHeader } from "@lib/util/get-locale-header"
 import Medusa, { FetchArgs, FetchInput } from "@medusajs/js-sdk"
 
+// Patch localStorage for Turbopack server-side rendering: Turbopack provides a
+// partial window polyfill where localStorage exists but lacks standard methods.
+if (typeof window !== "undefined" && typeof window.localStorage?.getItem !== "function") {
+  const noop = () => null
+  Object.defineProperty(window, "localStorage", {
+    value: { getItem: noop, setItem: noop, removeItem: noop, clear: noop, length: 0 },
+    writable: true,
+    configurable: true,
+  })
+}
+
 // Defaults to standard port for Medusa server
 let MEDUSA_BACKEND_URL = "http://localhost:9000"
 
@@ -12,6 +23,10 @@ export const sdk = new Medusa({
   baseUrl: MEDUSA_BACKEND_URL,
   debug: process.env.NODE_ENV === "development",
   publishableKey: process.env.NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY,
+  auth: {
+    type: "jwt",
+    jwtTokenStorageMethod: "memory",
+  },
 })
 
 const originalFetch = sdk.client.fetch.bind(sdk.client)

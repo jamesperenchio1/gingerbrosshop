@@ -1,229 +1,241 @@
 "use client"
 
-import {
-  Popover,
-  PopoverButton,
-  PopoverPanel,
-  Transition,
-} from "@headlessui/react"
 import { convertToLocale } from "@lib/util/money"
 import { HttpTypes } from "@medusajs/types"
-import { Button } from "@medusajs/ui"
 import DeleteButton from "@modules/common/components/delete-button"
 import LineItemOptions from "@modules/common/components/line-item-options"
 import LineItemPrice from "@modules/common/components/line-item-price"
 import LocalizedClientLink from "@modules/common/components/localized-client-link"
 import Thumbnail from "@modules/products/components/thumbnail"
+import GbBottle from "@modules/common/components/gb-bottle"
 import { usePathname } from "next/navigation"
-import { Fragment, useEffect, useRef, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 
-const CartDropdown = ({
-  cart: cartState,
-}: {
-  cart?: HttpTypes.StoreCart | null
-}) => {
-  const [activeTimer, setActiveTimer] = useState<NodeJS.Timer | undefined>(
-    undefined
-  )
-  const [cartDropdownOpen, setCartDropdownOpen] = useState(false)
-
-  const open = () => setCartDropdownOpen(true)
-  const close = () => setCartDropdownOpen(false)
+const CartDropdown = ({ cart: cartState }: { cart?: HttpTypes.StoreCart | null }) => {
+  const [open, setOpen] = useState(false)
+  const [mounted, setMounted] = useState(false)
 
   const totalItems =
-    cartState?.items?.reduce((acc, item) => {
-      return acc + item.quantity
-    }, 0) || 0
+    cartState?.items?.reduce((acc, item) => acc + item.quantity, 0) || 0
 
   const subtotal = cartState?.subtotal ?? 0
+  const currencyCode = cartState?.currency_code ?? "thb"
   const itemRef = useRef<number>(totalItems || 0)
-
-  const timedOpen = () => {
-    open()
-
-    const timer = setTimeout(close, 5000)
-
-    setActiveTimer(timer)
-  }
-
-  const openAndCancel = () => {
-    if (activeTimer) {
-      clearTimeout(activeTimer)
-    }
-
-    open()
-  }
-
-  // Clean up the timer when the component unmounts
-  useEffect(() => {
-    return () => {
-      if (activeTimer) {
-        clearTimeout(activeTimer)
-      }
-    }
-  }, [activeTimer])
-
   const pathname = usePathname()
 
-  // open cart dropdown when modifying the cart items, but only if we're not on the cart page
   useEffect(() => {
-    if (itemRef.current !== totalItems && !pathname.includes("/cart")) {
-      timedOpen()
+    setMounted(true)
+  }, [])
+
+  // Auto-open when items added (except on cart page) — only after initial mount
+  useEffect(() => {
+    if (!mounted) return
+    if (itemRef.current !== totalItems && itemRef.current < totalItems && !pathname.includes("/cart") && !pathname.includes("/checkout")) {
+      setOpen(true)
+      const timer = setTimeout(() => setOpen(false), 4000)
+      itemRef.current = totalItems
+      return () => clearTimeout(timer)
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [totalItems, itemRef.current])
+    itemRef.current = totalItems
+  }, [totalItems, pathname, mounted])
+
+  // Close drawer on route change
+  useEffect(() => {
+    setOpen(false)
+  }, [pathname])
+
+  const freeShipThreshold = 500
+  // For THB: subtotal from Medusa may be in smallest unit (satang) or baht — use as-is with convertToLocale
+  const freeShipProgress = Math.min(100, (subtotal / (freeShipThreshold * 100)) * 100)
+  const remaining = Math.max(0, freeShipThreshold * 100 - subtotal)
 
   return (
-    <div
-      className="h-full z-50"
-      onMouseEnter={openAndCancel}
-      onMouseLeave={close}
-    >
-      <Popover className="relative h-full">
-        <PopoverButton className="h-full">
-          <LocalizedClientLink
-            className="hover:text-ui-fg-base"
-            href="/cart"
-            data-testid="nav-cart-link"
-          >{`Cart (${totalItems})`}</LocalizedClientLink>
-        </PopoverButton>
-        <Transition
-          show={cartDropdownOpen}
-          as={Fragment}
-          enter="transition ease-out duration-200"
-          enterFrom="opacity-0 translate-y-1"
-          enterTo="opacity-100 translate-y-0"
-          leave="transition ease-in duration-150"
-          leaveFrom="opacity-100 translate-y-0"
-          leaveTo="opacity-0 translate-y-1"
-        >
-          <PopoverPanel
-            static
-            className="hidden small:block absolute top-[calc(100%+1px)] right-0 bg-white border-x border-b border-gray-200 w-[420px] text-ui-fg-base"
-            data-testid="nav-cart-dropdown"
-          >
-            <div className="p-4 flex items-center justify-center">
-              <h3 className="text-large-semi">Cart</h3>
+    <>
+      {/* Cart icon button in nav */}
+      <button
+        onClick={() => setOpen(true)}
+        className="flex items-center gap-2 bg-dark text-background rounded-full px-4 py-[10px] font-sans text-sm font-semibold hover:bg-dark/90 transition-colors"
+        aria-label="Open cart"
+        data-testid="nav-cart-link"
+      >
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M6 7h12l-1 13H7L6 7Z" /><path d="M9 7a3 3 0 1 1 6 0" />
+        </svg>
+        <span>Cart</span>
+        <span className="bg-primary text-white text-[11px] font-bold rounded-full min-w-[20px] h-5 flex items-center justify-center px-1.5">
+          {totalItems}
+        </span>
+      </button>
+
+      {/* Backdrop */}
+      {open && (
+        <div
+          onClick={() => setOpen(false)}
+          className="fixed inset-0 bg-dark/40 backdrop-blur-[4px] z-[100] transition-opacity"
+          aria-hidden="true"
+        />
+      )}
+
+      {/* Slide-in drawer */}
+      <aside
+        className="fixed top-0 right-0 bottom-0 w-full sm:w-[460px] bg-background z-[101] flex flex-col shadow-[-20px_0_60px_rgba(44,24,16,0.15)] transition-transform duration-[400ms] ease-[cubic-bezier(0.5,0,0.5,1)]"
+        style={{ transform: open ? "translateX(0)" : "translateX(100%)", visibility: open || mounted ? "visible" : "hidden" }}
+        data-testid="nav-cart-dropdown"
+        aria-hidden={!open}
+      >
+        {/* Header */}
+        <header className="px-6 py-5 border-b border-dark/[0.08] bg-white flex justify-between items-center flex-shrink-0">
+          <div>
+            <h3 className="font-display text-[22px] font-bold text-dark">Your cart</h3>
+            <div className="font-sans text-xs text-dark/55 mt-0.5">
+              {totalItems} {totalItems === 1 ? "item" : "items"}
             </div>
-            {cartState && cartState.items?.length ? (
-              <>
-                <div className="overflow-y-scroll max-h-[402px] px-4 grid grid-cols-1 gap-y-8 no-scrollbar p-px">
-                  {cartState.items
-                    .sort((a, b) => {
-                      return (a.created_at ?? "") > (b.created_at ?? "")
-                        ? -1
-                        : 1
-                    })
-                    .map((item) => (
-                      <div
-                        className="grid grid-cols-[122px_1fr] gap-x-4"
-                        key={item.id}
-                        data-testid="cart-item"
-                      >
-                        <LocalizedClientLink
-                          href={`/products/${item.product_handle}`}
-                          className="w-24"
-                        >
-                          <Thumbnail
-                            thumbnail={item.thumbnail}
-                            images={item.variant?.product?.images}
-                            size="square"
-                          />
-                        </LocalizedClientLink>
-                        <div className="flex flex-col justify-between flex-1">
-                          <div className="flex flex-col flex-1">
-                            <div className="flex items-start justify-between">
-                              <div className="flex flex-col overflow-ellipsis whitespace-nowrap mr-4 w-[180px]">
-                                <h3 className="text-base-regular overflow-hidden text-ellipsis">
-                                  <LocalizedClientLink
-                                    href={`/products/${item.product_handle}`}
-                                    data-testid="product-link"
-                                  >
-                                    {item.title}
-                                  </LocalizedClientLink>
-                                </h3>
-                                <LineItemOptions
-                                  variant={item.variant}
-                                  data-testid="cart-item-variant"
-                                  data-value={item.variant}
-                                />
-                                <span
-                                  data-testid="cart-item-quantity"
-                                  data-value={item.quantity}
-                                >
-                                  Quantity: {item.quantity}
-                                </span>
-                              </div>
-                              <div className="flex justify-end">
-                                <LineItemPrice
-                                  item={item}
-                                  style="tight"
-                                  currencyCode={cartState.currency_code}
-                                />
-                              </div>
-                            </div>
-                          </div>
-                          <DeleteButton
-                            id={item.id}
-                            className="mt-1"
-                            data-testid="cart-item-remove-button"
-                          >
-                            Remove
-                          </DeleteButton>
-                        </div>
+          </div>
+          <button
+            onClick={() => setOpen(false)}
+            className="text-dark hover:text-primary transition-colors"
+            aria-label="Close cart"
+          >
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M6 6l12 12M18 6L6 18" />
+            </svg>
+          </button>
+        </header>
+
+        {totalItems === 0 ? (
+          /* Empty state */
+          <div className="flex-1 flex flex-col items-center justify-center p-10 gap-[18px]">
+            <div className="w-[76px] h-[76px] rounded-full bg-light flex items-center justify-center text-primary">
+              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M6 7h12l-1 13H7L6 7Z" /><path d="M9 7a3 3 0 1 1 6 0" />
+              </svg>
+            </div>
+            <div className="text-center">
+              <div className="font-display text-[22px] font-semibold text-dark">Your cart is empty</div>
+              <p className="font-sans text-dark/60 mt-2 text-sm">Let&apos;s fix that. The ale is very popular.</p>
+            </div>
+            <LocalizedClientLink
+              href="/store"
+              onClick={() => setOpen(false)}
+              className="gb-btn gb-btn--primary"
+            >
+              Shop the range
+            </LocalizedClientLink>
+          </div>
+        ) : (
+          <>
+            {/* Free shipping progress */}
+            <div className="px-6 py-4 bg-white border-b border-dark/[0.06] flex-shrink-0">
+              <div className="flex justify-between mb-2 font-sans text-xs">
+                {remaining === 0 ? (
+                  <span className="text-accent font-bold">✓ Free shipping unlocked</span>
+                ) : (
+                  <span className="text-dark">
+                    Add <strong>{convertToLocale({ amount: remaining, currency_code: currencyCode })}</strong> more for free shipping
+                  </span>
+                )}
+                <span className="text-dark/50">{convertToLocale({ amount: subtotal, currency_code: currencyCode })} / {convertToLocale({ amount: freeShipThreshold * 100, currency_code: currencyCode })}</span>
+              </div>
+              <div className="h-1.5 bg-light rounded-full overflow-hidden">
+                <div
+                  className="h-full rounded-full transition-all duration-400"
+                  style={{ width: `${freeShipProgress}%`, background: "linear-gradient(90deg, #C8893C, #4A7C3F)" }}
+                />
+              </div>
+            </div>
+
+            {/* Items */}
+            <div className="flex-1 overflow-y-auto px-6 no-scrollbar">
+              {cartState?.items
+                ?.sort((a, b) => ((a.created_at ?? "") > (b.created_at ?? "") ? -1 : 1))
+                .map((item) => (
+                  <div
+                    key={item.id}
+                    className="grid gap-[14px] py-[18px] border-b border-dark/[0.06]"
+                    style={{ gridTemplateColumns: "80px 1fr auto" }}
+                    data-testid="cart-item"
+                  >
+                    <div className="w-[80px] h-[96px] bg-gradient-to-br from-light to-background rounded-[10px] flex items-center justify-center flex-shrink-0">
+                      {item.thumbnail ? (
+                        <Thumbnail thumbnail={item.thumbnail} images={item.variant?.product?.images} size="square" />
+                      ) : (
+                        <GbBottle flavor="beer" size={70} />
+                      )}
+                    </div>
+                    <div>
+                      <div className="font-display font-semibold text-[15px] text-dark">{item.title}</div>
+                      <LineItemOptions variant={item.variant} title={item.variant_title} data-testid="cart-item-variant" data-value={item.variant} />
+                      <div className="flex items-center gap-[10px] mt-[10px]">
+                        <span className="font-sans text-xs text-dark/70" data-testid="cart-item-quantity" data-value={item.quantity}>
+                          Qty: {item.quantity}
+                        </span>
+                        <DeleteButton id={item.id} className="font-sans text-xs text-dark/50 underline" data-testid="cart-item-remove-button">
+                          Remove
+                        </DeleteButton>
                       </div>
-                    ))}
-                </div>
-                <div className="p-4 flex flex-col gap-y-4 text-small-regular">
-                  <div className="flex items-center justify-between">
-                    <span className="text-ui-fg-base font-semibold">
-                      Subtotal{" "}
-                      <span className="font-normal">(excl. taxes)</span>
-                    </span>
-                    <span
-                      className="text-large-semi"
-                      data-testid="cart-subtotal"
-                      data-value={subtotal}
-                    >
-                      {convertToLocale({
-                        amount: subtotal,
-                        currency_code: cartState.currency_code,
-                      })}
-                    </span>
+                    </div>
+                    <div className="font-sans font-bold text-primary text-[15px]">
+                      <LineItemPrice item={item} style="tight" currencyCode={currencyCode} />
+                    </div>
                   </div>
-                  <LocalizedClientLink href="/cart" passHref>
-                    <Button
-                      className="w-full"
-                      size="large"
-                      data-testid="go-to-cart-button"
-                    >
-                      Go to cart
-                    </Button>
+                ))}
+
+              {/* Cross-sell */}
+              <div className="my-5 p-4 bg-white rounded-[14px]">
+                <div className="text-[11px] tracking-[0.18em] uppercase font-bold text-primary mb-3 font-sans">Often added with this</div>
+                <div className="flex gap-[10px] items-center">
+                  <div className="w-[52px] h-[64px] bg-gradient-to-br from-light to-background rounded-lg flex items-center justify-center flex-shrink-0">
+                    <GbBottle flavor="shot" size={44} />
+                  </div>
+                  <div className="flex-1 font-sans">
+                    <div className="text-[13px] font-semibold text-dark">Ginger Shot · Single</div>
+                    <div className="text-[11px] text-dark/55 mt-0.5">The morning ritual</div>
+                  </div>
+                  <LocalizedClientLink
+                    href="/products/ginger-shot"
+                    onClick={() => setOpen(false)}
+                    className="px-3.5 py-2 bg-dark text-background rounded-full text-xs font-semibold font-sans whitespace-nowrap"
+                  >
+                    View →
                   </LocalizedClientLink>
                 </div>
-              </>
-            ) : (
-              <div>
-                <div className="flex py-16 flex-col gap-y-4 items-center justify-center">
-                  <div className="bg-gray-900 text-small-regular flex items-center justify-center w-6 h-6 rounded-full text-white">
-                    <span>0</span>
-                  </div>
-                  <span>Your shopping bag is empty.</span>
-                  <div>
-                    <LocalizedClientLink href="/store">
-                      <>
-                        <span className="sr-only">Go to all products page</span>
-                        <Button onClick={close}>Explore products</Button>
-                      </>
-                    </LocalizedClientLink>
-                  </div>
-                </div>
               </div>
-            )}
-          </PopoverPanel>
-        </Transition>
-      </Popover>
-    </div>
+            </div>
+
+            {/* Footer */}
+            <div className="border-t border-dark/[0.08] px-6 py-5 bg-white flex-shrink-0">
+              <div className="flex justify-between text-sm text-dark/70 mb-1.5 font-sans">
+                <span>Subtotal</span>
+                <span data-testid="cart-subtotal" data-value={subtotal}>
+                  {convertToLocale({ amount: subtotal, currency_code: currencyCode })}
+                </span>
+              </div>
+              <div className="flex justify-between font-display text-2xl font-bold text-dark mb-4">
+                <span>Total</span>
+                <span>{convertToLocale({ amount: subtotal, currency_code: currencyCode })}</span>
+              </div>
+              <LocalizedClientLink
+                href="/cart"
+                onClick={() => setOpen(false)}
+                className="gb-btn gb-btn--primary w-full justify-center text-[15px]"
+                data-testid="go-to-cart-button"
+              >
+                View cart & checkout
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M5 12h14M13 6l6 6-6 6" />
+                </svg>
+              </LocalizedClientLink>
+              <div className="flex gap-[10px] justify-center mt-3 font-sans text-[11px] text-dark/50">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6l8-3z" />
+                </svg>
+                Secure · Stripe + PromptPay QR
+              </div>
+            </div>
+          </>
+        )}
+      </aside>
+    </>
   )
 }
 

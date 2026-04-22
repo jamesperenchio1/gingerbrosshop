@@ -59,7 +59,7 @@ export default async function PaginatedProducts({
   let {
     response: { products, count },
   } = await listProductsWithSort({
-    page,
+    page: Math.max(0, page - 1),
     queryParams,
     sortBy,
     countryCode,
