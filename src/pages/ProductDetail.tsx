@@ -250,6 +250,10 @@ export default function ProductDetail() {
   }, [id]);
 
   const [subIndex, setSubIndex] = useState<number | null>(null);
+  const [isGift, setIsGift] = useState(false);
+  const [giftEmail, setGiftEmail] = useState('');
+  const [giftName, setGiftName] = useState('');
+  const [giftMessage, setGiftMessage] = useState('');
 
   const handleAdd = () => {
     if (!product.addable) return;
@@ -265,6 +269,10 @@ export default function ProductDetail() {
       badgeColor: sub ? 'bg-rust' : product.badgeColor,
       isSubscription: !!sub,
       interval: sub ? sub.intervalLabel : undefined,
+      isGift,
+      recipientEmail: isGift ? giftEmail : undefined,
+      recipientName: isGift ? giftName : undefined,
+      giftMessage: isGift ? giftMessage : undefined,
     });
     setAdded(true);
     setTimeout(() => setAdded(false), 800);
@@ -452,6 +460,46 @@ export default function ProductDetail() {
                   <p className="font-body text-[13px] text-accent-green mt-2">
                     {product.subscription.options[subIndex].savingsLabel} — billed {product.subscription.options[subIndex].intervalLabel}, cancel anytime.
                   </p>
+                )}
+
+                {/* Gift Toggle */}
+                {product.addable && (
+                  <div className="mt-5 pt-4 border-t border-soft-peach/50">
+                    <label className="flex items-center gap-3 cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={isGift}
+                        onChange={(e) => setIsGift(e.target.checked)}
+                        className="w-5 h-5 accent-deep-brown rounded"
+                      />
+                      <span className="font-body font-medium text-deep-brown text-[14px]">This is a gift 🎁</span>
+                    </label>
+                    {isGift && (
+                      <div className="mt-3 space-y-3">
+                        <input
+                          type="text"
+                          value={giftName}
+                          onChange={(e) => setGiftName(e.target.value)}
+                          placeholder="Recipient name"
+                          className="w-full bg-cream border border-soft-peach rounded-xl px-4 py-2.5 font-body text-[14px] text-deep-brown placeholder:text-earth/50 focus:outline-none focus:ring-2 focus:ring-rust/30"
+                        />
+                        <input
+                          type="email"
+                          value={giftEmail}
+                          onChange={(e) => setGiftEmail(e.target.value)}
+                          placeholder="Recipient email"
+                          className="w-full bg-cream border border-soft-peach rounded-xl px-4 py-2.5 font-body text-[14px] text-deep-brown placeholder:text-earth/50 focus:outline-none focus:ring-2 focus:ring-rust/30"
+                        />
+                        <textarea
+                          value={giftMessage}
+                          onChange={(e) => setGiftMessage(e.target.value)}
+                          placeholder="Gift message (optional)"
+                          rows={3}
+                          className="w-full bg-cream border border-soft-peach rounded-xl px-4 py-2.5 font-body text-[14px] text-deep-brown placeholder:text-earth/50 focus:outline-none focus:ring-2 focus:ring-rust/30 resize-none"
+                        />
+                      </div>
+                    )}
+                  </div>
                 )}
               </div>
             ) : (

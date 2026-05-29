@@ -40,6 +40,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   }
 
   const paymentMethod = (req.body?.paymentMethod as string | undefined) ?? 'card';
+  const referralCode = (req.body?.referralCode as string | undefined) ?? '';
   const hasSubscription = items.some((i) => i.id.endsWith('-sub-week') || i.id.endsWith('-sub-2week') || i.id.endsWith('-sub-month'));
   const hasOneTime = items.some((i) => !i.id.includes('-sub-'));
 
@@ -53,6 +54,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     res.status(400).json({ error: 'Cash on Delivery is not available for subscriptions. Please use card payment.' });
     return;
   }
+
+  const giftInfo = req.body?.giftInfo as { isGift: boolean; recipientEmail?: string; recipientName?: string; message?: string } | undefined;
 
   const lineItems: Stripe.Checkout.SessionCreateParams.LineItem[] = [];
   for (const item of items) {
@@ -72,6 +75,16 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
   const mode: Stripe.Checkout.SessionCreateParams.Mode = hasSubscription ? 'subscription' : 'payment';
 
+  const metadata: Record<string, string> = {
+    referralCode: referralCode || '',
+  };
+  if (giftInfo?.isGift) {
+    metadata.isGift = 'true';
+    metadata.recipientEmail = giftInfo.recipientEmail ?? '';
+    metadata.recipientName = giftInfo.recipientName ?? '';
+    metadata.giftMessage = giftInfo.message ?? '';
+  }
+
   try {
     const session = await stripe.checkout.sessions.create({
       mode,
@@ -82,6 +95,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       phone_number_collection: { enabled: true },
       allow_promotion_codes: true,
       payment_method_types: paymentMethod === 'cod' ? ['card', 'promptpay'] : undefined,
+      metadata,
     });
     res.status(200).json({ url: session.url });
   } catch (err) {

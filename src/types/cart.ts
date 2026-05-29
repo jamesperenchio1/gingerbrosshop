@@ -9,6 +9,10 @@ export interface CartItem {
   badgeColor: string;
   isSubscription?: boolean;
   interval?: string;
+  isGift?: boolean;
+  recipientEmail?: string;
+  recipientName?: string;
+  giftMessage?: string;
 }
 
 export interface CartState {

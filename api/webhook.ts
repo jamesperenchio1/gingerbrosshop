@@ -63,6 +63,12 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     }
 
     const isSubscription = session.mode === 'subscription';
+    const isGift = session.metadata?.isGift === 'true';
+    const recipientEmail = session.metadata?.recipientEmail ?? null;
+    const recipientName = session.metadata?.recipientName ?? null;
+    const giftMessage = session.metadata?.giftMessage ?? null;
+    const referralCode = session.metadata?.referralCode ?? '';
+
     const order = {
       sessionId: session.id,
       paymentIntentId: typeof session.payment_intent === 'string' ? session.payment_intent : null,
@@ -81,6 +87,11 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       currency: session.currency?.toUpperCase() ?? 'THB',
       status: session.payment_status,
       mode: session.mode,
+      isGift,
+      recipientEmail,
+      recipientName,
+      giftMessage,
+      referralCode,
       createdAt: new Date().toISOString(),
       trackingNumber: null,
       trackingCarrier: null,
@@ -115,6 +126,35 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         });
       } catch (err) {
         console.error('Failed to send customer email:', err);
+      }
+    }
+
+    // Send gift email to recipient
+    if (resend && isGift && recipientEmail) {
+      try {
+        await resend.emails.send({
+          from: `GingerBros <${fromEmail}>`,
+          to: recipientEmail,
+          subject: `${session.customer_details?.name ?? 'Someone'} sent you a GingerBros gift! 🍺`,
+          html: giftEmailHtml(session, lineItems, recipientName, giftMessage, session.customer_details?.name ?? 'A friend'),
+        });
+      } catch (err) {
+        console.error('Failed to send gift email:', err);
+      }
+    }
+
+    // Record referral if code was used
+    if (referralCode && order.customerEmail) {
+      try {
+        const { getReferralOwner, recordReferralUsage, addPoints } = await import('./lib/referrals');
+        const owner = await getReferralOwner(referralCode);
+        if (owner && owner !== order.customerEmail.toLowerCase()) {
+          await recordReferralUsage(referralCode, order.customerEmail);
+          await addPoints(owner, 50);
+          await addPoints(order.customerEmail, 50);
+        }
+      } catch {
+        // silent
       }
     }
   }
@@ -155,6 +195,31 @@ function sellerNotificationHtml(session: Stripe.Checkout.Session, items: Stripe.
       Add tracking at:<br>
       <a href="${process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'https://your-domain.com'}/admin/orders">Admin Orders</a>
     </p>
+  </div>`;
+}
+
+function giftEmailHtml(session: Stripe.Checkout.Session, items: Stripe.LineItem[], recipientName: string | null, message: string | null, senderName: string) {
+  const orderId = session.id.slice(-8).toUpperCase();
+  const total = ((session.amount_total ?? 0) / 100).toLocaleString();
+  const itemRows = items
+    .map(
+      (li) =>
+        `<tr><td style="padding:8px;border-bottom:1px solid #eee;">${li.description}</td><td style="padding:8px;border-bottom:1px solid #eee;text-align:center;">${li.quantity}</td><td style="padding:8px;border-bottom:1px solid #eee;text-align:right;">฿${(li.amount_total / 100).toLocaleString()}</td></tr>`
+    )
+    .join('');
+
+  return `<div style="font-family:system-ui,sans-serif;max-width:480px;margin:0 auto;padding:24px;color:#3D2410;">
+    <h2 style="color:#3D2410;">You have received a gift! 🎁</h2>
+    <p>Hi ${recipientName ?? 'there'},</p>
+    <p><strong>${senderName}</strong> has sent you a GingerBros gift subscription.</p>
+    ${message ? `<p style="background:#F5F0EB;padding:12px;border-radius:8px;font-style:italic;">"${message}"</p>` : ''}
+    <p style="font-size:14px;color:#666;">Order #${orderId}</p>
+    <table style="width:100%;border-collapse:collapse;margin:16px 0;font-size:14px;">
+      <thead><tr style="background:#F5F0EB;"><th style="padding:8px;text-align:left;">Item</th><th style="padding:8px;">Qty</th><th style="padding:8px;text-align:right;">Total</th></tr></thead>
+      <tbody>${itemRows}</tbody>
+    </table>
+    <p style="font-size:18px;font-weight:600;">Total: ฿${total}</p>
+    <p style="margin-top:24px;font-size:13px;color:#888;">You will receive shipping updates once the order is dispatched.</p>
   </div>`;
 }
 

@@ -9,6 +9,11 @@ export default function CartDrawer() {
   const [isCheckingOut, setIsCheckingOut] = useState(false);
   const [checkoutError, setCheckoutError] = useState('');
   const [paymentMethod, setPaymentMethod] = useState<'card' | 'cod'>('card');
+  const [cartEmail, setCartEmail] = useState('');
+  const [cartEmailSaved, setCartEmailSaved] = useState(false);
+  const [referralCode, setReferralCode] = useState('');
+  const [referralApplied, setReferralApplied] = useState(false);
+  const [referralError, setReferralError] = useState('');
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -27,6 +32,25 @@ export default function CartDrawer() {
 
   const hasMixedCart = state.items.some(i => i.isSubscription) && state.items.some(i => !i.isSubscription);
 
+  const handleSaveCartEmail = async () => {
+    if (!cartEmail.trim() || state.items.length === 0) return;
+    try {
+      await fetch('/api/save-cart', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          email: cartEmail.trim(),
+          items: state.items.map((i) => ({ name: i.name, price: i.price, quantity: i.quantity, image: i.image })),
+          subtotal,
+          url: window.location.origin + '/',
+        }),
+      });
+      setCartEmailSaved(true);
+    } catch {
+      // silent
+    }
+  };
+
   const handleCheckout = async () => {
     if (state.items.length === 0) return;
     if (hasMixedCart) {
@@ -42,6 +66,13 @@ export default function CartDrawer() {
         body: JSON.stringify({
           items: state.items.map(i => ({ id: i.id, quantity: i.quantity })),
           paymentMethod,
+          referralCode: referralApplied ? referralCode : '',
+          giftInfo: state.items.some(i => i.isGift) ? {
+            isGift: true,
+            recipientEmail: state.items.find(i => i.isGift)?.recipientEmail,
+            recipientName: state.items.find(i => i.isGift)?.recipientName,
+            message: state.items.find(i => i.isGift)?.giftMessage,
+          } : undefined,
         }),
       });
       const data = await res.json();
@@ -224,6 +255,75 @@ export default function CartDrawer() {
             {checkoutError && (
               <p className="mt-3 font-body text-[13px] text-center text-rust">
                 {checkoutError}
+              </p>
+            )}
+
+            {/* Abandoned cart email capture */}
+            {state.items.length > 0 && !cartEmailSaved && (
+              <div className="mt-4 pt-4 border-t border-soft-peach/50">
+                <p className="font-body text-[12px] text-earth mb-2">Enter your email to save this cart:</p>
+                <div className="flex gap-2">
+                  <input
+                    type="email"
+                    value={cartEmail}
+                    onChange={(e) => setCartEmail(e.target.value)}
+                    placeholder="your@email.com"
+                    className="flex-1 bg-cream border border-soft-peach rounded-full px-4 py-2 font-body text-[13px] text-deep-brown placeholder:text-earth/40 focus:outline-none focus:ring-2 focus:ring-rust/30"
+                  />
+                  <button
+                    onClick={handleSaveCartEmail}
+                    className="bg-deep-brown text-cream font-body text-[12px] px-4 py-2 rounded-full hover:bg-rust transition-colors"
+                  >
+                    Save
+                  </button>
+                </div>
+              </div>
+            )}
+            {cartEmailSaved && (
+              <p className="mt-3 font-body text-[12px] text-center text-accent-green">
+                Cart saved! We will remind you if you do not checkout.
+              </p>
+            )}
+
+            {/* Referral code */}
+            {!referralApplied && state.items.length > 0 && (
+              <div className="mt-4 pt-4 border-t border-soft-peach/50">
+                <p className="font-body text-[12px] text-earth mb-2">Have a referral code?</p>
+                <div className="flex gap-2">
+                  <input
+                    type="text"
+                    value={referralCode}
+                    onChange={(e) => setReferralCode(e.target.value)}
+                    placeholder="BROXXXX"
+                    className="flex-1 bg-cream border border-soft-peach rounded-full px-4 py-2 font-body text-[13px] text-deep-brown placeholder:text-earth/40 focus:outline-none focus:ring-2 focus:ring-rust/30 uppercase"
+                  />
+                  <button
+                    onClick={async () => {
+                      setReferralError('');
+                      try {
+                        const res = await fetch('/api/apply-referral', {
+                          method: 'POST',
+                          headers: { 'Content-Type': 'application/json' },
+                          body: JSON.stringify({ code: referralCode, email: cartEmail || 'guest@gingerbrosshop.com' }),
+                        });
+                        const data = await res.json();
+                        if (!res.ok) throw new Error(data.error);
+                        setReferralApplied(true);
+                      } catch (err) {
+                        setReferralError(err instanceof Error ? err.message : 'Invalid code');
+                      }
+                    }}
+                    className="bg-deep-brown text-cream font-body text-[12px] px-4 py-2 rounded-full hover:bg-rust transition-colors"
+                  >
+                    Apply
+                  </button>
+                </div>
+                {referralError && <p className="mt-1 font-body text-[11px] text-rust">{referralError}</p>}
+              </div>
+            )}
+            {referralApplied && (
+              <p className="mt-3 font-body text-[12px] text-center text-accent-green">
+                Referral code applied! Both you and your friend earned 50 points.
               </p>
             )}
 

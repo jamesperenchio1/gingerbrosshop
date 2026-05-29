@@ -1,6 +1,24 @@
 import { createContext, useContext, useReducer, useCallback, useEffect, type ReactNode } from 'react';
 import type { CartItem, CartState, CartAction } from '@/types/cart';
 
+async function snapshotCart(email: string | null, items: CartItem[], subtotal: number) {
+  if (!email || items.length === 0) return;
+  try {
+    await fetch('/api/save-cart', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        email,
+        items: items.map((i) => ({ name: i.name, price: i.price, quantity: i.quantity, image: i.image })),
+        subtotal,
+        url: typeof window !== 'undefined' ? window.location.origin + '/' : 'https://gingerbrosshop.com/',
+      }),
+    });
+  } catch {
+    // silent fail
+  }
+}
+
 const initialState: CartState = {
   items: [],
   isOpen: false,

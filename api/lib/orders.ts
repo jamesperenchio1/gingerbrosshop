@@ -13,6 +13,11 @@ export interface Order {
   currency: string;
   status: string;
   mode?: string;
+  isGift?: boolean;
+  recipientEmail?: string | null;
+  recipientName?: string | null;
+  giftMessage?: string | null;
+  referralCode?: string;
   createdAt: string;
   trackingNumber: string | null;
   trackingCarrier: string | null;
