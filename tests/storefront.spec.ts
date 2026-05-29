@@ -28,8 +28,9 @@ test('checkout button triggers Stripe redirect', async ({ page, baseURL }) => {
   // Intercept navigation to checkout.stripe.com
   const checkoutBtn = page.getByRole('button', { name: /checkout/i });
   await checkoutBtn.first().click();
-  await page.waitForURL(/checkout\.stripe\.com/, { timeout: 20_000 });
+  await page.waitForURL(/checkout\.stripe\.com/, { timeout: 20_000, waitUntil: 'commit' });
   expect(page.url()).toContain('checkout.stripe.com');
+  await expect(page.getByRole('heading', { name: /Pay GingerBros/i })).toBeVisible({ timeout: 15_000 });
 });
 
 test('api/checkout creates a Stripe session', async ({ request, baseURL }) => {
