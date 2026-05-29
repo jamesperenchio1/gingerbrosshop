@@ -20,6 +20,15 @@ interface ProductDef {
   addable: boolean;
   isBundle?: boolean;
   bundleSize?: number;
+  subscription?: {
+    options: Array<{
+      id: string;
+      price: number;
+      interval: string;
+      intervalLabel: string;
+      savingsLabel: string;
+    }>;
+  };
 }
 
 const PRODUCTS: ProductDef[] = [
@@ -34,6 +43,13 @@ const PRODUCTS: ProductDef[] = [
     borderStyle: 'border-none',
     bgColor: 'bg-cream',
     addable: true,
+    subscription: {
+      options: [
+        { id: 'pasteurized-sub-week', price: 114, interval: 'week', intervalLabel: 'weekly', savingsLabel: 'Save 5%' },
+        { id: 'pasteurized-sub-2week', price: 110, interval: 'week', intervalLabel: 'every 2 weeks', savingsLabel: 'Save 8%' },
+        { id: 'pasteurized-sub-month', price: 108, interval: 'month', intervalLabel: 'monthly', savingsLabel: 'Save 10%' },
+      ],
+    },
   },
   {
     id: 'pasteurized-6pack',
@@ -48,6 +64,13 @@ const PRODUCTS: ProductDef[] = [
     addable: true,
     isBundle: true,
     bundleSize: 6,
+    subscription: {
+      options: [
+        { id: 'pasteurized-6pack-sub-week', price: 618, interval: 'week', intervalLabel: 'weekly', savingsLabel: 'Save ฿32/wk' },
+        { id: 'pasteurized-6pack-sub-2week', price: 598, interval: 'week', intervalLabel: 'every 2 weeks', savingsLabel: 'Save ฿52/2wk' },
+        { id: 'pasteurized-6pack-sub-month', price: 585, interval: 'month', intervalLabel: 'monthly', savingsLabel: 'Save ฿65/mo' },
+      ],
+    },
   },
   {
     id: 'unpasteurized',
@@ -76,6 +99,7 @@ export default function Shop() {
     unpasteurized: 1,
   });
   const [addedId, setAddedId] = useState<string | null>(null);
+  const [selectedInterval, setSelectedInterval] = useState<Record<string, number>>({});
 
   useEffect(() => {
     const ctx = gsap.context(() => {
@@ -102,18 +126,21 @@ export default function Shop() {
     }));
   };
 
-  const handleAddToCart = (product: ProductDef) => {
+  const handleAddToCart = (product: ProductDef, subIndex?: number) => {
+    const sub = subIndex !== undefined && product.subscription ? product.subscription.options[subIndex] : undefined;
     addItem({
-      id: product.id,
-      name: product.name,
+      id: sub ? sub.id : product.id,
+      name: sub ? `${product.name} (${sub.intervalLabel})` : product.name,
       variant: product.id.includes('unpasteurized') ? 'unpasteurized' : 'pasteurized',
-      price: product.price,
+      price: sub ? sub.price : product.price,
       quantity: quantities[product.id] ?? 1,
       image: product.image,
-      badge: product.badge,
-      badgeColor: product.badgeColor,
+      badge: sub ? 'SUBSCRIPTION' : product.badge,
+      badgeColor: sub ? 'bg-rust' : product.badgeColor,
+      isSubscription: !!sub,
+      interval: sub ? sub.intervalLabel : undefined,
     });
-    setAddedId(product.id);
+    setAddedId(sub ? sub.id : product.id);
     setTimeout(() => setAddedId(null), 800);
   };
 
@@ -215,8 +242,36 @@ export default function Shop() {
                         : 'bg-amber text-deep-brown hover:bg-warm-gold active:scale-[0.98]'
                     }`}
                   >
-                    {addedId === product.id ? 'Added!' : 'Add to Cart'}
+                    {addedId === product.id ? 'Added!' : `Add to Cart — ฿${product.price}`}
                   </button>
+
+                  {product.subscription && (
+                    <div className="mt-3 pt-3 border-t border-soft-peach/50">
+                      <p className="font-body font-semibold text-[12px] uppercase tracking-wider text-deep-brown mb-2">
+                        Subscribe & Save
+                      </p>
+                      <div className="space-y-1.5">
+                        {product.subscription.options.map((opt, idx) => (
+                          <button
+                            key={opt.id}
+                            onClick={() => handleAddToCart(product, idx)}
+                            className={`w-full flex items-center justify-between font-body text-[13px] py-2.5 px-4 rounded-xl transition-all duration-200 ${
+                              addedId === opt.id
+                                ? 'bg-accent-green text-white'
+                                : 'bg-cream text-deep-brown hover:bg-amber/30'
+                            }`}
+                          >
+                            <span>
+                              ฿{opt.price} <span className="text-earth/60">{opt.intervalLabel}</span>
+                            </span>
+                            <span className="text-[11px] font-semibold text-accent-green">
+                              {opt.savingsLabel}
+                            </span>
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  )}
 
                   <div className="flex items-center gap-2 mt-3">
                     <span className="w-2 h-2 bg-accent-green rounded-full" />

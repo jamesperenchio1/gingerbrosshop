@@ -23,8 +23,13 @@ dist-ssr
 *.sln
 *.sw?
 .vercel
+data/
 
 # Playwright
 test-results/
 playwright-report/
 playwright/.cache/
+
+.superpowers/
+.env
+.env.local

@@ -8,6 +8,7 @@ export default function CartDrawer() {
   const drawerRef = useRef<HTMLDivElement>(null);
   const [isCheckingOut, setIsCheckingOut] = useState(false);
   const [checkoutError, setCheckoutError] = useState('');
+  const [paymentMethod, setPaymentMethod] = useState<'card' | 'cod'>('card');
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -24,8 +25,14 @@ export default function CartDrawer() {
     };
   }, [state.isOpen, closeCart]);
 
+  const hasMixedCart = state.items.some(i => i.isSubscription) && state.items.some(i => !i.isSubscription);
+
   const handleCheckout = async () => {
     if (state.items.length === 0) return;
+    if (hasMixedCart) {
+      setCheckoutError('Please checkout with only one-time items OR only subscription items.');
+      return;
+    }
     setIsCheckingOut(true);
     setCheckoutError('');
     try {
@@ -34,6 +41,7 @@ export default function CartDrawer() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           items: state.items.map(i => ({ id: i.id, quantity: i.quantity })),
+          paymentMethod,
         }),
       });
       const data = await res.json();
@@ -104,9 +112,16 @@ export default function CartDrawer() {
                             {item.name}
                           </h4>
                         </button>
-                        <span className={`inline-block mt-1 font-body font-semibold text-[11px] uppercase tracking-wider px-2 py-0.5 rounded-full text-white ${item.badgeColor}`}>
-                          {item.badge}
-                        </span>
+                        <div className="flex items-center gap-1.5 mt-1">
+                          <span className={`inline-block font-body font-semibold text-[11px] uppercase tracking-wider px-2 py-0.5 rounded-full text-white ${item.badgeColor}`}>
+                            {item.badge}
+                          </span>
+                          {item.isSubscription && (
+                            <span className="inline-block font-body font-semibold text-[10px] uppercase tracking-wider px-2 py-0.5 rounded-full bg-deep-brown text-cream">
+                              {item.interval}
+                            </span>
+                          )}
+                        </div>
                       </div>
                       <button
                         onClick={() => removeItem(item.id)}
@@ -156,6 +171,37 @@ export default function CartDrawer() {
                 ฿{subtotal}
               </span>
             </div>
+            {state.items.some(i => i.isSubscription) && (
+              <p className="font-body font-medium text-[13px] text-rust mb-2">
+                Subscription — billed {state.items[0]?.interval}
+              </p>
+            )}
+            <p className="font-body font-medium text-[13px] text-earth/60 mb-2">
+              {subtotal >= 500 ? 'Free shipping unlocked!' : 'Free shipping on orders over ฿500'}
+            </p>
+
+            {/* Payment Method Selector */}
+            {!state.items.some(i => i.isSubscription) && (
+              <div className="flex bg-cream rounded-full p-1 mb-4">
+                <button
+                  onClick={() => setPaymentMethod('card')}
+                  className={`flex-1 font-body font-medium text-[12px] py-2 rounded-full transition-all ${
+                    paymentMethod === 'card' ? 'bg-deep-brown text-cream' : 'text-earth'
+                  }`}
+                >
+                  Card / PromptPay
+                </button>
+                <button
+                  onClick={() => setPaymentMethod('cod')}
+                  className={`flex-1 font-body font-medium text-[12px] py-2 rounded-full transition-all ${
+                    paymentMethod === 'cod' ? 'bg-deep-brown text-cream' : 'text-earth'
+                  }`}
+                >
+                  Cash on Delivery
+                </button>
+              </div>
+            )}
+
             <p className="font-body font-medium text-[13px] text-earth/60 mb-5">
               Shipping calculated at checkout
             </p>

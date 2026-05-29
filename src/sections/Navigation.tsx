@@ -1,18 +1,20 @@
 import { useState, useEffect } from 'react';
 import { useCart } from '@/context/CartContext';
+import { useI18n } from '@/context/I18nContext';
 import { CartIcon, MenuIcon, CloseIcon } from '@/components/Icons';
 
 const navLinks = [
-  { label: 'Shop', href: '#shop' },
-  { label: 'Story', href: '#story' },
-  { label: 'Process', href: '#process' },
-  { label: 'Benefits', href: '#benefits' },
+  { label: 'shop', href: '#shop' },
+  { label: 'story', href: '#story' },
+  { label: 'process', href: '#process' },
+  { label: 'benefits', href: '#benefits' },
 ];
 
 export default function Navigation() {
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const { toggleCart, totalItems } = useCart();
+  const { t, locale, toggleLocale } = useI18n();
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 60);
@@ -51,7 +53,7 @@ export default function Navigation() {
         </a>
 
         {/* Desktop Nav */}
-        <div className="hidden md:flex items-center gap-8">
+        <div className="hidden md:flex items-center gap-6">
           {navLinks.map((link) => (
             <a
               key={link.href}
@@ -59,10 +61,16 @@ export default function Navigation() {
               onClick={(e) => handleNavClick(e, link.href)}
               className="font-body font-medium text-sm uppercase tracking-[0.08em] text-earth hover:text-deep-brown relative group transition-colors duration-200"
             >
-              {link.label}
+              {t(link.label)}
               <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-rust transition-all duration-300 group-hover:w-full" />
             </a>
           ))}
+          <button
+            onClick={toggleLocale}
+            className="font-body font-medium text-sm uppercase tracking-[0.08em] text-rust hover:text-deep-brown transition-colors"
+          >
+            {locale === 'en' ? 'TH' : 'EN'}
+          </button>
         </div>
 
         {/* Right side */}
@@ -71,7 +79,7 @@ export default function Navigation() {
             onClick={toggleCart}
             className="flex items-center gap-2 font-body font-medium text-sm uppercase tracking-[0.08em] text-earth hover:text-deep-brown transition-colors"
           >
-            <span className="hidden sm:inline">Cart</span>
+            <span className="hidden sm:inline">{t('cart')}</span>
             <span className="relative">
               <CartIcon className="w-5 h-5" />
               {totalItems > 0 && (
@@ -104,9 +112,15 @@ export default function Navigation() {
                 onClick={(e) => handleNavClick(e, link.href)}
                 className="font-body font-medium text-sm uppercase tracking-[0.08em] text-earth hover:text-deep-brown transition-colors"
               >
-                {link.label}
+                {t(link.label)}
               </a>
             ))}
+            <button
+              onClick={() => { toggleLocale(); setMobileOpen(false); }}
+              className="font-body font-medium text-sm uppercase tracking-[0.08em] text-rust hover:text-deep-brown transition-colors text-left"
+            >
+              {locale === 'en' ? 'Switch to Thai' : 'Switch to English'}
+            </button>
           </div>
         </div>
       )}

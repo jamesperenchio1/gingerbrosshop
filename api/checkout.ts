@@ -2,9 +2,18 @@ import type { VercelRequest, VercelResponse } from '@vercel/node';
 import Stripe from 'stripe';
 
 const PRICE_IDS: Record<string, string> = {
+  // One-time
   pasteurized: process.env.STRIPE_PRICE_PASTEURIZED ?? '',
   'pasteurized-6pack': process.env.STRIPE_PRICE_PASTEURIZED_6PACK ?? '',
   unpasteurized: process.env.STRIPE_PRICE_UNPASTEURIZED ?? '',
+  // Subscriptions — pasteurized single
+  'pasteurized-sub-week': process.env.STRIPE_PRICE_PASTEURIZED_SUB_WEEK ?? '',
+  'pasteurized-sub-2week': process.env.STRIPE_PRICE_PASTEURIZED_SUB_2WEEK ?? '',
+  'pasteurized-sub-month': process.env.STRIPE_PRICE_PASTEURIZED_SUB_MONTH ?? '',
+  // Subscriptions — 6-pack
+  'pasteurized-6pack-sub-week': process.env.STRIPE_PRICE_PASTEURIZED_6PACK_SUB_WEEK ?? '',
+  'pasteurized-6pack-sub-2week': process.env.STRIPE_PRICE_PASTEURIZED_6PACK_SUB_2WEEK ?? '',
+  'pasteurized-6pack-sub-month': process.env.STRIPE_PRICE_PASTEURIZED_6PACK_SUB_MONTH ?? '',
 };
 
 interface CheckoutLine {
@@ -30,6 +39,21 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return;
   }
 
+  const paymentMethod = (req.body?.paymentMethod as string | undefined) ?? 'card';
+  const hasSubscription = items.some((i) => i.id.endsWith('-sub-week') || i.id.endsWith('-sub-2week') || i.id.endsWith('-sub-month'));
+  const hasOneTime = items.some((i) => !i.id.includes('-sub-'));
+
+  if (hasSubscription && hasOneTime) {
+    res.status(400).json({ error: 'Cannot mix one-time and subscription items. Please checkout separately.' });
+    return;
+  }
+
+  // COD not available for subscriptions
+  if (hasSubscription && paymentMethod === 'cod') {
+    res.status(400).json({ error: 'Cash on Delivery is not available for subscriptions. Please use card payment.' });
+    return;
+  }
+
   const lineItems: Stripe.Checkout.SessionCreateParams.LineItem[] = [];
   for (const item of items) {
     const priceId = PRICE_IDS[item.id];
@@ -46,15 +70,18 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     (req.headers.origin as string | undefined) ??
     `https://${req.headers.host}`;
 
+  const mode: Stripe.Checkout.SessionCreateParams.Mode = hasSubscription ? 'subscription' : 'payment';
+
   try {
     const session = await stripe.checkout.sessions.create({
-      mode: 'payment',
+      mode,
       line_items: lineItems,
-      success_url: `${origin}/?checkout=success&session_id={CHECKOUT_SESSION_ID}`,
+      success_url: `${origin}/order/success?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${origin}/?checkout=cancelled`,
       shipping_address_collection: { allowed_countries: ['TH'] },
       phone_number_collection: { enabled: true },
       allow_promotion_codes: true,
+      payment_method_types: paymentMethod === 'cod' ? ['card', 'promptpay'] : undefined,
     });
     res.status(200).json({ url: session.url });
   } catch (err) {

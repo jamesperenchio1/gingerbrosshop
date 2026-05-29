@@ -7,6 +7,8 @@ export interface CartItem {
   image: string;
   badge: string;
   badgeColor: string;
+  isSubscription?: boolean;
+  interval?: string;
 }
 
 export interface CartState {

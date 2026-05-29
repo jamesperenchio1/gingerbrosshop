@@ -44,6 +44,15 @@ interface ProductData {
   variant: 'pasteurized' | 'unpasteurized';
   isBundle?: boolean;
   bundleSize?: number;
+  subscription?: {
+    options: Array<{
+      id: string;
+      price: number;
+      interval: string;
+      intervalLabel: string;
+      savingsLabel: string;
+    }>;
+  };
 }
 
 const PRODUCTS: Record<string, ProductData> = {
@@ -93,6 +102,13 @@ const PRODUCTS: Record<string, ProductData> = {
     ],
     addable: true,
     variant: 'pasteurized',
+    subscription: {
+      options: [
+        { id: 'pasteurized-sub-week', price: 114, interval: 'week', intervalLabel: 'weekly', savingsLabel: 'Save 5%' },
+        { id: 'pasteurized-sub-2week', price: 110, interval: 'week', intervalLabel: 'every 2 weeks', savingsLabel: 'Save 8%' },
+        { id: 'pasteurized-sub-month', price: 108, interval: 'month', intervalLabel: 'monthly', savingsLabel: 'Save 10%' },
+      ],
+    },
   },
   'pasteurized-6pack': {
     id: 'pasteurized-6pack',
@@ -139,6 +155,13 @@ const PRODUCTS: Record<string, ProductData> = {
     variant: 'pasteurized',
     isBundle: true,
     bundleSize: 6,
+    subscription: {
+      options: [
+        { id: 'pasteurized-6pack-sub-week', price: 618, interval: 'week', intervalLabel: 'weekly', savingsLabel: 'Save ฿32/wk' },
+        { id: 'pasteurized-6pack-sub-2week', price: 598, interval: 'week', intervalLabel: 'every 2 weeks', savingsLabel: 'Save ฿52/2wk' },
+        { id: 'pasteurized-6pack-sub-month', price: 585, interval: 'month', intervalLabel: 'monthly', savingsLabel: 'Save ฿65/mo' },
+      ],
+    },
   },
   unpasteurized: {
     id: 'unpasteurized',
@@ -226,17 +249,22 @@ export default function ProductDetail() {
     return () => ctx.revert();
   }, [id]);
 
+  const [subIndex, setSubIndex] = useState<number | null>(null);
+
   const handleAdd = () => {
     if (!product.addable) return;
+    const sub = subIndex !== null && product.subscription ? product.subscription.options[subIndex] : undefined;
     addItem({
-      id: product.id,
-      name: product.name,
+      id: sub ? sub.id : product.id,
+      name: sub ? `${product.name} (${sub.intervalLabel})` : product.name,
       variant: product.variant,
-      price: product.price,
+      price: sub ? sub.price : product.price,
       quantity,
       image: product.images[0],
-      badge: product.badge,
-      badgeColor: product.badgeColor,
+      badge: sub ? 'SUBSCRIPTION' : product.badge,
+      badgeColor: sub ? 'bg-rust' : product.badgeColor,
+      isSubscription: !!sub,
+      interval: sub ? sub.intervalLabel : undefined,
     });
     setAdded(true);
     setTimeout(() => setAdded(false), 800);
@@ -348,35 +376,83 @@ export default function ProductDetail() {
 
             {/* Quantity + Add to Cart */}
             {product.addable ? (
-              <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 mb-8">
-                <div className="flex items-center gap-4 border-2 border-soft-peach rounded-full py-2.5 px-5">
+              <div className="mb-8">
+                {product.subscription && (
+                  <div className="mb-4">
+                    <p className="font-body font-semibold text-[12px] uppercase tracking-wider text-deep-brown mb-2">
+                      Delivery Frequency
+                    </p>
+                    <div className="flex flex-wrap gap-2">
+                      <button
+                        onClick={() => setSubIndex(null)}
+                        className={`font-body font-medium text-[13px] px-4 py-2 rounded-full transition-all border ${
+                          subIndex === null
+                            ? 'bg-deep-brown text-cream border-deep-brown'
+                            : 'bg-cream text-earth border-soft-peach hover:border-deep-brown'
+                        }`}
+                      >
+                        One-time — ฿{product.price}
+                      </button>
+                      {product.subscription.options.map((opt, idx) => (
+                        <button
+                          key={opt.id}
+                          onClick={() => setSubIndex(idx)}
+                          className={`font-body font-medium text-[13px] px-4 py-2 rounded-full transition-all border ${
+                            subIndex === idx
+                              ? 'bg-deep-brown text-cream border-deep-brown'
+                              : 'bg-cream text-earth border-soft-peach hover:border-deep-brown'
+                          }`}
+                        >
+                          {opt.intervalLabel} — ฿{opt.price}
+                          <span className="ml-1.5 text-[11px] text-accent-green">{opt.savingsLabel}</span>
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
+                  <div className="flex items-center gap-4 border-2 border-soft-peach rounded-full py-2.5 px-5">
+                    <button
+                      onClick={() => setQuantity(Math.max(1, quantity - 1))}
+                      className="text-earth hover:text-deep-brown transition-colors"
+                    >
+                      <MinusIcon />
+                    </button>
+                    <span className="font-body font-medium text-earth min-w-[24px] text-center">
+                      {quantity}
+                    </span>
+                    <button
+                      onClick={() => setQuantity(Math.min(24, quantity + 1))}
+                      className="text-earth hover:text-deep-brown transition-colors"
+                    >
+                      <PlusIcon />
+                    </button>
+                  </div>
+
                   <button
-                    onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                    className="text-earth hover:text-deep-brown transition-colors"
+                    onClick={handleAdd}
+                    className={`font-body font-medium text-sm uppercase tracking-[0.08em] px-10 py-3.5 rounded-full transition-all duration-200 active:scale-[0.98] ${
+                      added
+                        ? 'bg-accent-green text-white'
+                        : subIndex !== null
+                        ? 'bg-deep-brown text-cream hover:bg-rust'
+                        : 'bg-amber text-deep-brown hover:bg-warm-gold'
+                    }`}
                   >
-                    <MinusIcon />
-                  </button>
-                  <span className="font-body font-medium text-earth min-w-[24px] text-center">
-                    {quantity}
-                  </span>
-                  <button
-                    onClick={() => setQuantity(Math.min(24, quantity + 1))}
-                    className="text-earth hover:text-deep-brown transition-colors"
-                  >
-                    <PlusIcon />
+                    {added
+                      ? 'Added to Cart!'
+                      : subIndex !== null && product.subscription
+                      ? `Subscribe — ฿${product.subscription.options[subIndex].price * quantity}/${product.subscription.options[subIndex].intervalLabel}`
+                      : `Add to Cart — ฿${product.price * quantity}`}
                   </button>
                 </div>
 
-                <button
-                  onClick={handleAdd}
-                  className={`font-body font-medium text-sm uppercase tracking-[0.08em] px-10 py-3.5 rounded-full transition-all duration-200 active:scale-[0.98] ${
-                    added
-                      ? 'bg-accent-green text-white'
-                      : 'bg-amber text-deep-brown hover:bg-warm-gold'
-                  }`}
-                >
-                  {added ? 'Added to Cart!' : `Add to Cart — ฿${product.price * quantity}`}
-                </button>
+                {subIndex !== null && product.subscription && (
+                  <p className="font-body text-[13px] text-accent-green mt-2">
+                    {product.subscription.options[subIndex].savingsLabel} — billed {product.subscription.options[subIndex].intervalLabel}, cancel anytime.
+                  </p>
+                )}
               </div>
             ) : (
               <div className="mb-8">
