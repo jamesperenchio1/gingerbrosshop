@@ -33,51 +33,11 @@ interface ProductDef {
 
 const PRODUCTS: ProductDef[] = [
   {
-    id: 'pasteurized',
-    name: 'Pasteurized Ginger Beer',
-    shortDescription: 'Our signature craft ginger beer, shelf-stable and ready to ship. Same great taste, longer lasting. 330ml per bottle.',
-    price: 120,
-    image: '/images/product-pasteurized.png',
-    badge: 'AVAILABLE EVERYWHERE',
-    badgeColor: 'bg-accent-green',
-    borderStyle: 'border-none',
-    bgColor: 'bg-cream',
-    addable: true,
-    subscription: {
-      options: [
-        { id: 'pasteurized-sub-week', price: 114, interval: 'week', intervalLabel: 'weekly', savingsLabel: 'Save 5%' },
-        { id: 'pasteurized-sub-2week', price: 110, interval: 'week', intervalLabel: 'every 2 weeks', savingsLabel: 'Save 8%' },
-        { id: 'pasteurized-sub-month', price: 108, interval: 'month', intervalLabel: 'monthly', savingsLabel: 'Save 10%' },
-      ],
-    },
-  },
-  {
-    id: 'pasteurized-6pack',
-    name: '6-Pack Bundle',
-    shortDescription: 'Six bottles of our pasteurized ginger beer at a better price. Perfect for sharing or stocking up. 6 x 330ml.',
-    price: 650,
-    image: '/images/bundle-6pack.jpg',
-    badge: 'BEST VALUE',
-    badgeColor: 'bg-amber',
-    borderStyle: 'border-none',
-    bgColor: 'bg-cream',
-    addable: true,
-    isBundle: true,
-    bundleSize: 6,
-    subscription: {
-      options: [
-        { id: 'pasteurized-6pack-sub-week', price: 618, interval: 'week', intervalLabel: 'weekly', savingsLabel: 'Save ฿32/wk' },
-        { id: 'pasteurized-6pack-sub-2week', price: 598, interval: 'week', intervalLabel: 'every 2 weeks', savingsLabel: 'Save ฿52/2wk' },
-        { id: 'pasteurized-6pack-sub-month', price: 585, interval: 'month', intervalLabel: 'monthly', savingsLabel: 'Save ฿65/mo' },
-      ],
-    },
-  },
-  {
     id: 'unpasteurized',
     name: 'Unpasteurized Ginger Beer',
     shortDescription: 'Fresh, living ginger beer with active cultures. More probiotics, more kick. Only available on Grab for now. 330ml per bottle.',
     price: 140,
-    image: '/images/product-unpasteurized.png',
+    image: '/images/product-unpasteurized-2.jpg',
     badge: 'GRAB EXCLUSIVE',
     badgeColor: 'bg-grab-green',
     borderStyle: 'border-2 border-dashed border-soft-peach',
@@ -94,8 +54,6 @@ export default function Shop() {
   const cardsRef = useRef<HTMLDivElement>(null);
 
   const [quantities, setQuantities] = useState<Record<string, number>>({
-    pasteurized: 1,
-    'pasteurized-6pack': 1,
     unpasteurized: 1,
   });
   const [addedId, setAddedId] = useState<string | null>(null);
