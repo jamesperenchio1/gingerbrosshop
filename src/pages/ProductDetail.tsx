@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router';
 import gsap from 'gsap';
 import { useCart } from '@/context/CartContext';
 import { PlusIcon, MinusIcon, StarIcon } from '@/components/Icons';
+import SEO from '@/components/SEO';
 
 /* ──────────────────────── Icons ──────────────────────── */
 
@@ -286,8 +287,45 @@ export default function ProductDetail() {
     }
   };
 
+  const productJsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'Product',
+    name: product.name,
+    description: product.description,
+    image: product.images.map((img) => `https://gingerbrosshop.com${img}`),
+    brand: { '@type': 'Brand', name: 'GingerBros' },
+    sku: product.id,
+    offers: {
+      '@type': 'Offer',
+      url: `https://gingerbrosshop.com/product/${product.id}`,
+      priceCurrency: 'THB',
+      price: product.price,
+      availability: product.addable
+        ? 'https://schema.org/InStock'
+        : 'https://schema.org/PreOrder',
+      seller: { '@type': 'Organization', name: 'GingerBros' },
+    },
+  };
+
+  const breadcrumbJsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://gingerbrosshop.com/' },
+      { '@type': 'ListItem', position: 2, name: product.name, item: `https://gingerbrosshop.com/product/${product.id}` },
+    ],
+  };
+
   return (
     <div className="min-h-screen bg-warm-white">
+      <SEO
+        title={`${product.name} — GingerBros`}
+        description={product.description}
+        path={`/product/${product.id}`}
+        image={`https://gingerbrosshop.com${product.images[0]}`}
+        type="product"
+        jsonLd={[productJsonLd, breadcrumbJsonLd]}
+      />
       {/* Top Bar */}
       <div className="sticky top-0 z-50 bg-warm-white/95 backdrop-blur-xl border-b border-soft-peach/50">
         <div className="max-w-[1280px] mx-auto px-6 h-14 flex items-center justify-between">

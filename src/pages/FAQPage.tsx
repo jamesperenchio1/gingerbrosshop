@@ -1,5 +1,6 @@
 import { useNavigate } from 'react-router';
 import { ArrowLeft, Package, Truck, CreditCard, RotateCcw, HelpCircle } from 'lucide-react';
+import SEO from '@/components/SEO';
 
 const FAQS = [
   {
@@ -44,10 +45,26 @@ const FAQS = [
   },
 ];
 
+const faqSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: FAQS.map((faq) => ({
+    '@type': 'Question',
+    name: faq.q,
+    acceptedAnswer: { '@type': 'Answer', text: faq.a },
+  })),
+};
+
 export default function FAQPage() {
   const navigate = useNavigate();
   return (
     <div className="min-h-screen bg-warm-white">
+      <SEO
+        title="FAQ — Ginger Beer Questions Answered | GingerBros"
+        description="Answers to common questions about GingerBros craft ginger beer: pasteurized vs unpasteurized, shipping, subscriptions, storage, and wholesale."
+        path="/faq"
+        jsonLd={[faqSchema]}
+      />
       <div className="sticky top-0 z-50 bg-warm-white/95 backdrop-blur-xl border-b border-soft-peach/50">
         <div className="max-w-[1280px] mx-auto px-6 h-14 flex items-center justify-between">
           <button onClick={() => navigate('/')} className="flex items-center gap-2 font-body font-medium text-sm text-earth hover:text-deep-brown transition-colors">

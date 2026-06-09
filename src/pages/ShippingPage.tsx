@@ -1,10 +1,16 @@
 import { useNavigate } from 'react-router';
 import { ArrowLeft, Truck, Clock, MapPin, PackageCheck } from 'lucide-react';
+import SEO from '@/components/SEO';
 
 export default function ShippingPage() {
   const navigate = useNavigate();
   return (
     <div className="min-h-screen bg-warm-white">
+      <SEO
+        title="Shipping Information — Nationwide Delivery in Thailand | GingerBros"
+        description="GingerBros ships nationwide across Thailand. Free shipping on orders over ฿500. Delivery in 2–4 business days. Cold-chain available for unpasteurized ginger beer."
+        path="/shipping"
+      />
       <div className="sticky top-0 z-50 bg-warm-white/95 backdrop-blur-xl border-b border-soft-peach/50">
         <div className="max-w-[1280px] mx-auto px-6 h-14 flex items-center justify-between">
           <button onClick={() => navigate('/')} className="flex items-center gap-2 font-body font-medium text-sm text-earth hover:text-deep-brown transition-colors">

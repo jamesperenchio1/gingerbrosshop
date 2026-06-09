@@ -99,7 +99,7 @@ export default function Shop() {
     unpasteurized: 1,
   });
   const [addedId, setAddedId] = useState<string | null>(null);
-  const [selectedInterval, setSelectedInterval] = useState<Record<string, number>>({});
+  const [_selectedInterval, _setSelectedInterval] = useState<Record<string, number>>({});
 
   useEffect(() => {
     const ctx = gsap.context(() => {

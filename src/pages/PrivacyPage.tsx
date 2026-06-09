@@ -1,10 +1,17 @@
 import { useNavigate } from 'react-router';
 import { ArrowLeft } from 'lucide-react';
+import SEO from '@/components/SEO';
 
 export default function PrivacyPage() {
   const navigate = useNavigate();
   return (
     <div className="min-h-screen bg-warm-white">
+      <SEO
+        title="Privacy Policy | GingerBros"
+        description="GingerBros privacy policy — how we collect, use, and protect your personal information when you shop at gingerbrosshop.com."
+        path="/privacy"
+        noindex
+      />
       <div className="sticky top-0 z-50 bg-warm-white/95 backdrop-blur-xl border-b border-soft-peach/50">
         <div className="max-w-[1280px] mx-auto px-6 h-14 flex items-center justify-between">
           <button onClick={() => navigate('/')} className="flex items-center gap-2 font-body font-medium text-sm text-earth hover:text-deep-brown transition-colors">
