@@ -7,14 +7,17 @@ const fromEmail = process.env.FROM_EMAIL ?? 'orders@gingerbrosshop.com';
 const resend = resendApiKey ? new Resend(resendApiKey) : null;
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
-  if (req.method !== 'POST') {
+  if (req.method !== 'POST' && req.method !== 'GET') {
     res.status(405).json({ error: 'Method not allowed' });
     return;
   }
 
-  // Simple auth: require a secret query param
   const secret = req.query.secret as string | undefined;
-  if (secret !== process.env.ADMIN_SECRET) {
+  const auth = req.headers.authorization;
+  const cronToken = process.env.CRON_SECRET;
+  const adminMatch = process.env.ADMIN_SECRET && secret === process.env.ADMIN_SECRET;
+  const cronMatch = cronToken && auth === `Bearer ${cronToken}`;
+  if (!adminMatch && !cronMatch) {
     res.status(401).json({ error: 'Unauthorized' });
     return;
   }

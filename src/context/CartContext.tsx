@@ -2,6 +2,8 @@ import { createContext, useContext, useReducer, useCallback, useEffect, type Rea
 import type { CartItem, CartState, CartAction } from '@/types/cart';
 
 
+const CART_EMAIL_KEY = 'gingerbros-cart-email';
+
 const initialState: CartState = {
   items: [],
   isOpen: false,
@@ -113,6 +115,10 @@ export function CartProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     const toStore = { items: state.items, isOpen: false };
     localStorage.setItem('gingerbros-cart', JSON.stringify(toStore));
+    const email = typeof window !== 'undefined' ? localStorage.getItem(CART_EMAIL_KEY) : null;
+    const subtotal = state.items.reduce((sum, item) => sum + item.price * item.quantity, 0);
+    const id = window.setTimeout(() => { snapshotCart(email, state.items, subtotal); }, 1500);
+    return () => window.clearTimeout(id);
   }, [state.items]);
 
   const addItem = useCallback((item: CartItem) => {
