@@ -47,8 +47,6 @@ export default function Footer() {
           <div>
             <span className="font-body font-semibold text-[11px] uppercase tracking-[0.08em] text-cream/50 mb-4 block">Shop</span>
             <ul className="space-y-3">
-              <li><a href="/product/pasteurized" onClick={link('/product/pasteurized')} className="font-body text-cream/70 text-[15px] hover:text-cream transition-colors">Pasteurized</a></li>
-              <li><a href="/product/pasteurized-6pack" onClick={link('/product/pasteurized-6pack')} className="font-body text-cream/70 text-[15px] hover:text-cream transition-colors">6-Pack Bundle</a></li>
               <li><a href="/product/unpasteurized" onClick={link('/product/unpasteurized')} className="font-body text-cream/70 text-[15px] hover:text-cream transition-colors">Unpasteurized</a></li>
               <li><a href="https://shopee.co.th/gingerbros" target="_blank" rel="noopener noreferrer" className="font-body text-cream/70 text-[15px] hover:text-cream transition-colors">Shopee Store</a></li>
               <li><a href="/wholesale" onClick={link('/wholesale')} className="font-body text-cream/70 text-[15px] hover:text-cream transition-colors">Wholesale</a></li>

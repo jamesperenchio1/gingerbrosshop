@@ -4,12 +4,10 @@ import Shop from '@/sections/Shop';
 import Story from '@/sections/Story';
 import Process from '@/sections/Process';
 import Benefits from '@/sections/Benefits';
-import Testimonials from '@/sections/Testimonials';
 import Newsletter from '@/components/Newsletter';
 import LineWidget from '@/components/LineWidget';
 import Footer from '@/sections/Footer';
 import CartDrawer from '@/sections/CartDrawer';
-import StickyCartBar from '@/sections/StickyCartBar';
 import SEO from '@/components/SEO';
 
 const organizationSchema = {
@@ -17,7 +15,7 @@ const organizationSchema = {
   '@type': 'Organization',
   name: 'GingerBros',
   url: 'https://gingerbrosshop.com',
-  logo: 'https://gingerbrosshop.com/images/product-pasteurized.png',
+  logo: 'https://gingerbrosshop.com/images/product-unpasteurized-2.jpg',
   sameAs: [
     'https://www.instagram.com/gingerbrosbeer',
     'https://www.facebook.com/gingerbrosbeer',
@@ -53,18 +51,6 @@ const productListSchema = {
     {
       '@type': 'ListItem',
       position: 1,
-      url: 'https://gingerbrosshop.com/product/pasteurized',
-      name: 'Pasteurized Ginger Beer',
-    },
-    {
-      '@type': 'ListItem',
-      position: 2,
-      url: 'https://gingerbrosshop.com/product/pasteurized-6pack',
-      name: '6-Pack Pasteurized Bundle',
-    },
-    {
-      '@type': 'ListItem',
-      position: 3,
       url: 'https://gingerbrosshop.com/product/unpasteurized',
       name: 'Unpasteurized Ginger Beer',
     },
@@ -76,7 +62,7 @@ export default function HomePage() {
     <div className="min-h-screen bg-warm-white">
       <SEO
         title="GingerBros — Naturally Brewed Craft Ginger Beer from Thailand"
-        description="7-day naturally fermented craft ginger beer brewed in Thailand. Low sugar, bold spice, good for the gut. Buy pasteurized or unpasteurized — nationwide delivery."
+        description="7-day naturally fermented craft ginger beer brewed in Thailand. Low sugar, bold spice, good for the gut. Buy unpasteurized — nationwide delivery."
         path="/"
         jsonLd={[organizationSchema, websiteSchema, productListSchema]}
       />
@@ -86,11 +72,9 @@ export default function HomePage() {
       <Story />
       <Process />
       <Benefits />
-      <Testimonials />
       <Newsletter />
       <Footer />
       <CartDrawer />
-      <StickyCartBar />
       <LineWidget />
     </div>
   );

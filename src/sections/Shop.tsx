@@ -57,7 +57,6 @@ export default function Shop() {
     unpasteurized: 1,
   });
   const [addedId, setAddedId] = useState<string | null>(null);
-  const [_selectedInterval, _setSelectedInterval] = useState<Record<string, number>>({});
 
   useEffect(() => {
     const ctx = gsap.context(() => {
@@ -102,10 +101,7 @@ export default function Shop() {
     setTimeout(() => setAddedId(null), 800);
   };
 
-  const getDetailLink = (product: ProductDef) => {
-    if (product.id === 'pasteurized-6pack') return '/product/pasteurized';
-    return `/product/${product.id}`;
-  };
+  const getDetailLink = (product: ProductDef) => `/product/${product.id}`;
 
   return (
     <section id="shop" ref={sectionRef} className="bg-warm-white py-[120px] md:py-[80px] max-md:py-[60px]">
@@ -236,30 +232,6 @@ export default function Shop() {
                     <span className="font-body font-medium text-[13px] text-earth">In Stock</span>
                   </div>
 
-                  {/* Cross-sell 6-pack on single bottle */}
-                  {product.id === 'pasteurized' && (
-                    <button
-                      onClick={() => navigate('/product/pasteurized-6pack')}
-                      className="mt-4 w-full bg-warm-gold/15 border border-warm-gold/30 rounded-xl p-3 flex items-center gap-3 hover:bg-warm-gold/25 transition-colors text-left"
-                    >
-                      <img
-                        src="/images/bundle-6pack.jpg"
-                        alt="6-Pack Bundle"
-                        className="w-12 h-12 rounded-lg object-cover flex-shrink-0"
-                      />
-                      <div className="flex-1 min-w-0">
-                        <span className="font-body font-semibold text-[12px] uppercase tracking-wider text-deep-brown block">
-                          Upgrade to 6-Pack
-                        </span>
-                        <span className="font-body text-[12px] text-earth">
-                          6 bottles for ฿650 — Save ฿70
-                        </span>
-                      </div>
-                      <span className="font-body font-semibold text-[12px] text-accent-green flex-shrink-0">
-                        Save
-                      </span>
-                    </button>
-                  )}
                 </>
               ) : (
                 <>

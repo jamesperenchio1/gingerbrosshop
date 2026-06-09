@@ -2,7 +2,7 @@ import { useState, useRef, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router';
 import gsap from 'gsap';
 import { useCart } from '@/context/CartContext';
-import { PlusIcon, MinusIcon, StarIcon } from '@/components/Icons';
+import { PlusIcon, MinusIcon } from '@/components/Icons';
 import SEO from '@/components/SEO';
 
 /* ──────────────────────── Icons ──────────────────────── */
@@ -35,6 +35,7 @@ interface ProductData {
   badge: string;
   badgeColor: string;
   images: string[];
+  video?: string;
   description: string;
   longDescription: string;
   ingredients: string[];
@@ -172,10 +173,10 @@ const PRODUCTS: Record<string, ProductData> = {
     badge: 'GRAB EXCLUSIVE',
     badgeColor: 'bg-grab-green',
     images: [
-      '/images/product-unpasteurized.png',
-      '/images/product-detail-1.jpg',
-      '/images/product-detail-2.jpg',
+      '/images/product-unpasteurized-2.jpg',
+      '/images/product-unpasteurized.jpg',
     ],
+    video: '/images/product-unpasteurized.mp4',
     description: 'Our unpasteurized ginger beer is the raw, living version — never heated, never filtered. Packed with active probiotic cultures and a bolder, more complex flavor. Must be kept refrigerated.',
     longDescription: 'The unpasteurized variant is ginger beer in its purest form. After 7 days of natural fermentation, we strain and bottle immediately — no heat treatment, no filtering, no intervention. This means every bottle contains billions of live, active probiotic cultures that continue to develop the flavor over time. The taste is bolder, more complex, and slightly more effervescent than the pasteurized version. Because it is a living product, it must be kept refrigerated and consumed within 30 days of bottling. The natural sediment you may see is normal — it is the live cultures and ginger particles that make this brew so special.',
     ingredients: ['Fresh Ginger', 'Filtered Water', 'Raw Cane Sugar', 'Live Cultures (Ginger Bug)'],
@@ -212,13 +213,6 @@ const PRODUCTS: Record<string, ProductData> = {
   },
 };
 
-/* ──────────────────────── Related Products ──────────────────────── */
-
-const RELATED = [
-  { id: 'pasteurized', name: 'Pasteurized — Single', price: 120, image: '/images/product-pasteurized.png', badge: 'POPULAR', badgeColor: 'bg-accent-green' },
-  { id: 'pasteurized-6pack', name: '6-Pack Bundle', price: 650, image: '/images/bundle-6pack.jpg', badge: 'SAVE ฿70', badgeColor: 'bg-amber' },
-  { id: 'unpasteurized', name: 'Unpasteurized', price: 140, image: '/images/product-unpasteurized.png', badge: 'GRAB ONLY', badgeColor: 'bg-grab-green' },
-];
 
 /* ──────────────────────── Page Component ──────────────────────── */
 
@@ -277,14 +271,6 @@ export default function ProductDetail() {
     });
     setAdded(true);
     setTimeout(() => setAdded(false), 800);
-  };
-
-  const handleRelatedClick = (relatedId: string) => {
-    if (relatedId === 'unpasteurized') {
-      navigate('/product/unpasteurized');
-    } else {
-      navigate(`/product/${relatedId}`);
-    }
   };
 
   const productJsonLd = {
@@ -346,13 +332,25 @@ export default function ProductDetail() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16">
           {/* Left: Image Gallery */}
           <div ref={heroRef} className="opacity-0 translate-y-[20px]">
-            {/* Main Image */}
+            {/* Main Media */}
             <div className="rounded-[20px] overflow-hidden bg-cream mb-4 h-[400px] md:h-[500px] flex items-center justify-center">
-              <img
-                src={product.images[activeImage]}
-                alt={product.name}
-                className="max-h-full max-w-full object-contain"
-              />
+              {product.video && activeImage === product.images.length ? (
+                <video
+                  src={product.video}
+                  controls
+                  autoPlay
+                  muted
+                  loop
+                  playsInline
+                  className="max-h-full max-w-full object-contain"
+                />
+              ) : (
+                <img
+                  src={product.images[activeImage]}
+                  alt={product.name}
+                  className="max-h-full max-w-full object-contain"
+                />
+              )}
             </div>
 
             {/* Thumbnails */}
@@ -368,6 +366,19 @@ export default function ProductDetail() {
                   <img src={img} alt="" className="w-full h-full object-cover" />
                 </button>
               ))}
+              {product.video && (
+                <button
+                  onClick={() => setActiveImage(product.images.length)}
+                  className={`flex-shrink-0 w-20 h-20 rounded-xl overflow-hidden border-2 transition-all relative ${
+                    activeImage === product.images.length ? 'border-amber' : 'border-transparent hover:border-soft-peach'
+                  }`}
+                >
+                  <video src={product.video} className="w-full h-full object-cover" muted />
+                  <div className="absolute inset-0 bg-deep-brown/40 flex items-center justify-center">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="white"><polygon points="5,3 19,12 5,21" /></svg>
+                  </div>
+                </button>
+              )}
             </div>
           </div>
 
@@ -387,16 +398,6 @@ export default function ProductDetail() {
             <p className="font-body text-earth text-[15px] leading-relaxed mb-5">
               {product.headline}
             </p>
-
-            {/* Rating */}
-            <div className="flex items-center gap-2 mb-6">
-              <div className="flex">
-                {[...Array(5)].map((_, i) => (
-                  <StarIcon key={i} className="text-amber w-4 h-4" filled />
-                ))}
-              </div>
-              <span className="font-body font-medium text-[13px] text-earth">4.9 (127 reviews)</span>
-            </div>
 
             {/* Price */}
             <div className="flex items-baseline gap-3 mb-8">
@@ -582,30 +583,6 @@ export default function ProductDetail() {
               </p>
             </div>
 
-            {/* Cross-sell: 6-Pack on single bottle page */}
-            {product.id === 'pasteurized' && (
-              <button
-                onClick={() => navigate('/product/pasteurized-6pack')}
-                className="w-full bg-cream border-2 border-amber/40 rounded-[16px] p-4 flex items-center gap-4 hover:border-amber hover:bg-amber/10 transition-all text-left"
-              >
-                <img
-                  src="/images/bundle-6pack.jpg"
-                  alt="6-Pack Bundle"
-                  className="w-16 h-16 rounded-xl object-cover flex-shrink-0"
-                />
-                <div className="flex-1 min-w-0">
-                  <span className="font-display font-semibold text-deep-brown text-[15px] block">
-                    6-Pack Bundle
-                  </span>
-                  <span className="font-body text-[13px] text-earth">
-                    6 bottles for ฿650 — Save ฿70 vs. buying singles
-                  </span>
-                </div>
-                <span className="font-body font-semibold text-sm text-accent-green flex-shrink-0 bg-accent-green/10 px-3 py-1 rounded-full">
-                  Save ฿70
-                </span>
-              </button>
-            )}
           </div>
         </div>
 
@@ -691,30 +668,6 @@ export default function ProductDetail() {
           </div>
         </div>
 
-        {/* Related Products */}
-        <div className="mt-20">
-          <h2 className="font-display font-semibold text-deep-brown text-2xl mb-8">
-            You Might Also Like
-          </h2>
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
-            {RELATED.filter((r) => r.id !== product.id).map((item) => (
-              <button
-                key={item.id}
-                onClick={() => handleRelatedClick(item.id)}
-                className="text-left bg-cream rounded-[20px] p-6 hover:shadow-lg transition-all duration-300 hover:scale-[1.01]"
-              >
-                <div className="h-[160px] flex items-center justify-center mb-4">
-                  <img src={item.image} alt={item.name} className="max-h-full max-w-full object-contain" />
-                </div>
-                <span className={`inline-block ${item.badgeColor} text-white font-body font-semibold text-[10px] uppercase tracking-wider px-2.5 py-1 rounded-full mb-2`}>
-                  {item.badge}
-                </span>
-                <h4 className="font-display font-semibold text-deep-brown text-[1rem] mb-1">{item.name}</h4>
-                <span className="font-display font-semibold text-rust">฿{item.price}</span>
-              </button>
-            ))}
-          </div>
-        </div>
       </div>
     </div>
   );
