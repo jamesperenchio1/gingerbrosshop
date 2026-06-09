@@ -1,10 +1,16 @@
 import { useNavigate } from 'react-router';
 import { ArrowLeft, Store, Truck, Percent, MessageCircle } from 'lucide-react';
+import SEO from '@/components/SEO';
 
 export default function WholesalePage() {
   const navigate = useNavigate();
   return (
     <div className="min-h-screen bg-warm-white">
+      <SEO
+        title="Wholesale Craft Ginger Beer Thailand — Bulk Pricing for Cafes & Restaurants | GingerBros"
+        description="GingerBros wholesale program: competitive bulk pricing on naturally fermented ginger beer for cafes, restaurants, and retailers across Thailand. Minimum order 24 bottles."
+        path="/wholesale"
+      />
       <div className="sticky top-0 z-50 bg-warm-white/95 backdrop-blur-xl border-b border-soft-peach/50">
         <div className="max-w-[1280px] mx-auto px-6 h-14 flex items-center justify-between">
           <button onClick={() => navigate('/')} className="flex items-center gap-2 font-body font-medium text-sm text-earth hover:text-deep-brown transition-colors">

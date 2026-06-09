@@ -1,0 +1,13 @@
+User-agent: *
+Allow: /
+
+# Block admin and private pages
+Disallow: /admin/
+Disallow: /order/success
+Disallow: /track
+
+# Block query strings with session/checkout params
+Disallow: /*?*session_id=
+Disallow: /*?*payment_intent=
+
+Sitemap: https://gingerbrosshop.com/sitemap.xml

@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router';
 import { ArrowLeft, Clock, ChefHat, Heart } from 'lucide-react';
+import SEO from '@/components/SEO';
 
 const POSTS = [
   {
@@ -65,8 +66,55 @@ export default function BlogPage() {
   const [activeSlug, setActiveSlug] = useState<string | null>(null);
   const activePost = POSTS.find((p) => p.slug === activeSlug);
 
+  const blogListSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'Blog',
+    name: 'The GingerBros Brew Blog',
+    url: 'https://gingerbrosshop.com/blog',
+    description: 'Recipes, gut health tips, and craft brewing stories from GingerBros Thailand.',
+    blogPost: POSTS.map((p) => ({
+      '@type': 'BlogPosting',
+      headline: p.title,
+      description: p.excerpt,
+      url: `https://gingerbrosshop.com/blog#${p.slug}`,
+    })),
+  };
+
+  const activePostSchema = activePost
+    ? {
+        '@context': 'https://schema.org',
+        '@type': 'BlogPosting',
+        headline: activePost.title,
+        description: activePost.excerpt,
+        articleBody: activePost.content,
+        url: `https://gingerbrosshop.com/blog#${activePost.slug}`,
+        author: { '@type': 'Organization', name: 'GingerBros' },
+        publisher: {
+          '@type': 'Organization',
+          name: 'GingerBros',
+          logo: { '@type': 'ImageObject', url: 'https://gingerbrosshop.com/images/product-pasteurized.png' },
+        },
+      }
+    : null;
+
   return (
     <div className="min-h-screen bg-warm-white">
+      {activePost ? (
+        <SEO
+          title={`${activePost.title} — GingerBros Blog`}
+          description={activePost.excerpt}
+          path="/blog"
+          type="article"
+          jsonLd={activePostSchema ? [activePostSchema] : undefined}
+        />
+      ) : (
+        <SEO
+          title="The Brew Blog — Ginger Beer Recipes, Gut Health & Brewing Tips | GingerBros"
+          description="Explore GingerBros blog for Moscow Mule recipes, probiotic gut health guides, and behind-the-scenes craft ginger beer brewing stories from Thailand."
+          path="/blog"
+          jsonLd={[blogListSchema]}
+        />
+      )}
       <div className="sticky top-0 z-50 bg-warm-white/95 backdrop-blur-xl border-b border-soft-peach/50">
         <div className="max-w-[1280px] mx-auto px-6 h-14 flex items-center justify-between">
           <button onClick={() => navigate('/')} className="flex items-center gap-2 font-body font-medium text-sm text-earth hover:text-deep-brown transition-colors">
