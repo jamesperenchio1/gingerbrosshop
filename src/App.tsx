@@ -1,4 +1,5 @@
 import { Routes, Route } from 'react-router';
+import { Analytics } from '@vercel/analytics/react';
 import { CartProvider } from '@/context/CartContext';
 import { I18nProvider } from '@/context/I18nContext';
 import { useLenis } from '@/hooks/useLenis';
@@ -43,6 +44,7 @@ export default function App() {
     <I18nProvider>
       <CartProvider>
         <AppContent />
+        <Analytics />
       </CartProvider>
     </I18nProvider>
   );
