@@ -4,6 +4,15 @@ import type { CartItem, CartState, CartAction } from '@/types/cart';
 
 const CART_EMAIL_KEY = 'gingerbros-cart-email';
 
+function snapshotCart(email: string | null, items: CartItem[], subtotal: number) {
+  if (!email || items.length === 0) return;
+  fetch('/api/save-cart', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email, items, subtotal, url: window.location.href }),
+  }).catch(() => {});
+}
+
 const initialState: CartState = {
   items: [],
   isOpen: false,
