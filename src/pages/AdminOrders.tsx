@@ -45,7 +45,7 @@ export default function AdminOrders() {
   const loadOrders = () => {
     setLoading(true);
     setError('');
-    fetch('/api/admin/orders', {
+    fetch('/api/admin', {
       headers: { Authorization: `Bearer ${token}` },
     })
       .then(async (res) => {
@@ -69,7 +69,7 @@ export default function AdminOrders() {
     if (!trackingInput.trim()) return;
     setSaving(true);
     try {
-      const res = await fetch('/api/admin/update-tracking', {
+      const res = await fetch('/api/admin', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
