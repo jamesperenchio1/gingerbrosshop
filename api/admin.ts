@@ -1,5 +1,5 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
-import { getOrders, updateTracking } from './_lib/orders';
+import { getOrders, updateTracking } from './_lib/orders.js';
 
 function isAuthorized(req: VercelRequest): boolean {
   const auth = req.headers.authorization;

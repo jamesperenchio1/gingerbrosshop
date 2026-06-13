@@ -1,6 +1,6 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { Resend } from 'resend';
-import { getAllAbandonedCarts, markCartRecovered } from './_lib/carts';
+import { getAllAbandonedCarts, markCartRecovered } from './_lib/carts.js';
 
 const resendApiKey = process.env.RESEND_API_KEY;
 const fromEmail = process.env.FROM_EMAIL ?? 'orders@gingerbrosshop.com';

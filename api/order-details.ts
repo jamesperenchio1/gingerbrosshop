@@ -1,6 +1,6 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import Stripe from 'stripe';
-import { getOrderBySessionId } from './_lib/orders';
+import { getOrderBySessionId } from './_lib/orders.js';
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (req.method !== 'GET') {
@@ -41,13 +41,14 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       unitAmount: li.price?.unit_amount ?? 0,
     }));
 
+    const sd = (session as Stripe.Checkout.Session & { shipping_details?: { name?: string | null; address?: Stripe.Address | null } | null }).shipping_details;
     res.status(200).json({
       sessionId: session.id,
       customerEmail: session.customer_details?.email ?? null,
       customerName: session.customer_details?.name ?? null,
       customerPhone: session.customer_details?.phone ?? null,
-      shippingAddress: session.shipping_details?.address ?? null,
-      shippingName: session.shipping_details?.name ?? null,
+      shippingAddress: sd?.address ?? null,
+      shippingName: sd?.name ?? null,
       amountTotal: session.amount_total,
       currency: session.currency?.toUpperCase() ?? 'THB',
       status: session.payment_status,

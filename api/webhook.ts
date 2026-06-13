@@ -1,7 +1,7 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import Stripe from 'stripe';
 import { Resend } from 'resend';
-import { saveOrder } from './_lib/orders';
+import { saveOrder } from './_lib/orders.js';
 
 const stripeSecret = process.env.STRIPE_SECRET_KEY;
 const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
@@ -51,7 +51,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   }
 
   if (event.type === 'checkout.session.completed') {
-    const session = event.data.object as Stripe.Checkout.Session;
+    const session = event.data.object as Stripe.Checkout.Session & { shipping_details?: { name?: string | null; address?: Stripe.Address | null } | null };
 
     // Expand line items for the email
     let lineItems: Stripe.LineItem[] = [];
@@ -76,7 +76,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       customerEmail: session.customer_details?.email ?? null,
       customerName: session.customer_details?.name ?? null,
       customerPhone: session.customer_details?.phone ?? null,
-      shippingAddress: (session.shipping_details?.address as Record<string, unknown>) ?? null,
+      shippingAddress: (session.shipping_details?.address as unknown as Record<string, unknown> | undefined) ?? null,
       items: lineItems.map((li) => ({
         id: li.price?.product?.toString() ?? li.id,
         description: li.description ?? 'Item',
@@ -146,7 +146,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     // Record referral if code was used
     if (referralCode && order.customerEmail) {
       try {
-        const { getReferralOwner, recordReferralUsage, addPoints } = await import('./lib/referrals');
+        const { getReferralOwner, recordReferralUsage, addPoints } = await import('./_lib/referrals.js');
         const owner = await getReferralOwner(referralCode);
         if (owner && owner !== order.customerEmail.toLowerCase()) {
           await recordReferralUsage(referralCode, order.customerEmail);
@@ -162,7 +162,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   res.status(200).json({ received: true });
 }
 
-function sellerNotificationHtml(session: Stripe.Checkout.Session, items: Stripe.LineItem[]) {
+type SessionWithShipping = Stripe.Checkout.Session & { shipping_details?: { name?: string | null; address?: Stripe.Address | null } | null };
+
+function sellerNotificationHtml(session: SessionWithShipping, items: Stripe.LineItem[]) {
   const orderId = session.id.slice(-8).toUpperCase();
   const total = ((session.amount_total ?? 0) / 100).toLocaleString();
   const isSub = session.mode === 'subscription';
@@ -198,7 +200,7 @@ function sellerNotificationHtml(session: Stripe.Checkout.Session, items: Stripe.
   </div>`;
 }
 
-function giftEmailHtml(session: Stripe.Checkout.Session, items: Stripe.LineItem[], recipientName: string | null, message: string | null, senderName: string) {
+function giftEmailHtml(session: SessionWithShipping, items: Stripe.LineItem[], recipientName: string | null, message: string | null, senderName: string) {
   const orderId = session.id.slice(-8).toUpperCase();
   const total = ((session.amount_total ?? 0) / 100).toLocaleString();
   const itemRows = items
@@ -223,7 +225,7 @@ function giftEmailHtml(session: Stripe.Checkout.Session, items: Stripe.LineItem[
   </div>`;
 }
 
-function customerInvoiceHtml(session: Stripe.Checkout.Session, items: Stripe.LineItem[]) {
+function customerInvoiceHtml(session: SessionWithShipping, items: Stripe.LineItem[]) {
   const orderId = session.id.slice(-8).toUpperCase();
   const total = ((session.amount_total ?? 0) / 100).toLocaleString();
   const isSub = session.mode === 'subscription';
