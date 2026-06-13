@@ -1,5 +1,5 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
-import { getOrCreateReferralCode, getPoints, getReferralCount } from './lib/referrals';
+import { getOrCreateReferralCode, getPoints, getReferralCount } from './_lib/referrals';
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (req.method !== 'GET') {
