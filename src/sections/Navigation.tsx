@@ -4,17 +4,17 @@ import { useI18n } from '@/context/I18nContext';
 import { CartIcon, MenuIcon, CloseIcon } from '@/components/Icons';
 
 const navLinks = [
-  { label: 'shop', href: '#shop' },
-  { label: 'story', href: '#story' },
-  { label: 'process', href: '#process' },
-  { label: 'benefits', href: '#benefits' },
+  { label: 'Shop', href: '#shop' },
+  { label: 'Story', href: '#story' },
+  { label: 'Process', href: '#process' },
+  { label: 'Benefits', href: '#benefits' },
 ];
 
 export default function Navigation() {
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const { toggleCart, totalItems } = useCart();
-  const { t, locale, toggleLocale } = useI18n();
+  const { t } = useI18n();
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 60);
@@ -61,16 +61,10 @@ export default function Navigation() {
               onClick={(e) => handleNavClick(e, link.href)}
               className="font-body font-medium text-sm uppercase tracking-[0.08em] text-earth hover:text-deep-brown relative group transition-colors duration-200"
             >
-              {t(link.label)}
+              {link.label}
               <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-rust transition-all duration-300 group-hover:w-full" />
             </a>
           ))}
-          <button
-            onClick={toggleLocale}
-            className="font-body font-medium text-sm uppercase tracking-[0.08em] text-rust hover:text-deep-brown transition-colors"
-          >
-            {locale === 'en' ? 'TH' : 'EN'}
-          </button>
         </div>
 
         {/* Right side */}
@@ -112,15 +106,10 @@ export default function Navigation() {
                 onClick={(e) => handleNavClick(e, link.href)}
                 className="font-body font-medium text-sm uppercase tracking-[0.08em] text-earth hover:text-deep-brown transition-colors"
               >
-                {t(link.label)}
+                {link.label}
               </a>
             ))}
-            <button
-              onClick={() => { toggleLocale(); setMobileOpen(false); }}
-              className="font-body font-medium text-sm uppercase tracking-[0.08em] text-rust hover:text-deep-brown transition-colors text-left"
-            >
-              {locale === 'en' ? 'Switch to Thai' : 'Switch to English'}
-            </button>
+
           </div>
         </div>
       )}

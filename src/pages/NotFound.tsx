@@ -1,10 +1,17 @@
 import { useNavigate } from 'react-router';
 import { Home } from 'lucide-react';
+import SEO from '@/components/SEO';
 
 export default function NotFound() {
   const navigate = useNavigate();
   return (
     <div className="min-h-screen bg-warm-white flex items-center justify-center px-6">
+      <SEO
+        title="Page Not Found — GingerBros"
+        description="Sorry, we couldn't find the page you were looking for. Browse our craft ginger beer collection or return to the homepage."
+        path=""
+        noindex
+      />
       <div className="text-center max-w-md">
         <h1 className="font-display font-bold text-deep-brown text-6xl mb-4">404</h1>
         <p className="font-body text-earth text-lg mb-2">Page not found</p>

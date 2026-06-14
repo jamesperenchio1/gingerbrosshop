@@ -1,19 +1,34 @@
 import { useState } from 'react';
-import { Mail, CheckCircle } from 'lucide-react';
+import { Mail, CheckCircle, AlertCircle } from 'lucide-react';
 
 export default function Newsletter() {
   const [email, setEmail] = useState('');
   const [subscribed, setSubscribed] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!email.trim()) return;
     setLoading(true);
-    // In production, send to your email service (Resend, Mailchimp, etc.)
-    await new Promise((r) => setTimeout(r, 800));
-    setSubscribed(true);
-    setLoading(false);
+    setError('');
+
+    try {
+      const res = await fetch('/api/subscribe', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: email.trim() }),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        throw new Error(data.error ?? 'Something went wrong. Please try again.');
+      }
+      setSubscribed(true);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to subscribe');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -44,9 +59,15 @@ export default function Newsletter() {
               disabled={loading}
               className="bg-deep-brown text-cream font-body font-medium px-6 py-3 rounded-full hover:bg-rust transition-colors disabled:opacity-60"
             >
-              {loading ? '...' : 'Subscribe'}
+              {loading ? 'Subscribing…' : 'Subscribe'}
             </button>
           </form>
+        )}
+        {error && (
+          <div className="flex items-center justify-center gap-2 text-rust mt-4">
+            <AlertCircle className="w-4 h-4" />
+            <span className="font-body text-sm">{error}</span>
+          </div>
         )}
       </div>
     </section>

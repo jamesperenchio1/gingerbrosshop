@@ -1,7 +1,7 @@
 export interface CartItem {
   id: string;
   name: string;
-  variant: 'pasteurized' | 'unpasteurized';
+  variant: 'unpasteurized';
   price: number;
   quantity: number;
   image: string;

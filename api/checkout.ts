@@ -1,19 +1,9 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import Stripe from 'stripe';
+import { rateLimit, getClientIp } from './_lib/rateLimit.js';
 
 const PRICE_IDS: Record<string, string> = {
-  // One-time
-  pasteurized: process.env.STRIPE_PRICE_PASTEURIZED ?? '',
-  'pasteurized-6pack': process.env.STRIPE_PRICE_PASTEURIZED_6PACK ?? '',
   unpasteurized: process.env.STRIPE_PRICE_UNPASTEURIZED ?? '',
-  // Subscriptions — pasteurized single
-  'pasteurized-sub-week': process.env.STRIPE_PRICE_PASTEURIZED_SUB_WEEK ?? '',
-  'pasteurized-sub-2week': process.env.STRIPE_PRICE_PASTEURIZED_SUB_2WEEK ?? '',
-  'pasteurized-sub-month': process.env.STRIPE_PRICE_PASTEURIZED_SUB_MONTH ?? '',
-  // Subscriptions — 6-pack
-  'pasteurized-6pack-sub-week': process.env.STRIPE_PRICE_PASTEURIZED_6PACK_SUB_WEEK ?? '',
-  'pasteurized-6pack-sub-2week': process.env.STRIPE_PRICE_PASTEURIZED_6PACK_SUB_2WEEK ?? '',
-  'pasteurized-6pack-sub-month': process.env.STRIPE_PRICE_PASTEURIZED_6PACK_SUB_MONTH ?? '',
 };
 
 interface CheckoutLine {
@@ -24,6 +14,12 @@ interface CheckoutLine {
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (req.method !== 'POST') {
     res.status(405).json({ error: 'Method not allowed' });
+    return;
+  }
+
+  const { allowed } = await rateLimit({ key: `checkout:${getClientIp(req)}`, limit: 10, windowSeconds: 60 });
+  if (!allowed) {
+    res.status(429).json({ error: 'Too many requests. Please try again in a minute.' });
     return;
   }
 

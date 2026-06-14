@@ -1,9 +1,10 @@
 import { useState, useRef, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router';
+import { useParams } from 'react-router';
 import gsap from 'gsap';
 import { useCart } from '@/context/CartContext';
 import { PlusIcon, MinusIcon } from '@/components/Icons';
 import SEO from '@/components/SEO';
+import NotFound from '@/pages/NotFound';
 
 /* ──────────────────────── Icons ──────────────────────── */
 
@@ -31,7 +32,6 @@ interface ProductData {
   name: string;
   headline: string;
   price: number;
-  originalPrice?: number;
   badge: string;
   badgeColor: string;
   images: string[];
@@ -42,135 +42,15 @@ interface ProductData {
   specs: { label: string; value: string }[];
   nutrition: { label: string; value: string }[];
   features: string[];
-  addable: boolean;
-  variant: 'pasteurized' | 'unpasteurized';
-  isBundle?: boolean;
-  bundleSize?: number;
-  subscription?: {
-    options: Array<{
-      id: string;
-      price: number;
-      interval: string;
-      intervalLabel: string;
-      savingsLabel: string;
-    }>;
-  };
 }
 
 const PRODUCTS: Record<string, ProductData> = {
-  pasteurized: {
-    id: 'pasteurized',
-    name: 'Pasteurized Ginger Beer',
-    headline: 'Our signature craft ginger beer — spicy, refreshing, and shelf-stable.',
-    price: 120,
-    badge: 'AVAILABLE EVERYWHERE',
-    badgeColor: 'bg-accent-green',
-    images: [
-      '/images/product-pasteurized.png',
-      '/images/product-detail-1.jpg',
-      '/images/product-detail-2.jpg',
-      '/images/product-detail-3.jpg',
-    ],
-    description: 'The original GingerBros pasteurized ginger beer. Naturally brewed over 7 days, then gently pasteurized to lock in the flavor and extend shelf life without preservatives. Same bold ginger taste, longer lasting. Perfect for home, bars, and restaurants.',
-    longDescription: 'Every bottle starts with fresh Thai ginger, grated by hand and combined with filtered water, raw cane sugar, and our proprietary ginger bug (a symbiotic culture of wild yeast and beneficial bacteria). Over 7 days of natural fermentation, the brew develops its signature effervescence, complex flavor profile, and beneficial compounds from ginger. After fermentation, we gently pasteurize the brew to halt fermentation while preserving the taste, then bottle it immediately to capture the carbonation. The result is a ginger beer that stays fresh for months without refrigeration — while still delivering that authentic, fiery ginger kick you expect from a craft brew.',
-    ingredients: ['Fresh Ginger', 'Filtered Water', 'Raw Cane Sugar', 'Live Cultures (Ginger Bug)'],
-    specs: [
-      { label: 'Volume', value: '330ml per bottle' },
-      { label: 'Shelf Life', value: '6 months from bottling date' },
-      { label: 'Storage', value: 'Cool, dry place. Refrigerate after opening.' },
-      { label: 'Serving Temp', value: 'Chilled (4-6°C)' },
-      { label: 'Fermentation', value: '7 days natural ferment' },
-      { label: 'Pasteurized', value: 'Yes — gently heat-treated' },
-      { label: 'Origin', value: 'Brewed and bottled in Thailand' },
-      { label: 'Dietary', value: 'Vegan, Gluten-Free, No Artificial Additives' },
-    ],
-    nutrition: [
-      { label: 'Serving Size', value: '330ml' },
-      { label: 'Energy', value: '95 kcal' },
-      { label: 'Total Carbohydrates', value: '22g' },
-      { label: '— Sugars', value: '18g' },
-      { label: 'Sodium', value: '5mg' },
-      { label: 'Vitamin B6', value: '0.3mg (18% DV)' },
-      { label: 'Vitamin B12', value: '0.5mcg (21% DV)' },
-      { label: 'Ginger Compounds', value: 'Naturally present' },
-    ],
-    features: [
-      '7-day natural fermentation for complex flavor',
-      'Ginger provides natural prebiotic compounds',
-      'Low sugar compared to commercial sodas',
-      'Naturally carbonated — no forced CO2',
-      'Shelf-stable for 6 months without refrigeration',
-      'Made with fresh Thai ginger — not extract',
-    ],
-    addable: true,
-    variant: 'pasteurized',
-    subscription: {
-      options: [
-        { id: 'pasteurized-sub-week', price: 114, interval: 'week', intervalLabel: 'weekly', savingsLabel: 'Save 5%' },
-        { id: 'pasteurized-sub-2week', price: 110, interval: 'week', intervalLabel: 'every 2 weeks', savingsLabel: 'Save 8%' },
-        { id: 'pasteurized-sub-month', price: 108, interval: 'month', intervalLabel: 'monthly', savingsLabel: 'Save 10%' },
-      ],
-    },
-  },
-  'pasteurized-6pack': {
-    id: 'pasteurized-6pack',
-    name: '6-Pack Pasteurized Bundle',
-    headline: 'Stock up and save. Six bottles of craft ginger beer at a better price.',
-    price: 650,
-    originalPrice: 720,
-    badge: 'BEST VALUE — SAVE ฿70',
-    badgeColor: 'bg-amber',
-    images: [
-      '/images/bundle-6pack.jpg',
-      '/images/product-pasteurized.png',
-      '/images/product-detail-3.jpg',
-    ],
-    description: 'Six bottles of our signature pasteurized ginger beer in one convenient bundle. Perfect for gatherings, weekly stocking, or gifting to fellow ginger beer lovers.',
-    longDescription: 'Our 6-pack bundle gives you six 330ml bottles of our pasteurized ginger beer at a discounted price. Each bottle is individually capped and labeled, making them easy to share or store. Whether you are hosting a dinner party, stocking your fridge for the week, or sending a gift to a craft beverage enthusiast, this bundle offers the best value per bottle. The pasteurized variant means you can store these at room temperature for up to 6 months — no rush to finish them.',
-    ingredients: ['Fresh Ginger', 'Filtered Water', 'Raw Cane Sugar', 'Live Cultures (Ginger Bug)'],
-    specs: [
-      { label: 'Contents', value: '6 x 330ml bottles' },
-      { label: 'Total Volume', value: '1,980ml' },
-      { label: 'Shelf Life', value: '6 months from bottling date' },
-      { label: 'Storage', value: 'Cool, dry place' },
-      { label: 'Packaging', value: 'Recyclable cardboard carrier' },
-      { label: 'Savings', value: '฿70 off individual pricing' },
-      { label: 'Origin', value: 'Brewed and bottled in Thailand' },
-      { label: 'Dietary', value: 'Vegan, Gluten-Free' },
-    ],
-    nutrition: [
-      { label: 'Serving Size', value: '330ml (per bottle)' },
-      { label: 'Servings Per Bundle', value: '6' },
-      { label: 'Energy (per bottle)', value: '95 kcal' },
-      { label: 'Total Sugars (per bottle)', value: '18g' },
-      { label: 'Probiotic Cultures', value: 'Present' },
-    ],
-    features: [
-      'Save ฿70 compared to buying individually',
-      'Perfect for parties, events, or weekly fridge stocking',
-      'Individually sealed — share or save for later',
-      'Shelf-stable for 6 months',
-      'Eco-friendly recyclable packaging',
-      'Includes free shipping within Thailand',
-    ],
-    addable: true,
-    variant: 'pasteurized',
-    isBundle: true,
-    bundleSize: 6,
-    subscription: {
-      options: [
-        { id: 'pasteurized-6pack-sub-week', price: 618, interval: 'week', intervalLabel: 'weekly', savingsLabel: 'Save ฿32/wk' },
-        { id: 'pasteurized-6pack-sub-2week', price: 598, interval: 'week', intervalLabel: 'every 2 weeks', savingsLabel: 'Save ฿52/2wk' },
-        { id: 'pasteurized-6pack-sub-month', price: 585, interval: 'month', intervalLabel: 'monthly', savingsLabel: 'Save ฿65/mo' },
-      ],
-    },
-  },
   unpasteurized: {
     id: 'unpasteurized',
     name: 'Unpasteurized Ginger Beer',
     headline: 'Raw, living ginger beer with active cultures. Maximum probiotics, maximum flavor.',
     price: 140,
-    badge: 'GRAB EXCLUSIVE',
+    badge: 'CHILLED DELIVERY',
     badgeColor: 'bg-grab-green',
     images: [
       '/images/product-unpasteurized-2.jpg',
@@ -178,7 +58,7 @@ const PRODUCTS: Record<string, ProductData> = {
     ],
     video: '/images/product-unpasteurized.mp4',
     description: 'Our unpasteurized ginger beer is the raw, living version — never heated, never filtered. Packed with active probiotic cultures and a bolder, more complex flavor. Must be kept refrigerated.',
-    longDescription: 'The unpasteurized variant is ginger beer in its purest form. After 7 days of natural fermentation, we strain and bottle immediately — no heat treatment, no filtering, no intervention. This means every bottle contains billions of live, active probiotic cultures that continue to develop the flavor over time. The taste is bolder, more complex, and slightly more effervescent than the pasteurized version. Because it is a living product, it must be kept refrigerated and consumed within 30 days of bottling. The natural sediment you may see is normal — it is the live cultures and ginger particles that make this brew so special.',
+    longDescription: 'Our unpasteurized ginger beer is ginger beer in its purest form. After 7 days of natural fermentation, we strain and bottle immediately — no heat treatment, no filtering, no intervention. This means every bottle contains billions of live, active probiotic cultures that continue to develop the flavor over time. The taste is bold, complex, and naturally effervescent. Because it is a living product, it must be kept refrigerated and consumed within 30 days of bottling. The natural sediment you may see is normal — it is the live cultures and ginger particles that make this brew so special.',
     ingredients: ['Fresh Ginger', 'Filtered Water', 'Raw Cane Sugar', 'Live Cultures (Ginger Bug)'],
     specs: [
       { label: 'Volume', value: '330ml per bottle' },
@@ -203,13 +83,11 @@ const PRODUCTS: Record<string, ProductData> = {
     features: [
       'Raw and unpasteurized — maximum probiotic content',
       'Living cultures continue to develop flavor in the bottle',
-      'Bolder, more complex taste than pasteurized version',
+      'Bold, complex, naturally effervescent flavour',
       'Billions of active CFUs per serving',
       'Natural sediment is normal and healthy',
       'Best consumed within 30 days for peak freshness',
     ],
-    addable: false,
-    variant: 'unpasteurized',
   },
 };
 
@@ -218,10 +96,13 @@ const PRODUCTS: Record<string, ProductData> = {
 
 export default function ProductDetail() {
   const { id } = useParams<{ id: string }>();
-  const navigate = useNavigate();
   const { addItem } = useCart();
 
-  const product = PRODUCTS[id ?? ''] ?? PRODUCTS['pasteurized'];
+  const product = PRODUCTS[id ?? ''];
+  if (!product) {
+    return <NotFound />;
+  }
+
   const [activeImage, setActiveImage] = useState(0);
   const [quantity, setQuantity] = useState(1);
   const [added, setAdded] = useState(false);
@@ -244,26 +125,21 @@ export default function ProductDetail() {
     return () => ctx.revert();
   }, [id]);
 
-  const [subIndex, setSubIndex] = useState<number | null>(null);
   const [isGift, setIsGift] = useState(false);
   const [giftEmail, setGiftEmail] = useState('');
   const [giftName, setGiftName] = useState('');
   const [giftMessage, setGiftMessage] = useState('');
 
   const handleAdd = () => {
-    if (!product.addable) return;
-    const sub = subIndex !== null && product.subscription ? product.subscription.options[subIndex] : undefined;
     addItem({
-      id: sub ? sub.id : product.id,
-      name: sub ? `${product.name} (${sub.intervalLabel})` : product.name,
-      variant: product.variant,
-      price: sub ? sub.price : product.price,
+      id: product.id,
+      name: product.name,
+      variant: 'unpasteurized',
+      price: product.price,
       quantity,
       image: product.images[0],
-      badge: sub ? 'SUBSCRIPTION' : product.badge,
-      badgeColor: sub ? 'bg-rust' : product.badgeColor,
-      isSubscription: !!sub,
-      interval: sub ? sub.intervalLabel : undefined,
+      badge: product.badge,
+      badgeColor: product.badgeColor,
       isGift,
       recipientEmail: isGift ? giftEmail : undefined,
       recipientName: isGift ? giftName : undefined,
@@ -286,9 +162,7 @@ export default function ProductDetail() {
       url: `https://gingerbrosshop.com/product/${product.id}`,
       priceCurrency: 'THB',
       price: product.price,
-      availability: product.addable
-        ? 'https://schema.org/InStock'
-        : 'https://schema.org/PreOrder',
+      availability: 'https://schema.org/InStock',
       seller: { '@type': 'Organization', name: 'GingerBros' },
     },
   };
@@ -315,13 +189,13 @@ export default function ProductDetail() {
       {/* Top Bar */}
       <div className="sticky top-0 z-50 bg-warm-white/95 backdrop-blur-xl border-b border-soft-peach/50">
         <div className="max-w-[1280px] mx-auto px-6 h-14 flex items-center justify-between">
-          <button
-            onClick={() => navigate('/')}
+          <a
+            href="/"
             className="flex items-center gap-2 font-body font-medium text-sm text-earth hover:text-deep-brown transition-colors"
           >
             <ArrowLeftIcon2 />
             Back to Shop
-          </button>
+          </a>
           <span className="font-display font-bold text-lg text-deep-brown">GingerBros</span>
           <div className="w-20" />
         </div>
@@ -404,16 +278,6 @@ export default function ProductDetail() {
               <span className="font-display font-semibold text-deep-brown text-3xl">
                 ฿{product.price}
               </span>
-              {product.originalPrice && (
-                <span className="font-body font-medium text-[15px] text-earth/50 line-through">
-                  ฿{product.originalPrice}
-                </span>
-              )}
-              {product.isBundle && (
-                <span className="font-body font-semibold text-[13px] text-accent-green">
-                  Save ฿{product.originalPrice! - product.price}
-                </span>
-              )}
             </div>
 
             {/* Description */}
@@ -422,146 +286,76 @@ export default function ProductDetail() {
             </p>
 
             {/* Quantity + Add to Cart */}
-            {product.addable ? (
-              <div className="mb-8">
-                {product.subscription && (
-                  <div className="mb-4">
-                    <p className="font-body font-semibold text-[12px] uppercase tracking-wider text-deep-brown mb-2">
-                      Delivery Frequency
-                    </p>
-                    <div className="flex flex-wrap gap-2">
-                      <button
-                        onClick={() => setSubIndex(null)}
-                        className={`font-body font-medium text-[13px] px-4 py-2 rounded-full transition-all border ${
-                          subIndex === null
-                            ? 'bg-deep-brown text-cream border-deep-brown'
-                            : 'bg-cream text-earth border-soft-peach hover:border-deep-brown'
-                        }`}
-                      >
-                        One-time — ฿{product.price}
-                      </button>
-                      {product.subscription.options.map((opt, idx) => (
-                        <button
-                          key={opt.id}
-                          onClick={() => setSubIndex(idx)}
-                          className={`font-body font-medium text-[13px] px-4 py-2 rounded-full transition-all border ${
-                            subIndex === idx
-                              ? 'bg-deep-brown text-cream border-deep-brown'
-                              : 'bg-cream text-earth border-soft-peach hover:border-deep-brown'
-                          }`}
-                        >
-                          {opt.intervalLabel} — ฿{opt.price}
-                          <span className="ml-1.5 text-[11px] text-accent-green">{opt.savingsLabel}</span>
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-                )}
-
-                <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
-                  <div className="flex items-center gap-4 border-2 border-soft-peach rounded-full py-2.5 px-5">
-                    <button
-                      onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                      className="text-earth hover:text-deep-brown transition-colors"
-                    >
-                      <MinusIcon />
-                    </button>
-                    <span className="font-body font-medium text-earth min-w-[24px] text-center">
-                      {quantity}
-                    </span>
-                    <button
-                      onClick={() => setQuantity(Math.min(24, quantity + 1))}
-                      className="text-earth hover:text-deep-brown transition-colors"
-                    >
-                      <PlusIcon />
-                    </button>
-                  </div>
-
+            <div className="mb-8">
+              <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
+                <div className="flex items-center gap-4 border-2 border-soft-peach rounded-full py-2.5 px-5">
                   <button
-                    onClick={handleAdd}
-                    className={`font-body font-medium text-sm uppercase tracking-[0.08em] px-10 py-3.5 rounded-full transition-all duration-200 active:scale-[0.98] ${
-                      added
-                        ? 'bg-accent-green text-white'
-                        : subIndex !== null
-                        ? 'bg-deep-brown text-cream hover:bg-rust'
-                        : 'bg-amber text-deep-brown hover:bg-warm-gold'
-                    }`}
+                    onClick={() => setQuantity(Math.max(1, quantity - 1))}
+                    className="text-earth hover:text-deep-brown transition-colors"
                   >
-                    {added
-                      ? 'Added to Cart!'
-                      : subIndex !== null && product.subscription
-                      ? `Subscribe — ฿${product.subscription.options[subIndex].price * quantity}/${product.subscription.options[subIndex].intervalLabel}`
-                      : `Add to Cart — ฿${product.price * quantity}`}
+                    <MinusIcon />
+                  </button>
+                  <span className="font-body font-medium text-earth min-w-[24px] text-center">
+                    {quantity}
+                  </span>
+                  <button
+                    onClick={() => setQuantity(Math.min(24, quantity + 1))}
+                    className="text-earth hover:text-deep-brown transition-colors"
+                  >
+                    <PlusIcon />
                   </button>
                 </div>
 
-                {subIndex !== null && product.subscription && (
-                  <p className="font-body text-[13px] text-accent-green mt-2">
-                    {product.subscription.options[subIndex].savingsLabel} — billed {product.subscription.options[subIndex].intervalLabel}, cancel anytime.
-                  </p>
-                )}
+                <button
+                  onClick={handleAdd}
+                  className={`font-body font-medium text-sm uppercase tracking-[0.08em] px-10 py-3.5 rounded-full transition-all duration-200 active:scale-[0.98] ${
+                    added
+                      ? 'bg-accent-green text-white'
+                      : 'bg-amber text-deep-brown hover:bg-warm-gold'
+                  }`}
+                >
+                  {added ? 'Added to Cart!' : `Add to Cart — ฿${product.price * quantity}`}
+                </button>
+              </div>
 
-                {/* Gift Toggle */}
-                {product.addable && (
-                  <div className="mt-5 pt-4 border-t border-soft-peach/50">
-                    <label className="flex items-center gap-3 cursor-pointer">
-                      <input
-                        type="checkbox"
-                        checked={isGift}
-                        onChange={(e) => setIsGift(e.target.checked)}
-                        className="w-5 h-5 accent-deep-brown rounded"
-                      />
-                      <span className="font-body font-medium text-deep-brown text-[14px]">This is a gift 🎁</span>
-                    </label>
-                    {isGift && (
-                      <div className="mt-3 space-y-3">
-                        <input
-                          type="text"
-                          value={giftName}
-                          onChange={(e) => setGiftName(e.target.value)}
-                          placeholder="Recipient name"
-                          className="w-full bg-cream border border-soft-peach rounded-xl px-4 py-2.5 font-body text-[14px] text-deep-brown placeholder:text-earth/50 focus:outline-none focus:ring-2 focus:ring-rust/30"
-                        />
-                        <input
-                          type="email"
-                          value={giftEmail}
-                          onChange={(e) => setGiftEmail(e.target.value)}
-                          placeholder="Recipient email"
-                          className="w-full bg-cream border border-soft-peach rounded-xl px-4 py-2.5 font-body text-[14px] text-deep-brown placeholder:text-earth/50 focus:outline-none focus:ring-2 focus:ring-rust/30"
-                        />
-                        <textarea
-                          value={giftMessage}
-                          onChange={(e) => setGiftMessage(e.target.value)}
-                          placeholder="Gift message (optional)"
-                          rows={3}
-                          className="w-full bg-cream border border-soft-peach rounded-xl px-4 py-2.5 font-body text-[14px] text-deep-brown placeholder:text-earth/50 focus:outline-none focus:ring-2 focus:ring-rust/30 resize-none"
-                        />
-                      </div>
-                    )}
+              {/* Gift Toggle */}
+              <div className="mt-5 pt-4 border-t border-soft-peach/50">
+                <label className="flex items-center gap-3 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={isGift}
+                    onChange={(e) => setIsGift(e.target.checked)}
+                    className="w-5 h-5 accent-deep-brown rounded"
+                  />
+                  <span className="font-body font-medium text-deep-brown text-[14px]">This is a gift 🎁</span>
+                </label>
+                {isGift && (
+                  <div className="mt-3 space-y-3">
+                    <input
+                      type="text"
+                      value={giftName}
+                      onChange={(e) => setGiftName(e.target.value)}
+                      placeholder="Recipient name"
+                      className="w-full bg-cream border border-soft-peach rounded-xl px-4 py-2.5 font-body text-[14px] text-deep-brown placeholder:text-earth/50 focus:outline-none focus:ring-2 focus:ring-rust/30"
+                    />
+                    <input
+                      type="email"
+                      value={giftEmail}
+                      onChange={(e) => setGiftEmail(e.target.value)}
+                      placeholder="Recipient email"
+                      className="w-full bg-cream border border-soft-peach rounded-xl px-4 py-2.5 font-body text-[14px] text-deep-brown placeholder:text-earth/50 focus:outline-none focus:ring-2 focus:ring-rust/30"
+                    />
+                    <textarea
+                      value={giftMessage}
+                      onChange={(e) => setGiftMessage(e.target.value)}
+                      placeholder="Gift message (optional)"
+                      rows={3}
+                      className="w-full bg-cream border border-soft-peach rounded-xl px-4 py-2.5 font-body text-[14px] text-deep-brown placeholder:text-earth/50 focus:outline-none focus:ring-2 focus:ring-rust/30 resize-none"
+                    />
                   </div>
                 )}
               </div>
-            ) : (
-              <div className="mb-8">
-                <button
-                  disabled
-                  className="w-full sm:w-auto font-body font-medium text-sm uppercase tracking-[0.08em] px-10 py-3.5 rounded-full bg-soft-peach text-earth/50 cursor-not-allowed flex items-center justify-center gap-2"
-                >
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 15h-2v-2h2v2zm0-4h-2V7h2v6zm4 4h-2v-2h2v2zm0-4h-2V7h2v6z" />
-                  </svg>
-                  Available on Grab Only
-                </button>
-                <a
-                  href="https://www.grab.com/th/en/food/"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-block mt-3 font-body font-medium text-[14px] text-grab-green hover:underline"
-                >
-                  Order on Grab instead
-                </a>
-              </div>
-            )}
+            </div>
 
             {/* Quick Features */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-8">

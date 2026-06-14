@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router';
 import { ArrowLeft, Search, Package, Truck, CheckCircle } from 'lucide-react';
+import SEO from '@/components/SEO';
 
 interface OrderResult {
   sessionId: string;
@@ -43,6 +44,12 @@ export default function TrackOrderPage() {
 
   return (
     <div className="min-h-screen bg-warm-white">
+      <SEO
+        title="Track Your Order — GingerBros"
+        description="Track your GingerBros craft ginger beer order status. Enter your email and order number to see shipping updates."
+        path="/track"
+        noindex
+      />
       <div className="sticky top-0 z-50 bg-warm-white/95 backdrop-blur-xl border-b border-soft-peach/50">
         <div className="max-w-[1280px] mx-auto px-6 h-14 flex items-center justify-between">
           <button onClick={() => navigate('/')} className="flex items-center gap-2 font-body font-medium text-sm text-earth hover:text-deep-brown transition-colors">

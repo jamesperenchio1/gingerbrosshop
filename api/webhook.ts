@@ -213,7 +213,7 @@ function giftEmailHtml(session: SessionWithShipping, items: Stripe.LineItem[], r
   return `<div style="font-family:system-ui,sans-serif;max-width:480px;margin:0 auto;padding:24px;color:#3D2410;">
     <h2 style="color:#3D2410;">You have received a gift! 🎁</h2>
     <p>Hi ${recipientName ?? 'there'},</p>
-    <p><strong>${senderName}</strong> has sent you a GingerBros gift subscription.</p>
+    <p><strong>${senderName}</strong> has sent you a GingerBros gift.</p>
     ${message ? `<p style="background:#F5F0EB;padding:12px;border-radius:8px;font-style:italic;">"${message}"</p>` : ''}
     <p style="font-size:14px;color:#666;">Order #${orderId}</p>
     <table style="width:100%;border-collapse:collapse;margin:16px 0;font-size:14px;">

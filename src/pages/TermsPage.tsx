@@ -10,7 +10,6 @@ export default function TermsPage() {
         title="Terms of Service | GingerBros"
         description="GingerBros terms of service — your rights and obligations when purchasing craft ginger beer from gingerbrosshop.com."
         path="/terms"
-        noindex
       />
       <div className="sticky top-0 z-50 bg-warm-white/95 backdrop-blur-xl border-b border-soft-peach/50">
         <div className="max-w-[1280px] mx-auto px-6 h-14 flex items-center justify-between">

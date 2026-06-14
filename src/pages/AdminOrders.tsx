@@ -1,5 +1,4 @@
-import { useEffect, useState } from 'react';
-import { useSearchParams } from 'react-router';
+import { useState, useEffect } from 'react';
 import { Package, Truck, Search, Eye, EyeOff } from 'lucide-react';
 
 interface Order {
@@ -18,9 +17,10 @@ interface Order {
   trackingCarrier: string | null;
 }
 
+const TOKEN_KEY = 'gingerbros-admin-token';
+
 export default function AdminOrders() {
-  const [searchParams, setSearchParams] = useSearchParams();
-  const [token, setToken] = useState(searchParams.get('token') ?? localStorage.getItem('admin_token') ?? '');
+  const [token, setToken] = useState('');
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -30,13 +30,21 @@ export default function AdminOrders() {
   const [saving, setSaving] = useState(false);
   const [showToken, setShowToken] = useState(false);
 
-  const isAuthed = orders.length > 0 || (!loading && !error && token);
+  useEffect(() => {
+    try {
+      const stored = sessionStorage.getItem(TOKEN_KEY);
+      if (stored) setToken(stored);
+    } catch {
+      // ignore
+    }
+  }, []);
 
   useEffect(() => {
     if (!token) return;
-    localStorage.setItem('admin_token', token);
-    if (searchParams.get('token') !== token) {
-      setSearchParams({ token });
+    try {
+      sessionStorage.setItem(TOKEN_KEY, token);
+    } catch {
+      // ignore
     }
     loadOrders();
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -96,7 +104,17 @@ export default function AdminOrders() {
     }
   };
 
-  if (!isAuthed || (orders.length === 0 && error)) {
+  const handleLogout = () => {
+    setToken('');
+    setOrders([]);
+    try {
+      sessionStorage.removeItem(TOKEN_KEY);
+    } catch {
+      // ignore
+    }
+  };
+
+  if (!token || (orders.length === 0 && error)) {
     return (
       <div className="min-h-screen bg-warm-white flex items-center justify-center px-6">
         <div className="w-full max-w-sm">
@@ -110,12 +128,18 @@ export default function AdminOrders() {
               type={showToken ? 'text' : 'password'}
               value={token}
               onChange={(e) => setToken(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') {
+                  setToken(e.currentTarget.value);
+                }
+              }}
               placeholder="Admin secret"
               className="w-full bg-cream border border-soft-peach rounded-xl px-4 py-3 pr-12 font-body text-deep-brown placeholder:text-earth/50 focus:outline-none focus:ring-2 focus:ring-rust/30"
             />
             <button
               onClick={() => setShowToken(!showToken)}
               className="absolute right-3 top-1/2 -translate-y-1/2 text-earth hover:text-deep-brown"
+              type="button"
             >
               {showToken ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
             </button>
@@ -134,13 +158,21 @@ export default function AdminOrders() {
             <h1 className="font-display text-2xl text-deep-brown">Orders</h1>
             <p className="font-body text-earth text-sm">{orders.length} order{orders.length !== 1 ? 's' : ''}</p>
           </div>
-          <button
-            onClick={loadOrders}
-            className="flex items-center gap-2 bg-deep-brown text-cream font-body text-sm px-4 py-2 rounded-full hover:bg-rust transition-colors"
-          >
-            <Search className="w-4 h-4" />
-            Refresh
-          </button>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={loadOrders}
+              className="flex items-center gap-2 bg-deep-brown text-cream font-body text-sm px-4 py-2 rounded-full hover:bg-rust transition-colors"
+            >
+              <Search className="w-4 h-4" />
+              Refresh
+            </button>
+            <button
+              onClick={handleLogout}
+              className="font-body text-sm text-earth hover:text-deep-brown px-3 py-2"
+            >
+              Log out
+            </button>
+          </div>
         </div>
 
         {loading && orders.length === 0 && (

@@ -18,31 +18,20 @@ interface ProductDef {
   borderStyle: string;
   bgColor: string;
   addable: boolean;
-  isBundle?: boolean;
-  bundleSize?: number;
-  subscription?: {
-    options: Array<{
-      id: string;
-      price: number;
-      interval: string;
-      intervalLabel: string;
-      savingsLabel: string;
-    }>;
-  };
 }
 
 const PRODUCTS: ProductDef[] = [
   {
     id: 'unpasteurized',
     name: 'Unpasteurized Ginger Beer',
-    shortDescription: 'Fresh, living ginger beer with active cultures. More probiotics, more kick. Only available on Grab for now. 330ml per bottle.',
+    shortDescription: 'Raw, living ginger beer with active cultures. Must be kept refrigerated. 330ml per bottle.',
     price: 140,
     image: '/images/product-unpasteurized-2.jpg',
-    badge: 'GRAB EXCLUSIVE',
+    badge: 'CHILLED DELIVERY',
     badgeColor: 'bg-grab-green',
     borderStyle: 'border-2 border-dashed border-soft-peach',
     bgColor: 'bg-warm-white',
-    addable: false,
+    addable: true,
   },
 ];
 
@@ -83,21 +72,18 @@ export default function Shop() {
     }));
   };
 
-  const handleAddToCart = (product: ProductDef, subIndex?: number) => {
-    const sub = subIndex !== undefined && product.subscription ? product.subscription.options[subIndex] : undefined;
+  const handleAddToCart = (product: ProductDef) => {
     addItem({
-      id: sub ? sub.id : product.id,
-      name: sub ? `${product.name} (${sub.intervalLabel})` : product.name,
-      variant: product.id.includes('unpasteurized') ? 'unpasteurized' : 'pasteurized',
-      price: sub ? sub.price : product.price,
+      id: product.id,
+      name: product.name,
+      variant: 'unpasteurized',
+      price: product.price,
       quantity: quantities[product.id] ?? 1,
       image: product.image,
-      badge: sub ? 'SUBSCRIPTION' : product.badge,
-      badgeColor: sub ? 'bg-rust' : product.badgeColor,
-      isSubscription: !!sub,
-      interval: sub ? sub.intervalLabel : undefined,
+      badge: product.badge,
+      badgeColor: product.badgeColor,
     });
-    setAddedId(sub ? sub.id : product.id);
+    setAddedId(product.id);
     setTimeout(() => setAddedId(null), 800);
   };
 
@@ -108,13 +94,13 @@ export default function Shop() {
       <div className="max-w-[1100px] mx-auto px-6">
         <div ref={headerRef} className="opacity-0 translate-y-[40px] text-center mb-16">
           <span className="font-body font-medium text-[13px] uppercase tracking-[0.08em] text-rust mb-3 block">
-            OUR PRODUCTS
+            OUR PRODUCT
           </span>
           <h2 className="font-display font-semibold text-deep-brown text-[clamp(1.5rem,3vw,2.5rem)] mb-3">
             Choose Your Brew
           </h2>
           <p className="font-body text-earth">
-            Single bottles and bundles. Select your ginger beer below.
+            Fresh, raw ginger beer delivered chilled to your door.
           </p>
         </div>
 
@@ -122,7 +108,7 @@ export default function Shop() {
           {PRODUCTS.map((product) => (
             <div
               key={product.id}
-              className={`opacity-0 translate-y-[50px] scale-[0.96] ${product.bgColor} ${product.borderStyle} rounded-[20px] p-8 flex flex-col`}
+              className={`opacity-0 translate-y-[50px] scale-[0.96] ${product.bgColor} ${product.borderStyle} rounded-[20px] p-8 flex flex-col md:col-start-2`}
             >
               {/* Product Image */}
               <button
@@ -159,101 +145,43 @@ export default function Shop() {
                   ฿{product.price}
                 </span>
                 <span className="font-body font-medium text-[13px] text-rust">
-                  {product.isBundle ? `for ${product.bundleSize} bottles` : 'per bottle'}
+                  per bottle
                 </span>
-                {product.isBundle && (
-                  <span className="font-body font-medium text-[11px] text-accent-green ml-1">
-                    Save ฿70
-                  </span>
-                )}
               </div>
 
-              {product.addable ? (
-                <>
-                  <div className="flex items-center justify-center gap-4 mb-4 border-2 border-soft-peach rounded-full py-2 px-4 self-start">
-                    <button
-                      onClick={() => handleQuantityChange(product.id, -1)}
-                      className="text-earth hover:text-deep-brown transition-colors"
-                    >
-                      <MinusIcon />
-                    </button>
-                    <span className="font-body font-medium text-earth min-w-[20px] text-center">
-                      {quantities[product.id] ?? 1}
-                    </span>
-                    <button
-                      onClick={() => handleQuantityChange(product.id, 1)}
-                      className="text-earth hover:text-deep-brown transition-colors"
-                    >
-                      <PlusIcon />
-                    </button>
-                  </div>
+              <div className="flex items-center justify-center gap-4 mb-4 border-2 border-soft-peach rounded-full py-2 px-4 self-start">
+                <button
+                  onClick={() => handleQuantityChange(product.id, -1)}
+                  className="text-earth hover:text-deep-brown transition-colors"
+                >
+                  <MinusIcon />
+                </button>
+                <span className="font-body font-medium text-earth min-w-[20px] text-center">
+                  {quantities[product.id] ?? 1}
+                </span>
+                <button
+                  onClick={() => handleQuantityChange(product.id, 1)}
+                  className="text-earth hover:text-deep-brown transition-colors"
+                >
+                  <PlusIcon />
+                </button>
+              </div>
 
-                  <button
-                    onClick={() => handleAddToCart(product)}
-                    className={`w-full font-body font-medium text-sm uppercase tracking-[0.08em] py-3.5 rounded-full transition-all duration-200 ${
-                      addedId === product.id
-                        ? 'bg-accent-green text-white'
-                        : 'bg-amber text-deep-brown hover:bg-warm-gold active:scale-[0.98]'
-                    }`}
-                  >
-                    {addedId === product.id ? 'Added!' : `Add to Cart — ฿${product.price}`}
-                  </button>
+              <button
+                onClick={() => handleAddToCart(product)}
+                className={`w-full font-body font-medium text-sm uppercase tracking-[0.08em] py-3.5 rounded-full transition-all duration-200 ${
+                  addedId === product.id
+                    ? 'bg-accent-green text-white'
+                    : 'bg-amber text-deep-brown hover:bg-warm-gold active:scale-[0.98]'
+                }`}
+              >
+                {addedId === product.id ? 'Added!' : `Add to Cart — ฿${product.price}`}
+              </button>
 
-                  {product.subscription && (
-                    <div className="mt-3 pt-3 border-t border-soft-peach/50">
-                      <p className="font-body font-semibold text-[12px] uppercase tracking-wider text-deep-brown mb-2">
-                        Subscribe & Save
-                      </p>
-                      <div className="space-y-1.5">
-                        {product.subscription.options.map((opt, idx) => (
-                          <button
-                            key={opt.id}
-                            onClick={() => handleAddToCart(product, idx)}
-                            className={`w-full flex items-center justify-between font-body text-[13px] py-2.5 px-4 rounded-xl transition-all duration-200 ${
-                              addedId === opt.id
-                                ? 'bg-accent-green text-white'
-                                : 'bg-cream text-deep-brown hover:bg-amber/30'
-                            }`}
-                          >
-                            <span>
-                              ฿{opt.price} <span className="text-earth/60">{opt.intervalLabel}</span>
-                            </span>
-                            <span className="text-[11px] font-semibold text-accent-green">
-                              {opt.savingsLabel}
-                            </span>
-                          </button>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-
-                  <div className="flex items-center gap-2 mt-3">
-                    <span className="w-2 h-2 bg-accent-green rounded-full" />
-                    <span className="font-body font-medium text-[13px] text-earth">In Stock</span>
-                  </div>
-
-                </>
-              ) : (
-                <>
-                  <button
-                    disabled
-                    className="w-full font-body font-medium text-sm uppercase tracking-[0.08em] py-3.5 rounded-full bg-soft-peach text-earth/50 cursor-not-allowed flex items-center justify-center gap-2"
-                  >
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-                      <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 15h-2v-2h2v2zm0-4h-2V7h2v6zm4 4h-2v-2h2v2zm0-4h-2V7h2v6z" />
-                    </svg>
-                    Available on Grab
-                  </button>
-                  <a
-                    href="https://www.grab.com/th/en/food/"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="block text-center font-body font-medium text-[13px] text-grab-green hover:underline mt-3 transition-all"
-                  >
-                    Order on Grab instead
-                  </a>
-                </>
-              )}
+              <div className="flex items-center gap-2 mt-3">
+                <span className="w-2 h-2 bg-accent-green rounded-full" />
+                <span className="font-body font-medium text-[13px] text-earth">In Stock</span>
+              </div>
 
               {/* View Details Link */}
               <button

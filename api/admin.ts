@@ -1,13 +1,24 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { getOrders, updateTracking } from './_lib/orders.js';
+import { rateLimit, getClientIp } from './_lib/rateLimit.js';
 
 function isAuthorized(req: VercelRequest): boolean {
   const auth = req.headers.authorization;
-  const expected = process.env.ADMIN_SECRET ? `Bearer ${process.env.ADMIN_SECRET}` : null;
-  return !expected || auth === expected;
+  const expected = process.env.ADMIN_SECRET;
+  if (!expected) {
+    console.error('ADMIN_SECRET is not configured');
+    return false;
+  }
+  return auth === `Bearer ${expected}`;
 }
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
+  const { allowed } = await rateLimit({ key: `admin:${getClientIp(req)}`, limit: 30, windowSeconds: 60 });
+  if (!allowed) {
+    res.status(429).json({ error: 'Too many requests. Please try again in a minute.' });
+    return;
+  }
+
   if (!isAuthorized(req)) {
     res.status(401).json({ error: 'Unauthorized' });
     return;

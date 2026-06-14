@@ -86,9 +86,15 @@ export default function CartDrawer() {
     }
   };
 
+  const getProductId = (itemId: string) => {
+    // Subscription IDs are like unpasteurized-sub-week
+    const subIndex = itemId.indexOf('-sub-');
+    return subIndex > 0 ? itemId.slice(0, subIndex) : itemId;
+  };
+
   const handleViewProduct = (productId: string) => {
     closeCart();
-    navigate(`/product/${productId}`);
+    navigate(`/product/${getProductId(productId)}`);
   };
 
   return (

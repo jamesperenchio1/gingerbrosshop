@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useSearchParams, Link } from 'react-router';
 import { CheckCircle, Package, Truck, Mail } from 'lucide-react';
 import { useCart } from '@/context/CartContext';
+import SEO from '@/components/SEO';
 
 interface OrderItem {
   description: string;
@@ -102,6 +103,12 @@ export default function OrderSuccess() {
 
   return (
     <div className="min-h-screen bg-warm-white">
+      <SEO
+        title="Thank You for Your Order — GingerBros"
+        description="Your GingerBros order has been confirmed. Check your email for the receipt and tracking updates."
+        path="/order/success"
+        noindex
+      />
       <div className="max-w-lg mx-auto px-6 py-12 sm:py-16">
         <div className="text-center mb-10">
           <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-5">

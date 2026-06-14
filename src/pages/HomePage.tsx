@@ -17,9 +17,8 @@ const organizationSchema = {
   url: 'https://gingerbrosshop.com',
   logo: 'https://gingerbrosshop.com/images/product-unpasteurized-2.jpg',
   sameAs: [
-    'https://www.instagram.com/gingerbrosbeer',
-    'https://www.facebook.com/gingerbrosbeer',
-    'https://www.tiktok.com/@gingerbrosbeer',
+    'https://www.instagram.com/drinkgingerbros',
+    'https://www.tiktok.com/@gingerbrosbrew',
   ],
   contactPoint: {
     '@type': 'ContactPoint',
@@ -62,7 +61,7 @@ export default function HomePage() {
     <div className="min-h-screen bg-warm-white">
       <SEO
         title="GingerBros — Naturally Brewed Craft Ginger Beer from Thailand"
-        description="7-day naturally fermented craft ginger beer brewed in Thailand. Low sugar, bold spice, good for the gut. Buy unpasteurized — nationwide delivery."
+        description="7-day naturally fermented craft ginger beer brewed in Thailand. Raw, unpasteurized, and delivered chilled to your door nationwide."
         path="/"
         jsonLd={[organizationSchema, websiteSchema, productListSchema]}
       />

@@ -16,13 +16,13 @@ const POSTS = [
 Ingredients:
 • 60ml vodka
 • 15ml fresh lime juice
-• GingerBros Pasteurized Ginger Beer
+• GingerBros Unpasteurized Ginger Beer
 • Lime wedge and mint for garnish
 
 Instructions:
 Fill a copper mug with ice. Add vodka and lime juice. Top with GingerBros. Stir gently and garnish.
 
-The natural fermentation gives our ginger beer a subtle funk and complexity that elevates this classic cocktail from good to unforgettable.`,
+The natural fermentation gives our unpasteurized ginger beer a subtle funk and complexity that elevates this classic cocktail from good to unforgettable.`,
   },
   {
     slug: 'gut-health',
@@ -55,7 +55,7 @@ Day 1-2: We combine grated ginger, filtered water, and raw cane sugar in small b
 
 Day 3-5: Fermentation begins. The ginger bug consumes the sugar and produces natural carbonation, B vitamins, and complex flavor compounds. We taste and monitor each batch daily.
 
-Day 6-7: The brew reaches its peak flavor and carbonation. We carefully strain and bottle immediately for our unpasteurized line, or gently pasteurize for our shelf-stable line.
+Day 6-7: The brew reaches its peak flavor and carbonation. We carefully strain and bottle immediately for our unpasteurized line, preserving the live cultures and fresh taste.
 
 The result is a ginger beer with real depth, real ingredients, and none of the artificial aftertaste of commercial sodas.`,
   },
@@ -92,7 +92,7 @@ export default function BlogPage() {
         publisher: {
           '@type': 'Organization',
           name: 'GingerBros',
-          logo: { '@type': 'ImageObject', url: 'https://gingerbrosshop.com/images/product-pasteurized.png' },
+          logo: { '@type': 'ImageObject', url: 'https://gingerbrosshop.com/images/product-unpasteurized-2.jpg' },
         },
       }
     : null;

@@ -4,12 +4,12 @@
 
   <url>
     <loc>https://gingerbrosshop.com/</loc>
-    <lastmod>2026-06-09</lastmod>
+    <lastmod>2026-06-14</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
     <image:image>
-      <image:loc>https://gingerbrosshop.com/images/product-pasteurized.png</image:loc>
-      <image:title>GingerBros Pasteurized Craft Ginger Beer</image:title>
+      <image:loc>https://gingerbrosshop.com/images/product-unpasteurized-2.jpg</image:loc>
+      <image:title>GingerBros Unpasteurized Craft Ginger Beer</image:title>
     </image:image>
     <image:image>
       <image:loc>https://gingerbrosshop.com/images/hero-bottle.png</image:loc>
@@ -18,87 +18,65 @@
   </url>
 
   <url>
-    <loc>https://gingerbrosshop.com/product/pasteurized</loc>
-    <lastmod>2026-06-09</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.9</priority>
-    <image:image>
-      <image:loc>https://gingerbrosshop.com/images/product-pasteurized.png</image:loc>
-      <image:title>Pasteurized Ginger Beer — GingerBros</image:title>
-    </image:image>
-    <image:image>
-      <image:loc>https://gingerbrosshop.com/images/product-detail-1.jpg</image:loc>
-      <image:title>Pasteurized Ginger Beer Close-Up</image:title>
-    </image:image>
-  </url>
-
-  <url>
-    <loc>https://gingerbrosshop.com/product/pasteurized-6pack</loc>
-    <lastmod>2026-06-09</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.9</priority>
-    <image:image>
-      <image:loc>https://gingerbrosshop.com/images/bundle-6pack.jpg</image:loc>
-      <image:title>GingerBros 6-Pack Bundle</image:title>
-    </image:image>
-  </url>
-
-  <url>
     <loc>https://gingerbrosshop.com/product/unpasteurized</loc>
-    <lastmod>2026-06-09</lastmod>
+    <lastmod>2026-06-14</lastmod>
     <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
+    <priority>0.9</priority>
     <image:image>
-      <image:loc>https://gingerbrosshop.com/images/product-unpasteurized.png</image:loc>
+      <image:loc>https://gingerbrosshop.com/images/product-unpasteurized-2.jpg</image:loc>
       <image:title>Unpasteurized Raw Ginger Beer — GingerBros</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://gingerbrosshop.com/images/product-unpasteurized.jpg</image:loc>
+      <image:title>Unpasteurized Ginger Beer Close-Up</image:title>
     </image:image>
   </url>
 
   <url>
     <loc>https://gingerbrosshop.com/blog</loc>
-    <lastmod>2026-06-09</lastmod>
+    <lastmod>2026-06-14</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
 
   <url>
     <loc>https://gingerbrosshop.com/faq</loc>
-    <lastmod>2026-06-09</lastmod>
+    <lastmod>2026-06-14</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
 
   <url>
     <loc>https://gingerbrosshop.com/wholesale</loc>
-    <lastmod>2026-06-09</lastmod>
+    <lastmod>2026-06-14</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
 
   <url>
     <loc>https://gingerbrosshop.com/shipping</loc>
-    <lastmod>2026-06-09</lastmod>
+    <lastmod>2026-06-14</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
 
   <url>
     <loc>https://gingerbrosshop.com/returns</loc>
-    <lastmod>2026-06-09</lastmod>
+    <lastmod>2026-06-14</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.4</priority>
   </url>
 
   <url>
     <loc>https://gingerbrosshop.com/privacy</loc>
-    <lastmod>2026-06-09</lastmod>
+    <lastmod>2026-06-14</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.3</priority>
   </url>
 
   <url>
     <loc>https://gingerbrosshop.com/terms</loc>
-    <lastmod>2026-06-09</lastmod>
+    <lastmod>2026-06-14</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.3</priority>
   </url>

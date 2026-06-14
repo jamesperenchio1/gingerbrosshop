@@ -1,76 +1,127 @@
-import { useNavigate } from 'react-router';
-import { ArrowLeft, Store, Truck, Percent, MessageCircle } from 'lucide-react';
+import { Store, Truck, BadgeCheck, Mail } from 'lucide-react';
 import SEO from '@/components/SEO';
 
 export default function WholesalePage() {
-  const navigate = useNavigate();
+  const benefits = [
+    {
+      icon: <Store className="w-8 h-8 text-amber" />,
+      title: 'Real Retailer Pricing',
+      description: 'Wholesale rates for cafes, restaurants, bars, hotels, and retailers. The more you order, the better your margin.',
+    },
+    {
+      icon: <Truck className="w-8 h-8 text-amber" />,
+      title: 'Chilled Delivery',
+      description: 'Our unpasteurized ginger beer is shipped chilled with insulated packaging and ice packs to keep cultures alive.',
+    },
+    {
+      icon: <BadgeCheck className="w-8 h-8 text-amber" />,
+      title: 'Consistent Quality',
+      description: 'Every batch is naturally fermented for 7 days using the same ginger-bug starter, Thai ginger, and raw cane sugar.',
+    },
+  ];
+
+  const products = [
+    { product: 'Unpasteurized Bottles', moq: '24 bottles (1 case)' },
+    { product: 'Unpasteurized Cases', moq: '5+ cases' },
+  ];
+
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'WebPage',
+    name: 'Wholesale — GingerBros',
+    description: 'Wholesale pricing for cafes, restaurants, bars, and retailers. Order chilled unpasteurized ginger beer in Thailand.',
+    url: 'https://gingerbrosshop.com/wholesale',
+    mainEntity: {
+      '@type': 'Organization',
+      name: 'GingerBros',
+      url: 'https://gingerbrosshop.com',
+    },
+  };
+
   return (
     <div className="min-h-screen bg-warm-white">
       <SEO
-        title="Wholesale Craft Ginger Beer Thailand — Bulk Pricing for Cafes & Restaurants | GingerBros"
-        description="GingerBros wholesale program: competitive bulk pricing on naturally fermented ginger beer for cafes, restaurants, and retailers across Thailand. Minimum order 24 bottles."
+        title="Wholesale — GingerBros"
+        description="Wholesale pricing for cafes, restaurants, bars, and retailers. Order chilled unpasteurized ginger beer in Thailand."
         path="/wholesale"
+        jsonLd={jsonLd}
       />
-      <div className="sticky top-0 z-50 bg-warm-white/95 backdrop-blur-xl border-b border-soft-peach/50">
-        <div className="max-w-[1280px] mx-auto px-6 h-14 flex items-center justify-between">
-          <button onClick={() => navigate('/')} className="flex items-center gap-2 font-body font-medium text-sm text-earth hover:text-deep-brown transition-colors">
-            <ArrowLeft className="w-4 h-4" /> Back to Shop
-          </button>
-          <span className="font-display font-bold text-lg text-deep-brown">GingerBros</span>
-          <div className="w-20" />
-        </div>
-      </div>
 
-      <div className="max-w-[800px] mx-auto px-6 py-16">
-        <h1 className="font-display font-bold text-deep-brown text-3xl md:text-4xl mb-4 text-center">Wholesale & B2B</h1>
-        <p className="font-body text-earth text-center mb-12">Serve GingerBros at your cafe, bar, or restaurant.</p>
+      <main className="pt-28 pb-20">
+        <div className="max-w-[900px] mx-auto px-6">
+          <div className="text-center mb-16">
+            <span className="font-body font-medium text-[13px] uppercase tracking-[0.08em] text-rust mb-3 block">
+              B2B / TRADE
+            </span>
+            <h1 className="font-display font-bold text-deep-brown text-[clamp(2rem,4vw,3rem)] mb-4">
+              GingerBros Wholesale
+            </h1>
+            <p className="font-body text-earth text-lg max-w-[600px] mx-auto leading-relaxed">
+              Serve Thailand’s best craft ginger beer at your venue. Premium margins, reliable supply, and a product customers actually remember.
+            </p>
+          </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-12">
-          {[
-            { icon: Store, title: 'Cafes & Restaurants', desc: 'Stock our pasteurized ginger beer for your beverage menu.' },
-            { icon: Truck, title: 'Bulk Delivery', desc: 'Case quantities delivered directly to your business.' },
-            { icon: Percent, title: 'Wholesale Pricing', desc: 'Competitive margins for resellers and distributors.' },
-            { icon: MessageCircle, title: 'Dedicated Support', desc: 'Direct line to our team for orders and questions.' },
-          ].map((item) => {
-            const Icon = item.icon;
-            return (
-              <div key={item.title} className="bg-cream rounded-2xl p-6">
-                <Icon className="w-8 h-8 text-rust mb-3" />
-                <h3 className="font-display font-semibold text-deep-brown mb-1">{item.title}</h3>
-                <p className="font-body text-earth text-sm">{item.desc}</p>
-              </div>
-            );
-          })}
-        </div>
-
-        <div className="bg-cream rounded-2xl p-8 mb-8">
-          <h2 className="font-display font-semibold text-deep-brown text-xl mb-4">Minimum Order Quantities</h2>
-          <div className="space-y-3">
-            {[
-              { product: 'Pasteurized Single Bottles', moq: '24 bottles (1 case)' },
-              { product: '6-Pack Bundles', moq: '10 bundles (60 bottles)' },
-            ].map((row) => (
-              <div key={row.product} className="flex justify-between py-3 border-b border-soft-peach/50 last:border-0">
-                <span className="font-body text-earth">{row.product}</span>
-                <span className="font-body font-semibold text-deep-brown">{row.moq}</span>
+          {/* Benefits Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-16">
+            {benefits.map((benefit) => (
+              <div key={benefit.title} className="bg-cream rounded-[20px] p-6">
+                <div className="mb-4">{benefit.icon}</div>
+                <h3 className="font-display font-semibold text-deep-brown text-[1.1rem] mb-2">
+                  {benefit.title}
+                </h3>
+                <p className="font-body text-[14px] text-earth leading-relaxed">
+                  {benefit.description}
+                </p>
               </div>
             ))}
           </div>
-        </div>
 
-        <div className="bg-deep-brown rounded-2xl p-8 text-center">
-          <h2 className="font-display font-bold text-cream text-xl mb-3">Get a Quote</h2>
-          <p className="font-body text-cream/70 mb-6">
-            Tell us about your business and we will send you wholesale pricing within 24 hours.
-          </p>
-          <a
-            href="mailto:gingerbros.brew@gmail.com?subject=Wholesale%20Inquiry"
-            className="inline-block bg-amber text-deep-brown font-body font-medium px-8 py-3 rounded-full hover:bg-warm-gold transition-colors"
-          >
-            Email Us — gingerbros.brew@gmail.com
-          </a>
+          {/* MOQ Table */}
+          <div className="bg-cream rounded-[20px] p-8 md:p-10 mb-12">
+            <h2 className="font-display font-semibold text-deep-brown text-[1.35rem] mb-6">
+              Wholesale Products & Minimum Order Quantities
+            </h2>
+            <div className="overflow-x-auto">
+              <table className="w-full">
+                <thead>
+                  <tr className="border-b border-soft-peach/50">
+                    <th className="text-left font-body font-semibold text-[13px] uppercase tracking-[0.08em] text-rust pb-3">Product</th>
+                    <th className="text-left font-body font-semibold text-[13px] uppercase tracking-[0.08em] text-rust pb-3">Minimum Order</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {products.map((row) => (
+                    <tr key={row.product} className="border-b border-soft-peach/30 last:border-0">
+                      <td className="font-body text-deep-brown py-4">{row.product}</td>
+                      <td className="font-body text-earth py-4">{row.moq}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+            <p className="font-body text-[13px] text-earth/70 mt-4">
+              Larger volume pricing and recurring supply contracts are available on request.
+            </p>
+          </div>
+
+          {/* How to Order */}
+          <div className="bg-deep-brown rounded-[20px] p-8 md:p-10 text-cream">
+            <h2 className="font-display font-semibold text-[1.35rem] mb-4">
+              How to Order
+            </h2>
+            <p className="font-body text-[15px] text-cream/80 leading-relaxed mb-6">
+              Send us a short message with your business name, what you serve, and the volume you are interested in. We will respond with trade pricing and delivery options within 24 hours.
+            </p>
+            <a
+              href="mailto:hello@gingerbrosshop.com?subject=Wholesale%20Inquiry"
+              className="inline-flex items-center gap-2 bg-amber text-deep-brown font-body font-medium text-sm uppercase tracking-[0.08em] px-8 py-3.5 rounded-full hover:bg-warm-gold transition-colors"
+            >
+              <Mail className="w-5 h-5" />
+              Request Wholesale Quote
+            </a>
+          </div>
         </div>
-      </div>
+      </main>
     </div>
   );
 }

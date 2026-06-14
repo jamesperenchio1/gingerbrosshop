@@ -1,10 +1,17 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import Stripe from 'stripe';
 import { getOrders } from './_lib/orders.js';
+import { rateLimit, getClientIp } from './_lib/rateLimit.js';
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (req.method !== 'GET') {
     res.status(405).json({ error: 'Method not allowed' });
+    return;
+  }
+
+  const { allowed } = await rateLimit({ key: `track:${getClientIp(req)}`, limit: 20, windowSeconds: 60 });
+  if (!allowed) {
+    res.status(429).json({ error: 'Too many requests. Please try again in a minute.' });
     return;
   }
 
