@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect, useRef } from 'react';
+import { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router';
 import {
   ArrowLeft,
@@ -14,14 +14,9 @@ import {
   Tag as TagIcon,
   Mountain,
   X,
-  Flame,
 } from 'lucide-react';
-import gsap from 'gsap';
-import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import SEO from '@/components/SEO';
 import Newsletter from '@/components/Newsletter';
-
-gsap.registerPlugin(ScrollTrigger);
 
 type Category = 'Recipe' | 'Health' | 'Brewing' | 'Culture' | 'Guide';
 
@@ -762,8 +757,6 @@ export default function BlogPage() {
   const [activeSlug, setActiveSlug] = useState<string | null>(null);
   const [filter, setFilter] = useState<'All' | Category>('All');
   const [query, setQuery] = useState('');
-  const heroRef = useRef<HTMLDivElement>(null);
-  const gridRef = useRef<HTMLDivElement>(null);
 
   const activePost = POSTS.find((p) => p.slug === activeSlug) ?? null;
   const featured = POSTS.find((p) => p.featured) ?? POSTS[0];
@@ -794,39 +787,6 @@ export default function BlogPage() {
     if (!activePost) return [];
     return POSTS.filter((p) => p.slug !== activePost.slug && p.category === activePost.category).slice(0, 3);
   }, [activePost]);
-
-  // Scroll to top whenever a post opens or closes.
-  useEffect(() => {
-    window.scrollTo({ top: 0, behavior: 'instant' as ScrollBehavior });
-  }, [activeSlug]);
-
-  // Entrance animations for the list view.
-  useEffect(() => {
-    if (activePost) return;
-    const ctx = gsap.context(() => {
-      if (heroRef.current?.children) {
-        gsap.from(Array.from(heroRef.current.children), {
-          opacity: 0,
-          y: 24,
-          duration: 0.7,
-          stagger: 0.08,
-          ease: 'power3.out',
-        });
-      }
-      const cards = gridRef.current?.querySelectorAll('.blog-card');
-      if (cards && cards.length) {
-        gsap.from(cards, {
-          opacity: 0,
-          y: 28,
-          duration: 0.6,
-          stagger: 0.06,
-          ease: 'power3.out',
-          scrollTrigger: { trigger: gridRef.current, start: 'top 85%' },
-        });
-      }
-    });
-    return () => ctx.revert();
-  }, [activePost, filter, query]);
 
   const blogListSchema = {
     '@context': 'https://schema.org',
@@ -912,10 +872,7 @@ export default function BlogPage() {
             <div className="absolute -top-20 -right-16 w-72 h-72 rounded-full bg-amber/20 blur-3xl" />
             <div className="absolute -bottom-24 -left-16 w-72 h-72 rounded-full bg-accent-green/15 blur-3xl" />
 
-            <div ref={heroRef} className="relative max-w-[1280px] mx-auto px-6 pt-16 pb-12 text-center">
-              <span className="inline-flex items-center gap-2 font-body font-semibold text-[12px] uppercase tracking-[0.12em] text-rust bg-amber/20 px-4 py-1.5 rounded-full mb-5">
-                <Flame className="w-3.5 h-3.5" /> Stories from the brewhouse
-              </span>
+            <div className="relative max-w-[1280px] mx-auto px-6 pt-16 pb-12 text-center">
               <h1 className="font-display font-bold text-deep-brown text-4xl md:text-5xl lg:text-6xl mb-4 leading-tight">
                 The Brew Journal
               </h1>
@@ -1026,7 +983,7 @@ export default function BlogPage() {
 
             {/* Grid */}
             {filteredPosts.length > 0 ? (
-              <div ref={gridRef} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                 {filteredPosts.map((post) => (
                   <PostCard key={post.slug} post={post} onClick={() => setActiveSlug(post.slug)} />
                 ))}
