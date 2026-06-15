@@ -56,6 +56,10 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       items: lineItems ?? [],
       trackingNumber: localOrder?.trackingNumber ?? null,
       trackingCarrier: localOrder?.trackingCarrier ?? null,
+      isGift: localOrder?.isGift ?? false,
+      recipientEmail: localOrder?.recipientEmail ?? null,
+      recipientName: localOrder?.recipientName ?? null,
+      giftMessage: localOrder?.giftMessage ?? null,
     });
   } catch (err) {
     const message = err instanceof Error ? err.message : 'Stripe error';

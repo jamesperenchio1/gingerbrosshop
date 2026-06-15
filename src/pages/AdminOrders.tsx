@@ -15,6 +15,10 @@ interface Order {
   createdAt: string;
   trackingNumber: string | null;
   trackingCarrier: string | null;
+  isGift?: boolean;
+  recipientEmail?: string | null;
+  recipientName?: string | null;
+  giftMessage?: string | null;
 }
 
 const TOKEN_KEY = 'gingerbros-admin-token';
@@ -206,6 +210,19 @@ export default function AdminOrders() {
                       {order.customerName ?? 'Guest'} · {order.customerEmail ?? 'No email'}
                     </p>
                     <p className="font-body text-earth/60 text-[12px] mt-0.5">{date}</p>
+                    {order.isGift && (
+                      <div className="mt-2">
+                        <span className="inline-flex items-center gap-1 font-body text-[11px] uppercase tracking-wider px-2 py-0.5 rounded-full bg-rust/10 text-rust">
+                          🎁 Gift
+                        </span>
+                        <p className="font-body text-earth text-[12px] mt-1">
+                          To: {order.recipientName ?? '—'} · {order.recipientEmail ?? '—'}
+                        </p>
+                        {order.giftMessage && (
+                          <p className="font-body text-earth/70 text-[12px] italic mt-0.5">“{order.giftMessage}”</p>
+                        )}
+                      </div>
+                    )}
                   </div>
                   <div className="text-right">
                     <p className="font-display font-semibold text-deep-brown">฿{total}</p>
