@@ -6,7 +6,7 @@ import { PlusIcon, MinusIcon, SnowflakeIcon } from '@/components/Icons';
 import SEO from '@/components/SEO';
 import NotFound from '@/pages/NotFound';
 import { useCatalog, defaultPrice, intervalLabel, type CatalogPrice } from '@/lib/catalog';
-import { getProductContent } from '@/data/productContent';
+import { getProductContent } from '@/lib/productContent';
 
 /* ──────────────────────── Icons ──────────────────────── */
 
