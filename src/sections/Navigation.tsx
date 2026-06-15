@@ -86,6 +86,7 @@ export default function Navigation() {
         <div className="flex items-center gap-4">
           <button
             onClick={toggleCart}
+            data-testid="cart-button"
             className="flex items-center gap-2 font-body font-medium text-sm uppercase tracking-[0.08em] text-earth hover:text-deep-brown transition-colors"
           >
             <span className="hidden sm:inline">{t('cart')}</span>

@@ -117,6 +117,7 @@ export default function CartDrawer() {
   return (
     <>
       <div
+        data-testid="cart-overlay"
         className={`fixed inset-0 bg-black/20 z-[60] transition-opacity duration-300 ${
           state.isOpen ? 'pointer-events-auto' : 'pointer-events-none'
         }`}
@@ -126,6 +127,7 @@ export default function CartDrawer() {
 
       <div
         ref={drawerRef}
+        data-testid="cart-drawer"
         aria-hidden={!state.isOpen}
         inert={!state.isOpen || undefined}
         className={`fixed top-0 right-0 h-full w-full sm:w-[420px] bg-warm-white z-[70] shadow-[-8px_0_40px_rgba(61,36,16,0.1)] flex flex-col transition-transform duration-300 ${
@@ -136,7 +138,7 @@ export default function CartDrawer() {
           <h2 className="font-display font-semibold text-deep-brown text-[1.25rem]">
             Your Cart
           </h2>
-          <button onClick={closeCart} aria-label="Close cart" className="text-deep-brown hover:text-rust transition-colors">
+          <button onClick={closeCart} aria-label="Close cart" data-testid="cart-close" className="text-deep-brown hover:text-rust transition-colors">
             <CloseIcon />
           </button>
         </div>
@@ -151,9 +153,9 @@ export default function CartDrawer() {
               </button>
             </div>
           ) : (
-            <div className="space-y-4">
+            <div data-testid="cart-items" className="space-y-4">
               {state.items.map((item) => (
-                <div key={item.id} className="flex gap-4 pb-4 border-b border-soft-peach last:border-0">
+                <div key={item.id} data-testid={`cart-item-${item.id}`} className="flex gap-4 pb-4 border-b border-soft-peach last:border-0">
                   <button
                     onClick={() => handleViewProduct(item.id)}
                     className="w-[72px] h-[72px] rounded-xl overflow-hidden bg-cream flex-shrink-0 hover:opacity-80 transition-opacity"
@@ -243,6 +245,7 @@ export default function CartDrawer() {
             <button
               onClick={handleCheckout}
               disabled={isCheckingOut}
+              data-testid="cart-checkout"
               className="w-full bg-deep-brown text-cream font-body font-medium text-sm uppercase tracking-[0.08em] py-4 rounded-full hover:bg-rust active:scale-[0.98] transition-all duration-200 flex items-center justify-center gap-2 disabled:opacity-90"
             >
               {isCheckingOut ? (
@@ -341,6 +344,7 @@ export default function CartDrawer() {
 
             <button
               onClick={closeCart}
+              data-testid="cart-continue"
               className="w-full text-center font-body font-medium text-rust hover:underline transition-all"
             >
               Continue Shopping

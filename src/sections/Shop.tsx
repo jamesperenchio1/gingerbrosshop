@@ -145,6 +145,7 @@ export default function Shop() {
 
             <button
               onClick={handleAddToCart}
+              data-testid="add-to-cart"
               className={`w-full font-body font-medium text-sm uppercase tracking-[0.08em] py-3.5 rounded-full transition-all duration-200 ${
                 added
                   ? 'bg-accent-green text-white'

@@ -326,6 +326,7 @@ export default function ProductDetail() {
                     type="checkbox"
                     checked={isGift}
                     onChange={(e) => setIsGift(e.target.checked)}
+                    data-testid="gift-toggle"
                     className="w-5 h-5 accent-deep-brown rounded"
                   />
                   <span className="font-body font-medium text-deep-brown text-[14px]">This is a gift 🎁</span>
@@ -337,6 +338,7 @@ export default function ProductDetail() {
                       value={giftName}
                       onChange={(e) => setGiftName(e.target.value)}
                       placeholder="Recipient name"
+                      data-testid="gift-name"
                       className="w-full bg-cream border border-soft-peach rounded-xl px-4 py-2.5 font-body text-[14px] text-deep-brown placeholder:text-earth/50 focus:outline-none focus:ring-2 focus:ring-rust/30"
                     />
                     <input
@@ -344,6 +346,7 @@ export default function ProductDetail() {
                       value={giftEmail}
                       onChange={(e) => setGiftEmail(e.target.value)}
                       placeholder="Recipient email"
+                      data-testid="gift-email"
                       className="w-full bg-cream border border-soft-peach rounded-xl px-4 py-2.5 font-body text-[14px] text-deep-brown placeholder:text-earth/50 focus:outline-none focus:ring-2 focus:ring-rust/30"
                     />
                     <textarea
@@ -351,6 +354,7 @@ export default function ProductDetail() {
                       onChange={(e) => setGiftMessage(e.target.value)}
                       placeholder="Gift message (optional)"
                       rows={3}
+                      data-testid="gift-message"
                       className="w-full bg-cream border border-soft-peach rounded-xl px-4 py-2.5 font-body text-[14px] text-deep-brown placeholder:text-earth/50 focus:outline-none focus:ring-2 focus:ring-rust/30 resize-none"
                     />
                   </div>

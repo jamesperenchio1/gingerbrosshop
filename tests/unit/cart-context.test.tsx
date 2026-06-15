@@ -14,8 +14,8 @@ const sampleItem: CartItem = {
   price: 140,
   quantity: 1,
   image: '/images/product-unpasteurized-2.jpg',
-  badge: 'CHILLED DELIVERY',
-  badgeColor: 'bg-grab-green',
+  badge: 'Chilled Delivery',
+  badgeColor: 'bg-sky-500',
 };
 
 const sampleItem2: CartItem = {
@@ -101,6 +101,21 @@ describe('cartReducer', () => {
       { type: 'CLEAR_CART' }
     );
     expect(state.items).toHaveLength(0);
+  });
+
+  it('preserves gift fields on cart items', () => {
+    const giftItem: CartItem = {
+      ...sampleItem,
+      isGift: true,
+      recipientName: 'Gift Recipient',
+      recipientEmail: 'gift@example.com',
+      giftMessage: 'Enjoy!',
+    };
+    const state = cartReducer({ items: [], isOpen: false }, { type: 'ADD_ITEM', payload: giftItem });
+    expect(state.items[0].isGift).toBe(true);
+    expect(state.items[0].recipientName).toBe('Gift Recipient');
+    expect(state.items[0].recipientEmail).toBe('gift@example.com');
+    expect(state.items[0].giftMessage).toBe('Enjoy!');
   });
 });
 

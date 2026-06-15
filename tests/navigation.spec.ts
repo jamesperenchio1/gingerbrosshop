@@ -21,5 +21,5 @@ test('home anchor links work from product page', async ({ page }) => {
 
 test('navigation cart button is visible on product page', async ({ page }) => {
   await page.goto('/product/unpasteurized');
-  await expect(page.locator('nav').getByRole('button', { name: /cart/i })).toBeVisible();
+  await expect(page.getByTestId('cart-button')).toBeVisible();
 });

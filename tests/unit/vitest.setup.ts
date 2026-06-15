@@ -1,5 +1,10 @@
 import '@testing-library/jest-dom';
 
+// API env defaults for unit tests
+process.env.STRIPE_PRICE_UNPASTEURIZED = 'price_test_unpasteurized';
+process.env.STRIPE_SECRET_KEY = 'sk_test_fake';
+process.env.STRIPE_WEBHOOK_SECRET = 'whsec_fake';
+
 // Simple localStorage mock for cart persistence tests
 class LocalStorageMock {
   store: Record<string, string> = {};

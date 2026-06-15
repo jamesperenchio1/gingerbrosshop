@@ -714,6 +714,7 @@ function PostCard({ post, onClick }: { post: Post; onClick: () => void }) {
   return (
     <button
       onClick={onClick}
+      data-testid={`blog-post-${post.slug}`}
       className="group blog-card flex flex-col text-left bg-warm-white rounded-3xl overflow-hidden border border-soft-peach/60 hover:border-amber/60 hover:shadow-xl hover:-translate-y-1 transition-all duration-300"
     >
       <div className={`relative h-44 overflow-hidden bg-gradient-to-br ${meta.gradient}`}>
@@ -998,6 +999,7 @@ export default function BlogPage() {
                 <button
                   key={cat}
                   onClick={() => setFilter(cat)}
+                  data-testid={`blog-filter-${cat}`}
                   className={`font-body font-medium text-sm px-4 py-2 rounded-full border transition-all ${
                     filter === cat
                       ? 'bg-deep-brown text-cream border-deep-brown'
@@ -1064,6 +1066,7 @@ export default function BlogPage() {
             <div className="relative max-w-[760px] mx-auto px-6 pt-10 pb-12 md:pt-14 md:pb-16">
               <button
                 onClick={() => setActiveSlug(null)}
+                data-testid="blog-back"
                 className={`inline-flex items-center gap-2 font-body font-medium text-sm mb-8 transition-colors ${
                   activePost.image ? 'text-cream/90 hover:text-cream' : 'text-earth hover:text-deep-brown'
                 }`}
@@ -1103,7 +1106,7 @@ export default function BlogPage() {
           </div>
 
           {/* Article body */}
-          <div className="max-w-[720px] mx-auto px-6 pt-10">
+          <div data-testid="blog-article-content" className="max-w-[720px] mx-auto px-6 pt-10">
             <p className="font-body text-lg text-earth leading-relaxed mb-8 pb-8 border-b border-soft-peach">
               {activePost.excerpt}
             </p>

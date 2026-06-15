@@ -5,6 +5,24 @@ vi.mock('../../api/_lib/rateLimit.js', () => ({
   getClientIp: vi.fn(() => '127.0.0.1'),
 }));
 
+let lastSessionCreateParams: Record<string, unknown> | null = null;
+const createSessionMock = vi.fn(async (params: Record<string, unknown>) => {
+  lastSessionCreateParams = params;
+  return { url: 'https://checkout.stripe.com/test-session' };
+});
+
+vi.mock('stripe', () => ({
+  default: vi.fn().mockImplementation(function () {
+    return {
+      checkout: {
+        sessions: {
+          create: createSessionMock,
+        },
+      },
+    };
+  }),
+}));
+
 import handler from '../../api/checkout';
 
 function mockReq(overrides: Partial<Parameters<typeof handler>[0]> = {}): Parameters<typeof handler>[0] {
@@ -36,6 +54,8 @@ function mockRes() {
 describe('checkout API handler', () => {
   beforeEach(() => {
     process.env.STRIPE_SECRET_KEY = 'sk_test_fake_key_for_validation';
+    lastSessionCreateParams = null;
+    createSessionMock.mockClear();
   });
 
   it('rejects non-POST requests', async () => {
@@ -84,5 +104,45 @@ describe('checkout API handler', () => {
     await handler(req, res);
     expect(res.statusCode).toBe(500);
     expect(res._json.error).toMatch(/STRIPE_SECRET_KEY not configured/i);
+  });
+
+  it('passes gift info into Stripe session metadata', async () => {
+    const req = mockReq({
+      body: {
+        items: [{ id: 'unpasteurized', quantity: 1 }],
+        giftInfo: {
+          isGift: true,
+          recipientEmail: 'gift@example.com',
+          recipientName: 'Gift Recipient',
+          message: 'Enjoy!',
+        },
+      },
+    });
+    const res = mockRes();
+    await handler(req, res);
+
+    expect(res.statusCode).toBe(200);
+    expect(res._json.url).toMatch(/^https:\/\/checkout\.stripe\.com\//);
+
+    expect(lastSessionCreateParams?.metadata).toMatchObject({
+      isGift: 'true',
+      recipientEmail: 'gift@example.com',
+      recipientName: 'Gift Recipient',
+      giftMessage: 'Enjoy!',
+    });
+  });
+
+  it('passes referral code into Stripe session metadata', async () => {
+    const req = mockReq({
+      body: {
+        items: [{ id: 'unpasteurized', quantity: 1 }],
+        referralCode: 'BRO1234',
+      },
+    });
+    const res = mockRes();
+    await handler(req, res);
+
+    expect(res.statusCode).toBe(200);
+    expect(lastSessionCreateParams?.metadata).toMatchObject({ referralCode: 'BRO1234' });
   });
 });
