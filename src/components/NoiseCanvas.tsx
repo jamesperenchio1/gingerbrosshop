@@ -153,6 +153,8 @@ export default function NoiseCanvas() {
     let mouseY = 0.5;
     let mouseActive = 0;
     let running = true;
+    let onScreen = true;
+    let frameId = 0;
 
     function resize() {
       const dpr = Math.min(window.devicePixelRatio || 1, 2);
@@ -173,7 +175,7 @@ export default function NoiseCanvas() {
       gl!.uniform2f(uMouse, mouseX, mouseY);
       gl!.uniform1f(uMouseActive, mouseActive);
       gl!.drawArrays(gl!.TRIANGLES, 0, 3);
-      requestAnimationFrame(render);
+      if (onScreen) frameId = requestAnimationFrame(render);
     }
 
     function onMove(e: MouseEvent) {
@@ -182,15 +184,27 @@ export default function NoiseCanvas() {
       mouseY = 1.0 - e.clientY / window.innerHeight;
     }
 
-    window.addEventListener('mousemove', onMove);
-    window.addEventListener('resize', () => {
-      // resize will be called on next frame
-    });
+    // Pause the render loop when the hero is scrolled out of view to save GPU/battery.
+    const io = new IntersectionObserver((entries) => {
+      const visible = entries[0].isIntersecting;
+      if (visible && !onScreen) {
+        onScreen = true;
+        frameId = requestAnimationFrame(render);
+      } else if (!visible) {
+        onScreen = false;
+      }
+    }, { threshold: 0 });
+    io.observe(canvas);
 
-    requestAnimationFrame(render);
+    window.addEventListener('mousemove', onMove);
+
+    frameId = requestAnimationFrame(render);
 
     return () => {
       running = false;
+      onScreen = false;
+      cancelAnimationFrame(frameId);
+      io.disconnect();
       window.removeEventListener('mousemove', onMove);
     };
   }, []);
