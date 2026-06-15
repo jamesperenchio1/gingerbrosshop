@@ -1,5 +1,10 @@
 import { test, expect } from '@playwright/test';
 
+test.beforeEach(async ({ page }) => {
+  await page.goto('/');
+  await page.evaluate(() => localStorage.clear());
+});
+
 test('add to cart from product page opens global drawer', async ({ page }) => {
   await page.goto('/product/unpasteurized');
   await expect(page.locator('h1')).toContainText('Unpasteurized Ginger Beer');
@@ -51,8 +56,8 @@ test('cart badge shows item count in navigation', async ({ page }) => {
   await page.getByRole('button', { name: /add to cart/i }).first().click();
   await expect(cartBtn.locator('span.absolute')).toHaveText('1');
 
-  // Increase quantity
-  await page.getByRole('button', { name: /increase quantity/i }).click();
+  // Increase quantity in the open cart drawer
+  await page.locator('div.z-\\[70\\]').getByRole('button', { name: /increase quantity/i }).click();
   await expect(cartBtn.locator('span.absolute')).toHaveText('2');
 });
 

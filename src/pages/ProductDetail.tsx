@@ -2,7 +2,7 @@ import { useState, useRef, useEffect, useLayoutEffect } from 'react';
 import { useParams } from 'react-router';
 import gsap from 'gsap';
 import { useCart } from '@/context/CartContext';
-import { PlusIcon, MinusIcon, SnowflakeIcon } from '@/components/Icons';
+import { PlusIcon, MinusIcon } from '@/components/Icons';
 import SEO from '@/components/SEO';
 import NotFound from '@/pages/NotFound';
 
@@ -50,8 +50,8 @@ const PRODUCTS: Record<string, ProductData> = {
     name: 'Unpasteurized Ginger Beer',
     headline: 'Raw, living ginger beer with active cultures. Maximum probiotics, maximum flavor.',
     price: 140,
-    badge: 'Chilled Delivery',
-    badgeColor: 'bg-sky-500',
+    badge: 'CHILLED DELIVERY',
+    badgeColor: 'bg-grab-green',
     images: [
       '/images/product-unpasteurized-2.jpg',
       '/images/product-unpasteurized.jpg',
@@ -193,23 +193,8 @@ export default function ProductDetail() {
         type="product"
         jsonLd={[productJsonLd, breadcrumbJsonLd]}
       />
-      {/* Top Bar */}
-      <div className="sticky top-0 z-50 bg-warm-white/95 backdrop-blur-xl border-b border-soft-peach/50">
-        <div className="max-w-[1280px] mx-auto px-6 h-14 flex items-center justify-between">
-          <a
-            href="/"
-            className="flex items-center gap-2 font-body font-medium text-sm text-earth hover:text-deep-brown transition-colors"
-          >
-            <ArrowLeftIcon2 />
-            Back to Shop
-          </a>
-          <span className="font-display font-bold text-lg text-deep-brown">GingerBros</span>
-          <div className="w-20" />
-        </div>
-      </div>
-
       {/* Main Content */}
-      <div className="max-w-[1280px] mx-auto px-6 py-12 md:py-16">
+      <div className="max-w-[1280px] mx-auto px-6 pt-24 md:pt-28 pb-12 md:pb-16">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16">
           {/* Left: Image Gallery */}
           <div ref={heroRef}>
@@ -265,9 +250,16 @@ export default function ProductDetail() {
 
           {/* Right: Product Info */}
           <div ref={infoRef}>
+            <a
+              href="/"
+              className="inline-flex items-center gap-2 font-body font-medium text-[13px] text-earth hover:text-deep-brown transition-colors mb-4"
+            >
+              <ArrowLeftIcon2 />
+              Back to Shop
+            </a>
+
             {/* Badge */}
-            <span className="inline-flex items-center gap-1.5 bg-sky-50 text-sky-700 border border-sky-200/80 font-body font-semibold text-[11px] uppercase tracking-[0.06em] px-3 py-1.5 rounded-full mb-4">
-              <SnowflakeIcon className="w-3.5 h-3.5" />
+            <span className={`inline-block ${product.badgeColor} text-white font-body font-semibold text-[11px] uppercase tracking-wider px-3 py-1.5 rounded-full mb-4`}>
               {product.badge}
             </span>
 
