@@ -7,14 +7,14 @@ test.beforeEach(async ({ page }) => {
 
 test('add to cart from product page opens global drawer', async ({ page }) => {
   await page.goto('/product/unpasteurized');
-  await expect(page.locator('h1')).toContainText('Unpasteurized Ginger Beer');
+  await expect(page.locator('h1')).toContainText('Unpasteurized Ginger Fizz');
 
   const addBtn = page.getByRole('button', { name: /add to cart/i }).first();
   await addBtn.click();
 
   // Cart drawer should open immediately without navigating away
   await expect(page.getByRole('heading', { name: /your cart/i })).toBeVisible({ timeout: 5_000 });
-  await expect(page.getByText('Unpasteurized Ginger Beer').nth(1)).toBeVisible();
+  await expect(page.getByText('Unpasteurized Ginger Fizz').nth(1)).toBeVisible();
 
   // Cart should be accessible from the nav cart button
   await page.locator('div.fixed.inset-0.bg-black\\/20').first().click();
@@ -29,7 +29,7 @@ test('cart persists after reload on product page', async ({ page }) => {
   await expect(page.getByRole('heading', { name: /your cart/i })).toBeVisible();
   await page.reload();
   await page.locator('nav').getByRole('button', { name: /cart/i }).click();
-  await expect(page.getByText('Unpasteurized Ginger Beer').nth(1)).toBeVisible();
+  await expect(page.getByText('Unpasteurized Ginger Fizz').nth(1)).toBeVisible();
 });
 
 test('cart drawer does not show payment method selector', async ({ page }) => {
@@ -44,7 +44,7 @@ test('cart drawer does not show payment method selector', async ({ page }) => {
 test('hero headline is visible without bottle overlay', async ({ page }) => {
   await page.goto('/');
   const hero = page.locator('#hero');
-  await expect(hero.getByRole('heading', { name: /GingerBros Ginger Beer/i })).toBeVisible();
+  await expect(hero.getByRole('heading', { name: /GingerBros Ginger Fizz/i })).toBeVisible();
   await expect(hero.locator('img[alt*="bottle" i]')).not.toBeVisible();
 });
 
@@ -67,8 +67,8 @@ test('cart stays open when navigating to a product page', async ({ page }) => {
   await expect(page.getByRole('heading', { name: /your cart/i })).toBeVisible();
 
   // Click the product image in the cart to navigate via client-side routing
-  await page.locator('div.z-\\[70\\] img[alt="Unpasteurized Ginger Beer"]').first().click();
-  await expect(page.locator('h1')).toContainText('Unpasteurized Ginger Beer');
+  await page.locator('div.z-\\[70\\] img[alt="Unpasteurized Ginger Fizz"]').first().click();
+  await expect(page.locator('h1')).toContainText('Unpasteurized Ginger Fizz');
   await expect(page.getByRole('heading', { name: /your cart/i })).toBeVisible();
   await expect(page.locator('div.fixed.inset-0.bg-black\\/20')).toBeAttached();
 });

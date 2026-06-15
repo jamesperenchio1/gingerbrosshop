@@ -8,7 +8,7 @@ export default function ReturnsPage() {
     <div className="min-h-screen bg-warm-white">
       <SEO
         title="Returns & Refund Policy | GingerBros"
-        description="GingerBros return policy for craft ginger beer. Damaged or incorrect orders? Contact us within 24 hours with photos for a replacement or full refund."
+        description="GingerBros return policy for craft ginger fizz. Damaged or incorrect orders? Contact us within 24 hours with photos for a replacement or full refund."
         path="/returns"
       />
       <div className="sticky top-0 z-50 bg-warm-white/95 backdrop-blur-xl border-b border-soft-peach/50">
@@ -31,7 +31,7 @@ export default function ReturnsPage() {
             <div>
               <h2 className="font-display font-semibold text-deep-brown text-lg mb-2">Perishable Goods Policy</h2>
               <p className="font-body text-earth leading-relaxed">
-                Because ginger beer is a perishable food product, we cannot accept returns for change of mind. This is standard practice for all food and beverage businesses. However, we stand behind our product 100%.
+                Because ginger fizz is a perishable food product, we cannot accept returns for change of mind. This is standard practice for all food and beverage businesses. However, we stand behind our product 100%.
               </p>
             </div>
           </div>

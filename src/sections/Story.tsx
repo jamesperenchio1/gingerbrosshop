@@ -79,7 +79,7 @@ export default function Story() {
               Brewed with Patience, Served with Pride
             </h2>
             <p className="font-body text-earth leading-relaxed mb-4">
-              GingerBros started with a simple belief: the best things take time. Every batch of our ginger beer undergoes a full 7-day natural fermentation process using only four ingredients — ginger, water, sugar, and live cultures.
+              GingerBros started with a simple belief: the best things take time. Every batch of our ginger fizz undergoes a full 7-day natural fermentation process using only four ingredients — ginger, water, sugar, and live cultures.
             </p>
             <p className="font-body text-earth leading-relaxed mb-8">
               What begins as a humble blend transforms through patience into a crisp, refreshing drink that&apos;s naturally high in vitamin B and ginger-derived prebiotic compounds. Good for the gut, great for the soul.

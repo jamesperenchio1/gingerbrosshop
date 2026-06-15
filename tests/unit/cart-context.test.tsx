@@ -9,7 +9,7 @@ const wrapper = ({ children }: { children: React.ReactNode }) => (
 
 const sampleItem: CartItem = {
   id: 'unpasteurized',
-  name: 'Unpasteurized Ginger Beer',
+  name: 'Unpasteurized Ginger Fizz',
   variant: 'unpasteurized',
   price: 140,
   quantity: 1,
@@ -20,7 +20,7 @@ const sampleItem: CartItem = {
 
 const sampleItem2: CartItem = {
   id: 'pasteurized',
-  name: 'Pasteurized Ginger Beer',
+  name: 'Pasteurized Ginger Fizz',
   variant: 'unpasteurized',
   price: 120,
   quantity: 2,

@@ -52,7 +52,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       subject: 'Welcome to the Brew Crew 🍺',
       html: `<div style="font-family:system-ui,sans-serif;max-width:480px;margin:0 auto;padding:24px;color:#3D2410;">
         <h2 style="color:#3D2410;">Welcome to the Brew Crew!</h2>
-        <p>Thanks for subscribing. You'll be the first to hear about new flavors, exclusive offers, and ginger beer tips.</p>
+        <p>Thanks for subscribing. You'll be the first to hear about new flavors, exclusive offers, and ginger fizz tips.</p>
         <p style="margin-top:24px;font-size:13px;color:#888;">Brewed with patience in Thailand.<br>GingerBros</p>
       </div>`,
     });

@@ -47,8 +47,8 @@ interface ProductData {
 const PRODUCTS: Record<string, ProductData> = {
   unpasteurized: {
     id: 'unpasteurized',
-    name: 'Unpasteurized Ginger Beer',
-    headline: 'Raw, living ginger beer with active cultures. Maximum probiotics, maximum flavor.',
+    name: 'Unpasteurized Ginger Fizz',
+    headline: 'Raw, living ginger fizz with active cultures. Maximum probiotics, maximum flavor.',
     price: 140,
     badge: 'CHILLED DELIVERY',
     badgeColor: 'bg-grab-green',
@@ -57,8 +57,8 @@ const PRODUCTS: Record<string, ProductData> = {
       '/images/product-unpasteurized.jpg',
     ],
     video: '/images/product-unpasteurized.mp4',
-    description: 'Our unpasteurized ginger beer is the raw, living version — never heated, never filtered. Packed with active probiotic cultures and a bolder, more complex flavor. Must be kept refrigerated.',
-    longDescription: 'Our unpasteurized ginger beer is ginger beer in its purest form. After 7 days of natural fermentation, we strain and bottle immediately — no heat treatment, no filtering, no intervention. This means every bottle contains billions of live, active probiotic cultures that continue to develop the flavor over time. The taste is bold, complex, and naturally effervescent. Because it is a living product, it must be kept refrigerated and consumed within 30 days of bottling. The natural sediment you may see is normal — it is the live cultures and ginger particles that make this brew so special.',
+    description: 'Our unpasteurized ginger fizz is the raw, living version — never heated, never filtered. Packed with active probiotic cultures and a bolder, more complex flavor. Must be kept refrigerated.',
+    longDescription: 'Our unpasteurized ginger fizz is ginger fizz in its purest form. After 7 days of natural fermentation, we strain and bottle immediately — no heat treatment, no filtering, no intervention. This means every bottle contains billions of live, active probiotic cultures that continue to develop the flavor over time. The taste is bold, complex, and naturally effervescent. Because it is a living product, it must be kept refrigerated and consumed within 30 days of bottling. The natural sediment you may see is normal — it is the live cultures and ginger particles that make this brew so special.',
     ingredients: ['Fresh Ginger', 'Filtered Water', 'Raw Cane Sugar', 'Live Cultures (Ginger Bug)'],
     specs: [
       { label: 'Volume', value: '330ml per bottle' },

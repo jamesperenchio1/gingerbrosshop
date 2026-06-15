@@ -11,7 +11,7 @@ export default function WholesalePage() {
     {
       icon: <Truck className="w-8 h-8 text-amber" />,
       title: 'Chilled Delivery',
-      description: 'Our unpasteurized ginger beer is shipped chilled with insulated packaging and ice packs to keep cultures alive.',
+      description: 'Our unpasteurized ginger fizz is shipped chilled with insulated packaging and ice packs to keep cultures alive.',
     },
     {
       icon: <BadgeCheck className="w-8 h-8 text-amber" />,
@@ -29,7 +29,7 @@ export default function WholesalePage() {
     '@context': 'https://schema.org',
     '@type': 'WebPage',
     name: 'Wholesale — GingerBros',
-    description: 'Wholesale pricing for cafes, restaurants, bars, and retailers. Order chilled unpasteurized ginger beer in Thailand.',
+    description: 'Wholesale pricing for cafes, restaurants, bars, and retailers. Order chilled unpasteurized ginger fizz in Thailand.',
     url: 'https://gingerbrosshop.com/wholesale',
     mainEntity: {
       '@type': 'Organization',
@@ -42,7 +42,7 @@ export default function WholesalePage() {
     <div className="min-h-screen bg-warm-white">
       <SEO
         title="Wholesale — GingerBros"
-        description="Wholesale pricing for cafes, restaurants, bars, and retailers. Order chilled unpasteurized ginger beer in Thailand."
+        description="Wholesale pricing for cafes, restaurants, bars, and retailers. Order chilled unpasteurized ginger fizz in Thailand."
         path="/wholesale"
         jsonLd={jsonLd}
       />
@@ -57,7 +57,7 @@ export default function WholesalePage() {
               GingerBros Wholesale
             </h1>
             <p className="font-body text-earth text-lg max-w-[600px] mx-auto leading-relaxed">
-              Serve Thailand’s best craft ginger beer at your venue. Premium margins, reliable supply, and a product customers actually remember.
+              Serve Thailand’s best craft ginger fizz at your venue. Premium margins, reliable supply, and a product customers actually remember.
             </p>
           </div>
 

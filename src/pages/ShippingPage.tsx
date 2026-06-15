@@ -12,7 +12,7 @@ export default function ShippingPage() {
     '@context': 'https://schema.org',
     '@type': 'WebPage',
     name: 'Shipping Information — GingerBros',
-    description: 'Shipping rates and delivery information for GingerBros unpasteurized ginger beer. Chilled nationwide delivery across Thailand.',
+    description: 'Shipping rates and delivery information for GingerBros unpasteurized ginger fizz. Chilled nationwide delivery across Thailand.',
     url: 'https://gingerbrosshop.com/shipping',
   };
 
@@ -20,7 +20,7 @@ export default function ShippingPage() {
     <div className="min-h-screen bg-warm-white">
       <SEO
         title="Shipping Information — GingerBros"
-        description="Shipping rates and delivery information for GingerBros unpasteurized ginger beer. Chilled nationwide delivery across Thailand."
+        description="Shipping rates and delivery information for GingerBros unpasteurized ginger fizz. Chilled nationwide delivery across Thailand."
         path="/shipping"
         jsonLd={jsonLd}
       />
@@ -34,7 +34,7 @@ export default function ShippingPage() {
               Shipping Information
             </h1>
             <p className="font-body text-earth text-lg max-w-[600px] mx-auto leading-relaxed">
-              Fresh ginger beer shipped chilled to your door across Thailand.
+              Fresh ginger fizz shipped chilled to your door across Thailand.
             </p>
           </div>
 
@@ -63,7 +63,7 @@ export default function ShippingPage() {
                 Unpasteurized — Chilled Nationwide
               </h3>
               <p className="font-body text-[14px] text-earth leading-relaxed mb-4">
-                Our unpasteurized ginger beer is a raw, living product. It is packed in insulated boxes with ice packs and shipped via chilled courier across Thailand. Please refrigerate immediately on arrival.
+                Our unpasteurized ginger fizz is a raw, living product. It is packed in insulated boxes with ice packs and shipped via chilled courier across Thailand. Please refrigerate immediately on arrival.
               </p>
               <div className="flex items-center gap-2 text-[13px] text-earth">
                 <Clock className="w-4 h-4 text-rust" />
