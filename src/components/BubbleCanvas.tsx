@@ -24,6 +24,8 @@ export default function BubbleCanvas() {
 
     let running = true;
     let needsResize = true;
+    let onScreen = true;
+    let frameId = 0;
     const bubbles: Bubble[] = [];
     const MAX_BUBBLES = 100;
     let cssW = 0;
@@ -120,12 +122,32 @@ export default function BubbleCanvas() {
         ctx!.fill();
       }
 
-      requestAnimationFrame(render);
+      if (onScreen) frameId = requestAnimationFrame(render);
     }
 
-    window.addEventListener('resize', () => { needsResize = true; });
-    requestAnimationFrame(render);
-    return () => { running = false; };
+    const onResize = () => { needsResize = true; };
+    window.addEventListener('resize', onResize);
+
+    // Pause the bubble animation when the hero is scrolled out of view.
+    const io = new IntersectionObserver((entries) => {
+      const visible = entries[0].isIntersecting;
+      if (visible && !onScreen) {
+        onScreen = true;
+        frameId = requestAnimationFrame(render);
+      } else if (!visible) {
+        onScreen = false;
+      }
+    }, { threshold: 0 });
+    io.observe(canvas);
+
+    frameId = requestAnimationFrame(render);
+    return () => {
+      running = false;
+      onScreen = false;
+      cancelAnimationFrame(frameId);
+      io.disconnect();
+      window.removeEventListener('resize', onResize);
+    };
   }, []);
 
   return (

@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useLayoutEffect } from 'react';
 import { useParams } from 'react-router';
 import gsap from 'gsap';
 import { useCart } from '@/context/CartContext';
@@ -97,38 +97,45 @@ const PRODUCTS: Record<string, ProductData> = {
 export default function ProductDetail() {
   const { id } = useParams<{ id: string }>();
   const { addItem } = useCart();
-
   const product = PRODUCTS[id ?? ''];
-  if (!product) {
-    return <NotFound />;
-  }
 
   const [activeImage, setActiveImage] = useState(0);
   const [quantity, setQuantity] = useState(1);
   const [added, setAdded] = useState(false);
   const [activeTab, setActiveTab] = useState<'details' | 'nutrition' | 'specs'>('details');
-
-  const heroRef = useRef<HTMLDivElement>(null);
-  const infoRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    window.scrollTo(0, 0);
-    setActiveImage(0);
-    setQuantity(1);
-  }, [id]);
-
-  useEffect(() => {
-    const ctx = gsap.context(() => {
-      gsap.to(heroRef.current, { opacity: 1, y: 0, duration: 0.7, ease: 'power3.out' });
-      gsap.to(infoRef.current, { opacity: 1, y: 0, duration: 0.7, delay: 0.15, ease: 'power3.out' });
-    });
-    return () => ctx.revert();
-  }, [id]);
-
   const [isGift, setIsGift] = useState(false);
   const [giftEmail, setGiftEmail] = useState('');
   const [giftName, setGiftName] = useState('');
   const [giftMessage, setGiftMessage] = useState('');
+
+  const heroRef = useRef<HTMLDivElement>(null);
+  const infoRef = useRef<HTMLDivElement>(null);
+
+  // Reset per-product UI state when the product changes (render-phase, per React docs).
+  const [prevId, setPrevId] = useState(id);
+  if (id !== prevId) {
+    setPrevId(id);
+    setActiveImage(0);
+    setQuantity(1);
+  }
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [id]);
+
+  useLayoutEffect(() => {
+    if (!product) return;
+    const ctx = gsap.context(() => {
+      gsap.from(heroRef.current, { opacity: 0, y: 20, duration: 0.7, ease: 'power3.out' });
+      gsap.from(infoRef.current, { opacity: 0, y: 20, duration: 0.7, delay: 0.15, ease: 'power3.out' });
+    });
+    return () => ctx.revert();
+  }, [id, product]);
+
+  // Keep all hooks above this guard so hook order is stable across renders.
+  if (!product) {
+    return <NotFound />;
+  }
 
   const handleAdd = () => {
     addItem({
@@ -205,7 +212,7 @@ export default function ProductDetail() {
       <div className="max-w-[1280px] mx-auto px-6 py-12 md:py-16">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16">
           {/* Left: Image Gallery */}
-          <div ref={heroRef} className="opacity-0 translate-y-[20px]">
+          <div ref={heroRef}>
             {/* Main Media */}
             <div className="rounded-[20px] overflow-hidden bg-cream mb-4 h-[400px] md:h-[500px] flex items-center justify-center">
               {product.video && activeImage === product.images.length ? (
@@ -257,7 +264,7 @@ export default function ProductDetail() {
           </div>
 
           {/* Right: Product Info */}
-          <div ref={infoRef} className="opacity-0 translate-y-[20px]">
+          <div ref={infoRef}>
             {/* Badge */}
             <span className="inline-flex items-center gap-1.5 bg-sky-50 text-sky-700 border border-sky-200/80 font-body font-semibold text-[11px] uppercase tracking-[0.06em] px-3 py-1.5 rounded-full mb-4">
               <SnowflakeIcon className="w-3.5 h-3.5" />

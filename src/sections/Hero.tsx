@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useLayoutEffect, useRef } from 'react';
 import gsap from 'gsap';
 import NoiseCanvas from '@/components/NoiseCanvas';
 import BubbleCanvas from '@/components/BubbleCanvas';
@@ -11,13 +11,13 @@ export default function Hero() {
   const ctaRef = useRef<HTMLDivElement>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     const tl = gsap.timeline({ defaults: { ease: 'power3.out' } });
-    tl.to(badgeRef.current, { opacity: 1, y: 0, duration: 0.5, delay: 0.2 })
-      .to(headlineRef.current, { opacity: 1, y: 0, duration: 0.8 }, '-=0.2')
-      .to(subRef.current, { opacity: 1, y: 0, duration: 0.6 }, '-=0.4')
-      .to(ctaRef.current, { opacity: 1, y: 0, duration: 0.5 }, '-=0.3')
-      .to(scrollRef.current, { opacity: 1, duration: 0.5 }, '-=0.2');
+    tl.from(badgeRef.current, { opacity: 0, y: -10, duration: 0.5, delay: 0.2 })
+      .from(headlineRef.current, { opacity: 0, y: 30, duration: 0.8 }, '-=0.2')
+      .from(subRef.current, { opacity: 0, y: 20, duration: 0.6 }, '-=0.4')
+      .from(ctaRef.current, { opacity: 0, y: 15, duration: 0.5 }, '-=0.3')
+      .from(scrollRef.current, { opacity: 0, duration: 0.5 }, '-=0.2');
 
     return () => { tl.kill(); };
   }, []);
@@ -45,7 +45,7 @@ export default function Hero() {
         {/* Badge */}
         <div
           ref={badgeRef}
-          className="opacity-0 translate-y-[-10px] mb-6"
+          className="mb-6"
         >
           <span className="inline-block bg-cream text-deep-brown font-body font-medium text-sm px-5 py-2 rounded-full">
             Naturally Brewed in Thailand
@@ -55,7 +55,7 @@ export default function Hero() {
         {/* Headline */}
         <h1
           ref={headlineRef}
-          className="opacity-0 translate-y-[30px] font-display font-bold text-deep-brown leading-[0.95] mb-4"
+          className="font-display font-bold text-deep-brown leading-[0.95] mb-4"
           style={{ fontSize: 'clamp(3rem, 8vw, 6rem)' }}
         >
           GingerBros
@@ -66,7 +66,7 @@ export default function Hero() {
         {/* Subheadline */}
         <p
           ref={subRef}
-          className="opacity-0 translate-y-[20px] font-body font-medium text-[15px] text-earth max-w-[500px] mb-8 leading-relaxed"
+          className="font-body font-medium text-[15px] text-earth max-w-[500px] mb-8 leading-relaxed"
         >
           7-day naturally fermented craft ginger beer. Low in sugar, good for the gut. Our unpasteurized brew is packed with live probiotics.
         </p>
@@ -74,7 +74,7 @@ export default function Hero() {
         {/* CTA Row */}
         <div
           ref={ctaRef}
-          className="opacity-0 translate-y-[15px] flex flex-wrap items-center justify-center gap-4"
+          className="flex flex-wrap items-center justify-center gap-4"
         >
           <button
             onClick={handleShopClick}
@@ -94,7 +94,7 @@ export default function Hero() {
       {/* Scroll indicator */}
       <div
         ref={scrollRef}
-        className="opacity-0 absolute bottom-8 left-1/2 -translate-x-1/2 z-10"
+        className="absolute bottom-8 left-1/2 -translate-x-1/2 z-10"
       >
         <ChevronDownIcon className="text-earth/40 animate-bounce-gentle" />
       </div>

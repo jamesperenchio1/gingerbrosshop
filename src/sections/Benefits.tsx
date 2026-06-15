@@ -30,9 +30,9 @@ export default function Benefits() {
 
   useEffect(() => {
     const ctx = gsap.context(() => {
-      gsap.to(headerRef.current, {
-        opacity: 1,
-        y: 0,
+      gsap.from(headerRef.current, {
+        opacity: 0,
+        y: 30,
         duration: 0.6,
         ease: 'power3.out',
         scrollTrigger: {
@@ -43,9 +43,9 @@ export default function Benefits() {
 
       const cards = cardsRef.current?.children;
       if (cards) {
-        gsap.to(Array.from(cards), {
-          opacity: 1,
-          y: 0,
+        gsap.from(Array.from(cards), {
+          opacity: 0,
+          y: 40,
           duration: 0.7,
           stagger: 0.12,
           ease: 'power3.out',
@@ -68,7 +68,7 @@ export default function Benefits() {
     >
       <div className="max-w-[1100px] mx-auto px-6">
         {/* Header */}
-        <div ref={headerRef} className="opacity-0 translate-y-[30px] text-center mb-16">
+        <div ref={headerRef} className="text-center mb-16">
           <span className="font-body font-medium text-[13px] uppercase tracking-[0.08em] text-rust mb-3 block">
             WHY GINGER BEER
           </span>
@@ -84,7 +84,7 @@ export default function Benefits() {
             return (
               <div
                 key={benefit.title}
-                className="opacity-0 translate-y-[40px] text-center"
+                className="text-center"
               >
                 {/* Icon */}
                 <div className="inline-flex items-center justify-center w-16 h-16 bg-cream rounded-full mb-5">
