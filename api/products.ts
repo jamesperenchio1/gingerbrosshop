@@ -61,8 +61,12 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
     for (const price of prices.data) {
       const product = price.product;
-      // Skip prices whose product is deleted or archived.
-      if (typeof product === 'string' || product.deleted || !product.active) {
+      // Skip prices whose product is deleted or archived. Split the guards so
+      // TypeScript narrows `product` to Stripe.Product before reading `.active`.
+      if (typeof product === 'string' || product.deleted) {
+        continue;
+      }
+      if (!product.active) {
         continue;
       }
 
