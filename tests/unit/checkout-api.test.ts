@@ -1,0 +1,88 @@
+import { describe, it, expect, vi, beforeEach } from 'vitest';
+
+vi.mock('../../api/_lib/rateLimit.js', () => ({
+  rateLimit: vi.fn(async () => ({ allowed: true, remaining: 10, reset: Date.now() })),
+  getClientIp: vi.fn(() => '127.0.0.1'),
+}));
+
+import handler from '../../api/checkout';
+
+function mockReq(overrides: Partial<Parameters<typeof handler>[0]> = {}): Parameters<typeof handler>[0] {
+  return {
+    method: 'POST',
+    headers: {},
+    socket: { remoteAddress: '127.0.0.1' },
+    body: { items: [] },
+    ...overrides,
+  } as Parameters<typeof handler>[0];
+}
+
+function mockRes() {
+  const res: any = {
+    statusCode: 200,
+    _json: null,
+    status(code: number) {
+      this.statusCode = code;
+      return this;
+    },
+    json(data: unknown) {
+      this._json = data;
+      return this;
+    },
+  };
+  return res as Parameters<typeof handler>[1];
+}
+
+describe('checkout API handler', () => {
+  beforeEach(() => {
+    process.env.STRIPE_SECRET_KEY = 'sk_test_fake_key_for_validation';
+  });
+
+  it('rejects non-POST requests', async () => {
+    const req = mockReq({ method: 'GET' });
+    const res = mockRes();
+    await handler(req, res);
+    expect(res.statusCode).toBe(405);
+    expect(res._json).toEqual({ error: 'Method not allowed' });
+  });
+
+  it('rejects empty cart', async () => {
+    const req = mockReq({ body: { items: [] } });
+    const res = mockRes();
+    await handler(req, res);
+    expect(res.statusCode).toBe(400);
+    expect(res._json.error).toMatch(/Cart is empty/i);
+  });
+
+  it('rejects unknown product', async () => {
+    const req = mockReq({ body: { items: [{ id: 'does-not-exist', quantity: 1 }] } });
+    const res = mockRes();
+    await handler(req, res);
+    expect(res.statusCode).toBe(400);
+    expect(res._json.error).toMatch(/Unknown product/i);
+  });
+
+  it('rejects mixed one-time and subscription items', async () => {
+    const req = mockReq({
+      body: {
+        items: [
+          { id: 'unpasteurized', quantity: 1 },
+          { id: 'unpasteurized-sub-week', quantity: 1 },
+        ],
+      },
+    });
+    const res = mockRes();
+    await handler(req, res);
+    expect(res.statusCode).toBe(400);
+    expect(res._json.error).toMatch(/Cannot mix/i);
+  });
+
+  it('rejects missing stripe secret', async () => {
+    delete process.env.STRIPE_SECRET_KEY;
+    const req = mockReq({ body: { items: [{ id: 'unpasteurized', quantity: 1 }] } });
+    const res = mockRes();
+    await handler(req, res);
+    expect(res.statusCode).toBe(500);
+    expect(res._json.error).toMatch(/STRIPE_SECRET_KEY not configured/i);
+  });
+});

@@ -3,6 +3,7 @@ import type { CartItem, CartState, CartAction } from '@/types/cart';
 
 
 const CART_EMAIL_KEY = 'gingerbros-cart-email';
+const CART_STORAGE_KEY = 'gingerbros-cart';
 
 function snapshotCart(email: string | null, items: CartItem[], subtotal: number) {
   if (!email || items.length === 0) return;
@@ -18,9 +19,9 @@ const initialState: CartState = {
   isOpen: false,
 };
 
-function loadState(): CartState {
+export function loadState(): CartState {
   try {
-    const stored = localStorage.getItem('gingerbros-cart');
+    const stored = localStorage.getItem(CART_STORAGE_KEY);
     if (stored) {
       return { ...JSON.parse(stored), isOpen: false };
     }
@@ -30,7 +31,7 @@ function loadState(): CartState {
   return initialState;
 }
 
-function cartReducer(state: CartState, action: CartAction): CartState {
+export function cartReducer(state: CartState, action: CartAction): CartState {
   switch (action.type) {
     case 'ADD_ITEM': {
       const existing = state.items.find(item => item.id === action.payload.id);
@@ -123,7 +124,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     const toStore = { items: state.items, isOpen: false };
-    localStorage.setItem('gingerbros-cart', JSON.stringify(toStore));
+    localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(toStore));
     const email = typeof window !== 'undefined' ? localStorage.getItem(CART_EMAIL_KEY) : null;
     const subtotal = state.items.reduce((sum, item) => sum + item.price * item.quantity, 0);
     const id = window.setTimeout(() => { snapshotCart(email, state.items, subtotal); }, 1500);

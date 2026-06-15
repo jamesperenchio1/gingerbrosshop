@@ -6,9 +6,9 @@ import { CloseIcon, TrashIcon, LockIcon, ShoppingBagIcon, PlusIcon, MinusIcon } 
 export default function CartDrawer() {
   const { state, closeCart, removeItem, updateQuantity, decrementOrRemove, subtotal } = useCart();
   const drawerRef = useRef<HTMLDivElement>(null);
+  const [mounted, setMounted] = useState(state.isOpen);
   const [isCheckingOut, setIsCheckingOut] = useState(false);
   const [checkoutError, setCheckoutError] = useState('');
-  const [paymentMethod, setPaymentMethod] = useState<'card' | 'cod'>('card');
   const [cartEmail, setCartEmail] = useState('');
   const [cartEmailSaved, setCartEmailSaved] = useState(false);
   const [referralCode, setReferralCode] = useState('');
@@ -17,15 +17,32 @@ export default function CartDrawer() {
   const navigate = useNavigate();
 
   useEffect(() => {
+    if (state.isOpen) {
+      setMounted(true);
+    } else {
+      const id = window.setTimeout(() => setMounted(false), 300);
+      return () => window.clearTimeout(id);
+    }
+  }, [state.isOpen]);
+
+  useEffect(() => {
     const handleKey = (e: KeyboardEvent) => {
       if (e.key === 'Escape') closeCart();
+    };
+    const handlePageShow = () => {
+      // Reset body overflow when page is restored from bfcache
+      if (!state.isOpen) {
+        document.body.style.overflow = '';
+      }
     };
     if (state.isOpen) {
       document.addEventListener('keydown', handleKey);
       document.body.style.overflow = 'hidden';
     }
+    window.addEventListener('pageshow', handlePageShow);
     return () => {
       document.removeEventListener('keydown', handleKey);
+      window.removeEventListener('pageshow', handlePageShow);
       document.body.style.overflow = '';
     };
   }, [state.isOpen, closeCart]);
@@ -65,7 +82,6 @@ export default function CartDrawer() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           items: state.items.map(i => ({ id: i.id, quantity: i.quantity })),
-          paymentMethod,
           referralCode: referralApplied ? referralCode : '',
           giftInfo: state.items.some(i => i.isGift) ? {
             isGift: true,
@@ -93,9 +109,10 @@ export default function CartDrawer() {
   };
 
   const handleViewProduct = (productId: string) => {
-    closeCart();
     navigate(`/product/${getProductId(productId)}`);
   };
+
+  if (!mounted) return null;
 
   return (
     <>
@@ -116,7 +133,7 @@ export default function CartDrawer() {
           <h2 className="font-display font-semibold text-deep-brown text-[1.25rem]">
             Your Cart
           </h2>
-          <button onClick={closeCart} className="text-deep-brown hover:text-rust transition-colors">
+          <button onClick={closeCart} aria-label="Close cart" className="text-deep-brown hover:text-rust transition-colors">
             <CloseIcon />
           </button>
         </div>
@@ -216,40 +233,20 @@ export default function CartDrawer() {
             <p className="font-body font-medium text-[13px] text-earth/60 mb-2">
               {subtotal >= 500 ? 'Free shipping unlocked!' : 'Free shipping on orders over ฿500'}
             </p>
-
-            {/* Payment Method Selector */}
-            {!state.items.some(i => i.isSubscription) && (
-              <div className="flex bg-cream rounded-full p-1 mb-4">
-                <button
-                  onClick={() => setPaymentMethod('card')}
-                  className={`flex-1 font-body font-medium text-[12px] py-2 rounded-full transition-all ${
-                    paymentMethod === 'card' ? 'bg-deep-brown text-cream' : 'text-earth'
-                  }`}
-                >
-                  Card / PromptPay
-                </button>
-                <button
-                  onClick={() => setPaymentMethod('cod')}
-                  className={`flex-1 font-body font-medium text-[12px] py-2 rounded-full transition-all ${
-                    paymentMethod === 'cod' ? 'bg-deep-brown text-cream' : 'text-earth'
-                  }`}
-                >
-                  Cash on Delivery
-                </button>
-              </div>
-            )}
-
             <p className="font-body font-medium text-[13px] text-earth/60 mb-5">
-              Shipping calculated at checkout
+              Shipping & payment handled securely on Stripe
             </p>
 
             <button
               onClick={handleCheckout}
               disabled={isCheckingOut}
-              className="w-full bg-deep-brown text-cream font-body font-medium text-sm uppercase tracking-[0.08em] py-4 rounded-full hover:bg-rust active:scale-[0.98] transition-all duration-200 flex items-center justify-center gap-2 disabled:opacity-70"
+              className="w-full bg-deep-brown text-cream font-body font-medium text-sm uppercase tracking-[0.08em] py-4 rounded-full hover:bg-rust active:scale-[0.98] transition-all duration-200 flex items-center justify-center gap-2 disabled:opacity-90"
             >
               {isCheckingOut ? (
-                <span className="w-5 h-5 border-2 border-cream/30 border-t-cream rounded-full animate-spin" />
+                <>
+                  <span className="w-5 h-5 border-2 border-cream/30 border-t-cream rounded-full animate-spin" />
+                  <span>Redirecting to Stripe…</span>
+                </>
               ) : (
                 <>
                   <LockIcon />

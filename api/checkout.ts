@@ -35,19 +35,12 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return;
   }
 
-  const paymentMethod = (req.body?.paymentMethod as string | undefined) ?? 'card';
   const referralCode = (req.body?.referralCode as string | undefined) ?? '';
   const hasSubscription = items.some((i) => i.id.endsWith('-sub-week') || i.id.endsWith('-sub-2week') || i.id.endsWith('-sub-month'));
   const hasOneTime = items.some((i) => !i.id.includes('-sub-'));
 
   if (hasSubscription && hasOneTime) {
     res.status(400).json({ error: 'Cannot mix one-time and subscription items. Please checkout separately.' });
-    return;
-  }
-
-  // COD not available for subscriptions
-  if (hasSubscription && paymentMethod === 'cod') {
-    res.status(400).json({ error: 'Cash on Delivery is not available for subscriptions. Please use card payment.' });
     return;
   }
 
@@ -90,7 +83,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       shipping_address_collection: { allowed_countries: ['TH'] },
       phone_number_collection: { enabled: true },
       allow_promotion_codes: true,
-      payment_method_types: paymentMethod === 'cod' ? ['card', 'promptpay'] : undefined,
+      payment_method_types: ['card', 'promptpay'],
       metadata,
     });
     res.status(200).json({ url: session.url });

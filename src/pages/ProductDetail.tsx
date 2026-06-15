@@ -98,15 +98,14 @@ export default function ProductDetail() {
   const { id } = useParams<{ id: string }>();
   const { addItem } = useCart();
 
-  const product = PRODUCTS[id ?? ''];
-  if (!product) {
-    return <NotFound />;
-  }
-
   const [activeImage, setActiveImage] = useState(0);
   const [quantity, setQuantity] = useState(1);
   const [added, setAdded] = useState(false);
   const [activeTab, setActiveTab] = useState<'details' | 'nutrition' | 'specs'>('details');
+  const [isGift, setIsGift] = useState(false);
+  const [giftEmail, setGiftEmail] = useState('');
+  const [giftName, setGiftName] = useState('');
+  const [giftMessage, setGiftMessage] = useState('');
 
   const heroRef = useRef<HTMLDivElement>(null);
   const infoRef = useRef<HTMLDivElement>(null);
@@ -125,10 +124,10 @@ export default function ProductDetail() {
     return () => ctx.revert();
   }, [id]);
 
-  const [isGift, setIsGift] = useState(false);
-  const [giftEmail, setGiftEmail] = useState('');
-  const [giftName, setGiftName] = useState('');
-  const [giftMessage, setGiftMessage] = useState('');
+  const product = PRODUCTS[id ?? ''];
+  if (!product) {
+    return <NotFound />;
+  }
 
   const handleAdd = () => {
     addItem({
@@ -186,23 +185,8 @@ export default function ProductDetail() {
         type="product"
         jsonLd={[productJsonLd, breadcrumbJsonLd]}
       />
-      {/* Top Bar */}
-      <div className="sticky top-0 z-50 bg-warm-white/95 backdrop-blur-xl border-b border-soft-peach/50">
-        <div className="max-w-[1280px] mx-auto px-6 h-14 flex items-center justify-between">
-          <a
-            href="/"
-            className="flex items-center gap-2 font-body font-medium text-sm text-earth hover:text-deep-brown transition-colors"
-          >
-            <ArrowLeftIcon2 />
-            Back to Shop
-          </a>
-          <span className="font-display font-bold text-lg text-deep-brown">GingerBros</span>
-          <div className="w-20" />
-        </div>
-      </div>
-
       {/* Main Content */}
-      <div className="max-w-[1280px] mx-auto px-6 py-12 md:py-16">
+      <div className="max-w-[1280px] mx-auto px-6 pt-24 md:pt-28 pb-12 md:pb-16">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16">
           {/* Left: Image Gallery */}
           <div ref={heroRef} className="opacity-0 translate-y-[20px]">
@@ -258,6 +242,14 @@ export default function ProductDetail() {
 
           {/* Right: Product Info */}
           <div ref={infoRef} className="opacity-0 translate-y-[20px]">
+            <a
+              href="/"
+              className="inline-flex items-center gap-2 font-body font-medium text-[13px] text-earth hover:text-deep-brown transition-colors mb-4"
+            >
+              <ArrowLeftIcon2 />
+              Back to Shop
+            </a>
+
             {/* Badge */}
             <span className={`inline-block ${product.badgeColor} text-white font-body font-semibold text-[11px] uppercase tracking-wider px-3 py-1.5 rounded-full mb-4`}>
               {product.badge}

@@ -75,12 +75,12 @@ export default function Process() {
               className="opacity-0 translate-y-[40px] bg-cream rounded-[20px] p-8"
             >
               {/* Step Number */}
-              <span className="font-display font-bold text-amber/25 text-[4rem] leading-none block">
+              <span className="font-display font-bold text-deep-brown/30 text-[4rem] leading-none block">
                 {step.number}
               </span>
 
               {/* Divider */}
-              <div className="w-10 h-0.5 bg-amber/30 my-4" />
+              <div className="w-10 h-0.5 bg-deep-brown/40 my-4" />
 
               {/* Days */}
               <span className="font-display font-semibold text-deep-brown text-[1.25rem] block mb-1">

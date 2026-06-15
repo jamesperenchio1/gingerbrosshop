@@ -1,4 +1,3 @@
-import Navigation from '@/sections/Navigation';
 import Hero from '@/sections/Hero';
 import Shop from '@/sections/Shop';
 import Story from '@/sections/Story';
@@ -7,7 +6,6 @@ import Benefits from '@/sections/Benefits';
 import Newsletter from '@/components/Newsletter';
 import LineWidget from '@/components/LineWidget';
 import Footer from '@/sections/Footer';
-import CartDrawer from '@/sections/CartDrawer';
 import SEO from '@/components/SEO';
 
 const organizationSchema = {
@@ -65,7 +63,6 @@ export default function HomePage() {
         path="/"
         jsonLd={[organizationSchema, websiteSchema, productListSchema]}
       />
-      <Navigation />
       <Hero />
       <Shop />
       <Story />
@@ -73,7 +70,6 @@ export default function HomePage() {
       <Benefits />
       <Newsletter />
       <Footer />
-      <CartDrawer />
       <LineWidget />
     </div>
   );

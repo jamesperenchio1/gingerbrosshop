@@ -26,7 +26,7 @@ export default function FAQPage() {
     {
       icon: <CreditCard className="w-6 h-6 text-amber" />,
       q: 'What payment methods do you accept?',
-      a: 'We accept credit/debit cards, PromptPay, and cash on delivery (COD) for most areas in Thailand. Card and PromptPay payments are processed securely through Stripe.',
+      a: 'We accept credit/debit cards and PromptPay. Payments are processed securely through Stripe.'
     },
     {
       icon: <HelpCircle className="w-6 h-6 text-amber" />,

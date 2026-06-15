@@ -4,6 +4,8 @@ import { Analytics } from '@vercel/analytics/react';
 import { CartProvider } from '@/context/CartContext';
 import { I18nProvider } from '@/context/I18nContext';
 import { useLenis } from '@/hooks/useLenis';
+import Navigation from '@/sections/Navigation';
+import CartDrawer from '@/sections/CartDrawer';
 import HomePage from '@/pages/HomePage';
 
 const ProductDetail = lazy(() => import('@/pages/ProductDetail'));
@@ -47,7 +49,9 @@ export default function App() {
   return (
     <I18nProvider>
       <CartProvider>
+        <Navigation />
         <AppContent />
+        <CartDrawer />
         <Analytics />
       </CartProvider>
     </I18nProvider>
