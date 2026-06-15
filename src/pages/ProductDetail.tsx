@@ -2,7 +2,7 @@ import { useState, useRef, useEffect } from 'react';
 import { useParams } from 'react-router';
 import gsap from 'gsap';
 import { useCart } from '@/context/CartContext';
-import { PlusIcon, MinusIcon } from '@/components/Icons';
+import { PlusIcon, MinusIcon, SnowflakeIcon } from '@/components/Icons';
 import SEO from '@/components/SEO';
 import NotFound from '@/pages/NotFound';
 
@@ -50,8 +50,8 @@ const PRODUCTS: Record<string, ProductData> = {
     name: 'Unpasteurized Ginger Beer',
     headline: 'Raw, living ginger beer with active cultures. Maximum probiotics, maximum flavor.',
     price: 140,
-    badge: 'CHILLED DELIVERY',
-    badgeColor: 'bg-grab-green',
+    badge: 'Chilled Delivery',
+    badgeColor: 'bg-sky-500',
     images: [
       '/images/product-unpasteurized-2.jpg',
       '/images/product-unpasteurized.jpg',
@@ -259,7 +259,8 @@ export default function ProductDetail() {
           {/* Right: Product Info */}
           <div ref={infoRef} className="opacity-0 translate-y-[20px]">
             {/* Badge */}
-            <span className={`inline-block ${product.badgeColor} text-white font-body font-semibold text-[11px] uppercase tracking-wider px-3 py-1.5 rounded-full mb-4`}>
+            <span className="inline-flex items-center gap-1.5 bg-sky-50 text-sky-700 border border-sky-200/80 font-body font-semibold text-[11px] uppercase tracking-[0.06em] px-3 py-1.5 rounded-full mb-4">
+              <SnowflakeIcon className="w-3.5 h-3.5" />
               {product.badge}
             </span>
 

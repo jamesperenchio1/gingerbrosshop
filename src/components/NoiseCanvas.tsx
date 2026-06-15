@@ -81,10 +81,10 @@ void main() {
   float fineNoise = vnoise(noisePos * 2.5 + t * 0.15) * 0.15;
   cloud = cloud + fineNoise - 0.075;
 
-  vec3 c0 = vec3(0.961, 0.902, 0.784);
-  vec3 c1 = vec3(0.910, 0.788, 0.478);
-  vec3 c2 = vec3(0.831, 0.639, 0.294);
-  vec3 c3 = vec3(0.788, 0.588, 0.227);
+  vec3 c0 = vec3(0.980, 0.937, 0.835);
+  vec3 c1 = vec3(0.937, 0.835, 0.565);
+  vec3 c2 = vec3(0.898, 0.749, 0.435);
+  vec3 c3 = vec3(0.863, 0.706, 0.376);
 
   vec3 color = c0;
   if (cloud < 0.30) {
@@ -147,7 +147,7 @@ export default function NoiseCanvas() {
 
     gl.uniform1f(uDriftSpeed, 0.15);
     gl.uniform1f(uWarpScale, 2.8);
-    gl.uniform1f(uWarpIntensity, 0.85);
+    gl.uniform1f(uWarpIntensity, 0.7);
 
     let mouseX = 0.5;
     let mouseY = 0.5;

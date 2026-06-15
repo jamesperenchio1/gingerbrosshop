@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { useCart } from '@/context/CartContext';
-import { PlusIcon, MinusIcon } from '@/components/Icons';
+import { PlusIcon, MinusIcon, SnowflakeIcon } from '@/components/Icons';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -27,10 +27,10 @@ const PRODUCTS: ProductDef[] = [
     shortDescription: 'Raw, living ginger beer with active cultures. Must be kept refrigerated. 330ml per bottle.',
     price: 140,
     image: '/images/product-unpasteurized-2.jpg',
-    badge: 'CHILLED DELIVERY',
-    badgeColor: 'bg-grab-green',
-    borderStyle: 'border-2 border-dashed border-soft-peach',
-    bgColor: 'bg-warm-white',
+    badge: 'Chilled Delivery',
+    badgeColor: 'bg-sky-500',
+    borderStyle: 'border border-soft-peach/60 shadow-[0_12px_40px_rgba(61,36,16,0.10)]',
+    bgColor: 'bg-white',
     addable: true,
   },
 ];
@@ -108,22 +108,23 @@ export default function Shop() {
           {PRODUCTS.map((product) => (
             <div
               key={product.id}
-              className={`opacity-0 translate-y-[50px] scale-[0.96] ${product.bgColor} ${product.borderStyle} rounded-[20px] p-8 flex flex-col md:col-start-2`}
+              className={`opacity-0 translate-y-[50px] scale-[0.96] ${product.bgColor} ${product.borderStyle} rounded-[24px] p-8 flex flex-col md:col-start-2`}
             >
               {/* Product Image */}
               <button
                 onClick={() => navigate(getDetailLink(product))}
-                className="flex items-center justify-center mb-6 h-[220px] hover:opacity-90 transition-opacity"
+                className="flex items-center justify-center mb-6 h-[240px] rounded-2xl overflow-hidden bg-warm-white hover:opacity-95 transition-opacity"
               >
                 <img
                   src={product.image}
                   alt={product.name}
-                  className="max-h-full max-w-full object-contain drop-shadow-lg rounded-lg"
+                  className="h-full w-full object-cover"
                 />
               </button>
 
               {/* Badge */}
-              <span className={`inline-block self-start ${product.badgeColor} text-white font-body font-semibold text-[11px] uppercase tracking-wider px-3 py-1.5 rounded-full mb-3`}>
+              <span className="inline-flex items-center gap-1.5 self-start bg-sky-50 text-sky-700 border border-sky-200/80 font-body font-semibold text-[11px] uppercase tracking-[0.06em] px-3 py-1.5 rounded-full mb-3">
+                <SnowflakeIcon className="w-3.5 h-3.5" />
                 {product.badge}
               </span>
 

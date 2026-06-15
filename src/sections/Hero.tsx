@@ -9,7 +9,6 @@ export default function Hero() {
   const headlineRef = useRef<HTMLHeadingElement>(null);
   const subRef = useRef<HTMLParagraphElement>(null);
   const ctaRef = useRef<HTMLDivElement>(null);
-  const imageRef = useRef<HTMLDivElement>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -17,7 +16,6 @@ export default function Hero() {
     tl.to(badgeRef.current, { opacity: 1, y: 0, duration: 0.5, delay: 0.2 })
       .to(headlineRef.current, { opacity: 1, y: 0, duration: 0.8 }, '-=0.2')
       .to(subRef.current, { opacity: 1, y: 0, duration: 0.6 }, '-=0.4')
-      .to(imageRef.current, { opacity: 1, y: 0, scale: 1, duration: 0.8 }, '-=0.4')
       .to(ctaRef.current, { opacity: 1, y: 0, duration: 0.5 }, '-=0.3')
       .to(scrollRef.current, { opacity: 1, duration: 0.5 }, '-=0.2');
 
@@ -68,23 +66,10 @@ export default function Hero() {
         {/* Subheadline */}
         <p
           ref={subRef}
-          className="opacity-0 translate-y-[20px] font-body font-medium text-[15px] text-earth max-w-[500px] mb-6 leading-relaxed"
+          className="opacity-0 translate-y-[20px] font-body font-medium text-[15px] text-earth max-w-[500px] mb-8 leading-relaxed"
         >
           7-day naturally fermented craft ginger beer. Low in sugar, good for the gut. Our unpasteurized brew is packed with live probiotics.
         </p>
-
-        {/* Hero Bottle */}
-        <div
-          ref={imageRef}
-          className="opacity-0 translate-y-[20px] scale-[0.95] w-full max-w-[280px] md:max-w-[340px] mb-8"
-        >
-          <img
-            src="/images/hero-bottle.png"
-            alt="GingerBros craft ginger beer bottle"
-            className="w-full h-auto drop-shadow-2xl"
-            fetchPriority="high"
-          />
-        </div>
 
         {/* CTA Row */}
         <div
