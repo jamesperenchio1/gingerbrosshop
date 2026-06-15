@@ -308,7 +308,7 @@ export default function CartDrawer() {
                     onClick={async () => {
                       setReferralError('');
                       try {
-                        const res = await fetch('/api/apply-referral', {
+                        const res = await fetch('/api/referral', {
                           method: 'POST',
                           headers: { 'Content-Type': 'application/json' },
                           body: JSON.stringify({ code: referralCode, email: cartEmail || 'guest@gingerbrosshop.com' }),
