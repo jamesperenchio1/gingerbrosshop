@@ -184,6 +184,19 @@ function sellerNotificationHtml(session: SessionWithShipping, items: Stripe.Line
     ? `<p><strong>Shipping to:</strong><br>${shipping.name}<br>${Object.values(shipping.address ?? {}).filter(Boolean).join(', ')}</p>`
     : '';
 
+  const isGift = session.metadata?.isGift === 'true';
+  const recipientName = session.metadata?.recipientName;
+  const recipientEmail = session.metadata?.recipientEmail;
+  const giftMessage = session.metadata?.giftMessage;
+  const giftHtml = isGift
+    ? `<div style="background:#F5F0EB;padding:12px;border-radius:8px;margin:16px 0;">
+        <p style="margin:0 0 4px 0;font-weight:600;">🎁 This order is a gift</p>
+        <p style="margin:0;font-size:14px;"><strong>Recipient:</strong> ${recipientName ?? '—'}</p>
+        <p style="margin:0;font-size:14px;"><strong>Recipient email:</strong> ${recipientEmail ?? '—'}</p>
+        ${giftMessage ? `<p style="margin:8px 0 0 0;font-size:14px;font-style:italic;">“${giftMessage}”</p>` : ''}
+      </div>`
+    : '';
+
   return `<div style="font-family:system-ui,sans-serif;max-width:480px;margin:0 auto;padding:24px;">
     <h2 style="color:#3D2410;">New Order Received 🍺</h2>
     <p>Order #${orderId} has been paid${isSub ? ' — <strong>Monthly Subscription</strong>' : ''}.</p>
@@ -192,6 +205,7 @@ function sellerNotificationHtml(session: SessionWithShipping, items: Stripe.Line
       <tbody>${itemRows}</tbody>
     </table>
     <p style="font-size:18px;font-weight:600;">Total: ฿${total}${isSub ? '/month' : ''}</p>
+    ${giftHtml}
     ${shippingHtml}
     <p style="margin-top:24px;font-size:13px;color:#666;">
       Add tracking at:<br>

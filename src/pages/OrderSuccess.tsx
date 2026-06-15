@@ -25,6 +25,10 @@ interface OrderDetails {
   items: OrderItem[];
   trackingNumber: string | null;
   trackingCarrier: string | null;
+  isGift: boolean;
+  recipientEmail: string | null;
+  recipientName: string | null;
+  giftMessage: string | null;
 }
 
 export default function OrderSuccess() {
@@ -145,8 +149,19 @@ export default function OrderSuccess() {
             ))}
           </div>
 
-          {address && (
+          {order.isGift && (
             <div className="pt-4 border-t border-soft-peach/50">
+              <p className="font-body text-[13px] text-earth uppercase tracking-wider mb-2">Gift Recipient</p>
+              <p className="font-body text-deep-brown">{order.recipientName ?? 'Not provided'}</p>
+              <p className="font-body text-earth text-[14px]">{order.recipientEmail ?? 'No email provided'}</p>
+              {order.giftMessage && (
+                <p className="font-body text-earth text-[14px] mt-2 italic">“{order.giftMessage}”</p>
+              )}
+            </div>
+          )}
+
+          {address && (
+            <div className={`pt-4 border-t border-soft-peach/50 ${order.isGift ? 'mt-4' : ''}`}>
               <p className="font-body text-[13px] text-earth uppercase tracking-wider mb-2">Shipping to</p>
               <p className="font-body text-deep-brown">{order.shippingName}</p>
               <p className="font-body text-earth text-[14px]">{address}</p>
