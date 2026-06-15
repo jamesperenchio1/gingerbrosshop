@@ -9,7 +9,7 @@
     <priority>1.0</priority>
     <image:image>
       <image:loc>https://gingerbrosshop.com/images/product-unpasteurized-2.jpg</image:loc>
-      <image:title>GingerBros Unpasteurized Craft Ginger Beer</image:title>
+      <image:title>GingerBros Unpasteurized Craft Ginger Fizz</image:title>
     </image:image>
   </url>
 
@@ -20,11 +20,11 @@
     <priority>0.9</priority>
     <image:image>
       <image:loc>https://gingerbrosshop.com/images/product-unpasteurized-2.jpg</image:loc>
-      <image:title>Unpasteurized Raw Ginger Beer — GingerBros</image:title>
+      <image:title>Unpasteurized Raw Ginger Fizz — GingerBros</image:title>
     </image:image>
     <image:image>
       <image:loc>https://gingerbrosshop.com/images/product-unpasteurized.jpg</image:loc>
-      <image:title>Unpasteurized Ginger Beer Close-Up</image:title>
+      <image:title>Unpasteurized Ginger Fizz Close-Up</image:title>
     </image:image>
   </url>
 

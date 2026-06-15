@@ -1,7 +1,7 @@
 {
-  "name": "GingerBros — Craft Ginger Beer",
+  "name": "GingerBros — Craft Ginger Fizz",
   "short_name": "GingerBros",
-  "description": "7-day naturally fermented craft ginger beer from Thailand. Low sugar, good for the gut.",
+  "description": "7-day naturally fermented craft ginger fizz from Thailand. Low sugar, good for the gut.",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#FDF6EC",

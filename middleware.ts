@@ -21,9 +21,9 @@ const FALLBACK_IMAGE = `${SITE_URL}/images/product-unpasteurized-2.jpg`;
 
 const KNOWN_ROUTES: Record<string, RouteMeta> = {
   '/': {
-    title: 'GingerBros — Naturally Brewed Craft Ginger Beer from Thailand',
+    title: 'GingerBros — Naturally Brewed Craft Ginger Fizz from Thailand',
     description:
-      '7-day naturally fermented craft ginger beer brewed in Thailand. Raw, unpasteurized, and delivered chilled to your door nationwide.',
+      '7-day naturally fermented craft ginger fizz brewed in Thailand. Raw, unpasteurized, and delivered chilled to your door nationwide.',
     image: FALLBACK_IMAGE,
     type: 'website',
     jsonLd: {
@@ -46,13 +46,13 @@ const KNOWN_ROUTES: Record<string, RouteMeta> = {
         },
         {
           '@type': 'ItemList',
-          name: 'GingerBros Craft Ginger Beer Products',
+          name: 'GingerBros Craft Ginger Fizz Products',
           itemListElement: [
             {
               '@type': 'ListItem',
               position: 1,
               url: `${SITE_URL}/product/unpasteurized`,
-              name: 'Unpasteurized Ginger Beer',
+              name: 'Unpasteurized Ginger Fizz',
             },
           ],
         },
@@ -60,17 +60,17 @@ const KNOWN_ROUTES: Record<string, RouteMeta> = {
     },
   },
   '/product/unpasteurized': {
-    title: 'Unpasteurized Ginger Beer — GingerBros',
+    title: 'Unpasteurized Ginger Fizz — GingerBros',
     description:
-      'Raw, living ginger beer with active probiotic cultures. 7-day naturally fermented, refrigerated delivery across Thailand.',
+      'Raw, living ginger fizz with active probiotic cultures. 7-day naturally fermented, refrigerated delivery across Thailand.',
     image: `${SITE_URL}/images/product-unpasteurized-2.jpg`,
     type: 'product',
     jsonLd: {
       '@context': 'https://schema.org',
       '@type': 'Product',
-      name: 'Unpasteurized Ginger Beer',
+      name: 'Unpasteurized Ginger Fizz',
       description:
-        'Raw, living ginger beer with active probiotic cultures. 7-day naturally fermented, refrigerated delivery across Thailand.',
+        'Raw, living ginger fizz with active probiotic cultures. 7-day naturally fermented, refrigerated delivery across Thailand.',
       image: [
         `${SITE_URL}/images/product-unpasteurized-2.jpg`,
         `${SITE_URL}/images/product-unpasteurized.jpg`,
@@ -88,9 +88,9 @@ const KNOWN_ROUTES: Record<string, RouteMeta> = {
     },
   },
   '/blog': {
-    title: 'The Brew Blog — Ginger Beer Recipes, Gut Health & Brewing Tips | GingerBros',
+    title: 'The Brew Blog — Ginger Fizz Recipes, Gut Health & Brewing Tips | GingerBros',
     description:
-      'Explore GingerBros blog for ginger beer recipes, probiotic gut health guides, and behind-the-scenes craft brewing stories from Thailand.',
+      'Explore GingerBros blog for ginger fizz recipes, probiotic gut health guides, and behind-the-scenes craft brewing stories from Thailand.',
     image: FALLBACK_IMAGE,
     type: 'website',
   },
@@ -104,14 +104,14 @@ const KNOWN_ROUTES: Record<string, RouteMeta> = {
   '/wholesale': {
     title: 'Wholesale — GingerBros',
     description:
-      'Wholesale pricing for cafes, restaurants, bars, and retailers. Order chilled unpasteurized ginger beer in Thailand.',
+      'Wholesale pricing for cafes, restaurants, bars, and retailers. Order chilled unpasteurized ginger fizz in Thailand.',
     image: FALLBACK_IMAGE,
     type: 'website',
   },
   '/shipping': {
     title: 'Shipping Information — GingerBros',
     description:
-      'Shipping rates and delivery information for GingerBros unpasteurized ginger beer. Chilled nationwide delivery across Thailand.',
+      'Shipping rates and delivery information for GingerBros unpasteurized ginger fizz. Chilled nationwide delivery across Thailand.',
     image: FALLBACK_IMAGE,
     type: 'website',
   },

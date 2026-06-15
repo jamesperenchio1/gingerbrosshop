@@ -3,8 +3,8 @@ import middleware from '../middleware.ts';
 const BASE = 'http://localhost:4174';
 
 const cases = [
-  { path: '/', expectStatus: 200, title: 'GingerBros — Naturally Brewed Craft Ginger Beer' },
-  { path: '/product/unpasteurized', expectStatus: 200, title: 'Unpasteurized Ginger Beer — GingerBros' },
+  { path: '/', expectStatus: 200, title: 'GingerBros — Naturally Brewed Craft Ginger Fizz' },
+  { path: '/product/unpasteurized', expectStatus: 200, title: 'Unpasteurized Ginger Fizz — GingerBros' },
   { path: '/product/pasteurized', expectStatus: 404, title: 'Page Not Found — GingerBros' },
   { path: '/product/pasteurized-6pack', expectStatus: 404, title: 'Page Not Found — GingerBros' },
   { path: '/product/unknown-id', expectStatus: 404, title: 'Page Not Found — GingerBros' },

@@ -46,7 +46,7 @@ export default function TrackOrderPage() {
     <div className="min-h-screen bg-warm-white">
       <SEO
         title="Track Your Order — GingerBros"
-        description="Track your GingerBros craft ginger beer order status. Enter your email and order number to see shipping updates."
+        description="Track your GingerBros craft ginger fizz order status. Enter your email and order number to see shipping updates."
         path="/track"
         noindex
       />

@@ -43,13 +43,13 @@ const websiteSchema = {
 const productListSchema = {
   '@context': 'https://schema.org',
   '@type': 'ItemList',
-  name: 'GingerBros Craft Ginger Beer Products',
+  name: 'GingerBros Craft Ginger Fizz Products',
   itemListElement: [
     {
       '@type': 'ListItem',
       position: 1,
       url: 'https://gingerbrosshop.com/product/unpasteurized',
-      name: 'Unpasteurized Ginger Beer',
+      name: 'Unpasteurized Ginger Fizz',
     },
   ],
 };
@@ -58,8 +58,8 @@ export default function HomePage() {
   return (
     <div className="min-h-screen bg-warm-white">
       <SEO
-        title="GingerBros — Naturally Brewed Craft Ginger Beer from Thailand"
-        description="7-day naturally fermented craft ginger beer brewed in Thailand. Raw, unpasteurized, and delivered chilled to your door nationwide."
+        title="GingerBros — Naturally Brewed Craft Ginger Fizz from Thailand"
+        description="7-day naturally fermented craft ginger fizz brewed in Thailand. Raw, unpasteurized, and delivered chilled to your door nationwide."
         path="/"
         jsonLd={[organizationSchema, websiteSchema, productListSchema]}
       />

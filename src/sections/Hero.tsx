@@ -60,7 +60,7 @@ export default function Hero() {
         >
           GingerBros
           <br />
-          Ginger Beer
+          Ginger Fizz
         </h1>
 
         {/* Subheadline */}
@@ -68,7 +68,7 @@ export default function Hero() {
           ref={subRef}
           className="font-body font-medium text-[15px] text-earth max-w-[500px] mb-8 leading-relaxed"
         >
-          7-day naturally fermented craft ginger beer. Low in sugar, good for the gut. Our unpasteurized brew is packed with live probiotics.
+          7-day naturally fermented craft ginger fizz. Low in sugar, good for the gut. Our unpasteurized brew is packed with live probiotics.
         </p>
 
         {/* CTA Row */}

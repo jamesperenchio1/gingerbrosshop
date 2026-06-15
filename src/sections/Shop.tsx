@@ -9,8 +9,8 @@ gsap.registerPlugin(ScrollTrigger);
 
 const PRODUCT = {
   id: 'unpasteurized',
-  name: 'Unpasteurized Ginger Beer',
-  shortDescription: 'Raw, living ginger beer with active cultures. Must be kept refrigerated. 330ml per bottle.',
+  name: 'Unpasteurized Ginger Fizz',
+  shortDescription: 'Raw, living ginger fizz with active cultures. Must be kept refrigerated. 330ml per bottle.',
   price: 140,
   image: '/images/product-unpasteurized-2.jpg',
   badge: 'Chilled Delivery',
@@ -77,7 +77,7 @@ export default function Shop() {
             Choose Your Brew
           </h2>
           <p className="font-body text-earth">
-            Fresh, raw ginger beer delivered chilled to your door.
+            Fresh, raw ginger fizz delivered chilled to your door.
           </p>
         </div>
 

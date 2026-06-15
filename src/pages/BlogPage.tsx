@@ -19,22 +19,22 @@ const POSTS: Post[] = [
   {
     slug: 'moscow-mule',
     title: 'The Perfect Moscow Mule with GingerBros',
-    excerpt: 'Why our 7-day fermented ginger beer makes the best Moscow Mule you have ever tasted.',
+    excerpt: 'Why our 7-day fermented ginger fizz makes the best Moscow Mule you have ever tasted.',
     category: 'Recipe',
     readTime: '3 min',
     icon: ChefHat,
-    content: `A great Moscow Mule starts with great ginger beer. Our 7-day naturally fermented brew brings a depth of flavor that mass-market ginger beers simply cannot match.
+    content: `A great Moscow Mule starts with great ginger fizz. Our 7-day naturally fermented brew brings a depth of flavor that mass-market ginger fizzs simply cannot match.
 
 Ingredients:
 • 60ml vodka
 • 15ml fresh lime juice
-• GingerBros Unpasteurized Ginger Beer
+• GingerBros Unpasteurized Ginger Fizz
 • Lime wedge and mint for garnish
 
 Instructions:
 Fill a copper mug with ice. Add vodka and lime juice. Top with GingerBros. Stir gently and garnish.
 
-The natural fermentation gives our unpasteurized ginger beer a subtle funk and complexity that elevates this classic cocktail from good to unforgettable.`,
+The natural fermentation gives our unpasteurized ginger fizz a subtle funk and complexity that elevates this classic cocktail from good to unforgettable.`,
   },
   {
     slug: 'dark-and-stormy',
@@ -43,33 +43,33 @@ The natural fermentation gives our unpasteurized ginger beer a subtle funk and c
     category: 'Recipe',
     readTime: '3 min',
     icon: ChefHat,
-    content: `The Dark ’n’ Stormy is Bermuda’s national drink for a reason: dark rum and ginger beer were made for each other. Our version swaps the usual soda for GingerBros, so you get real ginger heat and natural carbonation.
+    content: `The Dark ’n’ Stormy is Bermuda’s national drink for a reason: dark rum and ginger fizz were made for each other. Our version swaps the usual soda for GingerBros, so you get real ginger heat and natural carbonation.
 
 Ingredients:
 • 60ml dark rum (Gosling’s Black Seal is traditional)
-• 120ml GingerBros Unpasteurized Ginger Beer
+• 120ml GingerBros Unpasteurized Ginger Fizz
 • 10ml fresh lime juice
 • Lime wheel and candied ginger for garnish
 
 Instructions:
 Fill a tall glass with ice. Pour in the rum and lime juice. Top with GingerBros and stir once. Float the lime wheel on top.
 
-Pro tip: The live cultures in our unpasteurized ginger beer add a faint tartness that cuts through the rum’s sweetness beautifully.`,
+Pro tip: The live cultures in our unpasteurized ginger fizz add a faint tartness that cuts through the rum’s sweetness beautifully.`,
   },
   {
     slug: 'ginger-margarita',
-    title: 'Ginger Beer Margarita',
-    excerpt: 'Tequila, lime, and fiery ginger beer come together in a refreshingly different margarita.',
+    title: 'Ginger Fizz Margarita',
+    excerpt: 'Tequila, lime, and fiery ginger fizz come together in a refreshingly different margarita.',
     category: 'Recipe',
     readTime: '4 min',
     icon: ChefHat,
-    content: `Margarita night just got an upgrade. Replacing part of the orange liqueur with ginger beer gives this cocktail a spicy backbone and lighter body.
+    content: `Margarita night just got an upgrade. Replacing part of the orange liqueur with ginger fizz gives this cocktail a spicy backbone and lighter body.
 
 Ingredients:
 • 45ml blanco tequila
 • 30ml fresh lime juice
 • 15ml triple sec or orange liqueur
-• 60ml GingerBros Unpasteurized Ginger Beer
+• 60ml GingerBros Unpasteurized Ginger Fizz
 • Salt rim and jalapeño slice (optional)
 
 Instructions:
@@ -89,7 +89,7 @@ The result is tart, spicy, and dangerously drinkable — perfect for tropical af
 Ingredients:
 • 30ml fresh lemon juice
 • 15ml honey or simple syrup
-• 120ml GingerBros Unpasteurized Ginger Beer
+• 120ml GingerBros Unpasteurized Ginger Fizz
 • Lemon wheel and fresh mint
 
 Instructions:
@@ -99,16 +99,16 @@ It is crisp, naturally effervescent, and low in sugar compared to most lemonades
   },
   {
     slug: 'ginger-glazed-chicken',
-    title: 'Ginger Beer Glazed Chicken Wings',
+    title: 'Ginger Fizz Glazed Chicken Wings',
     excerpt: 'Reduce GingerBros into a sticky, spicy glaze for oven or grill.',
     category: 'Recipe',
     readTime: '5 min',
     icon: ChefHat,
-    content: `Ginger beer is not just for drinking. Reduce it down and it becomes a tangy, caramelized glaze that works on wings, tofu, or roasted vegetables.
+    content: `Ginger fizz is not just for drinking. Reduce it down and it becomes a tangy, caramelized glaze that works on wings, tofu, or roasted vegetables.
 
 Ingredients:
 • 500g chicken wings (or firm tofu cubes)
-• 240ml GingerBros Unpasteurized Ginger Beer
+• 240ml GingerBros Unpasteurized Ginger Fizz
 • 2 tbsp soy sauce
 • 1 tbsp honey
 • 1 tsp grated fresh ginger
@@ -122,8 +122,8 @@ The live cultures cook off, but the real ginger flavor stays intense.`,
   },
   {
     slug: 'gut-health',
-    title: 'Ginger Beer & Gut Health: What You Should Know',
-    excerpt: 'The science behind ginger, fermentation, and why your gut loves unpasteurized ginger beer.',
+    title: 'Ginger Fizz & Gut Health: What You Should Know',
+    excerpt: 'The science behind ginger, fermentation, and why your gut loves unpasteurized ginger fizz.',
     category: 'Health',
     readTime: '5 min',
     icon: Heart,
@@ -136,20 +136,20 @@ Ginger contains compounds called gingerols and shogaols that have anti-inflammat
 • Reduce bloating and gas
 • Support a healthy inflammatory response
 
-Our unpasteurized ginger beer goes a step further by delivering live probiotic cultures from our natural fermentation process. These beneficial bacteria can help support a healthy gut microbiome.
+Our unpasteurized ginger fizz goes a step further by delivering live probiotic cultures from our natural fermentation process. These beneficial bacteria can help support a healthy gut microbiome.
 
-Keep in mind: the probiotic benefits only apply to unpasteurized ginger beer. Pasteurized versions have had the live cultures heated away.`,
+Keep in mind: the probiotic benefits only apply to unpasteurized ginger fizz. Pasteurized versions have had the live cultures heated away.`,
   },
   {
     slug: 'probiotics-prebiotics',
     title: 'Probiotics vs Prebiotics: A Simple Guide',
-    excerpt: 'Learn the difference and how to pair unpasteurized ginger beer with gut-friendly foods.',
+    excerpt: 'Learn the difference and how to pair unpasteurized ginger fizz with gut-friendly foods.',
     category: 'Health',
     readTime: '4 min',
     icon: Leaf,
     content: `Probiotics are live microorganisms that add to the population of beneficial bacteria in your gut. Prebiotics are the fibers that feed them.
 
-Unpasteurized ginger beer delivers probiotics thanks to natural fermentation. To get the most from it, pair it with prebiotic-rich foods like:
+Unpasteurized ginger fizz delivers probiotics thanks to natural fermentation. To get the most from it, pair it with prebiotic-rich foods like:
 
 • Bananas
 • Oats
@@ -175,7 +175,7 @@ Clinical studies suggest ginger can:
 • Help with nausea and digestive discomfort
 • Provide antioxidant compounds that protect cells from oxidative stress
 
-None of this means ginger beer replaces medicine or a balanced diet. But choosing a drink made with real ginger and no artificial junk is a small, enjoyable way to support overall wellness. Our unpasteurized version also adds the probiotic angle, which ties into the growing understanding that gut health and immune health are closely linked.`,
+None of this means ginger fizz replaces medicine or a balanced diet. But choosing a drink made with real ginger and no artificial junk is a small, enjoyable way to support overall wellness. Our unpasteurized version also adds the probiotic angle, which ties into the growing understanding that gut health and immune health are closely linked.`,
   },
   {
     slug: 'low-sugar-drinking',
@@ -184,22 +184,22 @@ None of this means ginger beer replaces medicine or a balanced diet. But choosin
     category: 'Health',
     readTime: '3 min',
     icon: Heart,
-    content: `Traditional ginger beer recipes are loaded with sugar. We take a different approach.
+    content: `Traditional ginger fizz recipes are loaded with sugar. We take a different approach.
 
 During our 7-day natural fermentation, the ginger bug consumes much of the cane sugar we start with. What is left is a small amount of residual sugar that balances the ginger heat and supports carbonation.
 
-The result is a ginger beer that tastes bright and refreshing without being syrupy. For anyone watching their sugar intake, this makes GingerBros a better mixer and standalone drink than most commercial alternatives.
+The result is a ginger fizz that tastes bright and refreshing without being syrupy. For anyone watching their sugar intake, this makes GingerBros a better mixer and standalone drink than most commercial alternatives.
 
 Of course, moderation still matters. But it is nice when the better choice also tastes better.`,
   },
   {
     slug: 'hydration-electrolytes',
-    title: 'Ginger Beer, Hydration, and Hot Days',
+    title: 'Ginger Fizz, Hydration, and Hot Days',
     excerpt: 'Can a fermented ginger drink actually help on sweaty afternoons?',
     category: 'Health',
     readTime: '3 min',
     icon: Leaf,
-    content: `Thailand is hot. When you sweat, you lose water and electrolytes. While water should always be your first line of defense, a naturally fermented ginger beer can be a flavorful option that encourages you to drink more.
+    content: `Thailand is hot. When you sweat, you lose water and electrolytes. While water should always be your first line of defense, a naturally fermented ginger fizz can be a flavorful option that encourages you to drink more.
 
 Ginger contains potassium and magnesium in small amounts. Combined with the carbonation and gentle spice, it can feel more satisfying than plain water on a humid afternoon.
 
@@ -251,7 +251,7 @@ export default function BlogPage() {
     '@type': 'Blog',
     name: 'The GingerBros Brew Blog',
     url: 'https://gingerbrosshop.com/blog',
-    description: 'Ginger beer recipes, gut health tips, and wellness ideas from GingerBros Thailand.',
+    description: 'Ginger fizz recipes, gut health tips, and wellness ideas from GingerBros Thailand.',
     blogPost: POSTS.map((p) => ({
       '@type': 'BlogPosting',
       headline: p.title,
@@ -289,8 +289,8 @@ export default function BlogPage() {
         />
       ) : (
         <SEO
-          title="The Brew Blog — Ginger Beer Recipes, Gut Health & Wellness | GingerBros"
-          description="Explore the GingerBros blog for ginger beer cocktail recipes, probiotic gut health guides, and low-sugar wellness tips from Thailand."
+          title="The Brew Blog — Ginger Fizz Recipes, Gut Health & Wellness | GingerBros"
+          description="Explore the GingerBros blog for ginger fizz cocktail recipes, probiotic gut health guides, and low-sugar wellness tips from Thailand."
           path="/blog"
           jsonLd={[blogListSchema]}
         />
@@ -310,7 +310,7 @@ export default function BlogPage() {
           <>
             <h1 className="font-display font-bold text-deep-brown text-3xl md:text-4xl mb-4 text-center">The Brew Blog</h1>
             <p className="font-body text-earth text-center mb-8 max-w-[500px] mx-auto">
-              Real ginger beer recipes, gut-health explainers, and low-sugar drinking ideas from the GingerBros kitchen.
+              Real ginger fizz recipes, gut-health explainers, and low-sugar drinking ideas from the GingerBros kitchen.
             </p>
 
             {/* Category filters */}
