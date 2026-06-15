@@ -114,6 +114,19 @@ export function LightningIcon({ className = '' }: { className?: string }) {
   );
 }
 
+export function SnowflakeIcon({ className = '' }: { className?: string }) {
+  return (
+    <svg className={className} width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
+      <line x1="12" y1="2" x2="12" y2="22" />
+      <line x1="2" y1="12" x2="22" y2="12" />
+      <line x1="4.9" y1="4.9" x2="19.1" y2="19.1" />
+      <line x1="19.1" y1="4.9" x2="4.9" y2="19.1" />
+      <path d="M12 2l-2.2 2.2M12 2l2.2 2.2M12 22l-2.2-2.2M12 22l2.2-2.2" />
+      <path d="M2 12l2.2-2.2M2 12l2.2 2.2M22 12l-2.2-2.2M22 12l-2.2 2.2" />
+    </svg>
+  );
+}
+
 export function MenuIcon({ className = '' }: { className?: string }) {
   return (
     <svg className={className} width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">

@@ -118,13 +118,16 @@ export default function CartDrawer() {
     <>
       <div
         className={`fixed inset-0 bg-black/20 z-[60] transition-opacity duration-300 ${
-          state.isOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
+          state.isOpen ? 'pointer-events-auto' : 'pointer-events-none'
         }`}
+        style={{ opacity: state.isOpen ? 1 : 0 }}
         onClick={closeCart}
       />
 
       <div
         ref={drawerRef}
+        aria-hidden={!state.isOpen}
+        inert={!state.isOpen || undefined}
         className={`fixed top-0 right-0 h-full w-full sm:w-[420px] bg-warm-white z-[70] shadow-[-8px_0_40px_rgba(61,36,16,0.1)] flex flex-col transition-transform duration-300 ${
           state.isOpen ? 'translate-x-0' : 'translate-x-full'
         }`}

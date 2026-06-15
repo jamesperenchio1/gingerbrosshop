@@ -42,9 +42,6 @@
     <link rel="preconnect" href="https://checkout.stripe.com" />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet" />
 
-    <!-- Preload hero image for LCP -->
-    <link rel="preload" as="image" href="/images/hero-bottle.png" fetchpriority="high" />
-
     <!-- Google Analytics 4 -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-WYM1PC2CL0"></script>
     <script>
@@ -69,28 +66,6 @@
     </script>
   </head>
   <body>
-    <style>
-      /* No-JS fallback: force animated sections visible when scripting is disabled */
-      @media (scripting: none) {
-        .opacity-0 { opacity: 1 !important; }
-      }
-    </style>
-    <script>
-      // Safety net: if animations fail or JS is slow, reveal content after 2.5s
-      setTimeout(function () {
-        document.documentElement.classList.add('animations-ready');
-      }, 2500);
-    </script>
-    <style>
-      .animations-ready .opacity-0 { opacity: 1 !important; transition: opacity 0.3s ease; }
-      .animations-ready .translate-y-\[20px\],
-      .animations-ready .translate-y-\[30px\],
-      .animations-ready .translate-y-\[40px\],
-      .animations-ready .translate-y-\[50px\] { transform: translateY(0) !important; }
-      .animations-ready .translate-x-\[-40px\] { transform: translateX(0) !important; }
-      .animations-ready .scale-\[0\.96\] { transform: scale(1) !important; }
-      .animations-ready .scale-\[1\.02\] { transform: scale(1) !important; }
-    </style>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
     <noscript><img height="1" width="1" style="display:none" src="https://www.facebook.com/tr?id=927558480333349&ev=PageView&noscript=1" alt="" /></noscript>

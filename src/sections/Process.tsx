@@ -38,15 +38,15 @@ export default function Process() {
 
   useEffect(() => {
     const ctx = gsap.context(() => {
-      gsap.to(headerRef.current, {
-        opacity: 1, y: 0, duration: 0.6, ease: 'power3.out',
+      gsap.from(headerRef.current, {
+        opacity: 0, y: 30, duration: 0.6, ease: 'power3.out',
         scrollTrigger: { trigger: sectionRef.current, start: 'top 80%' },
       });
 
       const cards = cardsRef.current?.children;
       if (cards) {
-        gsap.to(Array.from(cards), {
-          opacity: 1, y: 0, duration: 0.7, stagger: 0.15, ease: 'power3.out',
+        gsap.from(Array.from(cards), {
+          opacity: 0, y: 40, duration: 0.7, stagger: 0.15, ease: 'power3.out',
           scrollTrigger: { trigger: cardsRef.current, start: 'top 80%' },
         });
       }
@@ -58,7 +58,7 @@ export default function Process() {
     <section id="process" ref={sectionRef} className="bg-amber py-[120px] md:py-[80px] max-md:py-[60px]">
       <div className="max-w-[1000px] mx-auto px-6">
         {/* Header */}
-        <div ref={headerRef} className="opacity-0 translate-y-[30px] text-center mb-16">
+        <div ref={headerRef} className="text-center mb-16">
           <span className="font-body font-medium text-[13px] uppercase tracking-[0.08em] text-cream mb-3 block">
             THE PROCESS
           </span>
@@ -72,7 +72,7 @@ export default function Process() {
           {STEPS.map((step) => (
             <div
               key={step.number}
-              className="opacity-0 translate-y-[40px] bg-cream rounded-[20px] p-8"
+              className="bg-cream rounded-[20px] p-8"
             >
               {/* Step Number */}
               <span className="font-display font-bold text-deep-brown/30 text-[4rem] leading-none block">

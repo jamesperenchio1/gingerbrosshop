@@ -1,8 +1,8 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useLayoutEffect } from 'react';
 import { useParams } from 'react-router';
 import gsap from 'gsap';
 import { useCart } from '@/context/CartContext';
-import { PlusIcon, MinusIcon } from '@/components/Icons';
+import { PlusIcon, MinusIcon, SnowflakeIcon } from '@/components/Icons';
 import SEO from '@/components/SEO';
 import NotFound from '@/pages/NotFound';
 
@@ -50,8 +50,8 @@ const PRODUCTS: Record<string, ProductData> = {
     name: 'Unpasteurized Ginger Beer',
     headline: 'Raw, living ginger beer with active cultures. Maximum probiotics, maximum flavor.',
     price: 140,
-    badge: 'CHILLED DELIVERY',
-    badgeColor: 'bg-grab-green',
+    badge: 'Chilled Delivery',
+    badgeColor: 'bg-sky-500',
     images: [
       '/images/product-unpasteurized-2.jpg',
       '/images/product-unpasteurized.jpg',
@@ -97,6 +97,7 @@ const PRODUCTS: Record<string, ProductData> = {
 export default function ProductDetail() {
   const { id } = useParams<{ id: string }>();
   const { addItem } = useCart();
+  const product = PRODUCTS[id ?? ''];
 
   const [activeImage, setActiveImage] = useState(0);
   const [quantity, setQuantity] = useState(1);
@@ -110,21 +111,28 @@ export default function ProductDetail() {
   const heroRef = useRef<HTMLDivElement>(null);
   const infoRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
-    window.scrollTo(0, 0);
+  // Reset per-product UI state when the product changes (render-phase, per React docs).
+  const [prevId, setPrevId] = useState(id);
+  if (id !== prevId) {
+    setPrevId(id);
     setActiveImage(0);
     setQuantity(1);
-  }, [id]);
+  }
 
   useEffect(() => {
-    const ctx = gsap.context(() => {
-      gsap.to(heroRef.current, { opacity: 1, y: 0, duration: 0.7, ease: 'power3.out' });
-      gsap.to(infoRef.current, { opacity: 1, y: 0, duration: 0.7, delay: 0.15, ease: 'power3.out' });
-    });
-    return () => ctx.revert();
+    window.scrollTo(0, 0);
   }, [id]);
 
-  const product = PRODUCTS[id ?? ''];
+  useLayoutEffect(() => {
+    if (!product) return;
+    const ctx = gsap.context(() => {
+      gsap.from(heroRef.current, { opacity: 0, y: 20, duration: 0.7, ease: 'power3.out' });
+      gsap.from(infoRef.current, { opacity: 0, y: 20, duration: 0.7, delay: 0.15, ease: 'power3.out' });
+    });
+    return () => ctx.revert();
+  }, [id, product]);
+
+  // Keep all hooks above this guard so hook order is stable across renders.
   if (!product) {
     return <NotFound />;
   }
@@ -185,11 +193,26 @@ export default function ProductDetail() {
         type="product"
         jsonLd={[productJsonLd, breadcrumbJsonLd]}
       />
+      {/* Top Bar */}
+      <div className="sticky top-0 z-50 bg-warm-white/95 backdrop-blur-xl border-b border-soft-peach/50">
+        <div className="max-w-[1280px] mx-auto px-6 h-14 flex items-center justify-between">
+          <a
+            href="/"
+            className="flex items-center gap-2 font-body font-medium text-sm text-earth hover:text-deep-brown transition-colors"
+          >
+            <ArrowLeftIcon2 />
+            Back to Shop
+          </a>
+          <span className="font-display font-bold text-lg text-deep-brown">GingerBros</span>
+          <div className="w-20" />
+        </div>
+      </div>
+
       {/* Main Content */}
-      <div className="max-w-[1280px] mx-auto px-6 pt-24 md:pt-28 pb-12 md:pb-16">
+      <div className="max-w-[1280px] mx-auto px-6 py-12 md:py-16">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16">
           {/* Left: Image Gallery */}
-          <div ref={heroRef} className="opacity-0 translate-y-[20px]">
+          <div ref={heroRef}>
             {/* Main Media */}
             <div className="rounded-[20px] overflow-hidden bg-cream mb-4 h-[400px] md:h-[500px] flex items-center justify-center">
               {product.video && activeImage === product.images.length ? (
@@ -241,17 +264,10 @@ export default function ProductDetail() {
           </div>
 
           {/* Right: Product Info */}
-          <div ref={infoRef} className="opacity-0 translate-y-[20px]">
-            <a
-              href="/"
-              className="inline-flex items-center gap-2 font-body font-medium text-[13px] text-earth hover:text-deep-brown transition-colors mb-4"
-            >
-              <ArrowLeftIcon2 />
-              Back to Shop
-            </a>
-
+          <div ref={infoRef}>
             {/* Badge */}
-            <span className={`inline-block ${product.badgeColor} text-white font-body font-semibold text-[11px] uppercase tracking-wider px-3 py-1.5 rounded-full mb-4`}>
+            <span className="inline-flex items-center gap-1.5 bg-sky-50 text-sky-700 border border-sky-200/80 font-body font-semibold text-[11px] uppercase tracking-[0.06em] px-3 py-1.5 rounded-full mb-4">
+              <SnowflakeIcon className="w-3.5 h-3.5" />
               {product.badge}
             </span>
 
