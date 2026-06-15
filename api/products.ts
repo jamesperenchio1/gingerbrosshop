@@ -60,12 +60,14 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     const productMap = new Map<string, CatalogProduct>();
 
     for (const price of prices.data) {
-      const product = price.product;
-      // Skip prices whose product is deleted or archived. Split the guards so
-      // TypeScript narrows `product` to Stripe.Product before reading `.active`.
-      if (typeof product === 'string' || product.deleted) {
+      const expanded = price.product;
+      // Skip prices whose product is unexpanded (string id) or deleted. Cast to
+      // Stripe.Product explicitly — the union with DeletedProduct doesn't narrow
+      // reliably across Stripe type versions.
+      if (typeof expanded === 'string' || (expanded as Stripe.DeletedProduct).deleted) {
         continue;
       }
+      const product = expanded as Stripe.Product;
       if (!product.active) {
         continue;
       }
