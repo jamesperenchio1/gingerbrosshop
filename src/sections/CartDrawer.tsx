@@ -101,8 +101,9 @@ export default function CartDrawer() {
     <>
       <div
         className={`fixed inset-0 bg-black/20 z-[60] transition-opacity duration-300 ${
-          state.isOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
+          state.isOpen ? 'pointer-events-auto' : 'pointer-events-none'
         }`}
+        style={{ opacity: state.isOpen ? 1 : 0 }}
         onClick={closeCart}
       />
 
