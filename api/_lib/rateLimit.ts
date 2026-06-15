@@ -28,7 +28,7 @@ export async function rateLimit(opts: RateLimitOptions): Promise<{ allowed: bool
   }
 }
 
-export function getClientIp(req: { headers: { ['x-forwarded-for']?: string | string[] }; socket?: { remoteAddress?: string } }): string {
+export function getClientIp(req: { headers: Record<string, string | string[] | undefined>; socket?: { remoteAddress?: string } }): string {
   const forwarded = req.headers['x-forwarded-for'];
   if (typeof forwarded === 'string') return forwarded.split(',')[0].trim();
   if (Array.isArray(forwarded)) return forwarded[0].trim();

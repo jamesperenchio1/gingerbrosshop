@@ -2,12 +2,10 @@ import type { VercelRequest, VercelResponse } from '@vercel/node';
 import Stripe from 'stripe';
 import { rateLimit, getClientIp } from './_lib/rateLimit.js';
 
-const PRICE_IDS: Record<string, string> = {
-  unpasteurized: process.env.STRIPE_PRICE_UNPASTEURIZED ?? '',
-};
-
 interface CheckoutLine {
-  id: string;
+  // The Stripe price ID to purchase. `id` is accepted as a legacy alias.
+  priceId?: string;
+  id?: string;
   quantity: number;
 }
 
@@ -35,29 +33,54 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return;
   }
 
+  const paymentMethod = (req.body?.paymentMethod as string | undefined) ?? 'card';
   const referralCode = (req.body?.referralCode as string | undefined) ?? '';
-  const hasSubscription = items.some((i) => i.id.endsWith('-sub-week') || i.id.endsWith('-sub-2week') || i.id.endsWith('-sub-month'));
-  const hasOneTime = items.some((i) => !i.id.includes('-sub-'));
+  const giftInfo = req.body?.giftInfo as { isGift: boolean; recipientEmail?: string; recipientName?: string; message?: string } | undefined;
+
+  const stripe = new Stripe(secret);
+
+  // Resolve and validate every price directly against Stripe — Stripe is the
+  // source of truth, so there is no per-product env var or hardcoded map.
+  const lineItems: Stripe.Checkout.SessionCreateParams.LineItem[] = [];
+  let recurringCount = 0;
+  for (const item of items) {
+    const priceId = item.priceId ?? item.id;
+    if (!priceId) {
+      res.status(400).json({ error: 'Missing price in cart item' });
+      return;
+    }
+
+    let price: Stripe.Price;
+    try {
+      price = await stripe.prices.retrieve(priceId);
+    } catch {
+      res.status(400).json({ error: `Unknown product: ${priceId}` });
+      return;
+    }
+    if (!price.active) {
+      res.status(400).json({ error: `Unknown product: ${priceId}` });
+      return;
+    }
+
+    if (price.recurring) recurringCount++;
+    const qty = Math.max(1, Math.min(24, Math.floor(Number(item.quantity) || 1)));
+    lineItems.push({ price: price.id, quantity: qty });
+  }
+
+  const hasSubscription = recurringCount > 0;
+  const hasOneTime = recurringCount < lineItems.length;
 
   if (hasSubscription && hasOneTime) {
     res.status(400).json({ error: 'Cannot mix one-time and subscription items. Please checkout separately.' });
     return;
   }
 
-  const giftInfo = req.body?.giftInfo as { isGift: boolean; recipientEmail?: string; recipientName?: string; message?: string } | undefined;
-
-  const lineItems: Stripe.Checkout.SessionCreateParams.LineItem[] = [];
-  for (const item of items) {
-    const priceId = PRICE_IDS[item.id];
-    if (!priceId) {
-      res.status(400).json({ error: `Unknown product: ${item.id}` });
-      return;
-    }
-    const qty = Math.max(1, Math.min(24, Math.floor(Number(item.quantity) || 1)));
-    lineItems.push({ price: priceId, quantity: qty });
+  // COD not available for subscriptions
+  if (hasSubscription && paymentMethod === 'cod') {
+    res.status(400).json({ error: 'Cash on Delivery is not available for subscriptions. Please use card payment.' });
+    return;
   }
 
-  const stripe = new Stripe(secret);
   const origin =
     (req.headers.origin as string | undefined) ??
     `https://${req.headers.host}`;
@@ -83,7 +106,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       shipping_address_collection: { allowed_countries: ['TH'] },
       phone_number_collection: { enabled: true },
       allow_promotion_codes: true,
-      payment_method_types: ['card', 'promptpay'],
+      payment_method_types: paymentMethod === 'cod' ? ['card', 'promptpay'] : undefined,
       metadata,
     });
     res.status(200).json({ url: session.url });

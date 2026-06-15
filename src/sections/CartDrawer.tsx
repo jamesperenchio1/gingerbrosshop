@@ -81,7 +81,7 @@ export default function CartDrawer() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          items: state.items.map(i => ({ id: i.id, quantity: i.quantity })),
+          items: state.items.map(i => ({ priceId: i.priceId ?? i.id, quantity: i.quantity })),
           referralCode: referralApplied ? referralCode : '',
           giftInfo: state.items.some(i => i.isGift) ? {
             isGift: true,
@@ -102,14 +102,12 @@ export default function CartDrawer() {
     }
   };
 
-  const getProductId = (itemId: string) => {
-    // Subscription IDs are like unpasteurized-sub-week
-    const subIndex = itemId.indexOf('-sub-');
-    return subIndex > 0 ? itemId.slice(0, subIndex) : itemId;
-  };
-
-  const handleViewProduct = (productId: string) => {
-    navigate(`/product/${getProductId(productId)}`);
+  const handleViewProduct = (item: { productId?: string; id: string }) => {
+    // Prefer the catalog product id; fall back to stripping a legacy "-sub-"
+    // suffix from older cart items persisted before the Stripe-driven catalog.
+    const subIndex = item.id.indexOf('-sub-');
+    const productId = item.productId ?? (subIndex > 0 ? item.id.slice(0, subIndex) : item.id);
+    navigate(`/product/${productId}`);
   };
 
   if (!mounted) return null;
@@ -157,7 +155,7 @@ export default function CartDrawer() {
               {state.items.map((item) => (
                 <div key={item.id} data-testid={`cart-item-${item.id}`} className="flex gap-4 pb-4 border-b border-soft-peach last:border-0">
                   <button
-                    onClick={() => handleViewProduct(item.id)}
+                    onClick={() => handleViewProduct(item)}
                     className="w-[72px] h-[72px] rounded-xl overflow-hidden bg-cream flex-shrink-0 hover:opacity-80 transition-opacity"
                   >
                     <img src={item.image} alt={item.name} className="w-full h-full object-contain" />
@@ -166,7 +164,7 @@ export default function CartDrawer() {
                   <div className="flex-1 min-w-0">
                     <div className="flex items-start justify-between gap-2">
                       <div>
-                        <button onClick={() => handleViewProduct(item.id)}>
+                        <button onClick={() => handleViewProduct(item)}>
                           <h4 className="font-body font-medium text-deep-brown text-[15px] leading-tight text-left hover:text-rust transition-colors">
                             {item.name}
                           </h4>
@@ -310,7 +308,7 @@ export default function CartDrawer() {
                     onClick={async () => {
                       setReferralError('');
                       try {
-                        const res = await fetch('/api/apply-referral', {
+                        const res = await fetch('/api/referral', {
                           method: 'POST',
                           headers: { 'Content-Type': 'application/json' },
                           body: JSON.stringify({ code: referralCode, email: cartEmail || 'guest@gingerbrosshop.com' }),

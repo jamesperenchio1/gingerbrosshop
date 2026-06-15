@@ -1,7 +1,13 @@
 export interface CartItem {
+  // Unique cart-line key. Equals the Stripe price ID for catalog items.
   id: string;
+  // The Stripe price ID sent to checkout (defaults to `id` when omitted).
+  priceId?: string;
+  // The catalog product ID (Stripe metadata.app_id), used for routing to the
+  // product detail page.
+  productId?: string;
   name: string;
-  variant: 'unpasteurized';
+  variant: string;
   price: number;
   quantity: number;
   image: string;
