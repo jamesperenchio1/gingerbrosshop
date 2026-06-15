@@ -8,7 +8,7 @@ export default function TermsPage() {
     <div className="min-h-screen bg-warm-white">
       <SEO
         title="Terms of Service | GingerBros"
-        description="GingerBros terms of service — your rights and obligations when purchasing craft ginger beer from gingerbrosshop.com."
+        description="GingerBros terms of service — your rights and obligations when purchasing craft ginger fizz from gingerbrosshop.com."
         path="/terms"
       />
       <div className="sticky top-0 z-50 bg-warm-white/95 backdrop-blur-xl border-b border-soft-peach/50">

@@ -5,7 +5,7 @@ test('home page loads with hero and shop sections', async ({ page }) => {
   await expect(page).toHaveTitle(/GingerBros/);
   await expect(page.locator('body')).toBeVisible();
   // Shop section product appears
-  await expect(page.getByText('Unpasteurized Ginger Beer', { exact: false }).first()).toBeVisible({ timeout: 15_000 });
+  await expect(page.getByText('Unpasteurized Ginger Fizz', { exact: false }).first()).toBeVisible({ timeout: 15_000 });
 });
 
 test('add to cart opens drawer with item', async ({ page }) => {
@@ -19,7 +19,7 @@ test('add to cart opens drawer with item', async ({ page }) => {
 
 test('product page loads directly', async ({ page }) => {
   await page.goto('/product/unpasteurized');
-  await expect(page.locator('h1')).toContainText('Unpasteurized Ginger Beer');
+  await expect(page.locator('h1')).toContainText('Unpasteurized Ginger Fizz');
   await expect(page.getByRole('button', { name: /add to cart/i })).toBeVisible();
 });
 

@@ -70,7 +70,7 @@ export default function Benefits() {
         {/* Header */}
         <div ref={headerRef} className="text-center mb-16">
           <span className="font-body font-medium text-[13px] uppercase tracking-[0.08em] text-rust mb-3 block">
-            WHY GINGER BEER
+            WHY GINGER FIZZ
           </span>
           <h2 className="font-display font-semibold text-deep-brown text-[clamp(1.5rem,3vw,2.5rem)]">
             More Than a Drink

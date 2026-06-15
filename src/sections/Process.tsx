@@ -21,13 +21,13 @@ const STEPS = [
     number: '03',
     days: 'Day 6-7',
     title: 'Condition & Bottle',
-    description: 'The ginger beer is strained, conditioned for flavor development, then carefully bottled to capture natural carbonation.',
+    description: 'The ginger fizz is strained, conditioned for flavor development, then carefully bottled to capture natural carbonation.',
   },
   {
     number: '04',
     days: 'Ready',
     title: 'Enjoy Cold',
-    description: 'Chill thoroughly before opening. Expect a lively pop — this is living, effervescent ginger beer at its finest.',
+    description: 'Chill thoroughly before opening. Expect a lively pop — this is living, effervescent ginger fizz at its finest.',
   },
 ];
 
