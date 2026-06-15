@@ -4,6 +4,9 @@ import { rateLimit, getClientIp } from './_lib/rateLimit.js';
 
 const PRICE_IDS: Record<string, string> = {
   unpasteurized: process.env.STRIPE_PRICE_UNPASTEURIZED ?? '',
+  'unpasteurized-sub-week': process.env.STRIPE_PRICE_UNPASTEURIZED_SUB_WEEK ?? '',
+  'unpasteurized-sub-2week': process.env.STRIPE_PRICE_UNPASTEURIZED_SUB_2WEEK ?? '',
+  'unpasteurized-sub-month': process.env.STRIPE_PRICE_UNPASTEURIZED_SUB_MONTH ?? '',
 };
 
 interface CheckoutLine {
