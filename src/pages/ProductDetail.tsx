@@ -206,7 +206,7 @@ export default function ProductDetail() {
                     activeImage === images.length ? 'border-amber' : 'border-transparent hover:border-soft-peach'
                   }`}
                 >
-                  <video src={video} className="w-full h-full object-cover" muted />
+                  <video src={video} preload="metadata" className="w-full h-full object-cover" muted />
                   <div className="absolute inset-0 bg-deep-brown/40 flex items-center justify-center">
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="white"><polygon points="5,3 19,12 5,21" /></svg>
                   </div>
