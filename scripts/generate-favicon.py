@@ -1,39 +1,53 @@
-from PIL import Image
+"""Generate the GingerBros favicons: white "GB" monogram on an orange square.
+
+Run from the repo root:  python3 scripts/generate-favicon.py
+Outputs every icon referenced by index.html and site.webmanifest into public/.
+"""
+
 import os
+from PIL import Image, ImageDraw, ImageFont
 
 # Config
-ORANGE = (212, 119, 33)  # warm orange
-SRC = "/Users/jamesperenchio/Desktop/GingerBros Site/Kimi_Agent_姜啤电商功能扩展/app/public/source-keg.png"
-OUT_DIR = "/Users/jamesperenchio/Desktop/GingerBros Site/Kimi_Agent_姜啤电商功能扩展/app/public"
+ORANGE = (212, 119, 33)  # #D47721 warm brand orange
+TEXT = "GB"
+TEXT_COLOR = (255, 255, 255, 255)  # white
+FONT_PATH = "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf"
 
-def remove_white_background(img: Image.Image) -> Image.Image:
-    """Convert white-ish background to transparent."""
-    img = img.convert("RGBA")
-    data = img.getdata()
-    new_data = []
-    for r, g, b, a in data:
-        # If pixel is close to white and not already transparent, make it transparent
-        if a > 0 and r > 240 and g > 240 and b > 240:
-            new_data.append((255, 255, 255, 0))
-        else:
-            new_data.append((r, g, b, a))
-    img.putdata(new_data)
-    return img
+OUT_DIR = os.path.join(os.path.dirname(__file__), "..", "public")
 
-def create_favicon(size: int, keg: Image.Image, padding: float = 0.1) -> Image.Image:
+
+def _best_font_size(draw: ImageDraw.ImageDraw, size: int, padding: float) -> ImageFont.FreeTypeFont:
+    """Find the largest font size that fits TEXT within the padded canvas."""
+    target = size * (1 - 2 * padding)
+    font_size = max(8, int(size * 0.6))
+    font = ImageFont.truetype(FONT_PATH, font_size)
+    # Grow/shrink so the wider of width/height matches the target box.
+    while font_size > 6:
+        bbox = draw.textbbox((0, 0), TEXT, font=font)
+        w, h = bbox[2] - bbox[0], bbox[3] - bbox[1]
+        if max(w, h) <= target:
+            break
+        font_size -= 1
+        font = ImageFont.truetype(FONT_PATH, font_size)
+    return font
+
+
+def create_favicon(size: int, padding: float = 0.14) -> Image.Image:
     canvas = Image.new("RGBA", (size, size), ORANGE + (255,))
-    # Scale keg to fit with padding
-    keg_size = int(size * (1 - 2 * padding))
-    keg_resized = keg.resize((keg_size, keg_size), Image.LANCZOS)
-    # Paste centered
-    x = (size - keg_size) // 2
-    y = (size - keg_size) // 2
-    canvas.paste(keg_resized, (x, y), keg_resized)
+    draw = ImageDraw.Draw(canvas)
+    font = _best_font_size(draw, size, padding)
+
+    # Center using the text's actual bounding box (accounts for bearings).
+    bbox = draw.textbbox((0, 0), TEXT, font=font)
+    w, h = bbox[2] - bbox[0], bbox[3] - bbox[1]
+    x = (size - w) / 2 - bbox[0]
+    y = (size - h) / 2 - bbox[1]
+    draw.text((x, y), TEXT, font=font, fill=TEXT_COLOR)
     return canvas
 
+
 def main():
-    src = Image.open(SRC)
-    keg = remove_white_background(src)
+    out_dir = os.path.abspath(OUT_DIR)
 
     sizes = {
         "favicon-16x16.png": 16,
@@ -44,14 +58,21 @@ def main():
     }
 
     for filename, size in sizes.items():
-        out = create_favicon(size, keg)
-        out.save(os.path.join(OUT_DIR, filename), "PNG")
+        # Tighter padding at tiny sizes keeps "GB" legible.
+        pad = 0.1 if size <= 32 else 0.16
+        out = create_favicon(size, padding=pad)
+        out.save(os.path.join(out_dir, filename), "PNG")
         print(f"Generated {filename}")
 
-    # Generate multi-size favicon.ico
-    ico = create_favicon(64, keg)
-    ico.save(os.path.join(OUT_DIR, "favicon.ico"), format="ICO", sizes=[(16, 16), (32, 32), (48, 48), (64, 64)])
+    # Multi-size favicon.ico from a crisp 64px render.
+    ico = create_favicon(64, padding=0.12)
+    ico.save(
+        os.path.join(out_dir, "favicon.ico"),
+        format="ICO",
+        sizes=[(16, 16), (32, 32), (48, 48), (64, 64)],
+    )
     print("Generated favicon.ico")
+
 
 if __name__ == "__main__":
     main()
