@@ -85,12 +85,12 @@ const POSTS: Post[] = [
     slug: 'art-of-the-ginger-bug',
     title: 'The Art of the Ginger Bug: How We Brew Living Fizz',
     excerpt:
-      'Step inside our Chiang Mai brewhouse for a look at the wild ferment that powers every bottle — from raw rhizome to bubbling, living soda.',
+      'Step inside our Bangkok brewhouse for a look at the wild ferment that powers every bottle — from raw rhizome to bubbling, living soda.',
     category: 'Brewing',
     readTime: '9 min',
     icon: FlaskConical,
     date: '2026-06-02',
-    author: 'Nong, Head Brewer',
+    author: 'James, Founder',
     tags: ['fermentation', 'process', 'behind the scenes'],
     featured: true,
     image: '/images/story-brewing.webp',
@@ -110,7 +110,7 @@ Think of it like a sourdough starter, but for soda.
 
 ## Day by day in the brewhouse
 
-Our 7-day process is slow on purpose. Here is roughly how a batch moves through our Chiang Mai brewhouse:
+Our 7-day process is slow on purpose. Here is roughly how a batch moves through our Bangkok brewhouse:
 
 • Day 1 — We grate fresh, organic Thai ginger and combine it with filtered, non-chlorinated water and a measured amount of cane sugar. Chlorine would kill the very microbes we are trying to encourage, so water quality is non-negotiable.
 • Day 2 to 3 — The wild cultures bloom. Tiny bubbles cling to the side of the vessel. The smell turns bright and peppery as the yeast population climbs into the millions.
@@ -236,7 +236,7 @@ Pro tip: The live cultures in our unpasteurized ginger fizz add a faint tartness
     date: '2026-05-12',
     author: 'The GingerBros Kitchen',
     tags: ['cocktail', 'tequila', 'spicy'],
-    content: `Margarita night just got an upgrade. Replacing part of the orange liqueur with ginger fizz gives this cocktail a spicy backbone and a lighter, more refreshing body — perfect for a hot Chiang Mai afternoon.
+    content: `Margarita night just got an upgrade. Replacing part of the orange liqueur with ginger fizz gives this cocktail a spicy backbone and a lighter, more refreshing body — perfect for a hot Bangkok afternoon.
 
 ## Ingredients
 
@@ -779,18 +779,18 @@ If you remember nothing else: match intensity (bold food wants bold ginger), and
   {
     slug: 'meet-the-brewers',
     title: 'Meet the Brewers Behind the Bottle',
-    excerpt: 'The small Chiang Mai team that hand-balances every batch — and why they do it by taste, not by formula.',
+    excerpt: 'The small Bangkok team that hand-balances every batch — and why they do it by taste, not by formula.',
     category: 'Culture',
     readTime: '5 min',
     icon: Mountain,
     date: '2026-03-20',
     author: 'GingerBros Stories',
     tags: ['team', 'behind the scenes', 'craft'],
-    content: `Behind every bottle of GingerBros is a small team that treats brewing as a craft, not a production line. There are no flavour scientists in white coats here — just a handful of people, a brewhouse in Chiang Mai, and a stubborn belief that the best things are made slowly.
+    content: `Behind every bottle of GingerBros is a small team that treats brewing as a craft, not a production line. There are no flavour scientists in white coats here — just a handful of people, a brewhouse in Bangkok, and a stubborn belief that the best things are made slowly.
 
 ## Brewing by taste
 
-Our head brewer, Nong, learned fermentation from her grandmother before there was a single piece of stainless steel in the building. She grew up watching jars of fermenting fruit and ginger bubble away on a shaded shelf, and she still trusts her senses over any gauge. To this day, every batch is smelled, tasted and adjusted by hand before it is approved for bottling.
+Our founder, James, learned fermentation the slow, hands-on way — long before there was a single piece of stainless steel in the building. It started with jars of fermenting fruit and ginger bubbling away on a shaded shelf, a lot of curiosity, and even more patience. To this day he trusts his senses over any gauge: every batch is smelled, tasted and adjusted by hand before it is approved for bottling.
 
 > Numbers tell us the batch is safe. Our tongues tell us the batch is good.
 
@@ -798,7 +798,7 @@ Our head brewer, Nong, learned fermentation from her grandmother before there wa
 
 ## A drink with a place
 
-Working out of Chiang Mai means we are surrounded by some of the best fresh ginger in the world. Our team shops the same morning markets the home cooks do, choosing rhizomes by snapping them to check for juiciness and smelling the cut ends for brightness. That daily ritual ties the brew to the season — a batch in cool, dry January tastes subtly different from one in the humid heat of April, and we like it that way.
+Working out of Bangkok means we are surrounded by some of the best fresh ginger in the world. Our team shops the same morning markets the home cooks do, choosing rhizomes by snapping them to check for juiciness and smelling the cut ends for brightness. That daily ritual ties the brew to the season — a batch in cool, dry January tastes subtly different from one in the humid heat of April, and we like it that way.
 
 ## Why small stays small
 
@@ -812,7 +812,7 @@ We could grow faster by pasteurizing everything and automating the line. We choo
     readTime: '6 min',
     icon: FlaskConical,
     date: '2026-03-12',
-    author: 'Nong, Head Brewer',
+    author: 'James, Founder',
     tags: ['DIY', 'fermentation', 'tutorial'],
     content: `Curious how the magic works? You can culture a simple ginger bug in your own kitchen. It will not be GingerBros — that takes our specific cultures, water and seven years of practice — but it will teach you to respect the process, and it is genuinely one of the most satisfying things you can grow on a countertop.
 

@@ -175,9 +175,9 @@ const BLOG_POSTS: Record<string, BlogPostMeta> = {
   'art-of-the-ginger-bug': {
     title: 'The Art of the Ginger Bug: How We Brew Living Fizz',
     description:
-      'Step inside our Chiang Mai brewhouse for a look at the wild ferment that powers every bottle — from raw rhizome to bubbling, living soda.',
+      'Step inside our Bangkok brewhouse for a look at the wild ferment that powers every bottle — from raw rhizome to bubbling, living soda.',
     date: '2026-06-02',
-    author: 'Nong, Head Brewer',
+    author: 'James, Founder',
     image: `${SITE_URL}/images/story-brewing.webp`,
   },
   'moscow-mule': {
@@ -282,7 +282,7 @@ const BLOG_POSTS: Record<string, BlogPostMeta> = {
   'meet-the-brewers': {
     title: 'Meet the Brewers Behind the Bottle',
     description:
-      'The small Chiang Mai team that hand-balances every batch — and why they do it by taste, not by formula.',
+      'The small Bangkok team that hand-balances every batch — and why they do it by taste, not by formula.',
     date: '2026-03-20',
     author: 'GingerBros Stories',
     image: `${SITE_URL}/images/product-unpasteurized.jpg`,
@@ -292,7 +292,7 @@ const BLOG_POSTS: Record<string, BlogPostMeta> = {
     description:
       'A beginner-friendly walkthrough to culture your own wild ginger starter — the same idea behind our brew.',
     date: '2026-03-12',
-    author: 'Nong, Head Brewer',
+    author: 'James, Founder',
   },
   'sustainability-bottle-to-soil': {
     title: 'From Bottle to Soil: Our Sustainability Promise',
