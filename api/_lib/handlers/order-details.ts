@@ -1,6 +1,6 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
-import Stripe from 'stripe';
-import { getOrderBySessionId } from './_lib/orders.js';
+import { getStripe, type SessionWithShipping } from '../stripe.js';
+import { getOrderBySessionId } from '../orders.js';
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (req.method !== 'GET') {
@@ -20,7 +20,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return;
   }
 
-  const stripe = new Stripe(secret);
+  const stripe = getStripe(secret);
 
   try {
     const session = await stripe.checkout.sessions.retrieve(sessionId, {
@@ -41,7 +41,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       unitAmount: li.price?.unit_amount ?? 0,
     }));
 
-    const sd = (session as Stripe.Checkout.Session & { shipping_details?: { name?: string | null; address?: Stripe.Address | null } | null }).shipping_details;
+    const sd = (session as SessionWithShipping).shipping_details;
     res.status(200).json({
       sessionId: session.id,
       customerEmail: session.customer_details?.email ?? null,

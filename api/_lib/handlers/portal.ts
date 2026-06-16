@@ -1,5 +1,5 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
-import Stripe from 'stripe';
+import { getStripe } from '../stripe.js';
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (req.method !== 'POST') {
@@ -19,7 +19,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return;
   }
 
-  const stripe = new Stripe(secret);
+  const stripe = getStripe(secret);
 
   try {
     // Find or create customer

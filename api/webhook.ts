@@ -1,15 +1,20 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import Stripe from 'stripe';
-import { Resend } from 'resend';
+import { getStripe, type SessionWithShipping } from './_lib/stripe.js';
 import { saveOrder } from './_lib/orders.js';
+import {
+  getResend,
+  MAIL_FROM,
+  SELLER_EMAIL,
+  FROM_EMAIL,
+  money,
+  sellerNotificationHtml,
+  customerInvoiceHtml,
+  giftEmailHtml,
+} from './_lib/email.js';
 
 const stripeSecret = process.env.STRIPE_SECRET_KEY;
 const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
-const resendApiKey = process.env.RESEND_API_KEY;
-const sellerEmail = process.env.SELLER_EMAIL;
-const fromEmail = process.env.FROM_EMAIL ?? 'orders@gingerbros.co';
-
-const resend = resendApiKey ? new Resend(resendApiKey) : null;
 
 export const config = {
   api: {
@@ -36,7 +41,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return;
   }
 
-  const stripe = new Stripe(stripeSecret);
+  const stripe = getStripe(stripeSecret);
   const buf = await buffer(req);
   const sig = req.headers['stripe-signature'] as string | undefined;
 
@@ -51,7 +56,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   }
 
   if (event.type === 'checkout.session.completed') {
-    const session = event.data.object as Stripe.Checkout.Session & { shipping_details?: { name?: string | null; address?: Stripe.Address | null } | null };
+    const session = event.data.object as SessionWithShipping;
 
     // Expand line items for the email
     let lineItems: Stripe.LineItem[] = [];
@@ -62,7 +67,6 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       console.error('Failed to fetch line items:', err);
     }
 
-    const isSubscription = session.mode === 'subscription';
     const isGift = session.metadata?.isGift === 'true';
     const recipientEmail = session.metadata?.recipientEmail ?? null;
     const recipientName = session.metadata?.recipientName ?? null;
@@ -99,13 +103,15 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
     await saveOrder(order);
 
+    const resend = getResend();
+
     // Send seller notification
-    if (resend && sellerEmail) {
+    if (resend && SELLER_EMAIL) {
       try {
         await resend.emails.send({
-          from: `GingerBros Orders <${fromEmail}>`,
-          to: sellerEmail,
-          subject: `New Order #${session.id.slice(-8).toUpperCase()} — ฿${(session.amount_total ?? 0) / 100}`,
+          from: `GingerBros Orders <${FROM_EMAIL}>`,
+          to: SELLER_EMAIL,
+          subject: `New Order #${session.id.slice(-8).toUpperCase()} — ฿${money(session.amount_total)}`,
           html: sellerNotificationHtml(session, lineItems),
         });
       } catch (err) {
@@ -119,7 +125,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     if (resend && order.customerEmail) {
       try {
         await resend.emails.send({
-          from: `GingerBros <${fromEmail}>`,
+          from: MAIL_FROM,
           to: order.customerEmail,
           subject: `Your GingerBros Order Confirmation #${session.id.slice(-8).toUpperCase()}`,
           html: customerInvoiceHtml(session, lineItems),
@@ -133,7 +139,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     if (resend && isGift && recipientEmail) {
       try {
         await resend.emails.send({
-          from: `GingerBros <${fromEmail}>`,
+          from: MAIL_FROM,
           to: recipientEmail,
           subject: `${session.customer_details?.name ?? 'Someone'} sent you a GingerBros gift! 🍺`,
           html: giftEmailHtml(session, lineItems, recipientName, giftMessage, session.customer_details?.name ?? 'A friend'),
@@ -160,117 +166,4 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   }
 
   res.status(200).json({ received: true });
-}
-
-type SessionWithShipping = Stripe.Checkout.Session & { shipping_details?: { name?: string | null; address?: Stripe.Address | null } | null };
-
-function sellerNotificationHtml(session: SessionWithShipping, items: Stripe.LineItem[]) {
-  const orderId = session.id.slice(-8).toUpperCase();
-  const total = ((session.amount_total ?? 0) / 100).toLocaleString();
-  const isSub = session.mode === 'subscription';
-  const itemRows = items
-    .map(
-      (li) =>
-        `<tr>
-          <td style="padding:8px;border-bottom:1px solid #eee;">${li.description}</td>
-          <td style="padding:8px;border-bottom:1px solid #eee;text-align:center;">${li.quantity}</td>
-          <td style="padding:8px;border-bottom:1px solid #eee;text-align:right;">฿${(li.amount_total / 100).toLocaleString()}</td>
-        </tr>`
-    )
-    .join('');
-
-  const shipping = session.shipping_details;
-  const shippingHtml = shipping
-    ? `<p><strong>Shipping to:</strong><br>${shipping.name}<br>${Object.values(shipping.address ?? {}).filter(Boolean).join(', ')}</p>`
-    : '';
-
-  const isGift = session.metadata?.isGift === 'true';
-  const recipientName = session.metadata?.recipientName;
-  const recipientEmail = session.metadata?.recipientEmail;
-  const giftMessage = session.metadata?.giftMessage;
-  const giftHtml = isGift
-    ? `<div style="background:#F5F0EB;padding:12px;border-radius:8px;margin:16px 0;">
-        <p style="margin:0 0 4px 0;font-weight:600;">🎁 This order is a gift</p>
-        <p style="margin:0;font-size:14px;"><strong>Recipient:</strong> ${recipientName ?? '—'}</p>
-        <p style="margin:0;font-size:14px;"><strong>Recipient email:</strong> ${recipientEmail ?? '—'}</p>
-        ${giftMessage ? `<p style="margin:8px 0 0 0;font-size:14px;font-style:italic;">“${giftMessage}”</p>` : ''}
-      </div>`
-    : '';
-
-  return `<div style="font-family:system-ui,sans-serif;max-width:480px;margin:0 auto;padding:24px;">
-    <h2 style="color:#3D2410;">New Order Received 🍺</h2>
-    <p>Order #${orderId} has been paid${isSub ? ' — <strong>Monthly Subscription</strong>' : ''}.</p>
-    <table style="width:100%;border-collapse:collapse;margin:16px 0;font-size:14px;">
-      <thead><tr style="background:#F5F0EB;"><th style="padding:8px;text-align:left;">Item</th><th style="padding:8px;">Qty</th><th style="padding:8px;text-align:right;">Total</th></tr></thead>
-      <tbody>${itemRows}</tbody>
-    </table>
-    <p style="font-size:18px;font-weight:600;">Total: ฿${total}${isSub ? '/month' : ''}</p>
-    ${giftHtml}
-    ${shippingHtml}
-    <p style="margin-top:24px;font-size:13px;color:#666;">
-      Add tracking at:<br>
-      <a href="${process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'https://your-domain.com'}/admin/orders">Admin Orders</a>
-    </p>
-  </div>`;
-}
-
-function giftEmailHtml(session: SessionWithShipping, items: Stripe.LineItem[], recipientName: string | null, message: string | null, senderName: string) {
-  const orderId = session.id.slice(-8).toUpperCase();
-  const total = ((session.amount_total ?? 0) / 100).toLocaleString();
-  const itemRows = items
-    .map(
-      (li) =>
-        `<tr><td style="padding:8px;border-bottom:1px solid #eee;">${li.description}</td><td style="padding:8px;border-bottom:1px solid #eee;text-align:center;">${li.quantity}</td><td style="padding:8px;border-bottom:1px solid #eee;text-align:right;">฿${(li.amount_total / 100).toLocaleString()}</td></tr>`
-    )
-    .join('');
-
-  return `<div style="font-family:system-ui,sans-serif;max-width:480px;margin:0 auto;padding:24px;color:#3D2410;">
-    <h2 style="color:#3D2410;">You have received a gift! 🎁</h2>
-    <p>Hi ${recipientName ?? 'there'},</p>
-    <p><strong>${senderName}</strong> has sent you a GingerBros gift.</p>
-    ${message ? `<p style="background:#F5F0EB;padding:12px;border-radius:8px;font-style:italic;">"${message}"</p>` : ''}
-    <p style="font-size:14px;color:#666;">Order #${orderId}</p>
-    <table style="width:100%;border-collapse:collapse;margin:16px 0;font-size:14px;">
-      <thead><tr style="background:#F5F0EB;"><th style="padding:8px;text-align:left;">Item</th><th style="padding:8px;">Qty</th><th style="padding:8px;text-align:right;">Total</th></tr></thead>
-      <tbody>${itemRows}</tbody>
-    </table>
-    <p style="font-size:18px;font-weight:600;">Total: ฿${total}</p>
-    <p style="margin-top:24px;font-size:13px;color:#888;">You will receive shipping updates once the order is dispatched.</p>
-  </div>`;
-}
-
-function customerInvoiceHtml(session: SessionWithShipping, items: Stripe.LineItem[]) {
-  const orderId = session.id.slice(-8).toUpperCase();
-  const total = ((session.amount_total ?? 0) / 100).toLocaleString();
-  const isSub = session.mode === 'subscription';
-  const itemRows = items
-    .map(
-      (li) =>
-        `<tr>
-          <td style="padding:8px;border-bottom:1px solid #eee;">${li.description}</td>
-          <td style="padding:8px;border-bottom:1px solid #eee;text-align:center;">${li.quantity}</td>
-          <td style="padding:8px;border-bottom:1px solid #eee;text-align:right;">฿${(li.amount_total / 100).toLocaleString()}</td>
-        </tr>`
-    )
-    .join('');
-
-  const shipping = session.shipping_details;
-  const shippingHtml = shipping
-    ? `<p style="color:#555;font-size:14px;"><strong>Shipping to:</strong><br>${shipping.name}<br>${Object.values(shipping.address ?? {}).filter(Boolean).join(', ')}</p>`
-    : '';
-
-  return `<div style="font-family:system-ui,sans-serif;max-width:480px;margin:0 auto;padding:24px;color:#3D2410;">
-    <h2 style="color:#3D2410;">Thank you for your order! 🍺</h2>
-    <p>Hi ${session.customer_details?.name ?? 'there'},</p>
-    <p>We've received your order and will send tracking details once your GingerBros ships.</p>
-    <p style="font-size:14px;color:#666;">Order #${orderId}</p>
-    <table style="width:100%;border-collapse:collapse;margin:16px 0;font-size:14px;">
-      <thead><tr style="background:#F5F0EB;"><th style="padding:8px;text-align:left;">Item</th><th style="padding:8px;">Qty</th><th style="padding:8px;text-align:right;">Total</th></tr></thead>
-      <tbody>${itemRows}</tbody>
-    </table>
-    <p style="font-size:18px;font-weight:600;">Total: ฿${total}${isSub ? '/month' : ''}</p>
-    ${shippingHtml}
-    ${isSub ? '<p style="margin-top:16px;font-size:13px;color:#888;">This is a monthly subscription. You can cancel anytime from your Stripe customer portal.</p>' : ''}
-    <p style="margin-top:24px;font-size:13px;color:#888;">Questions? Reply to this email.</p>
-  </div>`;
 }

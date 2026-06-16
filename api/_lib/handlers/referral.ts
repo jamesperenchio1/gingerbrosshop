@@ -6,7 +6,7 @@ import {
   getReferralOwner,
   recordReferralUsage,
   addPoints,
-} from './_lib/referrals.js';
+} from '../referrals.js';
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   // GET: fetch a customer's referral code, points, and referral count.

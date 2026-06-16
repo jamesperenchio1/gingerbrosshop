@@ -1,11 +1,7 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
-import { Resend } from 'resend';
-import { getOrders, getOrderBySessionId, updateTracking, type Order } from './_lib/orders.js';
-import { rateLimit, getClientIp } from './_lib/rateLimit.js';
-
-const resendApiKey = process.env.RESEND_API_KEY;
-const fromEmail = process.env.FROM_EMAIL ?? 'orders@gingerbros.co';
-const resend = resendApiKey ? new Resend(resendApiKey) : null;
+import { getOrders, getOrderBySessionId, updateTracking, type Order } from '../orders.js';
+import { rateLimit, getClientIp } from '../rateLimit.js';
+import { getResend, MAIL_FROM, shippingNotificationHtml } from '../email.js';
 
 function isAuthorized(req: VercelRequest): boolean {
   const auth = req.headers.authorization;
@@ -71,6 +67,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
  * was sent.
  */
 async function sendShippingNotification(order: Order): Promise<boolean> {
+  const resend = getResend();
   if (!resend) {
     console.log('[SHIPPING NOTIFICATION] RESEND_API_KEY not configured — skipping email for', order.sessionId);
     return false;
@@ -82,14 +79,15 @@ async function sendShippingNotification(order: Order): Promise<boolean> {
   if (recipients.size === 0) return false;
 
   const orderId = order.sessionId.slice(-8).toUpperCase();
+  const html = shippingNotificationHtml(order);
   let sent = false;
   for (const to of recipients) {
     try {
       await resend.emails.send({
-        from: `GingerBros <${fromEmail}>`,
+        from: MAIL_FROM,
         to,
         subject: `Your GingerBros order #${orderId} is on its way! 🚚`,
-        html: shippingNotificationHtml(order),
+        html,
       });
       sent = true;
     } catch (err) {
@@ -97,35 +95,4 @@ async function sendShippingNotification(order: Order): Promise<boolean> {
     }
   }
   return sent;
-}
-
-function shippingNotificationHtml(order: Order): string {
-  const orderId = order.sessionId.slice(-8).toUpperCase();
-  const carrier = order.trackingCarrier?.trim();
-  const itemRows = order.items
-    .map(
-      (li) =>
-        `<tr>
-          <td style="padding:8px;border-bottom:1px solid #eee;">${li.description}</td>
-          <td style="padding:8px;border-bottom:1px solid #eee;text-align:center;">${li.quantity}</td>
-        </tr>`
-    )
-    .join('');
-
-  return `<div style="font-family:system-ui,sans-serif;max-width:480px;margin:0 auto;padding:24px;color:#3D2410;">
-    <h2 style="color:#3D2410;">Your order is on its way! 🚚</h2>
-    <p>Hi ${order.customerName ?? 'there'},</p>
-    <p>Good news — your GingerBros order has shipped. Because this is a living, unpasteurized brew, please refrigerate it as soon as it arrives.</p>
-    <div style="background:#F5F0EB;padding:16px;border-radius:8px;margin:16px 0;">
-      <p style="margin:0 0 4px 0;font-size:14px;"><strong>Order:</strong> #${orderId}</p>
-      <p style="margin:0 0 4px 0;font-size:14px;"><strong>Tracking number:</strong> ${order.trackingNumber}</p>
-      ${carrier ? `<p style="margin:0;font-size:14px;"><strong>Carrier:</strong> ${carrier}</p>` : ''}
-    </div>
-    <table style="width:100%;border-collapse:collapse;margin:16px 0;font-size:14px;">
-      <thead><tr style="background:#F5F0EB;"><th style="padding:8px;text-align:left;">Item</th><th style="padding:8px;">Qty</th></tr></thead>
-      <tbody>${itemRows}</tbody>
-    </table>
-    <p style="font-size:14px;">Track your order anytime at <a href="https://gingerbrosshop.com/track" style="color:#C0532B;">gingerbrosshop.com/track</a> using your email and order number <strong>${orderId}</strong>.</p>
-    <p style="margin-top:24px;font-size:13px;color:#888;">Questions? Just reply to this email.</p>
-  </div>`;
 }

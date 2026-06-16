@@ -1,5 +1,6 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import Stripe from 'stripe';
+import { getStripe } from '../stripe.js';
 
 // Stripe treats most currencies as 2-decimal (minor units). These are the
 // zero-decimal currencies where unit_amount is already the major-unit value.
@@ -46,7 +47,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return;
   }
 
-  const stripe = new Stripe(secret);
+  const stripe = getStripe(secret);
 
   try {
     // Pull every active price and its (expanded) product in one pass — this is
