@@ -17,6 +17,9 @@ test('category filters work', async ({ page }) => {
 
   await page.getByTestId('blog-filter-Health').click();
   await expect(page.getByTestId('blog-post-gut-health')).toBeVisible();
+
+  await page.getByTestId('blog-filter-Drinks').click();
+  await expect(page.getByTestId('blog-post-ginger-fizz-bar-menu')).toBeVisible();
 });
 
 test('clicking a post opens the article view', async ({ page }) => {

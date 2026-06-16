@@ -14,6 +14,7 @@ import {
   Calendar,
   Tag as TagIcon,
   Mountain,
+  Wine,
   X,
   BookOpen,
   ExternalLink,
@@ -21,7 +22,7 @@ import {
 import SEO from '@/components/SEO';
 import Newsletter from '@/components/Newsletter';
 
-type Category = 'Recipe' | 'Health' | 'Brewing' | 'Culture' | 'Guide';
+type Category = 'Recipe' | 'Drinks' | 'Health' | 'Brewing' | 'Culture' | 'Guide';
 
 interface Reference {
   label: string;
@@ -54,6 +55,12 @@ const CATEGORY_META: Record<
     gradient: 'from-amber/35 via-soft-peach/30 to-rust/15',
     ring: 'text-rust',
     chip: 'bg-amber/20 text-rust',
+  },
+  Drinks: {
+    icon: Wine,
+    gradient: 'from-rust/25 via-amber/20 to-warm-gold/15',
+    ring: 'text-rust',
+    chip: 'bg-rust/15 text-rust',
   },
   Health: {
     icon: Heart,
@@ -1100,9 +1107,158 @@ Sustainability is not a finish line we will one day cross and celebrate. It is a
       },
     ],
   },
+  {
+    slug: 'ginger-fizz-bar-menu',
+    title: 'Building a Ginger Fizz Cocktail Menu for Your Bar',
+    excerpt:
+      'How bars and restaurants can build a focused, profitable ginger fizz menu — from signature serves to garnish stations and staff training.',
+    category: 'Drinks',
+    readTime: '8 min',
+    icon: Wine,
+    date: '2026-06-12',
+    author: 'The GingerBros Trade Team',
+    tags: ['bar', 'menu', 'restaurants', 'cocktails'],
+    image: '/images/product-detail-2.jpg',
+    content: `A good ginger fizz menu does not try to be everything. It picks a few strong ideas, executes them consistently, and gives guests a reason to order something they cannot make at home. For bars and restaurants, that is the difference between a dead list and one that sells.
+
+GingerBros works on a drinks menu because it brings three things at once: real ginger heat, natural effervescence, and a fermentation story that sounds interesting when a server describes it. Guests notice the difference between a flat ginger ale and something that actually bites back.
+
+## Start with three house serves
+
+You do not need twenty cocktails. Most successful ginger fizz menus are built around three dependable serves:
+
+• **The Mule variation** — vodka, lime, GingerBros. Familiar enough to order without thinking, different enough to remember.
+• **The Dark serve** — dark rum, lime, GingerBros. Richer, slower, and perfect for evening service.
+• **The zero-proof option** — ginger fizz, citrus, and a seasonal herb or spice. This is where restaurants win over non-drinkers and designated drivers.
+
+## Make it signature without making it complicated
+
+The easiest way to own a drink is to control the garnish and the glass. A chilled copper mug for the mule, a tall collins for the dark serve, and a rocks glass with a salted rim for the margarita-style serve instantly separate your version from a standard recipe.
+
+Train staff to mention one detail: "We use a naturally fermented Thai ginger fizz." That single line justifies the price and gives guests a reason to choose it over a generic mixer.
+
+> A focused menu sells more than a long one. Three well-made ginger fizz drinks will outperform fifteen mediocre ones every time.
+
+## Food pairing for restaurants
+
+If you run a restaurant, put the ginger fizz drinks near the spicy and fatty sections of the menu. They pair naturally with:
+
+• Fried or grilled seafood
+• Thai, Indian, or Mexican spice profiles
+• Rich cheeses and charcuterie
+• Citrus-driven desserts
+
+The carbonation cleanses the palate and the ginger cuts richness, which makes it an easy upsell with food.
+
+## Pricing and pour cost
+
+Ginger fizz cocktails are high-margin by design. The base spirit is the biggest cost; the fizz itself is modest. Price them between your well drinks and your premium cocktails. A 120ml pour of GingerBros is usually enough per serve, so a bottle stretches further than most premium mixers.
+
+## Staff training in one sentence
+
+Cold glass, fresh citrus, gentle stir, no shaking. If your team can remember that, the drinks will look and taste correct every time.`,
+  },
+  {
+    slug: 'batching-cocktails-for-service',
+    title: 'Batching Ginger Fizz Cocktails for Busy Service',
+    excerpt:
+      'Pre-batch the base, pour the fizz fresh. A practical guide to speed, consistency, and carbonation for high-volume bars.',
+    category: 'Drinks',
+    readTime: '7 min',
+    icon: Wine,
+    date: '2026-06-10',
+    author: 'The GingerBros Trade Team',
+    tags: ['batching', 'service', 'speed', 'cocktails'],
+    image: '/images/product-detail-3.jpg',
+    content: `Speed kills quality unless you build for it. The smartest way to serve ginger fizz cocktails during a busy shift is to pre-batch everything except the fizz itself. Spirit, citrus, syrups, and bitters can all be combined ahead of time. The carbonation must go in last.
+
+This approach cuts pour time to under ten seconds per drink and keeps every serve identical. It also protects the most important part of the drink: the bubbles.
+
+## What to batch and what to leave fresh
+
+Batch the base, not the fizz:
+
+• **Batch** — spirit, citrus juice, simple syrup, bitters, tinctures, saline.
+• **Do not batch** — GingerBros, fresh garnishes, ice.
+
+Citrus juice can be batched the morning of service and kept cold. For longer stability, use a measured acid solution or high-quality pre-squeezed juice kept at 2°C.
+
+## The math for a liter batch
+
+For a batched Mule base that yields roughly ten drinks:
+
+• 600ml vodka
+• 150ml fresh lime juice
+• 100ml simple syrup
+• 25ml water to account for dilution
+
+Per serve, pour 90ml of base over ice and top with 120ml chilled GingerBros. Adjust dilution based on how much ice melt you expect in your glassware.
+
+## Storage and service setup
+
+Keep batched bases in labelled squeeze bottles or speed-pour containers in the low-boy fridge. Pre-fill glassware with ice where legal and practical. The closer the setup is to a simple "pour base, top fizz, garnish" rhythm, the faster service becomes.
+
+> Never batch the ginger fizz. Carbonation is the whole point, and it will flatten within an hour of being opened to air.
+
+## Scaling for events and functions
+
+For large events, batch bases in five-liter containers and pre-chill. Serve from a dedicated station with one person pouring base, one topping fizz, one garnishing. This is faster than having each bartender build drinks individually and keeps carbonation lively because bottles are opened and closed quickly.
+
+## Quality check before service
+
+Taste one batched drink at the start of every shift. Batches can drift if citrus oxidises or syrup settles. A ten-second taste catches problems before the first guest does.`,
+  },
+  {
+    slug: 'zero-proof-restaurant-drinks',
+    title: 'Zero-Proof Drinks That Restaurants Can Actually Sell',
+    excerpt:
+      'Why the mocktail menu matters, how to price it, and three zero-proof builds that work on a restaurant floor.',
+    category: 'Drinks',
+    readTime: '6 min',
+    icon: Wine,
+    date: '2026-06-07',
+    author: 'The GingerBros Trade Team',
+    tags: ['mocktails', 'zero-proof', 'restaurants', 'menu'],
+    image: '/images/product-detail-1.jpg',
+    content: `The non-drinking guest is no longer an afterthought. Designated drivers, pregnant guests, people on medication, and the simply not-drinking-today crowd all want something that feels considered. A good zero-proof menu turns that obligation into a sales opportunity.
+
+Ginger fizz is an ideal base for mocktails because it already has complexity. It is spicy, tart, effervescent, and slightly savoury. You do not need to hide it under sugar or fake spirits.
+
+## Why zero-proof menus matter
+
+A restaurant that only offers juice and soda to non-drinkers is leaving money on the table and sending a message that those guests are less important. A thoughtful zero-proof section:
+
+• Increases average spend from guests who would otherwise order only water
+• Reduces pressure on groups with mixed drinkers
+• Gives your venue a reputation for inclusivity
+• Costs less to make than most cocktails while supporting premium pricing
+
+## Price it like a cocktail
+
+Do not apologise with the price. A zero-proof drink should cost roughly 70–80% of its alcoholic equivalent. Guests are paying for craft, ingredients, glassware, and garnish — not just ethanol. If you price it like a soft drink, that is how staff will sell it.
+
+## Three builds that work
+
+**The Spicy Ginger Lemonade**
+Fresh lemon juice, honey syrup, GingerBros, mint. Bright, refreshing, and low in sugar.
+
+**The Ginger Shrub**
+GingerBros topped with a house shrub or drinking vinegar and soda water. Tart, complex, and conversation-worthy.
+
+**The Smoked Ginger Mule**
+GingerBros, lime, and a non-alcoholic smoked tea or mezcal-style syrup in a copper mug. Gives the theatre of a cocktail without the alcohol.
+
+> The best mocktails are not cocktails with the spirit removed. They are drinks that stand on their own logic.
+
+## Service tips
+
+List zero-proof drinks on the same menu as cocktails, not on a separate card. Use the same glassware and garnish standards. Train staff to offer them proactively, not just when asked. And name them like real drinks — not "virgin" anything.
+
+A strong zero-proof section makes your whole drinks program look more thoughtful, and GingerBros gives you a base that already tastes like a crafted ingredient.`,
+  },
 ];
 
-const ALL_CATEGORIES: ('All' | Category)[] = ['All', 'Recipe', 'Health', 'Brewing', 'Guide', 'Culture'];
+const ALL_CATEGORIES: ('All' | Category)[] = ['All', 'Recipe', 'Drinks', 'Health', 'Brewing', 'Guide', 'Culture'];
 
 function formatDate(iso: string) {
   return new Date(iso).toLocaleDateString('en-US', {
