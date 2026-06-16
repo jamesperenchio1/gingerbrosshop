@@ -1,17 +1,5 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 
-// Simple flat-rate shipping calculator for Thailand
-const RATES: Record<string, number> = {
-  bangkok: 50,
-  metro: 50,
-  central: 50,
-  north: 80,
-  northeast: 80,
-  south: 80,
-  east: 60,
-  west: 60,
-};
-
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (req.method !== 'GET') {
     res.status(405).json({ error: 'Method not allowed' });

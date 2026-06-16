@@ -1,7 +1,7 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
-import Stripe from 'stripe';
-import { getOrders } from './_lib/orders.js';
-import { rateLimit, getClientIp } from './_lib/rateLimit.js';
+import { getStripe } from '../stripe.js';
+import { getOrders } from '../orders.js';
+import { rateLimit, getClientIp } from '../rateLimit.js';
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (req.method !== 'GET') {
@@ -43,7 +43,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   }
 
   // Optionally refresh from Stripe to get latest status
-  const stripe = new Stripe(secret);
+  const stripe = getStripe(secret);
   try {
     const session = await stripe.checkout.sessions.retrieve(order.sessionId, {
       expand: ['line_items.data.price.product'],

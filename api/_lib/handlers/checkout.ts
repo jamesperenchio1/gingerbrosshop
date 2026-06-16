@@ -1,6 +1,7 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import Stripe from 'stripe';
-import { rateLimit, getClientIp } from './_lib/rateLimit.js';
+import { getStripe } from '../stripe.js';
+import { rateLimit, getClientIp } from '../rateLimit.js';
 
 interface CheckoutLine {
   // The Stripe price ID to purchase. `id` is accepted as a legacy alias.
@@ -37,7 +38,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   const referralCode = (req.body?.referralCode as string | undefined) ?? '';
   const giftInfo = req.body?.giftInfo as { isGift: boolean; recipientEmail?: string; recipientName?: string; message?: string } | undefined;
 
-  const stripe = new Stripe(secret);
+  const stripe = getStripe(secret);
 
   // Resolve and validate every price directly against Stripe — Stripe is the
   // source of truth, so there is no per-product env var or hardcoded map.

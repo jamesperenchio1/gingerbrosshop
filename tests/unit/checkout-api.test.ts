@@ -40,7 +40,7 @@ vi.mock('stripe', () => ({
   }),
 }));
 
-import handler from '../../api/checkout';
+import handler from '../../api/_lib/handlers/checkout';
 
 function mockReq(overrides: Partial<Parameters<typeof handler>[0]> = {}): Parameters<typeof handler>[0] {
   return {
