@@ -245,6 +245,7 @@ The natural fermentation gives our unpasteurized ginger fizz a subtle funk and c
     date: '2026-05-20',
     author: 'The GingerBros Kitchen',
     tags: ['cocktail', 'rum', 'classic'],
+    image: '/images/product-detail-1.jpg',
     content: `The Dark ’n’ Stormy is Bermuda’s national drink for a reason: dark rum and ginger were made for each other. The rum brings molasses, caramel and a little funk; the ginger brings heat and brightness to cut straight through it. Our version swaps the usual flat soda for GingerBros, so instead of sugar water you get real, living ginger and natural carbonation. The drink is named for its appearance — dark rum clouding through pale, stormy ginger like a squall rolling in off the Atlantic.
 
 ## The most protected cocktail in the world
@@ -289,6 +290,7 @@ The classic Bermudian recipe is sometimes served without lime, but a squeeze of 
     date: '2026-05-12',
     author: 'The GingerBros Kitchen',
     tags: ['cocktail', 'tequila', 'spicy'],
+    image: '/images/product-detail-2.jpg',
     content: `The classic margarita is a near-perfect balance of strong (tequila), sour (lime) and sweet (orange liqueur). This version keeps that balance but adds a fourth dimension — spice and effervescence — by replacing some of the orange liqueur with ginger fizz. The result is lighter, drier and more refreshing, with a warm ginger backbone that makes it perfect for a hot Bangkok afternoon.
 
 ## Ingredients
@@ -340,6 +342,7 @@ Scale the tequila, lime and triple sec for the crowd and keep that base chilled 
     date: '2026-05-05',
     author: 'The GingerBros Kitchen',
     tags: ['mocktail', 'zero-proof', 'citrus'],
+    image: '/images/product-detail-3.jpg',
     content: `Not every great drink needs alcohol. A well-made zero-proof drink is not a sad consolation prize — it is a deliberately built beverage with the same attention to balance you would give a cocktail. This spicy ginger lemonade leans on real ginger heat, fresh citrus and natural carbonation to wake up your palate, with no hangover and no compromise. It is the drink we reach for when we want something that *feels* like an occasion without the alcohol.
 
 ## Ingredients
@@ -388,6 +391,7 @@ Batch the lemon-and-honey base in a jug and keep it chilled, then top each glass
     date: '2026-04-26',
     author: 'The GingerBros Kitchen',
     tags: ['food', 'glaze', 'dinner'],
+    image: '/images/product-unpasteurized.jpg',
     content: `Ginger fizz is not just for drinking. Reduce it down and it becomes a tangy, caramelised glaze that clings to wings, tofu or roasted vegetables in a glossy, sticky lacquer. It is one of our favourite ways to use up a bottle that has lost a little of its sparkle — the carbonation does not matter once it hits the pan, but all that real ginger flavour does.
 
 ## Ingredients
@@ -435,6 +439,7 @@ The reduced glaze keeps in the fridge for up to a week in a sealed jar. Brush it
     date: '2026-04-18',
     author: 'The GingerBros Kitchen',
     tags: ['dessert', 'coffee', 'float'],
+    image: '/images/bundle-6pack.jpg',
     content: `When you cannot decide between dessert, coffee and a cold drink, make all three at once. The affogato — Italian for "drowned" — is traditionally a scoop of vanilla gelato drowned in a shot of hot espresso. We give it a spicy, fizzy twist by adding cold ginger fizz, turning a two-ingredient classic into a theatrical, temperature-contrasting float that is our answer to a sweltering afternoon.
 
 ## Ingredients
@@ -478,6 +483,7 @@ What makes this work as a dessert is the sheer number of contrasts happening at 
     date: '2026-06-08',
     author: 'GingerBros Wellness',
     tags: ['gut health', 'probiotics', 'science'],
+    image: '/images/product-unpasteurized.png',
     featured: true,
     content: `Ginger has been used for digestive health for thousands of years, from Ayurvedic medicine in India to traditional Chinese formulas to the kitchens of Southeast Asia. Modern research is now catching up to what traditional medicine long suspected — and in some areas, confirming it outright. This article walks through what the evidence actually says, where it is strong, and where the honest answer is "we are not sure yet."
 
@@ -542,6 +548,7 @@ Ginger fizz is not a supplement, and we will never pretend otherwise. But if you
     date: '2026-05-30',
     author: 'GingerBros Wellness',
     tags: ['gut health', 'nutrition', 'guide'],
+    image: '/images/product-pasteurized.png',
     content: `The two words sound almost identical, and the marketing on most supermarket shelves does nothing to clear up the confusion. Here is the simple version, and then we will go a little deeper: **probiotics** are live, beneficial microorganisms, and **prebiotics** are the special fibres that feed them. One is the seed, the other is the fertiliser. You need both.
 
 ## Probiotics: the live cultures
@@ -595,6 +602,7 @@ You do not have to overthink any of this. Aim for a little variety of fermented 
     date: '2026-05-22',
     author: 'GingerBros Wellness',
     tags: ['immunity', 'science', 'inflammation'],
+    image: '/images/hero-bottle.png',
     content: `"Boosts your immune system" might be the most overused phrase in all of wellness marketing. So let us be careful and honest here. Ginger is one of the most studied spices on the planet, and the results are genuinely promising — but promising is not the same as magical, and the word "immunity" deserves a lot more nuance than a label usually gives it.
 
 ## What the studies actually suggest
@@ -642,6 +650,7 @@ None of this means ginger fizz replaces medicine, vaccines, sleep, exercise or a
     date: '2026-05-14',
     author: 'GingerBros Wellness',
     tags: ['low sugar', 'fermentation', 'nutrition'],
+    image: '/images/product-detail-1.jpg',
     content: `A typical can of commercial ginger ale or soda contains somewhere around 30–40 grams of sugar. To put that in perspective: the World Health Organization recommends adults keep "free sugars" under 10% of daily energy — roughly 50 grams, or about 12 teaspoons — and suggests that dropping to 5% brings further benefit. A single sweet soda can eat most of that allowance in one go. Worse, most so-called ginger "ale" is not even fermented; it is carbonated sugar water with ginger flavouring added. We take a fundamentally different approach.
 
 ## The ginger bug eats the sugar
@@ -684,6 +693,7 @@ We could push the sugar number to zero with stevia, sucralose or aspartame. We c
     date: '2026-05-08',
     author: 'GingerBros Wellness',
     tags: ['hydration', 'summer', 'electrolytes'],
+    image: '/images/product-detail-2.jpg',
     content: `Bangkok is hot, and staying hydrated here is not optional — it is daily maintenance. When you sweat, you lose water *and* electrolytes — mainly sodium, with smaller amounts of potassium, magnesium and chloride. These minerals carry the electrical signals your nerves and muscles run on, which is why serious dehydration leaves you foggy, crampy and drained. So can a fizzy ginger drink actually help on a sweaty afternoon? The honest answer is: in the right way, yes — but not for the reason most "hydration" marketing implies.
 
 ## The most underrated factor in hydration: taste
@@ -722,6 +732,7 @@ In short: use it to drink *more*, not as a medical rehydration drink.
     date: '2026-04-30',
     author: 'GingerBros Wellness',
     tags: ['guide', 'probiotics', 'storage'],
+    image: '/images/product-pasteurized.png',
     content: `People ask us this all the time, so here is the straight answer with no marketing spin.
 
 ## First, what pasteurization actually does
@@ -788,6 +799,7 @@ If live cultures are your priority and you have fridge space, go unpasteurized. 
     date: '2026-04-22',
     author: 'The GingerBros Kitchen',
     tags: ['storage', 'tips', 'fermentation'],
+    image: '/images/product-unpasteurized.jpg',
     content: `Our unpasteurized fizz is, quite literally, alive. Inside that sealed bottle the cultures keep slowly working — and that is a feature, not a flaw, because it is exactly what keeps the flavour bright and evolving. But a living drink behaves differently from a dead one in a can, so a handful of simple habits will keep every bottle perfect (and keep you from wearing it).
 
 ## Why storage matters more than for normal soda
@@ -828,6 +840,7 @@ Never store living fizz in a warm car, on a sunny windowsill, or in the freezer.
     date: '2026-04-14',
     author: 'GingerBros Stories',
     tags: ['history', 'culture', 'ginger'],
+    image: '/images/story-brewing.jpg',
     content: `Ginger has been crossing borders for as long as people have been trading. Native to maritime Southeast Asia, it was one of the very first spices to travel the ancient routes westward — overland and by sea, through Indian and Arab merchants, into the Mediterranean world. The Romans prized it enough to tax it; by the Middle Ages it was one of the most common spices in Europe after black pepper, valuable enough that a pound of it could cost as much as a live sheep. The fizzy drink we love today is the product of centuries of that wandering.
 
 ## From medicine to merriment
@@ -874,6 +887,7 @@ Thailand has cooked with ginger and its aromatic cousins — galangal, turmeric,
     date: '2026-04-06',
     author: 'GingerBros Stories',
     tags: ['ingredients', 'thailand', 'sourcing'],
+    image: '/images/story-brewing.webp',
     content: `Taste two gingers side by side and you will quickly realise they are not the same experience at all. We tend to think of ginger as a single, fixed ingredient — a generic brown knob from the supermarket — but it is a living agricultural product with as much variation as wine grapes or coffee cherries. Ginger has *terroir*: climate, soil, rainfall and harvest timing change everything about how it tastes. For a drink whose entire identity is ginger, that variation is not a detail. It is the whole game.
 
 ## The chemistry behind "spicy"
@@ -913,6 +927,7 @@ When it is sourced and handled right, good ginger gives you a complete arc of fl
     date: '2026-03-28',
     author: 'The GingerBros Kitchen',
     tags: ['pairing', 'food', 'tips'],
+    image: '/images/bundle-6pack.jpg',
     content: `Ginger fizz might be the most food-friendly drink in your fridge, and there is real sensory science behind why. Three properties make it so versatile: its **spice** cuts through richness, its **tartness** lifts sweetness, and its **carbonation** physically scrubs fat and salt from your palate between bites. That last point is the same reason Champagne pairs with almost everything — bubbles act like a little reset button for your taste buds. Here is how to put all of that to work, whether you are mixing a cocktail or planning a meal.
 
 ## Best food matches
@@ -960,6 +975,7 @@ If you forget everything else, remember these two principles and you will rarely
     date: '2026-03-20',
     author: 'GingerBros Stories',
     tags: ['team', 'behind the scenes', 'craft'],
+    image: '/images/story-brewing.jpg',
     content: `Behind every bottle of GingerBros is a small team that treats brewing as a craft, not a production line. There are no flavour scientists in white coats here, no giant automated vats running unattended overnight — just a handful of people, a brewhouse in Bangkok, and a stubborn belief that the best things are made slowly and tasted often.
 
 ## Brewing by taste, not by formula
@@ -994,6 +1010,7 @@ Staying small lets us keep making decisions by palate, pay our growers fairly, r
     date: '2026-03-12',
     author: 'James, Founder',
     tags: ['DIY', 'fermentation', 'tutorial'],
+    image: '/images/product-unpasteurized.png',
     content: `Curious how the magic actually works? You can culture a simple ginger bug on your own kitchen counter with nothing more than ginger, sugar, water and a week of attention. It will not be GingerBros — that takes our specific cultures, our water and years of practice — but it is genuinely one of the most satisfying things you can grow at home, and it will teach you to respect the living process behind every fermented drink. Consider this your friendly, beginner-proof starting point.
 
 ## A quick word on what you are doing
@@ -1044,6 +1061,7 @@ And respect the pressure when you bottle: use bottles built for carbonation, "bu
     date: '2026-03-04',
     author: 'GingerBros Stories',
     tags: ['sustainability', 'glass', 'compost'],
+    image: '/images/product-detail-3.jpg',
     content: `Making a living drink that is also kind to the planet is a moving target, and we want to be honest about where we actually stand. We are a small brewery, not a climate authority, so treat this as a candid progress report rather than a glossy sustainability brochure — including, especially, the parts we have not solved yet. Greenwashing is easy; real accounting is harder, and far more useful to you.
 
 ## What we are genuinely proud of
@@ -1218,7 +1236,7 @@ function PostCard({ post }: { post: Post }) {
       data-testid={`blog-post-${post.slug}`}
       className="group blog-card flex flex-col text-left bg-warm-white rounded-3xl overflow-hidden border border-soft-peach/60 hover:border-amber/60 hover:shadow-xl hover:-translate-y-1 transition-all duration-300"
     >
-      <div className={`relative h-44 overflow-hidden bg-gradient-to-br ${meta.gradient}`}>
+      <div className={`relative h-44 w-full overflow-hidden bg-gradient-to-br ${meta.gradient}`}>
         {post.image ? (
           <img
             src={post.image}
