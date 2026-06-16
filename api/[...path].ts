@@ -32,14 +32,29 @@ const routes: Record<string, Handler> = {
   'abandoned-cart-check': abandonedCartCheck,
 };
 
-export default async function handler(req: VercelRequest, res: VercelResponse) {
+/**
+ * Resolve the first path segment after `/api`. We parse `req.url` rather than
+ * relying on the `[...path]` catch-all query param, which Vercel does not
+ * populate reliably for plain Node functions. Falls back to the query param
+ * when present.
+ */
+function resolveRoute(req: VercelRequest): string {
   const pathParam = req.query.path;
-  const segments = Array.isArray(pathParam) ? pathParam : pathParam ? [pathParam] : [];
-  const route = segments[0] ?? '';
+  if (Array.isArray(pathParam) && pathParam.length > 0) return pathParam[0];
+  if (typeof pathParam === 'string' && pathParam) return pathParam.split('/')[0];
+
+  const pathname = (req.url ?? '').split('?')[0];
+  const segments = pathname.split('/').filter(Boolean); // e.g. ['api', 'products'] or ['products']
+  const start = segments[0] === 'api' ? 1 : 0;
+  return segments[start] ?? '';
+}
+
+export default async function handler(req: VercelRequest, res: VercelResponse) {
+  const route = resolveRoute(req);
 
   const fn = routes[route];
   if (!fn) {
-    res.status(404).json({ error: `Not found: /api/${segments.join('/')}` });
+    res.status(404).json({ error: `Not found: /api/${route}` });
     return;
   }
 
