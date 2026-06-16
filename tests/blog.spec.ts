@@ -32,3 +32,24 @@ test('back to blog returns to list', async ({ page }) => {
   await page.getByTestId('blog-back').click();
   await expect(page.getByTestId('blog-post-moscow-mule')).toBeVisible();
 });
+
+test('opening an article updates the URL to a deep link', async ({ page }) => {
+  await page.getByTestId('blog-post-moscow-mule').click();
+  await expect(page).toHaveURL(/\/blog\/moscow-mule$/);
+});
+
+test('browser back from an article returns to the blog list, not the shop', async ({ page }) => {
+  await page.getByTestId('blog-post-gut-health').click();
+  await expect(page).toHaveURL(/\/blog\/gut-health$/);
+  await expect(page.getByRole('heading', { name: /Ginger Fizz & Gut Health/i })).toBeVisible();
+
+  // The reported bug: pressing back used to jump to the shop. It should land on /blog.
+  await page.goBack();
+  await expect(page).toHaveURL(/\/blog$/);
+  await expect(page.getByTestId('blog-post-moscow-mule')).toBeVisible();
+});
+
+test('articles include a references section', async ({ page }) => {
+  await page.getByTestId('blog-post-gut-health').click();
+  await expect(page.getByTestId('blog-article-content')).toContainText('References');
+});
