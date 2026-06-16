@@ -39,6 +39,7 @@ function AppContent() {
         <Route path="/wholesale" element={<WholesalePage />} />
         <Route path="/track" element={<TrackOrderPage />} />
         <Route path="/blog" element={<BlogPage />} />
+        <Route path="/blog/:slug" element={<BlogPage />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
     </Suspense>

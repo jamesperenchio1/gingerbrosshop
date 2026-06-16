@@ -158,6 +158,181 @@ const KNOWN_ROUTES: Record<string, RouteMeta> = {
 
 const VALID_PRODUCT_IDS = new Set(['unpasteurized']);
 
+interface BlogPostMeta {
+  title: string;
+  description: string;
+  date: string;
+  author: string;
+  image?: string;
+}
+
+/**
+ * Lightweight mirror of the blog catalogue in src/pages/BlogPage.tsx, used so
+ * crawlers and link-preview bots get correct per-article meta and a 200 status
+ * on /blog/:slug deep links (instead of the generic SPA 404 fallback).
+ */
+const BLOG_POSTS: Record<string, BlogPostMeta> = {
+  'art-of-the-ginger-bug': {
+    title: 'The Art of the Ginger Bug: How We Brew Living Fizz',
+    description:
+      'Step inside our Chiang Mai brewhouse for a look at the wild ferment that powers every bottle — from raw rhizome to bubbling, living soda.',
+    date: '2026-06-02',
+    author: 'Nong, Head Brewer',
+    image: `${SITE_URL}/images/story-brewing.webp`,
+  },
+  'moscow-mule': {
+    title: 'The Perfect Moscow Mule with GingerBros',
+    description:
+      'Why our 7-day fermented ginger fizz makes the best Moscow Mule you have ever tasted — and the copper-mug ritual that goes with it.',
+    date: '2026-05-28',
+    author: 'The GingerBros Kitchen',
+    image: `${SITE_URL}/images/product-unpasteurized-2.jpg`,
+  },
+  'dark-and-stormy': {
+    title: 'Dark ’n’ Stormy with a Thai Ginger Kick',
+    description: 'A rum-forward classic gets brighter with fresh, fiery Thai ginger and live-culture fizz.',
+    date: '2026-05-20',
+    author: 'The GingerBros Kitchen',
+  },
+  'ginger-margarita': {
+    title: 'Ginger Fizz Margarita',
+    description: 'Tequila, lime, and fiery ginger fizz come together in a refreshingly different margarita.',
+    date: '2026-05-12',
+    author: 'The GingerBros Kitchen',
+  },
+  'spicy-ginger-lemonade': {
+    title: 'Spicy Ginger Lemonade (Zero-Proof)',
+    description: 'A bright, alcohol-free refresher that still feels like a special occasion.',
+    date: '2026-05-05',
+    author: 'The GingerBros Kitchen',
+  },
+  'ginger-glazed-chicken': {
+    title: 'Ginger Fizz Glazed Chicken Wings',
+    description: 'Reduce GingerBros into a sticky, spicy glaze for oven or grill.',
+    date: '2026-04-26',
+    author: 'The GingerBros Kitchen',
+  },
+  'ginger-affogato-float': {
+    title: 'Ginger Fizz Affogato Float',
+    description: 'A grown-up dessert: cold ginger fizz poured over vanilla ice cream and a shot of espresso.',
+    date: '2026-04-18',
+    author: 'The GingerBros Kitchen',
+  },
+  'gut-health': {
+    title: 'Ginger Fizz & Gut Health: What You Should Know',
+    description: 'The science behind ginger, fermentation, and why your gut loves unpasteurized ginger fizz.',
+    date: '2026-06-08',
+    author: 'GingerBros Wellness',
+  },
+  'probiotics-prebiotics': {
+    title: 'Probiotics vs Prebiotics: A Simple Guide',
+    description: 'Learn the difference and how to pair unpasteurized ginger fizz with gut-friendly foods.',
+    date: '2026-05-30',
+    author: 'GingerBros Wellness',
+  },
+  'ginger-immunity': {
+    title: 'Ginger for Immunity: Fact or Fad?',
+    description: 'What research actually says about ginger, inflammation, and immune support.',
+    date: '2026-05-22',
+    author: 'GingerBros Wellness',
+  },
+  'low-sugar-drinking': {
+    title: 'Why We Keep the Sugar Lower',
+    description: 'Most of the sugar in our brew is eaten by the ginger bug during fermentation.',
+    date: '2026-05-14',
+    author: 'GingerBros Wellness',
+  },
+  'hydration-electrolytes': {
+    title: 'Ginger Fizz, Hydration, and Hot Days',
+    description: 'Can a fermented ginger drink actually help on sweaty afternoons?',
+    date: '2026-05-08',
+    author: 'GingerBros Wellness',
+  },
+  'unpasteurized-vs-pasteurized': {
+    title: 'Unpasteurized vs Pasteurized: The Honest Difference',
+    description: 'A clear, no-spin comparison so you can choose the bottle that fits your life.',
+    date: '2026-04-30',
+    author: 'GingerBros Wellness',
+  },
+  'storing-living-fizz': {
+    title: 'How to Store Living Fizz (and Open It Safely)',
+    description:
+      'Live cultures keep working in the bottle. Here is how to keep yours happy and avoid a fountain.',
+    date: '2026-04-22',
+    author: 'The GingerBros Kitchen',
+  },
+  'history-of-ginger-beer': {
+    title: 'A Short, Spicy History of Ginger Beer',
+    description: 'From 18th-century England to Thai street stalls, the global journey of fermented ginger.',
+    date: '2026-04-14',
+    author: 'GingerBros Stories',
+  },
+  'thai-ginger-vs-the-world': {
+    title: 'Thai Ginger vs the World: Why Origin Matters',
+    description: 'Not all ginger is created equal. Here is what makes the Thai rhizome special.',
+    date: '2026-04-06',
+    author: 'GingerBros Stories',
+  },
+  'flavor-pairing-guide': {
+    title: 'The GingerBros Flavor Pairing Guide',
+    description: 'What to eat, mix, and serve alongside ginger fizz for maximum deliciousness.',
+    date: '2026-03-28',
+    author: 'The GingerBros Kitchen',
+  },
+  'meet-the-brewers': {
+    title: 'Meet the Brewers Behind the Bottle',
+    description:
+      'The small Chiang Mai team that hand-balances every batch — and why they do it by taste, not by formula.',
+    date: '2026-03-20',
+    author: 'GingerBros Stories',
+    image: `${SITE_URL}/images/product-unpasteurized.jpg`,
+  },
+  'ginger-bug-at-home': {
+    title: 'Start Your Own Ginger Bug at Home',
+    description:
+      'A beginner-friendly walkthrough to culture your own wild ginger starter — the same idea behind our brew.',
+    date: '2026-03-12',
+    author: 'Nong, Head Brewer',
+  },
+  'sustainability-bottle-to-soil': {
+    title: 'From Bottle to Soil: Our Sustainability Promise',
+    description: 'Recyclable glass, ginger pulp that becomes compost, and the climate cost we are still working on.',
+    date: '2026-03-04',
+    author: 'GingerBros Stories',
+  },
+};
+
+function blogPostMeta(slug: string): RouteMeta | null {
+  const post = BLOG_POSTS[slug];
+  if (!post) return null;
+  const url = `${SITE_URL}/blog/${slug}`;
+  const image = post.image ?? FALLBACK_IMAGE;
+  return {
+    title: `${post.title} — GingerBros Brew Journal`,
+    description: post.description,
+    image,
+    type: 'article',
+    jsonLd: {
+      '@context': 'https://schema.org',
+      '@type': 'BlogPosting',
+      headline: post.title,
+      description: post.description,
+      datePublished: post.date,
+      image,
+      url,
+      author: { '@type': 'Organization', name: post.author },
+      publisher: {
+        '@type': 'Organization',
+        name: 'GingerBros',
+        logo: {
+          '@type': 'ImageObject',
+          url: `${SITE_URL}/images/product-unpasteurized-2.jpg`,
+        },
+      },
+    },
+  };
+}
+
 function escapeHtml(text: string): string {
   return text
     .replace(/&/g, '&amp;')
@@ -273,6 +448,20 @@ export default async function middleware(request: Request): Promise<Response> {
       html = injectMeta(html, notFoundMeta, pathname);
       return new Response(html, {
         status: 404,
+        headers: { 'Content-Type': 'text/html; charset=utf-8' },
+      });
+    }
+  }
+
+  // Individual blog articles live at /blog/:slug. Valid slugs return 200 with
+  // per-article meta; unknown slugs fall through to the 404 handling below.
+  const blogMatch = pathname.match(/^\/blog\/([^/]+)\/?$/);
+  if (blogMatch) {
+    const articleMeta = blogPostMeta(blogMatch[1]);
+    if (articleMeta) {
+      html = injectMeta(html, articleMeta, pathname);
+      return new Response(html, {
+        status: 200,
         headers: { 'Content-Type': 'text/html; charset=utf-8' },
       });
     }

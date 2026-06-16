@@ -36,6 +36,158 @@
   </url>
 
   <url>
+    <loc>https://gingerbrosshop.com/blog/art-of-the-ginger-bug</loc>
+    <lastmod>2026-06-02</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+    <image:image>
+      <image:loc>https://gingerbrosshop.com/images/story-brewing.webp</image:loc>
+      <image:title>The Art of the Ginger Bug: How We Brew Living Fizz</image:title>
+    </image:image>
+  </url>
+
+  <url>
+    <loc>https://gingerbrosshop.com/blog/gut-health</loc>
+    <lastmod>2026-06-08</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+
+  <url>
+    <loc>https://gingerbrosshop.com/blog/moscow-mule</loc>
+    <lastmod>2026-05-28</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+    <image:image>
+      <image:loc>https://gingerbrosshop.com/images/product-unpasteurized-2.jpg</image:loc>
+      <image:title>The Perfect Moscow Mule with GingerBros</image:title>
+    </image:image>
+  </url>
+
+  <url>
+    <loc>https://gingerbrosshop.com/blog/dark-and-stormy</loc>
+    <lastmod>2026-05-20</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+
+  <url>
+    <loc>https://gingerbrosshop.com/blog/ginger-margarita</loc>
+    <lastmod>2026-05-12</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+
+  <url>
+    <loc>https://gingerbrosshop.com/blog/spicy-ginger-lemonade</loc>
+    <lastmod>2026-05-05</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+
+  <url>
+    <loc>https://gingerbrosshop.com/blog/ginger-glazed-chicken</loc>
+    <lastmod>2026-04-26</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+
+  <url>
+    <loc>https://gingerbrosshop.com/blog/ginger-affogato-float</loc>
+    <lastmod>2026-04-18</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+
+  <url>
+    <loc>https://gingerbrosshop.com/blog/probiotics-prebiotics</loc>
+    <lastmod>2026-05-30</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+
+  <url>
+    <loc>https://gingerbrosshop.com/blog/ginger-immunity</loc>
+    <lastmod>2026-05-22</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+
+  <url>
+    <loc>https://gingerbrosshop.com/blog/low-sugar-drinking</loc>
+    <lastmod>2026-05-14</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+
+  <url>
+    <loc>https://gingerbrosshop.com/blog/hydration-electrolytes</loc>
+    <lastmod>2026-05-08</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+
+  <url>
+    <loc>https://gingerbrosshop.com/blog/unpasteurized-vs-pasteurized</loc>
+    <lastmod>2026-04-30</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+
+  <url>
+    <loc>https://gingerbrosshop.com/blog/storing-living-fizz</loc>
+    <lastmod>2026-04-22</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+
+  <url>
+    <loc>https://gingerbrosshop.com/blog/history-of-ginger-beer</loc>
+    <lastmod>2026-04-14</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+
+  <url>
+    <loc>https://gingerbrosshop.com/blog/thai-ginger-vs-the-world</loc>
+    <lastmod>2026-04-06</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+
+  <url>
+    <loc>https://gingerbrosshop.com/blog/flavor-pairing-guide</loc>
+    <lastmod>2026-03-28</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+
+  <url>
+    <loc>https://gingerbrosshop.com/blog/meet-the-brewers</loc>
+    <lastmod>2026-03-20</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+    <image:image>
+      <image:loc>https://gingerbrosshop.com/images/product-unpasteurized.jpg</image:loc>
+      <image:title>Meet the Brewers Behind the Bottle</image:title>
+    </image:image>
+  </url>
+
+  <url>
+    <loc>https://gingerbrosshop.com/blog/ginger-bug-at-home</loc>
+    <lastmod>2026-03-12</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+
+  <url>
+    <loc>https://gingerbrosshop.com/blog/sustainability-bottle-to-soil</loc>
+    <lastmod>2026-03-04</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+
+  <url>
     <loc>https://gingerbrosshop.com/faq</loc>
     <lastmod>2026-06-14</lastmod>
     <changefreq>monthly</changefreq>
