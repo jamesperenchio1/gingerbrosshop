@@ -2,6 +2,7 @@ import { useRef, useEffect, useState } from 'react';
 import { useCart } from '@/context/CartContext';
 import { useNavigate } from 'react-router';
 import { CloseIcon, TrashIcon, LockIcon, ShoppingBagIcon, PlusIcon, MinusIcon } from '@/components/Icons';
+import { PENDING_SUBSCRIPTION_CHECKOUT_KEY, startCheckout } from '@/lib/checkout';
 
 export default function CartDrawer() {
   const { state, closeCart, removeItem, updateQuantity, decrementOrRemove, subtotal } = useCart();
@@ -11,9 +12,6 @@ export default function CartDrawer() {
   const [checkoutError, setCheckoutError] = useState('');
   const [cartEmail, setCartEmail] = useState('');
   const [cartEmailSaved, setCartEmailSaved] = useState(false);
-  const [referralCode, setReferralCode] = useState('');
-  const [referralApplied, setReferralApplied] = useState(false);
-  const [referralError, setReferralError] = useState('');
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -70,32 +68,19 @@ export default function CartDrawer() {
 
   const handleCheckout = async () => {
     if (state.items.length === 0) return;
-    if (hasMixedCart) {
-      setCheckoutError('Please checkout with only one-time items OR only subscription items.');
-      return;
-    }
     setIsCheckingOut(true);
     setCheckoutError('');
     try {
-      const res = await fetch('/api/checkout', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          items: state.items.map(i => ({ priceId: i.priceId ?? i.id, quantity: i.quantity })),
-          referralCode: referralApplied ? referralCode : '',
-          giftInfo: state.items.some(i => i.isGift) ? {
-            isGift: true,
-            recipientEmail: state.items.find(i => i.isGift)?.recipientEmail,
-            recipientName: state.items.find(i => i.isGift)?.recipientName,
-            message: state.items.find(i => i.isGift)?.giftMessage,
-          } : undefined,
-        }),
-      });
-      const data = await res.json();
-      if (!res.ok || !data?.url) {
-        throw new Error(data?.error ?? 'Checkout failed');
+      if (hasMixedCart) {
+        // A Stripe Checkout Session can only be in one mode (payment or subscription),
+        // so a mixed cart pays for its one-time items first; the success page picks up
+        // the subscription leg automatically once that session completes.
+        const oneTimeItems = state.items.filter((i) => !i.isSubscription);
+        sessionStorage.setItem(PENDING_SUBSCRIPTION_CHECKOUT_KEY, '1');
+        window.location.href = await startCheckout(oneTimeItems);
+        return;
       }
-      window.location.href = data.url;
+      window.location.href = await startCheckout(state.items);
     } catch (err) {
       setCheckoutError(err instanceof Error ? err.message : 'Something went wrong. Please try again.');
       setIsCheckingOut(false);
@@ -230,7 +215,12 @@ export default function CartDrawer() {
             </div>
             {state.items.some(i => i.isSubscription) && (
               <p className="font-body font-medium text-[13px] text-rust mb-2">
-                Subscription — billed {state.items[0]?.interval}
+                Subscription — billed {state.items.find(i => i.isSubscription)?.interval}
+              </p>
+            )}
+            {hasMixedCart && (
+              <p className="font-body font-medium text-[13px] text-rust mb-2">
+                Your cart has both one-time and subscription items — checkout happens in two steps, starting with the one-time items.
               </p>
             )}
             <p className="font-body font-medium text-[13px] text-earth/60 mb-2">
@@ -289,48 +279,6 @@ export default function CartDrawer() {
             {cartEmailSaved && (
               <p className="mt-3 font-body text-[12px] text-center text-accent-green">
                 Cart saved! We will remind you if you do not checkout.
-              </p>
-            )}
-
-            {/* Referral code */}
-            {!referralApplied && state.items.length > 0 && (
-              <div className="mt-4 pt-4 border-t border-soft-peach/50">
-                <p className="font-body text-[12px] text-earth mb-2">Have a referral code?</p>
-                <div className="flex gap-2">
-                  <input
-                    type="text"
-                    value={referralCode}
-                    onChange={(e) => setReferralCode(e.target.value)}
-                    placeholder="BROXXXX"
-                    className="flex-1 bg-cream border border-soft-peach rounded-full px-4 py-2 font-body text-[13px] text-deep-brown placeholder:text-earth/40 focus:outline-none focus:ring-2 focus:ring-rust/30 uppercase"
-                  />
-                  <button
-                    onClick={async () => {
-                      setReferralError('');
-                      try {
-                        const res = await fetch('/api/referral', {
-                          method: 'POST',
-                          headers: { 'Content-Type': 'application/json' },
-                          body: JSON.stringify({ code: referralCode, email: cartEmail || 'guest@gingerbrosshop.com' }),
-                        });
-                        const data = await res.json();
-                        if (!res.ok) throw new Error(data.error);
-                        setReferralApplied(true);
-                      } catch (err) {
-                        setReferralError(err instanceof Error ? err.message : 'Invalid code');
-                      }
-                    }}
-                    className="bg-deep-brown text-cream font-body text-[12px] px-4 py-2 rounded-full hover:bg-rust transition-colors"
-                  >
-                    Apply
-                  </button>
-                </div>
-                {referralError && <p className="mt-1 font-body text-[11px] text-rust">{referralError}</p>}
-              </div>
-            )}
-            {referralApplied && (
-              <p className="mt-3 font-body text-[12px] text-center text-accent-green">
-                Referral code applied! Both you and your friend earned 50 points.
               </p>
             )}
 

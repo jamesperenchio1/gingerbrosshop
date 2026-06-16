@@ -154,10 +154,11 @@ export default function NoiseCanvas() {
     let mouseActive = 0;
     let running = true;
     let onScreen = true;
+    let needsResize = true;
     let frameId = 0;
 
     function resize() {
-      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      const dpr = Math.min(window.devicePixelRatio || 1, 1.5);
       const w = Math.round(canvas!.clientWidth * dpr);
       const h = Math.round(canvas!.clientHeight * dpr);
       if (canvas!.width !== w || canvas!.height !== h) {
@@ -170,7 +171,10 @@ export default function NoiseCanvas() {
 
     function render(now: number) {
       if (!running) return;
-      resize();
+      if (needsResize) {
+        resize();
+        needsResize = false;
+      }
       gl!.uniform1f(uTime, now * 0.001);
       gl!.uniform2f(uMouse, mouseX, mouseY);
       gl!.uniform1f(uMouseActive, mouseActive);
@@ -196,7 +200,9 @@ export default function NoiseCanvas() {
     }, { threshold: 0 });
     io.observe(canvas);
 
+    const onResize = () => { needsResize = true; };
     window.addEventListener('mousemove', onMove);
+    window.addEventListener('resize', onResize);
 
     frameId = requestAnimationFrame(render);
 
@@ -206,6 +212,7 @@ export default function NoiseCanvas() {
       cancelAnimationFrame(frameId);
       io.disconnect();
       window.removeEventListener('mousemove', onMove);
+      window.removeEventListener('resize', onResize);
     };
   }, []);
 
