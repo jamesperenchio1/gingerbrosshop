@@ -1,7 +1,9 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useSearchParams, Link } from 'react-router';
 import { CheckCircle, Package, Truck, Mail } from 'lucide-react';
 import { useCart } from '@/context/CartContext';
+import { PENDING_SUBSCRIPTION_CHECKOUT_KEY, startCheckout } from '@/lib/checkout';
+import type { CartItem } from '@/types/cart';
 import SEO from '@/components/SEO';
 
 interface OrderItem {
@@ -37,11 +39,42 @@ export default function OrderSuccess() {
   const [order, setOrder] = useState<OrderDetails | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
-  const { clearCart } = useCart();
+  const [pendingSubscriptionItems, setPendingSubscriptionItems] = useState<CartItem[]>([]);
+  const [continuingCheckout, setContinuingCheckout] = useState(false);
+  const [continueError, setContinueError] = useState('');
+  const { state, clearCart, removeItem } = useCart();
+  const ran = useRef(false);
 
   useEffect(() => {
-    clearCart();
-  }, [clearCart]);
+    if (ran.current) return;
+    ran.current = true;
+
+    // A mixed cart pays in two Stripe sessions: one-time items first, then the
+    // subscription. This flag is set right before redirecting to the first session,
+    // so landing back here with it set means the subscription leg still needs to run.
+    const isSplitCheckout = sessionStorage.getItem(PENDING_SUBSCRIPTION_CHECKOUT_KEY) === '1';
+    sessionStorage.removeItem(PENDING_SUBSCRIPTION_CHECKOUT_KEY);
+
+    if (isSplitCheckout) {
+      const remaining = state.items.filter((i) => i.isSubscription);
+      state.items.filter((i) => !i.isSubscription).forEach((i) => removeItem(i.id));
+      setPendingSubscriptionItems(remaining);
+    } else {
+      clearCart();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const handleContinueSubscriptionCheckout = async () => {
+    setContinuingCheckout(true);
+    setContinueError('');
+    try {
+      window.location.href = await startCheckout(pendingSubscriptionItems);
+    } catch (err) {
+      setContinueError(err instanceof Error ? err.message : 'Something went wrong. Please try again.');
+      setContinuingCheckout(false);
+    }
+  };
 
   useEffect(() => {
     if (!sessionId) {
@@ -121,6 +154,25 @@ export default function OrderSuccess() {
           <h1 className="font-display text-3xl text-deep-brown mb-2">Thank You!</h1>
           <p className="font-body text-earth">Your order has been confirmed.</p>
         </div>
+
+        {pendingSubscriptionItems.length > 0 && (
+          <div className="bg-deep-brown text-cream rounded-2xl p-6 sm:p-8 mb-6">
+            <h3 className="font-display font-semibold mb-2">One Step Left</h3>
+            <p className="font-body text-cream/80 mb-4">
+              This order covered your one-time items. Continue to set up the subscription items still in your cart.
+            </p>
+            <button
+              onClick={handleContinueSubscriptionCheckout}
+              disabled={continuingCheckout}
+              className="bg-cream text-deep-brown font-body font-medium px-6 py-2.5 rounded-full hover:bg-amber transition-colors text-sm disabled:opacity-80"
+            >
+              {continuingCheckout ? 'Redirecting to Stripe…' : 'Continue to Subscription Checkout'}
+            </button>
+            {continueError && (
+              <p className="mt-3 font-body text-[13px] text-amber">{continueError}</p>
+            )}
+          </div>
+        )}
 
         <div className="bg-cream rounded-2xl p-6 sm:p-8 mb-6">
           <div className="flex items-center justify-between mb-6 pb-4 border-b border-soft-peach/50">

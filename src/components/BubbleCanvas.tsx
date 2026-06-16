@@ -27,12 +27,12 @@ export default function BubbleCanvas() {
     let onScreen = true;
     let frameId = 0;
     const bubbles: Bubble[] = [];
-    const MAX_BUBBLES = 100;
+    const MAX_BUBBLES = 50;
     let cssW = 0;
     let cssH = 0;
 
     function resize() {
-      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      const dpr = Math.min(window.devicePixelRatio || 1, 1.5);
       const w = Math.round(canvas!.clientWidth * dpr);
       const h = Math.round(canvas!.clientHeight * dpr);
       if (canvas!.width !== w || canvas!.height !== h) {
@@ -72,7 +72,7 @@ export default function BubbleCanvas() {
         needsResize = false;
       }
 
-      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      const dpr = Math.min(window.devicePixelRatio || 1, 1.5);
       const w = canvas!.width;
       const h = canvas!.height;
       ctx!.clearRect(0, 0, w, h);
