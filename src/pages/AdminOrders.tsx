@@ -108,6 +108,26 @@ export default function AdminOrders() {
     }
   };
 
+  const grantBoxCredit = async (email: string | null) => {
+    if (!email) {
+      alert('This order has no customer email to credit.');
+      return;
+    }
+    if (!confirm(`Give ${email} a ฿100 box-return credit? It applies automatically at their next checkout.`)) return;
+    try {
+      const res = await fetch('/api/admin', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+        body: JSON.stringify({ action: 'grant-credit', email }),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(data.error ?? 'Failed to grant credit');
+      alert(`Done — ${email} now has ฿${Math.round((data.balance ?? 0) / 100)} in credit.`);
+    } catch (err) {
+      alert(err instanceof Error ? err.message : 'Failed to grant credit');
+    }
+  };
+
   const handleLogout = () => {
     setToken('');
     setOrders([]);
@@ -250,6 +270,13 @@ export default function AdminOrders() {
                       {isOpen ? 'Cancel' : '+ Add tracking number'}
                     </button>
                   )}
+
+                  <button
+                    onClick={() => grantBoxCredit(order.customerEmail)}
+                    className="mt-3 block text-accent-green font-body text-[13px] hover:underline"
+                  >
+                    🎁 Mark box returned (+฿100 credit)
+                  </button>
 
                   {isOpen && (
                     <div className="mt-3 flex flex-col sm:flex-row gap-2">

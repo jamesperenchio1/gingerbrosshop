@@ -15,13 +15,14 @@ export function getGiftInfo(items: CartItem[]) {
   };
 }
 
-export async function startCheckout(items: CartItem[]): Promise<string> {
+export async function startCheckout(items: CartItem[], email?: string): Promise<string> {
   const res = await fetch('/api/checkout', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
       items: items.map((i) => ({ priceId: i.priceId ?? i.id, quantity: i.quantity })),
       giftInfo: getGiftInfo(items),
+      email: email?.trim() || undefined,
     }),
   });
   const data = await res.json();
