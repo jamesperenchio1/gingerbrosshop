@@ -267,6 +267,30 @@ export function welcomeHtml(): string {
   );
 }
 
+/**
+ * Sent the moment we mark a customer's foam box as returned. `code` is the
+ * optional fallback promo code (when there's no email-keyed credit to lean on);
+ * otherwise we tell them it's already saved to their email and auto-applies.
+ */
+export function boxReturnRewardHtml(amountBaht: number, code?: string | null): string {
+  const redeem = code
+    ? `<p style="margin:0 0 6px;">Use this code at checkout:</p>
+       <div style="text-align:center;margin:8px 0 4px;">
+         <span style="display:inline-block;background:${BRAND.warmWhite};border:2px dashed ${BRAND.amber};border-radius:12px;padding:12px 22px;font-size:20px;font-weight:700;letter-spacing:0.12em;color:${BRAND.brown};">${code}</span>
+       </div>`
+    : `<p style="margin:0;">It's already saved to your email — just check out with this address and your ฿${amountBaht} comes off automatically. No code to type. ✨</p>`;
+
+  return layout(
+    `${heading('Thanks for returning your box! ♻️')}
+    <p style="margin:0 0 12px;">You're helping us cut waste and keep every brew chilled and fresh — so here's <strong>฿${amountBaht} off your next order</strong> as a thank-you.</p>
+    ${infoCard(redeem)}
+    <p style="margin-top:20px;text-align:center;">${button('Order Your Next Brew →', 'https://gingerbrosshop.com/#shop')}</p>
+    <p style="margin-top:16px;font-size:13px;color:${BRAND.earth};">Keep the foam boxes coming back and the rewards keep flowing. 🍺</p>`,
+    `Your ฿${amountBaht} box-return reward is ready`
+  );
+}
+
+
 export function abandonedCartHtml(snapshot: CartSnapshot): string {
   const rows = snapshot.items
     .map(

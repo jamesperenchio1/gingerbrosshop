@@ -110,10 +110,10 @@ export default function AdminOrders() {
 
   const grantBoxCredit = async (email: string | null) => {
     if (!email) {
-      alert('This order has no customer email to credit.');
+      alert('This order has no customer email. Use "No email? Generate code" instead.');
       return;
     }
-    if (!confirm(`Give ${email} a ฿100 box-return credit? It applies automatically at their next checkout.`)) return;
+    if (!confirm(`Give ${email} a ฿50 box-return credit and email it to them now? It applies automatically at their next checkout.`)) return;
     try {
       const res = await fetch('/api/admin', {
         method: 'POST',
@@ -122,9 +122,28 @@ export default function AdminOrders() {
       });
       const data = await res.json().catch(() => ({}));
       if (!res.ok) throw new Error(data.error ?? 'Failed to grant credit');
-      alert(`Done — ${email} now has ฿${Math.round((data.balance ?? 0) / 100)} in credit.`);
+      alert(
+        `Done — ${email} now has ฿${Math.round((data.balance ?? 0) / 100)} in credit.` +
+          (data.emailed ? '\nReward email sent. ✉️' : '\n(Email not sent — RESEND not configured.)')
+      );
     } catch (err) {
       alert(err instanceof Error ? err.message : 'Failed to grant credit');
+    }
+  };
+
+  const grantBoxCode = async (email: string | null) => {
+    if (!confirm('Generate a one-time ฿50 box-return code to hand this customer?')) return;
+    try {
+      const res = await fetch('/api/admin', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+        body: JSON.stringify({ action: 'grant-code', email: email || undefined }),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(data.error ?? 'Failed to generate code');
+      alert(`Code: ${data.code}\n\nWorth ฿${Math.round((data.granted ?? 0) / 100)}, single use.` + (data.emailed ? '\nAlso emailed to the customer. ✉️' : ''));
+    } catch (err) {
+      alert(err instanceof Error ? err.message : 'Failed to generate code');
     }
   };
 
@@ -271,12 +290,20 @@ export default function AdminOrders() {
                     </button>
                   )}
 
-                  <button
-                    onClick={() => grantBoxCredit(order.customerEmail)}
-                    className="mt-3 block text-accent-green font-body text-[13px] hover:underline"
-                  >
-                    🎁 Mark box returned (+฿100 credit)
-                  </button>
+                  <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-1">
+                    <button
+                      onClick={() => grantBoxCredit(order.customerEmail)}
+                      className="text-accent-green font-body text-[13px] hover:underline"
+                    >
+                      ♻️ Mark box returned (+฿50, emails customer)
+                    </button>
+                    <button
+                      onClick={() => grantBoxCode(order.customerEmail)}
+                      className="text-earth/70 font-body text-[12px] hover:underline"
+                    >
+                      No email? Generate code
+                    </button>
+                  </div>
 
                   {isOpen && (
                     <div className="mt-3 flex flex-col sm:flex-row gap-2">

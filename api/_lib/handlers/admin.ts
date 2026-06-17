@@ -1,11 +1,13 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { getOrders, getOrderBySessionId, updateTracking, type Order } from '../orders.js';
 import { rateLimit, getClientIp } from '../rateLimit.js';
-import { getResend, MAIL_FROM, shippingNotificationHtml } from '../email.js';
+import { getResend, MAIL_FROM, shippingNotificationHtml, boxReturnRewardHtml } from '../email.js';
 import { addCredit } from '../credits.js';
+import { getStripe } from '../stripe.js';
 
-// Default reward for returning the foam box + bottles: ฿100 in satang.
-const BOX_RETURN_CREDIT = 10000;
+// Default reward for returning the foam box + bottles: ฿50 in satang. A returned
+// box saves ~฿80, so ฿50 stays margin-positive while still delighting customers.
+const BOX_RETURN_CREDIT = 5000;
 
 function isAuthorized(req: VercelRequest): boolean {
   const auth = req.headers.authorization;
@@ -38,7 +40,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (req.method === 'POST') {
     const body = req.body ?? {};
 
-    // Grant store credit (e.g. when a customer returns their foam box + bottles).
+    // Box returned → grant email-keyed store credit and email the customer their
+    // reward immediately so it auto-applies at their next checkout.
     if (body.action === 'grant-credit') {
       const email = (body.email as string | undefined)?.trim().toLowerCase();
       if (!email) {
@@ -47,7 +50,73 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       }
       const amount = Number.isFinite(body.amount) && body.amount > 0 ? Math.round(body.amount) : BOX_RETURN_CREDIT;
       const balance = await addCredit(email, amount);
-      res.status(200).json({ success: true, email, granted: amount, balance });
+
+      let emailed = false;
+      const resend = getResend();
+      if (resend) {
+        try {
+          await resend.emails.send({
+            from: MAIL_FROM,
+            to: email,
+            subject: `Your ฿${Math.round(amount / 100)} box-return reward is ready ♻️`,
+            html: boxReturnRewardHtml(Math.round(amount / 100)),
+          });
+          emailed = true;
+        } catch (err) {
+          console.error('Failed to send box-return reward email:', err);
+        }
+      }
+
+      res.status(200).json({ success: true, email, granted: amount, balance, emailed });
+      return;
+    }
+
+    // Fallback for customers with no email on file: mint a one-time Stripe promo
+    // code the owner can hand over in person. Works without any email-keyed credit.
+    if (body.action === 'grant-code') {
+      const secret = process.env.STRIPE_SECRET_KEY;
+      if (!secret) {
+        res.status(500).json({ error: 'STRIPE_SECRET_KEY not configured' });
+        return;
+      }
+      const amount = Number.isFinite(body.amount) && body.amount > 0 ? Math.round(body.amount) : BOX_RETURN_CREDIT;
+      const stripe = getStripe(secret);
+      try {
+        const coupon = await stripe.coupons.create({
+          amount_off: amount,
+          currency: 'thb',
+          duration: 'once',
+          name: 'Box-return reward',
+        });
+        const promo = await stripe.promotionCodes.create({
+          promotion: { type: 'coupon', coupon: coupon.id },
+          max_redemptions: 1,
+        });
+
+        // If we happen to have an email, send the code too — otherwise the owner
+        // reads it out from the response.
+        const email = (body.email as string | undefined)?.trim().toLowerCase();
+        let emailed = false;
+        const resend = getResend();
+        if (email && resend) {
+          try {
+            await resend.emails.send({
+              from: MAIL_FROM,
+              to: email,
+              subject: `Your ฿${Math.round(amount / 100)} box-return reward is ready ♻️`,
+              html: boxReturnRewardHtml(Math.round(amount / 100), promo.code),
+            });
+            emailed = true;
+          } catch (err) {
+            console.error('Failed to send box-return code email:', err);
+          }
+        }
+
+        res.status(200).json({ success: true, code: promo.code, granted: amount, emailed });
+      } catch (err) {
+        const message = err instanceof Error ? err.message : 'Stripe error';
+        res.status(500).json({ error: message });
+      }
       return;
     }
 
