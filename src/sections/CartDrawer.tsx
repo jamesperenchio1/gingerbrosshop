@@ -224,7 +224,7 @@ export default function CartDrawer() {
               </p>
             )}
             <p className="font-body font-medium text-[13px] text-earth/60 mb-2">
-              {subtotal >= 500 ? 'Free shipping unlocked!' : 'Free shipping on orders over ฿500'}
+              {subtotal >= 500 ? '🎉 Free shipping unlocked!' : `฿100 shipping · add ฿${(500 - subtotal).toLocaleString()} for free shipping`}
             </p>
             <p className="font-body font-medium text-[13px] text-earth/60 mb-5">
               Shipping & payment handled securely on Stripe

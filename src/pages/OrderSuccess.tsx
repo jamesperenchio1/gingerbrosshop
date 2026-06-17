@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { useSearchParams, Link } from 'react-router';
-import { CheckCircle, Package, Truck, Mail } from 'lucide-react';
+import { CheckCircle, Package, Truck, Mail, FileText, Settings, Home, Gift } from 'lucide-react';
 import { useCart } from '@/context/CartContext';
 import { PENDING_SUBSCRIPTION_CHECKOUT_KEY, startCheckout } from '@/lib/checkout';
 import type { CartItem } from '@/types/cart';
@@ -20,9 +20,15 @@ interface OrderDetails {
   customerPhone: string | null;
   shippingAddress: Record<string, string> | null;
   shippingName: string | null;
+  amountSubtotal: number | null;
+  amountShipping: number;
+  amountDiscount: number;
   amountTotal: number;
   currency: string;
   status: string;
+  isSubscription: boolean;
+  invoiceUrl: string | null;
+  invoicePdf: string | null;
   createdAt: string;
   items: OrderItem[];
   trackingNumber: string | null;
@@ -31,6 +37,56 @@ interface OrderDetails {
   recipientEmail: string | null;
   recipientName: string | null;
   giftMessage: string | null;
+}
+
+const baht = (minor: number | null | undefined) => `฿${((minor ?? 0) / 100).toLocaleString()}`;
+
+/** Confirmed → Preparing → Shipped progress, based on whether tracking exists. */
+function OrderTimeline({ shipped }: { shipped: boolean }) {
+  const steps = [
+    { label: 'Confirmed', icon: CheckCircle, done: true },
+    { label: 'Preparing', icon: Package, done: true },
+    { label: 'Shipped', icon: Truck, done: shipped },
+    { label: 'Delivered', icon: Home, done: false },
+  ];
+  // The first not-yet-done step is the "current" one.
+  const currentIdx = steps.findIndex((s) => !s.done);
+  return (
+    <div className="flex items-center justify-between mb-6">
+      {steps.map((step, i) => {
+        const active = step.done || i === currentIdx;
+        return (
+          <div key={step.label} className="flex-1 flex flex-col items-center relative">
+            {i > 0 && (
+              <span
+                className={`absolute top-4 right-1/2 w-full h-0.5 ${
+                  step.done ? 'bg-accent-green' : 'bg-soft-peach'
+                }`}
+              />
+            )}
+            <div
+              className={`relative z-10 w-8 h-8 rounded-full flex items-center justify-center ${
+                step.done
+                  ? 'bg-accent-green text-white'
+                  : i === currentIdx
+                  ? 'bg-amber text-deep-brown'
+                  : 'bg-soft-peach/60 text-earth/50'
+              }`}
+            >
+              <step.icon className="w-4 h-4" />
+            </div>
+            <span
+              className={`mt-2 font-body text-[11px] sm:text-[12px] text-center ${
+                active ? 'text-deep-brown font-medium' : 'text-earth/50'
+              }`}
+            >
+              {step.label}
+            </span>
+          </div>
+        );
+      })}
+    </div>
+  );
 }
 
 export default function OrderSuccess() {
@@ -124,7 +180,7 @@ export default function OrderSuccess() {
   }
 
   const orderNumber = order.sessionId.slice(-8).toUpperCase();
-  const total = (order.amountTotal / 100).toLocaleString();
+  const receiptUrl = order.invoicePdf ?? order.invoiceUrl;
   const address = order.shippingAddress
     ? [
         order.shippingAddress.line1,
@@ -138,6 +194,8 @@ export default function OrderSuccess() {
         .join(', ')
     : null;
 
+  const hasBreakdown = order.amountSubtotal != null;
+
   return (
     <div className="min-h-screen bg-warm-white">
       <SEO
@@ -147,14 +205,18 @@ export default function OrderSuccess() {
         noindex
       />
       <div className="max-w-lg mx-auto px-6 py-12 sm:py-16">
+        {/* Hero */}
         <div className="text-center mb-10">
           <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-5">
             <CheckCircle className="w-8 h-8 text-green-700" />
           </div>
-          <h1 className="font-display text-3xl text-deep-brown mb-2">Thank You!</h1>
-          <p className="font-body text-earth">Your order has been confirmed.</p>
+          <h1 className="font-display text-3xl text-deep-brown mb-2">Thank You{order.customerName ? `, ${order.customerName.split(' ')[0]}` : ''}!</h1>
+          <p className="font-body text-earth">
+            Your order is confirmed{order.customerEmail ? <> — a receipt is on its way to <span className="text-deep-brown font-medium">{order.customerEmail}</span></> : ''}.
+          </p>
         </div>
 
+        {/* Split-checkout: subscription leg still to run */}
         {pendingSubscriptionItems.length > 0 && (
           <div className="bg-deep-brown text-cream rounded-2xl p-6 sm:p-8 mb-6">
             <h3 className="font-display font-semibold mb-2">One Step Left</h3>
@@ -168,25 +230,28 @@ export default function OrderSuccess() {
             >
               {continuingCheckout ? 'Redirecting to Stripe…' : 'Continue to Subscription Checkout'}
             </button>
-            {continueError && (
-              <p className="mt-3 font-body text-[13px] text-amber">{continueError}</p>
-            )}
+            {continueError && <p className="mt-3 font-body text-[13px] text-amber">{continueError}</p>}
           </div>
         )}
 
-        <div className="bg-cream rounded-2xl p-6 sm:p-8 mb-6">
-          <div className="flex items-center justify-between mb-6 pb-4 border-b border-soft-peach/50">
+        {/* Order summary */}
+        <div className="bg-white border border-soft-peach rounded-2xl p-6 sm:p-8 mb-6 shadow-[0_8px_30px_rgba(61,36,16,0.06)]">
+          <div className="flex items-center justify-between mb-6 pb-5 border-b border-soft-peach/60">
             <div>
-              <p className="font-body text-[13px] text-earth uppercase tracking-wider">Order #</p>
-              <p className="font-display font-semibold text-deep-brown">{orderNumber}</p>
+              <p className="font-body text-[12px] text-earth uppercase tracking-wider">Order #</p>
+              <p className="font-display font-semibold text-deep-brown text-lg">{orderNumber}</p>
             </div>
             <div className="text-right">
-              <p className="font-body text-[13px] text-earth uppercase tracking-wider">Total</p>
-              <p className="font-display font-semibold text-deep-brown">฿{total}</p>
+              <p className="font-body text-[12px] text-earth uppercase tracking-wider">Total</p>
+              <p className="font-display font-semibold text-deep-brown text-lg">{baht(order.amountTotal)}{order.isSubscription ? '' : ''}</p>
             </div>
           </div>
 
-          <div className="space-y-4 mb-6">
+          {/* Status timeline */}
+          <OrderTimeline shipped={!!order.trackingNumber} />
+
+          {/* Items */}
+          <div className="space-y-4 mb-5 pt-5 border-t border-soft-peach/60">
             {order.items.map((item, idx) => (
               <div key={idx} className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
@@ -196,25 +261,51 @@ export default function OrderSuccess() {
                     <p className="font-body text-[13px] text-earth">Qty: {item.quantity}</p>
                   </div>
                 </div>
-                <p className="font-body font-medium text-deep-brown">฿{(item.amountTotal / 100).toLocaleString()}</p>
+                <p className="font-body font-medium text-deep-brown">{baht(item.amountTotal)}</p>
               </div>
             ))}
           </div>
 
-          {order.isGift && (
-            <div className="pt-4 border-t border-soft-peach/50">
-              <p className="font-body text-[13px] text-earth uppercase tracking-wider mb-2">Gift Recipient</p>
-              <p className="font-body text-deep-brown">{order.recipientName ?? 'Not provided'}</p>
-              <p className="font-body text-earth text-[14px]">{order.recipientEmail ?? 'No email provided'}</p>
-              {order.giftMessage && (
-                <p className="font-body text-earth text-[14px] mt-2 italic">“{order.giftMessage}”</p>
+          {/* Cost breakdown */}
+          {hasBreakdown && (
+            <div className="pt-4 border-t border-soft-peach/60 space-y-1.5 font-body text-[14px]">
+              <div className="flex justify-between text-earth">
+                <span>Subtotal</span>
+                <span>{baht(order.amountSubtotal)}</span>
+              </div>
+              {order.amountDiscount > 0 && (
+                <div className="flex justify-between text-accent-green">
+                  <span>Discount</span>
+                  <span>−{baht(order.amountDiscount)}</span>
+                </div>
               )}
+              <div className="flex justify-between text-earth">
+                <span>Shipping</span>
+                <span>{order.amountShipping > 0 ? baht(order.amountShipping) : 'Free'}</span>
+              </div>
+              <div className="flex justify-between text-deep-brown font-semibold text-[15px] pt-1.5">
+                <span>Total</span>
+                <span>{baht(order.amountTotal)}</span>
+              </div>
             </div>
           )}
 
+          {/* Gift */}
+          {order.isGift && (
+            <div className="pt-4 mt-4 border-t border-soft-peach/60">
+              <p className="font-body text-[12px] text-earth uppercase tracking-wider mb-2 flex items-center gap-1.5">
+                <Gift className="w-3.5 h-3.5" /> Gift Recipient
+              </p>
+              <p className="font-body text-deep-brown">{order.recipientName ?? 'Not provided'}</p>
+              <p className="font-body text-earth text-[14px]">{order.recipientEmail ?? 'No email provided'}</p>
+              {order.giftMessage && <p className="font-body text-earth text-[14px] mt-2 italic">“{order.giftMessage}”</p>}
+            </div>
+          )}
+
+          {/* Shipping address */}
           {address && (
-            <div className={`pt-4 border-t border-soft-peach/50 ${order.isGift ? 'mt-4' : ''}`}>
-              <p className="font-body text-[13px] text-earth uppercase tracking-wider mb-2">Shipping to</p>
+            <div className="pt-4 mt-4 border-t border-soft-peach/60">
+              <p className="font-body text-[12px] text-earth uppercase tracking-wider mb-2">Shipping to</p>
               <p className="font-body text-deep-brown">{order.shippingName}</p>
               <p className="font-body text-earth text-[14px]">{address}</p>
               {order.customerPhone && <p className="font-body text-earth text-[14px] mt-1">{order.customerPhone}</p>}
@@ -222,6 +313,7 @@ export default function OrderSuccess() {
           )}
         </div>
 
+        {/* Tracking / next steps */}
         {order.trackingNumber ? (
           <div className="bg-deep-brown text-cream rounded-2xl p-6 sm:p-8 mb-6">
             <div className="flex items-center gap-3 mb-3">
@@ -231,7 +323,13 @@ export default function OrderSuccess() {
             <p className="font-body text-cream/80 mb-1">
               {order.trackingCarrier ?? 'Carrier'}: <span className="font-semibold text-cream">{order.trackingNumber}</span>
             </p>
-            <p className="font-body text-cream/60 text-[13px]">You'll receive updates at {order.customerEmail}</p>
+            <p className="font-body text-cream/60 text-[13px] mb-4">Keep it refrigerated as soon as it arrives 🧊</p>
+            <a
+              href="https://gingerbrosshop.com/track"
+              className="inline-block bg-cream text-deep-brown font-body font-medium px-6 py-2.5 rounded-full hover:bg-amber transition-colors text-sm"
+            >
+              Track Order
+            </a>
           </div>
         ) : (
           <div className="bg-white border border-soft-peach rounded-2xl p-6 sm:p-8 mb-6">
@@ -240,25 +338,35 @@ export default function OrderSuccess() {
               <h3 className="font-display font-semibold text-deep-brown">What's Next?</h3>
             </div>
             <p className="font-body text-earth">
-              We're preparing your order. You'll receive an email with tracking details once it ships.
+              We're preparing your order with care. You'll get an email with tracking details the moment it ships — and remember, it's a living brew, so pop it in the fridge on arrival.
             </p>
           </div>
         )}
 
-        {order.items.some((i) => i.description?.includes('Subscription') || i.description?.includes('Monthly') || i.description?.includes('weekly') || i.description?.includes('every 2 weeks')) && (
-          <div className="bg-cream rounded-2xl p-6 sm:p-8 mb-6">
-            <h3 className="font-display font-semibold text-deep-brown mb-2">Manage Your Subscription</h3>
-            <p className="font-body text-earth text-[14px] mb-4">
-              You can pause, skip, or cancel your subscription anytime.
-            </p>
+        {/* Self-service: receipt + portal */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-6">
+          {receiptUrl && (
             <a
-              href={`/api/portal?email=${encodeURIComponent(order.customerEmail ?? '')}`}
-              className="inline-block bg-deep-brown text-cream font-body font-medium px-6 py-2.5 rounded-full hover:bg-rust transition-colors text-sm"
+              href={receiptUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center justify-center gap-2 bg-white border border-soft-peach rounded-full py-3 font-body font-medium text-[14px] text-deep-brown hover:border-amber transition-colors"
             >
-              Open Subscription Portal
+              <FileText className="w-4 h-4" /> Download Receipt
             </a>
-          </div>
-        )}
+          )}
+          {order.customerEmail && (
+            <a
+              href={`/api/portal?email=${encodeURIComponent(order.customerEmail)}`}
+              className={`flex items-center justify-center gap-2 bg-white border border-soft-peach rounded-full py-3 font-body font-medium text-[14px] text-deep-brown hover:border-amber transition-colors ${
+                receiptUrl ? '' : 'sm:col-span-2'
+              }`}
+            >
+              <Settings className="w-4 h-4" />
+              {order.isSubscription ? 'Manage Subscription' : 'Manage Order & Receipts'}
+            </a>
+          )}
+        </div>
 
         <div className="text-center">
           <Link

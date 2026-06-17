@@ -44,6 +44,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   // source of truth, so there is no per-product env var or hardcoded map.
   const lineItems: Stripe.Checkout.SessionCreateParams.LineItem[] = [];
   let recurringCount = 0;
+  let subtotalMinor = 0;
   for (const item of items) {
     const priceId = item.priceId ?? item.id;
     if (!priceId) {
@@ -65,6 +66,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
     if (price.recurring) recurringCount++;
     const qty = Math.max(1, Math.min(24, Math.floor(Number(item.quantity) || 1)));
+    subtotalMinor += (price.unit_amount ?? 0) * qty;
     lineItems.push({ price: price.id, quantity: qty });
   }
 
@@ -98,6 +100,26 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     metadata.giftMessage = giftInfo.message ?? '';
   }
 
+  // Flat ฿100 shipping, waived for orders of ฿500+. Stripe Checkout collects it
+  // natively via shipping_options (one-time/payment mode only — subscription
+  // mode does not support shipping_options).
+  const FREE_SHIPPING_THRESHOLD = 50000; // ฿500 in satang
+  const SHIPPING_FLAT = 10000; // ฿100 in satang
+  const shippingFree = subtotalMinor >= FREE_SHIPPING_THRESHOLD;
+  const shippingOptions: Stripe.Checkout.SessionCreateParams.ShippingOption[] = [
+    {
+      shipping_rate_data: {
+        type: 'fixed_amount',
+        fixed_amount: { amount: shippingFree ? 0 : SHIPPING_FLAT, currency: 'thb' },
+        display_name: shippingFree ? 'Free shipping' : 'Standard shipping',
+        delivery_estimate: {
+          minimum: { unit: 'business_day', value: 2 },
+          maximum: { unit: 'business_day', value: 4 },
+        },
+      },
+    },
+  ];
+
   try {
     const session = await stripe.checkout.sessions.create({
       mode,
@@ -109,6 +131,17 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       allow_promotion_codes: true,
       payment_method_types: paymentMethod === 'cod' ? ['card', 'promptpay'] : undefined,
       metadata,
+      // One-time orders: collect shipping, always create a Customer (so buyers
+      // can use the self-service portal), and generate a hosted invoice + PDF
+      // receipt. None of these are valid in subscription mode, where Stripe
+      // already creates a customer and recurring invoices automatically.
+      ...(mode === 'payment'
+        ? {
+            shipping_options: shippingOptions,
+            customer_creation: 'always' as const,
+            invoice_creation: { enabled: true },
+          }
+        : {}),
     });
     res.status(200).json({ url: session.url });
   } catch (err) {
