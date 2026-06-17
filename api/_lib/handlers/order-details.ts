@@ -24,7 +24,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
   try {
     const session = await stripe.checkout.sessions.retrieve(sessionId, {
-      expand: ['line_items.data.price.product'],
+      expand: ['line_items.data.price.product', 'invoice'],
     });
 
     if (session.status !== 'complete') {
@@ -41,6 +41,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       unitAmount: li.price?.unit_amount ?? 0,
     }));
 
+    // Hosted invoice + downloadable PDF (from Stripe Invoicing), when available.
+    const invoice = typeof session.invoice === 'object' ? session.invoice : null;
+
     const sd = (session as SessionWithShipping).shipping_details;
     res.status(200).json({
       sessionId: session.id,
@@ -49,9 +52,15 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       customerPhone: session.customer_details?.phone ?? null,
       shippingAddress: sd?.address ?? null,
       shippingName: sd?.name ?? null,
+      amountSubtotal: session.amount_subtotal,
+      amountShipping: session.total_details?.amount_shipping ?? 0,
+      amountDiscount: session.total_details?.amount_discount ?? 0,
       amountTotal: session.amount_total,
       currency: session.currency?.toUpperCase() ?? 'THB',
       status: session.payment_status,
+      isSubscription: session.mode === 'subscription',
+      invoiceUrl: invoice?.hosted_invoice_url ?? null,
+      invoicePdf: invoice?.invoice_pdf ?? null,
       createdAt: new Date(session.created * 1000).toISOString(),
       items: lineItems ?? [],
       trackingNumber: localOrder?.trackingNumber ?? null,
