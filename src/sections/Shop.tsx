@@ -4,7 +4,7 @@ import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { useCart } from '@/context/CartContext';
 import { PlusIcon, MinusIcon, SnowflakeIcon } from '@/components/Icons';
-import { useCatalog, defaultPrice, type CatalogProduct } from '@/lib/catalog';
+import { useCatalog, defaultPrice, cheapestSubscription, maxSubscriptionSavings, intervalLabel, type CatalogProduct } from '@/lib/catalog';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -15,6 +15,8 @@ function ProductCard({ product }: { product: CatalogProduct }) {
   const [added, setAdded] = useState(false);
 
   const price = defaultPrice(product);
+  const subPrice = cheapestSubscription(product);
+  const subSavings = maxSubscriptionSavings(product);
   const detailLink = `/product/${product.id}`;
   const shortDescription = product.metadata.short_description ?? product.description ?? '';
   const image = product.images[0] ?? '';
@@ -72,10 +74,20 @@ function ProductCard({ product }: { product: CatalogProduct }) {
       </p>
 
       {/* Price */}
-      <div className="flex items-baseline gap-2 mb-4">
+      <div className="flex items-baseline gap-2 mb-2">
         <span className="font-display font-semibold text-deep-brown text-2xl">฿{price?.unitAmount ?? '—'}</span>
         <span className="font-body font-medium text-[13px] text-rust">per bottle</span>
       </div>
+
+      {/* Subscribe & save nudge */}
+      {subPrice && subSavings > 0 && (
+        <button
+          onClick={() => navigate(detailLink)}
+          className="self-start inline-flex items-center gap-1.5 mb-4 bg-accent-green/10 text-accent-green border border-accent-green/25 font-body font-semibold text-[12px] px-3 py-1.5 rounded-full hover:bg-accent-green/15 transition-colors"
+        >
+          🔁 Subscribe from ฿{subPrice.unitAmount}/{intervalLabel(subPrice.recurring).replace(/^per |^every /, '')} — save up to {subSavings}%
+        </button>
+      )}
 
       <div className="flex items-center justify-center gap-4 mb-4 border-2 border-soft-peach rounded-full py-2 px-4 self-start">
         <button
