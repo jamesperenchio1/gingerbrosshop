@@ -2,6 +2,7 @@ import type { VercelRequest, VercelResponse } from '@vercel/node';
 import Stripe from 'stripe';
 import { getStripe } from '../stripe.js';
 import { rateLimit, getClientIp } from '../rateLimit.js';
+import { getCredit } from '../credits.js';
 
 interface CheckoutLine {
   // The Stripe price ID to purchase. `id` is accepted as a legacy alias.
@@ -36,6 +37,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
   const paymentMethod = (req.body?.paymentMethod as string | undefined) ?? 'card';
   const referralCode = (req.body?.referralCode as string | undefined) ?? '';
+  const customerEmail = (req.body?.email as string | undefined)?.trim().toLowerCase() || '';
   const giftInfo = req.body?.giftInfo as { isGift: boolean; recipientEmail?: string; recipientName?: string; message?: string } | undefined;
 
   const stripe = getStripe(secret);
@@ -120,6 +122,27 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     },
   ];
 
+  // Auto-apply the returnable-box store credit when the shopper's email has a
+  // balance. Capped to the product subtotal so none is wasted (coupons discount
+  // line items, not shipping). Stripe forbids combining `discounts` with
+  // `allow_promotion_codes`, so a credited order can't also stack a typed code.
+  let discounts: Stripe.Checkout.SessionCreateParams.Discount[] | undefined;
+  if (customerEmail) {
+    const creditMinor = await getCredit(customerEmail);
+    const appliedMinor = Math.min(creditMinor, subtotalMinor);
+    if (appliedMinor > 0) {
+      const coupon = await stripe.coupons.create({
+        amount_off: appliedMinor,
+        currency: 'thb',
+        duration: 'once',
+        name: 'Box-return credit',
+      });
+      discounts = [{ coupon: coupon.id }];
+      metadata.creditEmail = customerEmail;
+      metadata.creditApplied = String(appliedMinor);
+    }
+  }
+
   try {
     const session = await stripe.checkout.sessions.create({
       mode,
@@ -128,9 +151,12 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       cancel_url: `${origin}/?checkout=cancelled`,
       shipping_address_collection: { allowed_countries: ['TH'] },
       phone_number_collection: { enabled: true },
-      allow_promotion_codes: true,
+      customer_email: customerEmail || undefined,
       payment_method_types: paymentMethod === 'cod' ? ['card', 'promptpay'] : undefined,
       metadata,
+      // A credited order uses `discounts`; otherwise let shoppers type a promo
+      // code. The two are mutually exclusive in Stripe Checkout.
+      ...(discounts ? { discounts } : { allow_promotion_codes: true }),
       // One-time orders: collect shipping, always create a Customer (so buyers
       // can use the self-service portal), and generate a hosted invoice + PDF
       // receipt. None of these are valid in subscription mode, where Stripe

@@ -103,6 +103,18 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
     await saveOrder(order);
 
+    // Draw down any returnable-box store credit that was applied to this order.
+    const creditApplied = Number(session.metadata?.creditApplied ?? 0);
+    const creditEmail = session.metadata?.creditEmail ?? '';
+    if (creditApplied > 0 && creditEmail) {
+      try {
+        const { consumeCredit } = await import('./_lib/credits.js');
+        await consumeCredit(creditEmail, creditApplied);
+      } catch (err) {
+        console.error('Failed to consume store credit:', err);
+      }
+    }
+
     const resend = getResend();
 
     // Send seller notification

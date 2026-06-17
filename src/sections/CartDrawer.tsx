@@ -12,6 +12,7 @@ export default function CartDrawer() {
   const [checkoutError, setCheckoutError] = useState('');
   const [cartEmail, setCartEmail] = useState('');
   const [cartEmailSaved, setCartEmailSaved] = useState(false);
+  const [creditBaht, setCreditBaht] = useState(0);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -47,6 +48,24 @@ export default function CartDrawer() {
 
   const hasMixedCart = state.items.some(i => i.isSubscription) && state.items.some(i => !i.isSubscription);
 
+  // Look up any returnable-box store credit for the entered email so we can show
+  // it will auto-apply at checkout.
+  const checkCredit = async (email: string) => {
+    const trimmed = email.trim();
+    if (!trimmed) {
+      setCreditBaht(0);
+      return;
+    }
+    try {
+      const res = await fetch(`/api/credit?email=${encodeURIComponent(trimmed)}`);
+      if (!res.ok) return;
+      const data = await res.json();
+      setCreditBaht(typeof data.balanceBaht === 'number' ? data.balanceBaht : 0);
+    } catch {
+      // silent — credit display is best-effort
+    }
+  };
+
   const handleSaveCartEmail = async () => {
     if (!cartEmail.trim() || state.items.length === 0) return;
     try {
@@ -61,6 +80,7 @@ export default function CartDrawer() {
         }),
       });
       setCartEmailSaved(true);
+      checkCredit(cartEmail);
     } catch {
       // silent
     }
@@ -77,10 +97,10 @@ export default function CartDrawer() {
         // the subscription leg automatically once that session completes.
         const oneTimeItems = state.items.filter((i) => !i.isSubscription);
         sessionStorage.setItem(PENDING_SUBSCRIPTION_CHECKOUT_KEY, '1');
-        window.location.href = await startCheckout(oneTimeItems);
+        window.location.href = await startCheckout(oneTimeItems, cartEmail);
         return;
       }
-      window.location.href = await startCheckout(state.items);
+      window.location.href = await startCheckout(state.items, cartEmail);
     } catch (err) {
       setCheckoutError(err instanceof Error ? err.message : 'Something went wrong. Please try again.');
       setIsCheckingOut(false);
@@ -213,6 +233,12 @@ export default function CartDrawer() {
                 ฿{subtotal}
               </span>
             </div>
+            {creditBaht > 0 && (
+              <div className="flex items-center justify-between mb-2 bg-accent-green/10 border border-accent-green/25 rounded-lg px-3 py-2">
+                <span className="font-body font-medium text-[13px] text-accent-green">🎁 Box-return credit</span>
+                <span className="font-body font-semibold text-[13px] text-accent-green">−฿{creditBaht} at checkout</span>
+              </div>
+            )}
             {state.items.some(i => i.isSubscription) && (
               <p className="font-body font-medium text-[13px] text-rust mb-2">
                 Subscription — billed {state.items.find(i => i.isSubscription)?.interval}
@@ -264,6 +290,7 @@ export default function CartDrawer() {
                     type="email"
                     value={cartEmail}
                     onChange={(e) => setCartEmail(e.target.value)}
+                    onBlur={(e) => checkCredit(e.target.value)}
                     placeholder="your@email.com"
                     className="flex-1 bg-cream border border-soft-peach rounded-full px-4 py-2 font-body text-[13px] text-deep-brown placeholder:text-earth/40 focus:outline-none focus:ring-2 focus:ring-rust/30"
                   />

@@ -2,6 +2,10 @@ import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { getOrders, getOrderBySessionId, updateTracking, type Order } from '../orders.js';
 import { rateLimit, getClientIp } from '../rateLimit.js';
 import { getResend, MAIL_FROM, shippingNotificationHtml } from '../email.js';
+import { addCredit } from '../credits.js';
+
+// Default reward for returning the foam box + bottles: ฿100 in satang.
+const BOX_RETURN_CREDIT = 10000;
 
 function isAuthorized(req: VercelRequest): boolean {
   const auth = req.headers.authorization;
@@ -32,7 +36,22 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   }
 
   if (req.method === 'POST') {
-    const { sessionId, trackingNumber, trackingCarrier } = req.body ?? {};
+    const body = req.body ?? {};
+
+    // Grant store credit (e.g. when a customer returns their foam box + bottles).
+    if (body.action === 'grant-credit') {
+      const email = (body.email as string | undefined)?.trim().toLowerCase();
+      if (!email) {
+        res.status(400).json({ error: 'Missing email' });
+        return;
+      }
+      const amount = Number.isFinite(body.amount) && body.amount > 0 ? Math.round(body.amount) : BOX_RETURN_CREDIT;
+      const balance = await addCredit(email, amount);
+      res.status(200).json({ success: true, email, granted: amount, balance });
+      return;
+    }
+
+    const { sessionId, trackingNumber, trackingCarrier } = body;
     if (!sessionId || !trackingNumber) {
       res.status(400).json({ error: 'Missing sessionId or trackingNumber' });
       return;
