@@ -55,6 +55,39 @@ export function defaultPrice(product: CatalogProduct): CatalogPrice | undefined 
   return product.prices.find((p) => !p.recurring) ?? product.prices[0];
 }
 
+/** The one-time (non-recurring) price for a product, if it has one. */
+export function oneTimePrice(product: CatalogProduct): CatalogPrice | undefined {
+  return product.prices.find((p) => !p.recurring);
+}
+
+/**
+ * Whole-number percent saved by `price` versus the one-time `reference` price.
+ * Returns 0 when either amount is missing or there's no saving (so callers can
+ * cheaply test `savingsPercent(...) > 0`).
+ */
+export function savingsPercent(price: CatalogPrice, reference: CatalogPrice | undefined): number {
+  const base = reference?.unitAmount;
+  const amount = price.unitAmount;
+  if (!base || amount == null || amount >= base) return 0;
+  return Math.round(((base - amount) / base) * 100);
+}
+
+/** The largest subscription saving across a product's prices, as a whole percent. */
+export function maxSubscriptionSavings(product: CatalogProduct): number {
+  const reference = oneTimePrice(product);
+  return product.prices.reduce(
+    (max, p) => (p.recurring ? Math.max(max, savingsPercent(p, reference)) : max),
+    0,
+  );
+}
+
+/** The cheapest recurring (subscription) price for a product, if any. */
+export function cheapestSubscription(product: CatalogProduct): CatalogPrice | undefined {
+  return product.prices
+    .filter((p) => p.recurring)
+    .sort((a, b) => (a.unitAmount ?? 0) - (b.unitAmount ?? 0))[0];
+}
+
 export interface UseCatalogResult {
   products: CatalogProduct[];
   loading: boolean;

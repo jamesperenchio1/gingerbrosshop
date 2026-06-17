@@ -5,7 +5,7 @@ import { useCart } from '@/context/CartContext';
 import { PlusIcon, MinusIcon, SnowflakeIcon } from '@/components/Icons';
 import SEO from '@/components/SEO';
 import NotFound from '@/pages/NotFound';
-import { useCatalog, defaultPrice, intervalLabel, type CatalogPrice } from '@/lib/catalog';
+import { useCatalog, defaultPrice, intervalLabel, oneTimePrice, savingsPercent, type CatalogPrice } from '@/lib/catalog';
 import { getProductContent } from '@/lib/productContent';
 
 /* ──────────────────────── Icons ──────────────────────── */
@@ -62,9 +62,19 @@ export default function ProductDetail() {
   const images = product?.images ?? [];
   const video = content.video;
 
-  const selectedPrice: CatalogPrice | undefined = useMemo(() => {
-    if (!product) return undefined;
-    return product.prices.find((p) => p.priceId === selectedPriceId) ?? defaultPrice(product);
+  const { selectedPrice, oneTimeForProduct, maxSavings } = useMemo<{
+    selectedPrice: CatalogPrice | undefined;
+    oneTimeForProduct: CatalogPrice | undefined;
+    maxSavings: number;
+  }>(() => {
+    if (!product) return { selectedPrice: undefined, oneTimeForProduct: undefined, maxSavings: 0 };
+    const selected = product.prices.find((p) => p.priceId === selectedPriceId) ?? defaultPrice(product);
+    const oneTime = oneTimePrice(product);
+    const max = product.prices.reduce(
+      (acc, p) => (p.recurring ? Math.max(acc, savingsPercent(p, oneTime)) : acc),
+      0,
+    );
+    return { selectedPrice: selected, oneTimeForProduct: oneTime, maxSavings: max };
   }, [product, selectedPriceId]);
 
   useEffect(() => {
@@ -267,24 +277,59 @@ export default function ProductDetail() {
                   {product.prices.map((p) => {
                     const isActive = p.priceId === selectedPrice.priceId;
                     const label = p.recurring ? intervalLabel(p.recurring) : 'One-time';
+                    const save = savingsPercent(p, oneTimeForProduct);
                     return (
                       <button
                         key={p.priceId}
                         onClick={() => setSelectedPriceId(p.priceId)}
-                        className={`flex items-center justify-between gap-2 rounded-xl border-2 px-4 py-3 text-left transition-all ${
+                        className={`relative flex items-center justify-between gap-2 rounded-xl border-2 px-4 py-3 text-left transition-all ${
                           isActive ? 'border-amber bg-amber/10' : 'border-soft-peach hover:border-soft-peach/80'
                         }`}
                       >
-                        <span className="font-body font-medium text-[14px] text-deep-brown capitalize">{label}</span>
-                        <span className="font-body font-semibold text-[14px] text-deep-brown">฿{p.unitAmount}</span>
+                        <span className="flex flex-col">
+                          <span className="font-body font-medium text-[14px] text-deep-brown capitalize">{label}</span>
+                          {save > 0 && (
+                            <span className="font-body font-semibold text-[11px] text-accent-green">Save {save}%</span>
+                          )}
+                        </span>
+                        <span className="flex items-baseline gap-1.5">
+                          {save > 0 && oneTimeForProduct?.unitAmount != null && (
+                            <span className="font-body text-[12px] text-earth/50 line-through">฿{oneTimeForProduct.unitAmount}</span>
+                          )}
+                          <span className="font-body font-semibold text-[14px] text-deep-brown">฿{p.unitAmount}</span>
+                        </span>
                       </button>
                     );
                   })}
                 </div>
-                {selectedPrice.recurring && (
-                  <p className="font-body text-[12px] text-earth/70 mt-2">
-                    Billed {intervalLabel(selectedPrice.recurring)}. Pause, skip, or cancel anytime.
-                  </p>
+                {selectedPrice.recurring ? (
+                  <div className="mt-3 rounded-xl bg-accent-green/8 border border-accent-green/25 px-4 py-3">
+                    <p className="font-body font-semibold text-[13px] text-deep-brown mb-1.5">
+                      🔁 Subscribe &amp; Save
+                      {savingsPercent(selectedPrice, oneTimeForProduct) > 0 &&
+                        ` — ${savingsPercent(selectedPrice, oneTimeForProduct)}% off every delivery`}
+                    </p>
+                    <ul className="font-body text-[12px] text-earth/80 space-y-1">
+                      <li>• Fresh fizz delivered {intervalLabel(selectedPrice.recurring)} — never run out</li>
+                      <li>• Lower price than one-time, locked in</li>
+                      <li>• Pause, skip, or cancel anytime — no commitment</li>
+                    </ul>
+                  </div>
+                ) : (
+                  oneTimeForProduct &&
+                  maxSavings > 0 && (
+                    <button
+                      onClick={() => {
+                        const cheapest = product.prices
+                          .filter((p) => p.recurring)
+                          .sort((a, b) => (a.unitAmount ?? 0) - (b.unitAmount ?? 0))[0];
+                        if (cheapest) setSelectedPriceId(cheapest.priceId);
+                      }}
+                      className="font-body text-[12px] text-rust hover:text-deep-brown hover:underline mt-2 text-left"
+                    >
+                      Subscribe &amp; save up to {maxSavings}% →
+                    </button>
+                  )
                 )}
               </div>
             )}
