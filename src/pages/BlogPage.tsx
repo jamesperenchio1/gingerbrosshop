@@ -1645,26 +1645,33 @@ export default function BlogPage() {
             )}
 
             {/* Category filters */}
-            <div className="flex items-center justify-center gap-2 mb-10 flex-wrap">
+            <div
+              role="group"
+              aria-label="Filter articles by category"
+              className="flex items-center justify-center gap-2 mb-10 flex-wrap"
+            >
               {ALL_CATEGORIES.map((cat) => (
                 <button
                   key={cat}
+                  type="button"
                   onClick={() => setFilter(cat)}
+                  aria-pressed={filter === cat}
+                  aria-label={`${cat} (${counts[cat]} ${counts[cat] === 1 ? 'article' : 'articles'})`}
                   data-testid={`blog-filter-${cat}`}
-                  className={`font-body font-medium text-sm px-4 py-2 rounded-full border transition-all ${
+                  className={`font-body font-medium text-sm px-4 py-2 rounded-full border transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-rust/40 ${
                     filter === cat
                       ? 'bg-deep-brown text-cream border-deep-brown'
                       : 'bg-warm-white text-earth border-soft-peach hover:border-amber hover:text-deep-brown'
                   }`}
                 >
-                  {cat} <span className="opacity-60">({counts[cat]})</span>
+                  {cat} <span className="opacity-60" aria-hidden="true">({counts[cat]})</span>
                 </button>
               ))}
             </div>
 
             {/* Results meta */}
             {(query || filter !== 'All') && (
-              <p className="font-body text-sm text-earth/60 mb-6">
+              <p className="font-body text-sm text-earth/60 mb-6" aria-live="polite">
                 {filteredPosts.length} {filteredPosts.length === 1 ? 'article' : 'articles'}
                 {query && (
                   <>

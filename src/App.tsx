@@ -1,5 +1,5 @@
-import { Suspense, lazy } from 'react';
-import { Routes, Route } from 'react-router';
+import { Suspense, lazy, useEffect } from 'react';
+import { Routes, Route, useLocation } from 'react-router';
 import { Analytics } from '@vercel/analytics/react';
 import { CartProvider } from '@/context/CartContext';
 import { I18nProvider } from '@/context/I18nContext';
@@ -7,6 +7,29 @@ import { useLenis } from '@/hooks/useLenis';
 import Navigation from '@/sections/Navigation';
 import CartDrawer from '@/sections/CartDrawer';
 import HomePage from '@/pages/HomePage';
+
+/**
+ * Reset scroll to the top on every route change (but preserve in-page #hash
+ * navigation). Without this, navigating between pages keeps the previous scroll
+ * position, which feels broken.
+ */
+function ScrollToTop() {
+  const { pathname, hash } = useLocation();
+  useEffect(() => {
+    if (hash) return;
+    window.scrollTo({ top: 0, left: 0, behavior: 'instant' as ScrollBehavior });
+  }, [pathname, hash]);
+  return null;
+}
+
+/** Lightweight branded fallback while a lazy page chunk loads. */
+function PageLoader() {
+  return (
+    <div className="min-h-screen bg-warm-white flex items-center justify-center">
+      <div className="w-8 h-8 border-2 border-deep-brown/20 border-t-deep-brown rounded-full animate-spin" />
+    </div>
+  );
+}
 
 const ProductDetail = lazy(() => import('@/pages/ProductDetail'));
 const OrderSuccess = lazy(() => import('@/pages/OrderSuccess'));
@@ -25,7 +48,8 @@ function AppContent() {
   useLenis();
 
   return (
-    <Suspense fallback={null}>
+    <Suspense fallback={<PageLoader />}>
+      <ScrollToTop />
       <Routes>
         <Route path="/" element={<HomePage />} />
         <Route path="/product/:id" element={<ProductDetail />} />

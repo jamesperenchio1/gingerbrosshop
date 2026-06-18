@@ -1,7 +1,7 @@
 import { useRef, useEffect } from 'react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import { GutHealthIcon, LeafIcon, LightningIcon } from '@/components/Icons';
+import { GutHealthIcon, LeafIcon, LightningIcon, SnowflakeIcon } from '@/components/Icons';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -9,18 +9,31 @@ const BENEFITS = [
   {
     icon: GutHealthIcon,
     title: 'Gut Health',
-    description: "Ginger contains natural prebiotic compounds. Our unpasteurized brew delivers live cultures too. Good for the gut, however you drink it.",
+    description: "Ginger contains natural prebiotic compounds, and because we never pasteurize, our brew also delivers live fermentation cultures — prebiotic and probiotic in every bottle.",
   },
   {
     icon: LeafIcon,
     title: 'All Natural',
-    description: 'Just four ingredients: ginger, water, sugar, and live cultures. No artificial anything. Brewed the way it should be.',
+    description: 'Just four ingredients: ginger, water, sugar, and live cultures. No additives, no preservatives, no artificial anything. Brewed the way it should be.',
   },
   {
     icon: LightningIcon,
     title: 'Vitamin B Rich',
-    description: 'The natural fermentation process produces B vitamins that support energy metabolism and overall wellness.',
+    description: 'The slow natural ferment produces B vitamins that support energy metabolism — a gentle, real-food lift with no caffeine and no crash.',
   },
+  {
+    icon: SnowflakeIcon,
+    title: 'Soothes & Settles',
+    description: 'Real ginger is a time-tested remedy for nausea, bloating, and sluggish digestion. Our fizz makes the daily dose something you actually look forward to.',
+  },
+];
+
+// Quick, scannable facts that reinforce the "why" without a wall of text.
+const FACTS = [
+  { stat: 'Low', label: 'in sugar' },
+  { stat: '7 days', label: 'naturally fermented' },
+  { stat: 'Never', label: 'heated or filtered' },
+  { stat: '330ml', label: 'live, raw & chilled' },
 ];
 
 export default function Benefits() {
@@ -72,13 +85,16 @@ export default function Benefits() {
           <span className="font-body font-medium text-[13px] uppercase tracking-[0.08em] text-rust mb-3 block">
             WHY GINGER FIZZ
           </span>
-          <h2 className="font-display font-semibold text-deep-brown text-[clamp(1.5rem,3vw,2.5rem)]">
+          <h2 className="font-display font-semibold text-deep-brown text-[clamp(1.5rem,3vw,2.5rem)] mb-3">
             More Than a Drink
           </h2>
+          <p className="font-body text-earth max-w-[560px] mx-auto">
+            For centuries ginger has been used to calm the stomach and fire up digestion. We just brew it the old, slow way — alive, raw, and barely sweet — so it does you good and tastes like it means it.
+          </p>
         </div>
 
         {/* Benefits Grid */}
-        <div ref={cardsRef} className="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div ref={cardsRef} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
           {BENEFITS.map((benefit) => {
             const Icon = benefit.icon;
             return (
@@ -103,6 +119,21 @@ export default function Benefits() {
               </div>
             );
           })}
+        </div>
+
+        {/* Quick facts strip */}
+        <div className="mt-14 grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4">
+          {FACTS.map((fact) => (
+            <div
+              key={fact.label}
+              className="bg-cream rounded-2xl px-4 py-6 text-center"
+            >
+              <p className="font-display font-bold text-deep-brown text-2xl sm:text-3xl leading-none mb-1.5">
+                {fact.stat}
+              </p>
+              <p className="font-body text-earth text-[13px] leading-snug">{fact.label}</p>
+            </div>
+          ))}
         </div>
       </div>
     </section>

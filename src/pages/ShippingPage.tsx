@@ -2,12 +2,6 @@ import { MapPin, Truck, Clock, Box } from 'lucide-react';
 import SEO from '@/components/SEO';
 
 export default function ShippingPage() {
-  const shippingRates = [
-    { region: 'Bangkok & Vicinity', time: '1-2 business days', rate: '฿80 flat rate, FREE over ฿500' },
-    { region: 'Central Thailand', time: '2-3 business days', rate: '฿120 flat rate, FREE over ฿800' },
-    { region: 'Northern / Northeastern / Southern Thailand', time: '2-4 business days', rate: '฿150 flat rate, FREE over ฿1,000' },
-  ];
-
   const jsonLd = {
     '@context': 'https://schema.org',
     '@type': 'WebPage',
@@ -43,18 +37,25 @@ export default function ShippingPage() {
             <div className="bg-cream rounded-2xl p-8">
               <Truck className="w-8 h-8 text-amber mb-4" />
               <h3 className="font-display font-semibold text-deep-brown text-[1.1rem] mb-3">
-                Standard Nationwide Shipping
+                Chilled Nationwide Shipping
               </h3>
               <p className="font-body text-[14px] text-earth leading-relaxed mb-4">
-                We ship every order with chilled packaging to protect flavor and live cultures. Orders are packed Monday–Thursday and dispatched the same or next business day.
+                Our ginger fizz is unpasteurized and full of living cultures, so it has to stay cold from our fridge to yours. Every order travels in an insulated foam box packed with ice packs to lock in flavor and keep those cultures happy in transit. We pack fresh Monday–Thursday and dispatch the same or next business day so your bottles spend as little time on the road as possible.
               </p>
-              <ul className="space-y-2">
-                {shippingRates.map((rate) => (
-                  <li key={rate.region} className="font-body text-[14px] text-earth">
-                    <strong className="text-deep-brown">{rate.region}:</strong> {rate.rate}
-                  </li>
-                ))}
-              </ul>
+              <div className="border-t border-deep-brown/10 pt-4">
+                <p className="font-body text-[14px] text-deep-brown font-semibold mb-1">
+                  Flat ฿100 chilled shipping
+                </p>
+                <p className="font-body text-[14px] text-earth leading-relaxed">
+                  One simple rate covers your insulated packaging, ice packs, and cold-chain courier anywhere in Thailand — and it's <strong className="text-deep-brown">FREE on orders over ฿500</strong>. Exact transit time depends on the courier and your destination, and you'll get a tracking link once you're on the way.
+                </p>
+              </div>
+              <div className="mt-4 flex items-start gap-2 text-[13px] text-earth">
+                <MapPin className="w-4 h-4 text-grab-green flex-shrink-0 mt-0.5" />
+                <span>
+                  Near us in Bangkok or Pathum Thani? We can deliver same-day chilled via Grab or Lineman — just reach out.
+                </span>
+              </div>
             </div>
 
             <div className="bg-cream rounded-2xl p-8">
@@ -79,8 +80,8 @@ export default function ShippingPage() {
             </h2>
             <div className="space-y-6">
               {[
-                { title: 'Order packed', desc: 'We prepare your box with chilled insulation and ice packs.' },
-                { title: 'Courier pickup', desc: 'Dispatched Monday–Thursday via our chilled delivery partner.' },
+                { title: 'Order packed', desc: 'We prepare your insulated foam box with ice packs to keep the cultures cold.' },
+                { title: 'Courier pickup', desc: 'Dispatched Monday–Thursday via our cold-chain courier, with a tracking link by email.' },
                 { title: 'Arrives cold', desc: 'Refrigerate immediately. Best enjoyed within 30 days of bottling.' },
               ].map((step, index) => (
                 <div key={step.title} className="flex gap-4">
