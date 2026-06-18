@@ -2,6 +2,7 @@ import { useEffect, useRef } from 'react';
 import Lenis from '@studio-freight/lenis';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { shouldReduceMotion } from '@/lib/utils';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -9,6 +10,10 @@ export function useLenis() {
   const lenisRef = useRef<Lenis | null>(null);
 
   useEffect(() => {
+    // On low-power / reduced-motion devices, smooth-scroll hijacking is the
+    // thing that stutters. Fall back to native scrolling there.
+    if (shouldReduceMotion()) return;
+
     const lenis = new Lenis({
       lerp: 0.15,
       smoothWheel: true,

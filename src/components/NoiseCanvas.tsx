@@ -1,4 +1,5 @@
-import { useRef, useEffect } from 'react';
+import { useRef, useEffect, useState } from 'react';
+import { shouldReduceMotion } from '@/lib/utils';
 
 const vertSrc = `
 attribute vec2 a_pos;
@@ -103,8 +104,12 @@ void main() {
 
 export default function NoiseCanvas() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  // Decide once on mount. When disabled we render nothing so the Hero's CSS
+  // gradient shows through instead of a continuously-animating WebGL shader.
+  const [enabled] = useState(() => !shouldReduceMotion());
 
   useEffect(() => {
+    if (!enabled) return;
     const canvas = canvasRef.current;
     if (!canvas) return;
 
@@ -214,7 +219,9 @@ export default function NoiseCanvas() {
       window.removeEventListener('mousemove', onMove);
       window.removeEventListener('resize', onResize);
     };
-  }, []);
+  }, [enabled]);
+
+  if (!enabled) return null;
 
   return (
     <canvas

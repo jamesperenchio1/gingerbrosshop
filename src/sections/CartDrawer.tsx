@@ -133,12 +133,12 @@ export default function CartDrawer() {
         data-testid="cart-drawer"
         aria-hidden={!state.isOpen}
         inert={!state.isOpen || undefined}
-        className={`fixed top-0 right-0 h-full w-full sm:w-[420px] bg-warm-white z-[70] shadow-[-8px_0_40px_rgba(61,36,16,0.1)] flex flex-col transition-transform duration-300 ${
+        className={`fixed top-0 right-0 h-full w-full sm:w-[min(92vw,400px)] bg-warm-white z-[70] shadow-[-8px_0_40px_rgba(61,36,16,0.1)] flex flex-col transition-transform duration-300 ${
           state.isOpen ? 'translate-x-0' : 'translate-x-full'
         }`}
       >
-        <div className="flex items-center justify-between px-6 py-5 border-b border-soft-peach/50">
-          <h2 className="font-display font-semibold text-deep-brown text-[1.25rem]">
+        <div className="flex items-center justify-between px-5 py-4 border-b border-soft-peach/50">
+          <h2 className="font-display font-semibold text-deep-brown text-[1.1rem]">
             Your Cart
           </h2>
           <button onClick={closeCart} aria-label="Close cart" data-testid="cart-close" className="text-deep-brown hover:text-rust transition-colors">
@@ -146,7 +146,7 @@ export default function CartDrawer() {
           </button>
         </div>
 
-        <div className="flex-1 overflow-y-auto px-6 py-4">
+        <div className="flex-1 overflow-y-auto px-5 py-3">
           {state.items.length === 0 ? (
             <div className="flex flex-col items-center justify-center h-full text-center">
               <ShoppingBagIcon className="text-soft-peach mb-4" />
@@ -156,12 +156,12 @@ export default function CartDrawer() {
               </button>
             </div>
           ) : (
-            <div data-testid="cart-items" className="space-y-4">
+            <div data-testid="cart-items" className="space-y-3">
               {state.items.map((item) => (
-                <div key={item.id} data-testid={`cart-item-${item.id}`} className="flex gap-4 pb-4 border-b border-soft-peach last:border-0">
+                <div key={item.id} data-testid={`cart-item-${item.id}`} className="flex gap-3 pb-3 border-b border-soft-peach last:border-0">
                   <button
                     onClick={() => handleViewProduct(item)}
-                    className="w-[72px] h-[72px] rounded-xl overflow-hidden bg-cream flex-shrink-0 hover:opacity-80 transition-opacity"
+                    className="w-14 h-14 rounded-xl overflow-hidden bg-cream flex-shrink-0 hover:opacity-80 transition-opacity"
                   >
                     <img src={item.image} alt={item.name} className="w-full h-full object-contain" />
                   </button>
@@ -226,10 +226,10 @@ export default function CartDrawer() {
         </div>
 
         {state.items.length > 0 && (
-          <div className="border-t border-soft-peach/50 px-6 py-5">
+          <div className="border-t border-soft-peach/50 px-5 py-4">
             <div className="flex items-center justify-between mb-2">
-              <span className="font-body text-earth">Subtotal</span>
-              <span className="font-display font-semibold text-deep-brown text-xl">
+              <span className="font-body text-earth text-[15px]">Subtotal</span>
+              <span className="font-display font-semibold text-deep-brown text-lg">
                 ฿{subtotal}
               </span>
             </div>
@@ -249,18 +249,18 @@ export default function CartDrawer() {
                 Your cart has both one-time and subscription items — checkout happens in two steps, starting with the one-time items.
               </p>
             )}
-            <p className="font-body font-medium text-[13px] text-earth/60 mb-2">
+            <p className="font-body font-medium text-[12px] text-earth/60 mb-1">
               {subtotal >= 500 ? '🎉 Free shipping unlocked!' : `฿100 shipping · add ฿${(500 - subtotal).toLocaleString()} for free shipping`}
             </p>
-            <p className="font-body font-medium text-[13px] text-earth/60 mb-5">
-              Shipping & payment handled securely on Stripe
+            <p className="font-body font-medium text-[12px] text-earth/60 mb-3.5">
+              Secure checkout on Stripe
             </p>
 
             <button
               onClick={handleCheckout}
               disabled={isCheckingOut}
               data-testid="cart-checkout"
-              className="w-full bg-deep-brown text-cream font-body font-medium text-sm uppercase tracking-[0.08em] py-4 rounded-full hover:bg-rust active:scale-[0.98] transition-all duration-200 flex items-center justify-center gap-2 disabled:opacity-90"
+              className="w-full bg-deep-brown text-cream font-body font-medium text-sm uppercase tracking-[0.08em] py-3.5 rounded-full hover:bg-rust active:scale-[0.98] transition-all duration-200 flex items-center justify-center gap-2 disabled:opacity-90"
             >
               {isCheckingOut ? (
                 <>
@@ -283,7 +283,7 @@ export default function CartDrawer() {
 
             {/* Abandoned cart email capture */}
             {state.items.length > 0 && !cartEmailSaved && (
-              <div className="mt-4 pt-4 border-t border-soft-peach/50">
+              <div className="mt-3 pt-3 border-t border-soft-peach/50">
                 <p className="font-body text-[12px] text-earth mb-2">Enter your email to save this cart:</p>
                 <div className="flex gap-2">
                   <input
@@ -309,16 +309,16 @@ export default function CartDrawer() {
               </p>
             )}
 
-            <div className="flex items-center gap-3 my-4">
+            <div className="flex items-center gap-3 my-3">
               <div className="flex-1 h-px bg-earth/10" />
-              <span className="font-body font-medium text-[13px] text-earth/40">or</span>
+              <span className="font-body font-medium text-[12px] text-earth/40">or</span>
               <div className="flex-1 h-px bg-earth/10" />
             </div>
 
             <button
               onClick={closeCart}
               data-testid="cart-continue"
-              className="w-full text-center font-body font-medium text-rust hover:underline transition-all"
+              className="w-full text-center font-body font-medium text-[14px] text-rust hover:underline transition-all"
             >
               Continue Shopping
             </button>

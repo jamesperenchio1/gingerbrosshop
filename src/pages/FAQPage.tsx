@@ -1,8 +1,17 @@
-import { Truck, Package, CreditCard, RefreshCw, Thermometer, HelpCircle } from 'lucide-react';
+import type { ReactNode } from 'react';
+import { Truck, Package, CreditCard, RefreshCw, Thermometer, HelpCircle, MapPin } from 'lucide-react';
+import { Link } from 'react-router';
 import SEO from '@/components/SEO';
 
+type FAQItem = {
+  icon: ReactNode;
+  q: string;
+  a: ReactNode;
+  aText?: string;
+};
+
 export default function FAQPage() {
-  const FAQS = [
+  const FAQS: FAQItem[] = [
     {
       icon: <Truck className="w-6 h-6 text-amber" />,
       q: 'Where do you deliver?',
@@ -19,6 +28,11 @@ export default function FAQPage() {
       a: 'Unpasteurized ginger fizz is raw and alive — keep it refrigerated at 2–6°C at all times. It is best consumed within 30 days of bottling. Natural sediment is normal and safe; gently invert before opening.',
     },
     {
+      icon: <MapPin className="w-6 h-6 text-amber" />,
+      q: 'Do you offer same-day local delivery?',
+      a: 'Yes! If you are in the Bangkok, Pathum Thani, or Rangsit area, we can deliver chilled same-day via Grab or Lineman. Just message us or note it at checkout and we will arrange a nearby drop — your fizz arrives cold and ready to refrigerate.',
+    },
+    {
       icon: <RefreshCw className="w-6 h-6 text-amber" />,
       q: 'Do you offer subscriptions?',
       a: 'Yes. You can subscribe to regular deliveries of unpasteurized ginger fizz and save on every box. Manage, pause, or cancel anytime from your customer portal.',
@@ -31,7 +45,20 @@ export default function FAQPage() {
     {
       icon: <HelpCircle className="w-6 h-6 text-amber" />,
       q: 'Can I buy GingerBros for my cafe, bar, or restaurant?',
-      a: 'Absolutely. We offer wholesale pricing for businesses. Visit our Wholesale page or email hello@gingerbrosshop.com with your venue details and estimated volume.',
+      a: (
+        <>
+          Absolutely. We offer wholesale pricing for businesses. Visit our{' '}
+          <Link to="/wholesale" className="text-rust font-semibold underline underline-offset-2 hover:text-amber transition-colors">
+            Wholesale page
+          </Link>{' '}
+          or email{' '}
+          <a href="mailto:hello@gingerbrosshop.com" className="text-rust font-semibold underline underline-offset-2 hover:text-amber transition-colors">
+            hello@gingerbrosshop.com
+          </a>{' '}
+          with your venue details and estimated volume.
+        </>
+      ),
+      aText: 'Absolutely. We offer wholesale pricing for businesses. Visit our Wholesale page (/wholesale) or email hello@gingerbrosshop.com with your venue details and estimated volume.',
     },
   ];
 
@@ -41,7 +68,7 @@ export default function FAQPage() {
     mainEntity: FAQS.map((f) => ({
       '@type': 'Question',
       name: f.q,
-      acceptedAnswer: { '@type': 'Answer', text: f.a },
+      acceptedAnswer: { '@type': 'Answer', text: f.aText ?? f.a },
     })),
   };
 

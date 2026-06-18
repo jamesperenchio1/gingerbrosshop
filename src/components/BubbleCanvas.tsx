@@ -1,4 +1,5 @@
 import { useRef, useEffect } from 'react';
+import { shouldReduceMotion } from '@/lib/utils';
 
 interface Bubble {
   x: number;
@@ -19,8 +20,9 @@ export default function BubbleCanvas() {
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
-    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    if (prefersReducedMotion) return;
+    // Skip entirely on reduced-motion / low-power devices — this is the main
+    // source of scroll stutter on weak hardware.
+    if (shouldReduceMotion()) return;
 
     let running = true;
     let needsResize = true;
