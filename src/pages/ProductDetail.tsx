@@ -2,7 +2,7 @@ import { useState, useRef, useEffect, useLayoutEffect, useMemo } from 'react';
 import { useParams } from 'react-router';
 import gsap from 'gsap';
 import { useCart } from '@/context/CartContext';
-import { PlusIcon, MinusIcon, SnowflakeIcon, LeafIcon } from '@/components/Icons';
+import { PlusIcon, MinusIcon } from '@/components/Icons';
 import SEO from '@/components/SEO';
 import NotFound from '@/pages/NotFound';
 import { useCatalog, defaultPrice, intervalLabel, oneTimePrice, savingsPercent, type CatalogPrice } from '@/lib/catalog';
@@ -229,21 +229,19 @@ export default function ProductDetail() {
           <div ref={infoRef}>
             <a
               href="/"
-              className="inline-flex items-center gap-2 font-body font-medium text-[13px] text-earth hover:text-deep-brown transition-colors mb-4"
+              className="flex w-fit items-center gap-2 font-body font-medium text-[13px] text-earth hover:text-deep-brown transition-colors mb-4"
             >
               <ArrowLeftIcon2 />
               Back to Shop
             </a>
 
-            {/* Badge — chilled products get the snowflake/blue, shelf-stable a leaf/green */}
+            {/* Badge — chilled products get the blue treatment, shelf-stable green */}
             {product.badge && (() => {
               const isChilled = /chill|cold|fridge|refriger/i.test(product.badge);
-              const BadgeIcon = isChilled ? SnowflakeIcon : LeafIcon;
               return (
-                <span className={`inline-flex items-center gap-1.5 border font-body font-semibold text-[11px] uppercase tracking-[0.06em] px-3 py-1.5 rounded-full mb-4 ${
+                <span className={`inline-flex items-center border font-body font-semibold text-[11px] uppercase tracking-[0.06em] px-3 py-1.5 rounded-full mb-4 ${
                   isChilled ? 'bg-sky-50 text-sky-700 border-sky-200/80' : 'bg-accent-green/10 text-accent-green border-accent-green/30'
                 }`}>
-                  <BadgeIcon className="w-3.5 h-3.5" />
                   {product.badge}
                 </span>
               );

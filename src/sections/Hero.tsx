@@ -2,7 +2,7 @@ import { useLayoutEffect, useRef } from 'react';
 import gsap from 'gsap';
 import NoiseCanvas from '@/components/NoiseCanvas';
 import BubbleCanvas from '@/components/BubbleCanvas';
-import { ChevronDownIcon, SnowflakeIcon, LeafIcon } from '@/components/Icons';
+import { ChevronDownIcon, LeafIcon } from '@/components/Icons';
 
 export default function Hero() {
   const badgeRef = useRef<HTMLDivElement>(null);
@@ -59,16 +59,16 @@ export default function Hero() {
             className="font-display font-bold text-deep-brown leading-[0.95] mb-4"
             style={{ fontSize: 'clamp(2.5rem, 6vw, 4.75rem)' }}
           >
-            Raw, Living
+            Fermented Ginger,
             <br />
-            Ginger Fizz
+            Your Way
           </h1>
 
           <p
             ref={subRef}
             className="font-body font-medium text-[15px] text-earth max-w-[460px] mb-7 leading-relaxed"
           >
-            7-day naturally fermented craft ginger fizz. Low in sugar, good for the gut, and never heated — so every bottle is alive with probiotics and delivered chilled.
+            Raw and living, or pasteurized and shelf-stable. Two brews, one bold ginger kick — 7-day naturally fermented and now low in sugar.
           </p>
 
           <div ref={ctaRef} className="flex flex-wrap items-center justify-center md:justify-start gap-4">
@@ -76,7 +76,7 @@ export default function Hero() {
               onClick={handleShopClick}
               className="bg-deep-brown text-cream font-body font-medium text-sm uppercase tracking-[0.08em] px-9 py-3.5 rounded-full hover:bg-rust hover:scale-[1.02] active:scale-[0.98] transition-all duration-200"
             >
-              Shop Now
+              Shop the Brews
             </button>
             <button
               onClick={handleStoryClick}
@@ -91,11 +91,11 @@ export default function Hero() {
             <span className="inline-flex items-center gap-1.5 font-body font-medium text-[13px] text-deep-brown/80">
               <LeafIcon className="w-4 h-4" /> 4 ingredients
             </span>
-            <span className="inline-flex items-center gap-1.5 font-body font-medium text-[13px] text-deep-brown/80">
-              <SnowflakeIcon className="w-4 h-4" /> Delivered chilled
+            <span className="font-body font-medium text-[13px] text-deep-brown/80">
+              Low in sugar
             </span>
             <span className="font-body font-medium text-[13px] text-deep-brown/80">
-              Live probiotics
+              7-day ferment
             </span>
           </div>
         </div>

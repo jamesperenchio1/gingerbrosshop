@@ -25,7 +25,7 @@ export const PRODUCT_CONTENT: Record<string, ProductContent> = {
     longDescription:
       'Our unpasteurized ginger fizz is ginger fizz in its purest form. After 7 days of natural fermentation, we strain and bottle immediately — no heat treatment, no filtering, no intervention. This means every bottle contains billions of live, active probiotic cultures that continue to develop the flavor over time. The taste is bold, complex, and naturally effervescent. Because it is a living product, it must be kept refrigerated and consumed within 30 days of bottling. The natural sediment you may see is normal — it is the live cultures and ginger particles that make this brew so special.',
     video: '/images/product-unpasteurized.mp4',
-    ingredients: ['Fresh Ginger', 'Filtered Water', 'Raw Cane Sugar', 'Live Cultures (Ginger Bug)'],
+    ingredients: ['Fresh Ginger', 'Filtered Water', 'Erythritol', 'Raw Cane Sugar (ferment starter)', 'Live Cultures (Ginger Bug)'],
     specs: [
       { label: 'Volume', value: '330ml per bottle' },
       { label: 'Shelf Life', value: '30 days (refrigerated)' },
@@ -38,20 +38,21 @@ export const PRODUCT_CONTENT: Record<string, ProductContent> = {
     ],
     nutrition: [
       { label: 'Serving Size', value: '330ml' },
-      { label: 'Energy', value: '98 kcal' },
-      { label: 'Total Carbohydrates', value: '23g' },
-      { label: '— Sugars', value: '19g' },
+      { label: 'Energy', value: '30 kcal' },
+      { label: 'Total Carbohydrates', value: '8g' },
+      { label: '— Sugars', value: '4g' },
+      { label: 'Sweetened with', value: 'Erythritol' },
       { label: 'Sodium', value: '5mg' },
       { label: 'Vitamin B6', value: '0.4mg (24% DV)' },
       { label: 'Vitamin B12', value: '0.6mcg (25% DV)' },
       { label: 'Active Probiotic CFU', value: '1+ billion per bottle' },
     ],
     features: [
+      'Low sugar — sweetened with erythritol, not loaded with cane sugar',
       'Raw and unpasteurized — maximum probiotic content',
       'Living cultures continue to develop flavor in the bottle',
       'Bold, complex, naturally effervescent flavour',
       'Billions of active CFUs per serving',
-      'Natural sediment is normal and healthy',
       'Best consumed within 30 days for peak freshness',
     ],
   },
@@ -59,7 +60,7 @@ export const PRODUCT_CONTENT: Record<string, ProductContent> = {
     headline: 'The same bold ginger kick, gently heat-stabilized so it travels anywhere and keeps in the pantry.',
     longDescription:
       'Ginger Pop is our pasteurized take on the brew. We ferment it the same slow, natural way, then gently heat-treat each bottle to lock in the flavour and make it shelf-stable. The result is a crisp, lively ginger soda you can stock at room temperature, take on the road, and ship anywhere in the country — no cold chain required. It is the easy, everyday way to enjoy real fermented ginger, with the bright bite you expect from GingerBros.',
-    ingredients: ['Fresh Ginger', 'Filtered Water', 'Raw Cane Sugar', 'Live Cultures (Ginger Bug)'],
+    ingredients: ['Fresh Ginger', 'Filtered Water', 'Erythritol', 'Raw Cane Sugar (ferment starter)', 'Live Cultures (Ginger Bug)'],
     specs: [
       { label: 'Volume', value: '330ml per bottle' },
       { label: 'Shelf Life', value: '6 months (unopened, room temperature)' },
@@ -72,19 +73,20 @@ export const PRODUCT_CONTENT: Record<string, ProductContent> = {
     ],
     nutrition: [
       { label: 'Serving Size', value: '330ml' },
-      { label: 'Energy', value: '92 kcal' },
-      { label: 'Total Carbohydrates', value: '22g' },
-      { label: '— Sugars', value: '18g' },
+      { label: 'Energy', value: '25 kcal' },
+      { label: 'Total Carbohydrates', value: '7g' },
+      { label: '— Sugars', value: '3g' },
+      { label: 'Sweetened with', value: 'Erythritol' },
       { label: 'Sodium', value: '5mg' },
       { label: 'Vitamin B6', value: '0.3mg (18% DV)' },
     ],
     features: [
+      'Low sugar — sweetened with erythritol, not loaded with cane sugar',
       'Pasteurized and shelf-stable — no refrigeration needed',
       'Ships nationwide without a cold chain',
       'Crisp, bright, refreshing ginger flavour',
       'Perfect for the pantry, the office, or the road',
       'Same slow 7-day natural ferment',
-      'Lower price point — your everyday ginger fix',
     ],
   },
 };
