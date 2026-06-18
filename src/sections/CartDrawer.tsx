@@ -12,10 +12,15 @@ export default function CartDrawer() {
   const [checkoutError, setCheckoutError] = useState('');
   const navigate = useNavigate();
 
+  // Mount immediately when opening (state adjustment during render, per React
+  // docs); the effect below only delays the unmount so the slide-out
+  // transition can finish.
+  if (state.isOpen && !mounted) {
+    setMounted(true);
+  }
+
   useEffect(() => {
-    if (state.isOpen) {
-      setMounted(true);
-    } else {
+    if (!state.isOpen) {
       const id = window.setTimeout(() => setMounted(false), 300);
       return () => window.clearTimeout(id);
     }

@@ -20,4 +20,24 @@ export default defineConfig([
       globals: globals.browser,
     },
   },
+  {
+    // Vendored shadcn/ui primitives are kept matching upstream rather than
+    // refactored to satisfy lint. They mix component + variant/constant exports
+    // (a Fast Refresh dev-only concern) and the skeleton uses Math.random for a
+    // placeholder width.
+    files: ['src/components/ui/**/*.{ts,tsx}'],
+    rules: {
+      'react-refresh/only-export-components': 'off',
+      'react-hooks/purity': 'off',
+    },
+  },
+  {
+    // Context providers intentionally co-locate their provider component with
+    // the matching hook/constants; splitting them hurts readability more than
+    // the Fast Refresh dev-only warning helps.
+    files: ['src/context/**/*.{ts,tsx}'],
+    rules: {
+      'react-refresh/only-export-components': 'off',
+    },
+  },
 ])
