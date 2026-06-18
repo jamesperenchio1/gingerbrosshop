@@ -10,8 +10,6 @@ export default function CartDrawer() {
   const [mounted, setMounted] = useState(state.isOpen);
   const [isCheckingOut, setIsCheckingOut] = useState(false);
   const [checkoutError, setCheckoutError] = useState('');
-  const [cartEmail, setCartEmail] = useState('');
-  const [creditBaht, setCreditBaht] = useState(0);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -47,43 +45,6 @@ export default function CartDrawer() {
 
   const hasMixedCart = state.items.some(i => i.isSubscription) && state.items.some(i => !i.isSubscription);
 
-  // Look up any returnable-box store credit for the entered email so we can show
-  // it will auto-apply at checkout.
-  const checkCredit = async (email: string) => {
-    const trimmed = email.trim();
-    if (!trimmed) {
-      setCreditBaht(0);
-      return;
-    }
-    try {
-      const res = await fetch(`/api/credit?email=${encodeURIComponent(trimmed)}`);
-      if (!res.ok) return;
-      const data = await res.json();
-      setCreditBaht(typeof data.balanceBaht === 'number' ? data.balanceBaht : 0);
-    } catch {
-      // silent — credit display is best-effort
-    }
-  };
-
-  const handleSaveCartEmail = async () => {
-    if (!cartEmail.trim() || state.items.length === 0) return;
-    try {
-      await fetch('/api/save-cart', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          email: cartEmail.trim(),
-          items: state.items.map((i) => ({ name: i.name, price: i.price, quantity: i.quantity, image: i.image })),
-          subtotal,
-          url: window.location.origin + '/',
-        }),
-      });
-      checkCredit(cartEmail);
-    } catch {
-      // silent
-    }
-  };
-
   const handleCheckout = async () => {
     if (state.items.length === 0) return;
     setIsCheckingOut(true);
@@ -95,10 +56,10 @@ export default function CartDrawer() {
         // the subscription leg automatically once that session completes.
         const oneTimeItems = state.items.filter((i) => !i.isSubscription);
         sessionStorage.setItem(PENDING_SUBSCRIPTION_CHECKOUT_KEY, '1');
-        window.location.href = await startCheckout(oneTimeItems, cartEmail);
+        window.location.href = await startCheckout(oneTimeItems);
         return;
       }
-      window.location.href = await startCheckout(state.items, cartEmail);
+      window.location.href = await startCheckout(state.items);
     } catch (err) {
       setCheckoutError(err instanceof Error ? err.message : 'Something went wrong. Please try again.');
       setIsCheckingOut(false);
@@ -230,32 +191,15 @@ export default function CartDrawer() {
               <span className="font-body text-earth text-[15px]">Subtotal</span>
               <span className="font-display font-semibold text-deep-brown text-lg">฿{subtotal}</span>
             </div>
-            {creditBaht > 0 && (
-              <div className="flex items-center justify-between text-accent-green">
-                <span className="font-body font-medium text-[13px]">Box-return credit</span>
-                <span className="font-body font-semibold text-[13px]">−฿{creditBaht}</span>
-              </div>
-            )}
 
             {/* Fine print — kept to a few quiet lines */}
             <div className="font-body text-[12px] text-earth/60 leading-relaxed">
-              <p>{subtotal >= 500 ? 'Free shipping included.' : '+฿100 chilled shipping · free over ฿500'}</p>
+              <p>{subtotal >= 500 ? 'Free shipping included.' : '+฿100 shipping · free over ฿500'}</p>
               {state.items.some((i) => i.isSubscription) && (
                 <p>Subscription billed {state.items.find((i) => i.isSubscription)?.interval}.</p>
               )}
               {hasMixedCart && <p>One-time &amp; subscription items check out in two quick steps.</p>}
             </div>
-
-            {/* Email — one clean line (receipt + box-return credit) */}
-            <input
-              type="email"
-              value={cartEmail}
-              onChange={(e) => setCartEmail(e.target.value)}
-              onBlur={() => { checkCredit(cartEmail); handleSaveCartEmail(); }}
-              placeholder="Email — for your receipt & rewards"
-              aria-label="Email for receipt and rewards"
-              className="w-full bg-cream border border-soft-peach rounded-full px-4 py-2.5 font-body text-[13px] text-deep-brown placeholder:text-earth/40 focus:outline-none focus:ring-2 focus:ring-rust/30"
-            />
 
             <button
               onClick={handleCheckout}
