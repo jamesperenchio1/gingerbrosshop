@@ -2,7 +2,7 @@ import { useState, useRef, useEffect, useLayoutEffect, useMemo } from 'react';
 import { useParams } from 'react-router';
 import gsap from 'gsap';
 import { useCart } from '@/context/CartContext';
-import { PlusIcon, MinusIcon, SnowflakeIcon } from '@/components/Icons';
+import { PlusIcon, MinusIcon, SnowflakeIcon, LeafIcon } from '@/components/Icons';
 import SEO from '@/components/SEO';
 import NotFound from '@/pages/NotFound';
 import { useCatalog, defaultPrice, intervalLabel, oneTimePrice, savingsPercent, type CatalogPrice } from '@/lib/catalog';
@@ -235,13 +235,19 @@ export default function ProductDetail() {
               Back to Shop
             </a>
 
-            {/* Badge */}
-            {product.badge && (
-              <span className="inline-flex items-center gap-1.5 bg-sky-50 text-sky-700 border border-sky-200/80 font-body font-semibold text-[11px] uppercase tracking-[0.06em] px-3 py-1.5 rounded-full mb-4">
-                <SnowflakeIcon className="w-3.5 h-3.5" />
-                {product.badge}
-              </span>
-            )}
+            {/* Badge — chilled products get the snowflake/blue, shelf-stable a leaf/green */}
+            {product.badge && (() => {
+              const isChilled = /chill|cold|fridge|refriger/i.test(product.badge);
+              const BadgeIcon = isChilled ? SnowflakeIcon : LeafIcon;
+              return (
+                <span className={`inline-flex items-center gap-1.5 border font-body font-semibold text-[11px] uppercase tracking-[0.06em] px-3 py-1.5 rounded-full mb-4 ${
+                  isChilled ? 'bg-sky-50 text-sky-700 border-sky-200/80' : 'bg-accent-green/10 text-accent-green border-accent-green/30'
+                }`}>
+                  <BadgeIcon className="w-3.5 h-3.5" />
+                  {product.badge}
+                </span>
+              );
+            })()}
 
             {/* Name */}
             <h1 className="font-display font-bold text-deep-brown text-[2rem] md:text-[2.5rem] leading-tight mb-3">
@@ -273,7 +279,7 @@ export default function ProductDetail() {
                 <span className="font-body font-semibold text-[12px] uppercase tracking-[0.08em] text-rust mb-2 block">
                   Purchase Options
                 </span>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
                   {product.prices.map((p) => {
                     const isActive = p.priceId === selectedPrice.priceId;
                     const label = p.recurring ? intervalLabel(p.recurring) : 'One-time';
@@ -282,11 +288,15 @@ export default function ProductDetail() {
                       <button
                         key={p.priceId}
                         onClick={() => setSelectedPriceId(p.priceId)}
-                        className={`relative flex items-center justify-between gap-2 rounded-xl border-2 px-4 py-3 text-left transition-all ${
-                          isActive ? 'border-amber bg-amber/10' : 'border-soft-peach hover:border-soft-peach/80'
+                        aria-pressed={isActive}
+                        className={`relative flex items-center gap-3 rounded-xl border-2 px-4 py-3 text-left transition-all ${
+                          isActive ? 'border-amber bg-amber/10' : 'border-soft-peach hover:border-amber/50'
                         }`}
                       >
-                        <span className="flex flex-col">
+                        <span className={`flex-shrink-0 w-4 h-4 rounded-full border-2 flex items-center justify-center transition-colors ${isActive ? 'border-amber' : 'border-soft-peach'}`}>
+                          {isActive && <span className="w-2 h-2 rounded-full bg-amber" />}
+                        </span>
+                        <span className="flex-1 flex flex-col">
                           <span className="font-body font-medium text-[14px] text-deep-brown capitalize">{label}</span>
                           {save > 0 && (
                             <span className="font-body font-semibold text-[11px] text-accent-green">Save {save}%</span>
@@ -296,23 +306,23 @@ export default function ProductDetail() {
                           {save > 0 && oneTimeForProduct?.unitAmount != null && (
                             <span className="font-body text-[12px] text-earth/50 line-through">฿{oneTimeForProduct.unitAmount}</span>
                           )}
-                          <span className="font-body font-semibold text-[14px] text-deep-brown">฿{p.unitAmount}</span>
+                          <span className="font-body font-semibold text-[15px] text-deep-brown">฿{p.unitAmount}</span>
                         </span>
                       </button>
                     );
                   })}
                 </div>
                 {selectedPrice.recurring ? (
-                  <div className="mt-3 rounded-xl bg-accent-green/8 border border-accent-green/25 px-4 py-3">
-                    <p className="font-body font-semibold text-[13px] text-deep-brown mb-1.5">
-                      🔁 Subscribe &amp; Save
+                  <div className="mt-3 rounded-xl bg-accent-green/[0.07] border border-accent-green/20 px-4 py-3.5">
+                    <p className="font-body font-semibold text-[13px] text-deep-brown mb-2">
+                      Subscribe &amp; Save
                       {savingsPercent(selectedPrice, oneTimeForProduct) > 0 &&
                         ` — ${savingsPercent(selectedPrice, oneTimeForProduct)}% off every delivery`}
                     </p>
-                    <ul className="font-body text-[12px] text-earth/80 space-y-1">
-                      <li>• Fresh fizz delivered {intervalLabel(selectedPrice.recurring)} — never run out</li>
-                      <li>• Lower price than one-time, locked in</li>
-                      <li>• Pause, skip, or cancel anytime — no commitment</li>
+                    <ul className="font-body text-[12px] text-earth/80 space-y-1.5">
+                      <li className="flex items-start gap-2"><CheckIcon className="text-accent-green flex-shrink-0 mt-0.5" /> Delivered {intervalLabel(selectedPrice.recurring)} — never run out</li>
+                      <li className="flex items-start gap-2"><CheckIcon className="text-accent-green flex-shrink-0 mt-0.5" /> A lower price than one-time, locked in</li>
+                      <li className="flex items-start gap-2"><CheckIcon className="text-accent-green flex-shrink-0 mt-0.5" /> Pause, skip, or cancel anytime</li>
                     </ul>
                   </div>
                 ) : (
@@ -325,9 +335,9 @@ export default function ProductDetail() {
                           .sort((a, b) => (a.unitAmount ?? 0) - (b.unitAmount ?? 0))[0];
                         if (cheapest) setSelectedPriceId(cheapest.priceId);
                       }}
-                      className="font-body text-[12px] text-rust hover:text-deep-brown hover:underline mt-2 text-left"
+                      className="font-body text-[13px] font-medium text-rust hover:text-deep-brown hover:underline mt-2.5 text-left"
                     >
-                      Subscribe &amp; save up to {maxSavings}% →
+                      Subscribe &amp; save up to {maxSavings}%
                     </button>
                   )
                 )}
@@ -384,7 +394,7 @@ export default function ProductDetail() {
                     data-testid="gift-toggle"
                     className="w-5 h-5 accent-deep-brown rounded"
                   />
-                  <span className="font-body font-medium text-deep-brown text-[14px]">This is a gift 🎁</span>
+                  <span className="font-body font-medium text-deep-brown text-[14px]">This is a gift</span>
                 </label>
                 {isGift && (
                   <div className="mt-3 space-y-3">

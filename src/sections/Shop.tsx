@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { useCart } from '@/context/CartContext';
-import { PlusIcon, MinusIcon, SnowflakeIcon } from '@/components/Icons';
+import { PlusIcon, MinusIcon, SnowflakeIcon, LeafIcon } from '@/components/Icons';
 import { useCatalog, defaultPrice, cheapestSubscription, maxSubscriptionSavings, intervalLabel, type CatalogProduct } from '@/lib/catalog';
 
 gsap.registerPlugin(ScrollTrigger);
@@ -18,6 +18,12 @@ function ProductCard({ product }: { product: CatalogProduct }) {
   const subPrice = cheapestSubscription(product);
   const subSavings = maxSubscriptionSavings(product);
   const detailLink = `/product/${product.id}`;
+  // Chilled products get the snowflake/blue treatment; shelf-stable ones a leaf.
+  const isChilled = /chill|cold|fridge|refriger/i.test(product.badge ?? '');
+  const BadgeIcon = isChilled ? SnowflakeIcon : LeafIcon;
+  const badgeClass = isChilled
+    ? 'bg-sky-50 text-sky-700 border-sky-200/80'
+    : 'bg-accent-green/10 text-accent-green border-accent-green/30';
   const shortDescription = product.metadata.short_description ?? product.description ?? '';
   const image = product.images[0] ?? '';
 
@@ -55,8 +61,8 @@ function ProductCard({ product }: { product: CatalogProduct }) {
 
       {/* Badge */}
       {product.badge && (
-        <span className="inline-flex items-center gap-1.5 self-start bg-sky-50 text-sky-700 border border-sky-200/80 font-body font-semibold text-[11px] uppercase tracking-[0.06em] px-3 py-1.5 rounded-full mb-3">
-          <SnowflakeIcon className="w-3.5 h-3.5" />
+        <span className={`inline-flex items-center gap-1.5 self-start border font-body font-semibold text-[11px] uppercase tracking-[0.06em] px-3 py-1.5 rounded-full mb-3 ${badgeClass}`}>
+          <BadgeIcon className="w-3.5 h-3.5" />
           {product.badge}
         </span>
       )}
@@ -85,7 +91,7 @@ function ProductCard({ product }: { product: CatalogProduct }) {
           onClick={() => navigate(detailLink)}
           className="self-start inline-flex items-center gap-1.5 mb-4 bg-accent-green/10 text-accent-green border border-accent-green/25 font-body font-semibold text-[12px] px-3 py-1.5 rounded-full hover:bg-accent-green/15 transition-colors"
         >
-          🔁 Subscribe from ฿{subPrice.unitAmount}/{intervalLabel(subPrice.recurring).replace(/^per |^every /, '')} — save up to {subSavings}%
+          Subscribe from ฿{subPrice.unitAmount}/{intervalLabel(subPrice.recurring).replace(/^per |^every /, '')} — save up to {subSavings}%
         </button>
       )}
 
@@ -175,12 +181,12 @@ export default function Shop() {
       <div className="max-w-[1100px] mx-auto px-6">
         <div ref={headerRef} className="text-center mb-16">
           <span className="font-body font-medium text-[13px] uppercase tracking-[0.08em] text-rust mb-3 block">
-            OUR PRODUCT
+            OUR BREWS
           </span>
           <h2 className="font-display font-semibold text-deep-brown text-[clamp(1.5rem,3vw,2.5rem)] mb-3">
             Choose Your Brew
           </h2>
-          <p className="font-body text-earth">Fresh, raw ginger fizz delivered chilled to your door.</p>
+          <p className="font-body text-earth">Raw and living, or pasteurized and shelf-stable — real fermented ginger, your way.</p>
         </div>
 
         {loading ? (
