@@ -1,11 +1,11 @@
-import { useState, useRef, useEffect, useLayoutEffect, useMemo } from 'react';
+import { useState, useRef, useEffect, useLayoutEffect } from 'react';
 import { useParams } from 'react-router';
 import gsap from 'gsap';
 import { useCart } from '@/context/CartContext';
 import { PlusIcon, MinusIcon } from '@/components/Icons';
 import SEO from '@/components/SEO';
 import NotFound from '@/pages/NotFound';
-import { useCatalog, defaultPrice, intervalLabel, oneTimePrice, savingsPercent, type CatalogPrice } from '@/lib/catalog';
+import { useCatalog, defaultPrice, intervalLabel, oneTimePrice, savingsPercent } from '@/lib/catalog';
 import { getProductContent } from '@/lib/productContent';
 
 /* ──────────────────────── Icons ──────────────────────── */
@@ -62,20 +62,18 @@ export default function ProductDetail() {
   const images = product?.images ?? [];
   const video = content.video;
 
-  const { selectedPrice, oneTimeForProduct, maxSavings } = useMemo<{
-    selectedPrice: CatalogPrice | undefined;
-    oneTimeForProduct: CatalogPrice | undefined;
-    maxSavings: number;
-  }>(() => {
-    if (!product) return { selectedPrice: undefined, oneTimeForProduct: undefined, maxSavings: 0 };
-    const selected = product.prices.find((p) => p.priceId === selectedPriceId) ?? defaultPrice(product);
-    const oneTime = oneTimePrice(product);
-    const max = product.prices.reduce(
-      (acc, p) => (p.recurring ? Math.max(acc, savingsPercent(p, oneTime)) : acc),
-      0,
-    );
-    return { selectedPrice: selected, oneTimeForProduct: oneTime, maxSavings: max };
-  }, [product, selectedPriceId]);
+  // Derived purchase data. The React Compiler memoizes these automatically; a
+  // manual useMemo here can't be preserved by the compiler, so we compute plainly.
+  const oneTimeForProduct = product ? oneTimePrice(product) : undefined;
+  const selectedPrice = product
+    ? (product.prices.find((p) => p.priceId === selectedPriceId) ?? defaultPrice(product))
+    : undefined;
+  const maxSavings = product
+    ? product.prices.reduce(
+        (acc, p) => (p.recurring ? Math.max(acc, savingsPercent(p, oneTimeForProduct)) : acc),
+        0,
+      )
+    : 0;
 
   useEffect(() => {
     window.scrollTo(0, 0);

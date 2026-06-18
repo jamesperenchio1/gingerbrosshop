@@ -52,8 +52,15 @@ function mockReq(overrides: Partial<Parameters<typeof handler>[0]> = {}): Parame
   } as Parameters<typeof handler>[0];
 }
 
+interface MockRes {
+  statusCode: number;
+  _json: unknown;
+  status(code: number): MockRes;
+  json(data: unknown): MockRes;
+}
+
 function mockRes() {
-  const res: any = {
+  const res: MockRes = {
     statusCode: 200,
     _json: null,
     status(code: number) {
