@@ -55,6 +55,38 @@ export const PRODUCT_CONTENT: Record<string, ProductContent> = {
       'Best consumed within 30 days for peak freshness',
     ],
   },
+  pasteurized: {
+    headline: 'The same bold ginger kick, gently heat-stabilized so it travels anywhere and keeps in the pantry.',
+    longDescription:
+      'Ginger Pop is our pasteurized take on the brew. We ferment it the same slow, natural way, then gently heat-treat each bottle to lock in the flavour and make it shelf-stable. The result is a crisp, lively ginger soda you can stock at room temperature, take on the road, and ship anywhere in the country — no cold chain required. It is the easy, everyday way to enjoy real fermented ginger, with the bright bite you expect from GingerBros.',
+    ingredients: ['Fresh Ginger', 'Filtered Water', 'Raw Cane Sugar', 'Live Cultures (Ginger Bug)'],
+    specs: [
+      { label: 'Volume', value: '330ml per bottle' },
+      { label: 'Shelf Life', value: '6 months (unopened, room temperature)' },
+      { label: 'Storage', value: 'Store in a cool, dry place. Refrigerate after opening.' },
+      { label: 'Serving Temp', value: 'Best served chilled' },
+      { label: 'Fermentation', value: '7 days natural ferment, then pasteurized' },
+      { label: 'Pasteurized', value: 'Yes — shelf-stable' },
+      { label: 'Origin', value: 'Brewed and bottled in Thailand' },
+      { label: 'Dietary', value: 'Vegan, Gluten-Free, No Artificial Additives' },
+    ],
+    nutrition: [
+      { label: 'Serving Size', value: '330ml' },
+      { label: 'Energy', value: '92 kcal' },
+      { label: 'Total Carbohydrates', value: '22g' },
+      { label: '— Sugars', value: '18g' },
+      { label: 'Sodium', value: '5mg' },
+      { label: 'Vitamin B6', value: '0.3mg (18% DV)' },
+    ],
+    features: [
+      'Pasteurized and shelf-stable — no refrigeration needed',
+      'Ships nationwide without a cold chain',
+      'Crisp, bright, refreshing ginger flavour',
+      'Perfect for the pantry, the office, or the road',
+      'Same slow 7-day natural ferment',
+      'Lower price point — your everyday ginger fix',
+    ],
+  },
 };
 
 export function getProductContent(appId: string | undefined): ProductContent {

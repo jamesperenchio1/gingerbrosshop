@@ -55,11 +55,11 @@ export default function Story() {
       style={{ background: 'linear-gradient(to bottom, rgba(240,212,168,0.3) 0%, #FDF8F0 100%)' }}
     >
       <div className="max-w-[1280px] mx-auto px-6">
-        <div className="grid grid-cols-1 md:grid-cols-[55%_45%] gap-12 md:gap-16 items-center">
+        <div className="grid grid-cols-1 md:grid-cols-[1.2fr_1fr] gap-12 md:gap-16 items-center">
           {/* Left — Image */}
           <div
             ref={imageRef}
-            className="order-2 md:order-1"
+            className="order-2 md:order-1 min-w-0"
           >
             <div className="rounded-[20px] overflow-hidden shadow-lg md:-mt-5">
               <img
@@ -71,7 +71,7 @@ export default function Story() {
           </div>
 
           {/* Right — Content */}
-          <div ref={contentRef} className="order-1 md:order-2">
+          <div ref={contentRef} className="order-1 md:order-2 min-w-0">
             <span className="block font-body font-medium text-[13px] uppercase tracking-[0.08em] text-rust mb-3">
               OUR STORY
             </span>

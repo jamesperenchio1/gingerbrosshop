@@ -11,7 +11,6 @@ export default function CartDrawer() {
   const [isCheckingOut, setIsCheckingOut] = useState(false);
   const [checkoutError, setCheckoutError] = useState('');
   const [cartEmail, setCartEmail] = useState('');
-  const [cartEmailSaved, setCartEmailSaved] = useState(false);
   const [creditBaht, setCreditBaht] = useState(0);
   const navigate = useNavigate();
 
@@ -79,7 +78,6 @@ export default function CartDrawer() {
           url: window.location.origin + '/',
         }),
       });
-      setCartEmailSaved(true);
       checkCredit(cartEmail);
     } catch {
       // silent
@@ -226,35 +224,38 @@ export default function CartDrawer() {
         </div>
 
         {state.items.length > 0 && (
-          <div className="border-t border-soft-peach/50 px-5 py-4">
-            <div className="flex items-center justify-between mb-2">
+          <div className="border-t border-soft-peach/50 px-5 py-4 space-y-3">
+            {/* Totals */}
+            <div className="flex items-center justify-between">
               <span className="font-body text-earth text-[15px]">Subtotal</span>
-              <span className="font-display font-semibold text-deep-brown text-lg">
-                ฿{subtotal}
-              </span>
+              <span className="font-display font-semibold text-deep-brown text-lg">฿{subtotal}</span>
             </div>
             {creditBaht > 0 && (
-              <div className="flex items-center justify-between mb-2 bg-accent-green/10 border border-accent-green/25 rounded-lg px-3 py-2">
-                <span className="font-body font-medium text-[13px] text-accent-green">🎁 Box-return credit</span>
-                <span className="font-body font-semibold text-[13px] text-accent-green">−฿{creditBaht} at checkout</span>
+              <div className="flex items-center justify-between text-accent-green">
+                <span className="font-body font-medium text-[13px]">Box-return credit</span>
+                <span className="font-body font-semibold text-[13px]">−฿{creditBaht}</span>
               </div>
             )}
-            {state.items.some(i => i.isSubscription) && (
-              <p className="font-body font-medium text-[13px] text-rust mb-2">
-                Subscription — billed {state.items.find(i => i.isSubscription)?.interval}
-              </p>
-            )}
-            {hasMixedCart && (
-              <p className="font-body font-medium text-[13px] text-rust mb-2">
-                Your cart has both one-time and subscription items — checkout happens in two steps, starting with the one-time items.
-              </p>
-            )}
-            <p className="font-body font-medium text-[12px] text-earth/60 mb-1">
-              {subtotal >= 500 ? '🎉 Free shipping unlocked!' : `฿100 shipping · add ฿${(500 - subtotal).toLocaleString()} for free shipping`}
-            </p>
-            <p className="font-body font-medium text-[12px] text-earth/60 mb-3.5">
-              Secure checkout on Stripe
-            </p>
+
+            {/* Fine print — kept to a few quiet lines */}
+            <div className="font-body text-[12px] text-earth/60 leading-relaxed">
+              <p>{subtotal >= 500 ? 'Free shipping included.' : '+฿100 chilled shipping · free over ฿500'}</p>
+              {state.items.some((i) => i.isSubscription) && (
+                <p>Subscription billed {state.items.find((i) => i.isSubscription)?.interval}.</p>
+              )}
+              {hasMixedCart && <p>One-time &amp; subscription items check out in two quick steps.</p>}
+            </div>
+
+            {/* Email — one clean line (receipt + box-return credit) */}
+            <input
+              type="email"
+              value={cartEmail}
+              onChange={(e) => setCartEmail(e.target.value)}
+              onBlur={() => { checkCredit(cartEmail); handleSaveCartEmail(); }}
+              placeholder="Email — for your receipt & rewards"
+              aria-label="Email for receipt and rewards"
+              className="w-full bg-cream border border-soft-peach rounded-full px-4 py-2.5 font-body text-[13px] text-deep-brown placeholder:text-earth/40 focus:outline-none focus:ring-2 focus:ring-rust/30"
+            />
 
             <button
               onClick={handleCheckout}
@@ -265,62 +266,26 @@ export default function CartDrawer() {
               {isCheckingOut ? (
                 <>
                   <span className="w-5 h-5 border-2 border-cream/30 border-t-cream rounded-full animate-spin" />
-                  <span>Redirecting to Stripe…</span>
+                  <span>Redirecting…</span>
                 </>
               ) : (
                 <>
                   <LockIcon />
-                  Checkout with Stripe
+                  Checkout
                 </>
               )}
             </button>
 
             {checkoutError && (
-              <p className="mt-3 font-body text-[13px] text-center text-rust">
-                {checkoutError}
-              </p>
+              <p className="font-body text-[13px] text-center text-rust">{checkoutError}</p>
             )}
-
-            {/* Abandoned cart email capture */}
-            {state.items.length > 0 && !cartEmailSaved && (
-              <div className="mt-3 pt-3 border-t border-soft-peach/50">
-                <p className="font-body text-[12px] text-earth mb-2">Enter your email to save this cart:</p>
-                <div className="flex gap-2">
-                  <input
-                    type="email"
-                    value={cartEmail}
-                    onChange={(e) => setCartEmail(e.target.value)}
-                    onBlur={(e) => checkCredit(e.target.value)}
-                    placeholder="your@email.com"
-                    className="flex-1 bg-cream border border-soft-peach rounded-full px-4 py-2 font-body text-[13px] text-deep-brown placeholder:text-earth/40 focus:outline-none focus:ring-2 focus:ring-rust/30"
-                  />
-                  <button
-                    onClick={handleSaveCartEmail}
-                    className="bg-deep-brown text-cream font-body text-[12px] px-4 py-2 rounded-full hover:bg-rust transition-colors"
-                  >
-                    Save
-                  </button>
-                </div>
-              </div>
-            )}
-            {cartEmailSaved && (
-              <p className="mt-3 font-body text-[12px] text-center text-accent-green">
-                Cart saved! We will remind you if you do not checkout.
-              </p>
-            )}
-
-            <div className="flex items-center gap-3 my-3">
-              <div className="flex-1 h-px bg-earth/10" />
-              <span className="font-body font-medium text-[12px] text-earth/40">or</span>
-              <div className="flex-1 h-px bg-earth/10" />
-            </div>
 
             <button
               onClick={closeCart}
               data-testid="cart-continue"
-              className="w-full text-center font-body font-medium text-[14px] text-rust hover:underline transition-all"
+              className="w-full text-center font-body font-medium text-[13px] text-earth/60 hover:text-rust transition-colors"
             >
-              Continue Shopping
+              Continue shopping
             </button>
           </div>
         )}
