@@ -174,7 +174,7 @@ export default function ProductDetail() {
           {/* Left: Image Gallery */}
           <div ref={heroRef}>
             {/* Main Media */}
-            <div className="rounded-[20px] overflow-hidden bg-cream mb-4 h-[400px] md:h-[500px] flex items-center justify-center">
+            <div className="rounded-[20px] overflow-hidden bg-cream mb-4 h-[400px] md:h-[500px] flex items-center justify-center group cursor-zoom-in">
               {video && activeImage === images.length ? (
                 <video
                   src={video}
@@ -189,7 +189,7 @@ export default function ProductDetail() {
                 <img
                   src={images[activeImage] ?? images[0]}
                   alt={product.name}
-                  className="max-h-full max-w-full object-contain"
+                  className="max-h-full max-w-full object-contain transition-transform duration-500 ease-out group-hover:scale-110"
                 />
               )}
             </div>
@@ -235,12 +235,13 @@ export default function ProductDetail() {
 
             {/* Badge — chilled products get the blue treatment, shelf-stable green */}
             {product.badge && (() => {
+              const badgeText = product.badge.replace(/\p{Emoji_Presentation}|\p{Extended_Pictographic}/gu, '').trim();
               const isChilled = /chill|cold|fridge|refriger/i.test(product.badge);
               return (
                 <span className={`inline-flex items-center border font-body font-semibold text-[11px] uppercase tracking-[0.06em] px-3 py-1.5 rounded-full mb-4 ${
                   isChilled ? 'bg-sky-50 text-sky-700 border-sky-200/80' : 'bg-accent-green/10 text-accent-green border-accent-green/30'
                 }`}>
-                  {product.badge}
+                  {badgeText}
                 </span>
               );
             })()}
@@ -331,9 +332,17 @@ export default function ProductDetail() {
                           .sort((a, b) => (a.unitAmount ?? 0) - (b.unitAmount ?? 0))[0];
                         if (cheapest) setSelectedPriceId(cheapest.priceId);
                       }}
-                      className="font-body text-[13px] font-medium text-rust hover:text-deep-brown hover:underline mt-2.5 text-left"
+                      className="mt-3 w-full flex items-center justify-between gap-3 rounded-xl border-2 border-amber bg-amber/10 px-4 py-3.5 text-left hover:bg-amber/20 transition-colors group"
                     >
-                      Subscribe &amp; save up to {maxSavings}%
+                      <div>
+                        <p className="font-display font-bold text-deep-brown text-[15px] leading-tight">
+                          Subscribe &amp; Save {maxSavings}%
+                        </p>
+                        <p className="font-body text-[12px] text-earth/70 mt-0.5">Auto-delivery · pause or cancel anytime</p>
+                      </div>
+                      <span className="flex-shrink-0 bg-deep-brown text-cream font-body font-semibold text-[12px] uppercase tracking-[0.06em] px-3.5 py-1.5 rounded-full group-hover:bg-rust transition-colors">
+                        Switch →
+                      </span>
                     </button>
                   )
                 )}

@@ -20,7 +20,7 @@ export async function startCheckout(items: CartItem[], email?: string): Promise<
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
-      items: items.map((i) => ({ priceId: i.priceId ?? i.id, quantity: i.quantity })),
+      items: items.map((i) => ({ priceId: i.priceId ?? i.id, quantity: i.quantity, productId: i.productId })),
       giftInfo: getGiftInfo(items),
       email: email?.trim() || undefined,
     }),

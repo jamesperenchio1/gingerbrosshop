@@ -9,6 +9,8 @@ interface CheckoutLine {
   priceId?: string;
   id?: string;
   quantity: number;
+  // The app-level product ID (e.g. "unpasteurized") used to determine shipping.
+  productId?: string;
 }
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
@@ -102,22 +104,21 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     metadata.giftMessage = giftInfo.message ?? '';
   }
 
-  // Flat ฿100 shipping, waived for orders of ฿500+. Stripe Checkout collects it
-  // natively via shipping_options (one-time/payment mode only — subscription
-  // mode does not support shipping_options).
+  // Shipping: unpasteurized always gets chilled delivery at ฿100 (no free tier).
+  // Pasteurized/regular: free over ฿500, otherwise ฿100 standard.
   const FREE_SHIPPING_THRESHOLD = 50000; // ฿500 in satang
   const SHIPPING_FLAT = 10000; // ฿100 in satang
-  const shippingFree = subtotalMinor >= FREE_SHIPPING_THRESHOLD;
+  const hasUnpasteurized = items.some(i => i.productId === 'unpasteurized');
+  const shippingFree = !hasUnpasteurized && subtotalMinor >= FREE_SHIPPING_THRESHOLD;
   const shippingOptions: Stripe.Checkout.SessionCreateParams.ShippingOption[] = [
     {
       shipping_rate_data: {
         type: 'fixed_amount',
         fixed_amount: { amount: shippingFree ? 0 : SHIPPING_FLAT, currency: 'thb' },
-        display_name: shippingFree ? 'Free shipping' : 'Standard shipping',
-        delivery_estimate: {
-          minimum: { unit: 'business_day', value: 2 },
-          maximum: { unit: 'business_day', value: 4 },
-        },
+        display_name: hasUnpasteurized ? 'Chilled Delivery' : shippingFree ? 'Free shipping' : 'Standard shipping',
+        delivery_estimate: hasUnpasteurized
+          ? { minimum: { unit: 'business_day', value: 1 }, maximum: { unit: 'business_day', value: 2 } }
+          : { minimum: { unit: 'business_day', value: 2 }, maximum: { unit: 'business_day', value: 4 } },
       },
     },
   ];

@@ -10,6 +10,7 @@ export default function CartDrawer() {
   const [mounted, setMounted] = useState(state.isOpen);
   const [isCheckingOut, setIsCheckingOut] = useState(false);
   const [checkoutError, setCheckoutError] = useState('');
+  const [prefetchedUrl, setPrefetchedUrl] = useState<string | null>(null);
   const navigate = useNavigate();
 
   // Mount immediately when opening (state adjustment during render, per React
@@ -49,6 +50,25 @@ export default function CartDrawer() {
   }, [state.isOpen, closeCart]);
 
   const hasMixedCart = state.items.some(i => i.isSubscription) && state.items.some(i => !i.isSubscription);
+  const hasUnpasteurized = state.items.some(i => i.productId === 'unpasteurized');
+
+  // Pre-create the Stripe checkout session in the background as soon as the cart
+  // opens, so clicking "Checkout" redirects instantly instead of waiting for the API.
+  const cartKey = state.items.map(i => `${i.id}:${i.quantity}`).join('|');
+  useEffect(() => {
+    const isMixed = state.items.some(i => i.isSubscription) && state.items.some(i => !i.isSubscription);
+    if (!state.isOpen || state.items.length === 0 || isMixed) {
+      setPrefetchedUrl(null);
+      return;
+    }
+    setPrefetchedUrl(null);
+    let cancelled = false;
+    startCheckout(state.items).then(url => {
+      if (!cancelled) setPrefetchedUrl(url);
+    }).catch(() => { /* retry on click */ });
+    return () => { cancelled = true; };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [state.isOpen, cartKey]);
 
   const handleCheckout = async () => {
     if (state.items.length === 0) return;
@@ -64,7 +84,7 @@ export default function CartDrawer() {
         window.location.href = await startCheckout(oneTimeItems);
         return;
       }
-      window.location.href = await startCheckout(state.items);
+      window.location.href = prefetchedUrl ?? await startCheckout(state.items);
     } catch (err) {
       setCheckoutError(err instanceof Error ? err.message : 'Something went wrong. Please try again.');
       setIsCheckingOut(false);
@@ -199,7 +219,7 @@ export default function CartDrawer() {
 
             {/* Fine print — kept to a few quiet lines */}
             <div className="font-body text-[12px] text-earth/60 leading-relaxed">
-              <p>{subtotal >= 500 ? 'Free shipping included.' : '+฿100 shipping · free over ฿500'}</p>
+              <p>{hasUnpasteurized ? '+฿100 chilled delivery.' : subtotal >= 500 ? 'Free shipping included.' : '+฿100 shipping · free over ฿500'}</p>
               {state.items.some((i) => i.isSubscription) && (
                 <p>Subscription billed {state.items.find((i) => i.isSubscription)?.interval}.</p>
               )}

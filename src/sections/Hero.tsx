@@ -2,7 +2,7 @@ import { useLayoutEffect, useRef } from 'react';
 import gsap from 'gsap';
 import NoiseCanvas from '@/components/NoiseCanvas';
 import BubbleCanvas from '@/components/BubbleCanvas';
-import { ChevronDownIcon, LeafIcon } from '@/components/Icons';
+import { ChevronDownIcon } from '@/components/Icons';
 
 export default function Hero() {
   const badgeRef = useRef<HTMLDivElement>(null);
@@ -87,16 +87,13 @@ export default function Hero() {
           </div>
 
           {/* Trust row */}
-          <div ref={trustRef} className="flex flex-wrap items-center justify-center md:justify-start gap-x-5 gap-y-2 mt-7">
-            <span className="inline-flex items-center gap-1.5 font-body font-medium text-[13px] text-deep-brown/80">
-              <LeafIcon className="w-4 h-4" /> 4 ingredients
-            </span>
-            <span className="font-body font-medium text-[13px] text-deep-brown/80">
-              Low in sugar
-            </span>
-            <span className="font-body font-medium text-[13px] text-deep-brown/80">
-              7-day ferment
-            </span>
+          <div ref={trustRef} className="flex items-center justify-center md:justify-start gap-x-2 mt-7">
+            {['4 ingredients', 'Low in sugar', '7-day ferment'].map((label, i, arr) => (
+              <span key={label} className="flex items-center gap-x-2 font-body font-medium text-[13px] text-deep-brown/80">
+                {label}
+                {i < arr.length - 1 && <span aria-hidden="true">·</span>}
+              </span>
+            ))}
           </div>
         </div>
 
