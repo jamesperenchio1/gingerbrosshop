@@ -33,3 +33,4 @@ playwright/.cache/
 .superpowers/
 .env
 .env.local
+.env*

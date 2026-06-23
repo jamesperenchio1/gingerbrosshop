@@ -4,6 +4,9 @@ module.exports = {
   content: ['./index.html', './src/**/*.{js,ts,jsx,tsx}'],
   theme: {
     extend: {
+      screens: {
+        xs: '400px',
+      },
       colors: {
         amber: '#D4A34B',
         'warm-gold': '#C9963A',

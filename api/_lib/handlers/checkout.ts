@@ -49,6 +49,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   const lineItems: Stripe.Checkout.SessionCreateParams.LineItem[] = [];
   let recurringCount = 0;
   let subtotalMinor = 0;
+  let subInterval: { interval: string; intervalCount: number } | null = null;
   for (const item of items) {
     const priceId = item.priceId ?? item.id;
     if (!priceId) {
@@ -68,10 +69,33 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       return;
     }
 
-    if (price.recurring) recurringCount++;
+    if (price.recurring) {
+      recurringCount++;
+      if (!subInterval) {
+        subInterval = { interval: price.recurring.interval, intervalCount: price.recurring.interval_count };
+      }
+    }
     const qty = Math.max(1, Math.min(24, Math.floor(Number(item.quantity) || 1)));
     subtotalMinor += (price.unit_amount ?? 0) * qty;
     lineItems.push({ price: price.id, quantity: qty });
+  }
+
+  // Stripe Checkout subscription mode doesn't support shipping_options, so we
+  // inject chilled delivery as a matching recurring line item instead.
+  // Price IDs are the live "Chilled Delivery" prices created on the Stripe account.
+  const CHILLED_DELIVERY_PRICE: Record<string, string> = {
+    'week_1':  'price_1TlT9f4xTvnGlHCDrZQrZ4kI',
+    'week_2':  'price_1TlT9h4xTvnGlHCDBXJjknzd',
+    'month_1': 'price_1TlT9j4xTvnGlHCDwrgy2MEu',
+  };
+  const hasUnpasteurizedSub = recurringCount > 0 && items.some(i => i.productId === 'unpasteurized');
+  if (hasUnpasteurizedSub && subInterval) {
+    const key = `${subInterval.interval}_${subInterval.intervalCount}`;
+    const deliveryPriceId = CHILLED_DELIVERY_PRICE[key];
+    if (deliveryPriceId) {
+      lineItems.push({ price: deliveryPriceId, quantity: 1 });
+      recurringCount++; // delivery is recurring — keep hasOneTime accurate
+    }
   }
 
   const hasSubscription = recurringCount > 0;
@@ -158,10 +182,11 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       // A credited order uses `discounts`; otherwise let shoppers type a promo
       // code. The two are mutually exclusive in Stripe Checkout.
       ...(discounts ? { discounts } : { allow_promotion_codes: true }),
-      // One-time orders: collect shipping, always create a Customer (so buyers
-      // can use the self-service portal), and generate a hosted invoice + PDF
-      // receipt. None of these are valid in subscription mode, where Stripe
-      // already creates a customer and recurring invoices automatically.
+      // One-time orders: collect shipping via Stripe's shipping_options (not
+      // supported in subscription mode — see chilled delivery line item above),
+      // always create a Customer for the self-service portal, and generate a
+      // hosted invoice + PDF receipt. Stripe handles all three automatically for
+      // recurring payments.
       ...(mode === 'payment'
         ? {
             shipping_options: shippingOptions,

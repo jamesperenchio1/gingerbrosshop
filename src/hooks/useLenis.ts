@@ -4,8 +4,6 @@ import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { shouldReduceMotion } from '@/lib/utils';
 
-gsap.registerPlugin(ScrollTrigger);
-
 export function useLenis() {
   const lenisRef = useRef<Lenis | null>(null);
 

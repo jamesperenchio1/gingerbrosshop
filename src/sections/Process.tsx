@@ -1,15 +1,12 @@
 import { useRef, useEffect } from 'react';
 import gsap from 'gsap';
-import { ScrollTrigger } from 'gsap/ScrollTrigger';
-
-gsap.registerPlugin(ScrollTrigger);
 
 const STEPS = [
   {
     number: '01',
     days: 'Day 1-2',
     title: 'Ginger & Sugar',
-    description: 'Fresh ginger is grated and combined with raw sugar and filtered water. The ginger bug — our live culture starter — is added to begin the fermentation.',
+    description: 'Fresh ginger is grated and combined with raw sugar and filtered water. The ginger bug (our live culture starter) is added to begin the fermentation.',
   },
   {
     number: '02',
@@ -27,7 +24,7 @@ const STEPS = [
     number: '04',
     days: 'Ready',
     title: 'Enjoy Cold',
-    description: 'Chill thoroughly before opening. Expect a lively pop — this is living, effervescent ginger fizz at its finest.',
+    description: 'Chill thoroughly before opening. Expect a lively pop. This is living, effervescent ginger fizz at its finest.',
   },
 ];
 
@@ -55,10 +52,10 @@ export default function Process() {
   }, []);
 
   return (
-    <section id="process" ref={sectionRef} className="bg-amber py-[120px] md:py-[80px] max-md:py-[60px]">
+    <section id="process" ref={sectionRef} className="bg-amber py-[60px] md:py-[80px]">
       <div className="max-w-[1000px] mx-auto px-6">
         {/* Header */}
-        <div ref={headerRef} className="text-center mb-16">
+        <div ref={headerRef} className="text-center mb-10 md:mb-16">
           <span className="font-body font-medium text-[13px] uppercase tracking-[0.08em] text-cream mb-3 block">
             THE PROCESS
           </span>
@@ -72,7 +69,7 @@ export default function Process() {
           {STEPS.map((step) => (
             <div
               key={step.number}
-              className="bg-cream rounded-[20px] p-8"
+              className="bg-cream rounded-[20px] p-5 sm:p-8"
             >
               {/* Step Number */}
               <span className="font-display font-bold text-deep-brown/30 text-[4rem] leading-none block">

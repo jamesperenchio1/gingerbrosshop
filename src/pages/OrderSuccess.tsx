@@ -52,39 +52,41 @@ function OrderTimeline({ shipped }: { shipped: boolean }) {
   // The first not-yet-done step is the "current" one.
   const currentIdx = steps.findIndex((s) => !s.done);
   return (
-    <div className="flex items-center justify-between mb-6">
-      {steps.map((step, i) => {
-        const active = step.done || i === currentIdx;
-        return (
-          <div key={step.label} className="flex-1 flex flex-col items-center relative">
-            {i > 0 && (
-              <span
-                className={`absolute top-4 right-1/2 w-full h-0.5 ${
-                  step.done ? 'bg-accent-green' : 'bg-soft-peach'
+    <div className="overflow-x-auto -mx-2 px-2 mb-6">
+      <div className="flex items-start justify-between min-w-[280px]">
+        {steps.map((step, i) => {
+          const active = step.done || i === currentIdx;
+          return (
+            <div key={step.label} className="flex-1 flex flex-col items-center relative">
+              {i > 0 && (
+                <span
+                  className={`absolute top-4 right-1/2 w-full h-0.5 ${
+                    step.done ? 'bg-accent-green' : 'bg-soft-peach'
+                  }`}
+                />
+              )}
+              <div
+                className={`relative z-10 w-8 h-8 rounded-full flex items-center justify-center ${
+                  step.done
+                    ? 'bg-accent-green text-white'
+                    : i === currentIdx
+                    ? 'bg-amber text-deep-brown'
+                    : 'bg-soft-peach/60 text-earth/50'
                 }`}
-              />
-            )}
-            <div
-              className={`relative z-10 w-8 h-8 rounded-full flex items-center justify-center ${
-                step.done
-                  ? 'bg-accent-green text-white'
-                  : i === currentIdx
-                  ? 'bg-amber text-deep-brown'
-                  : 'bg-soft-peach/60 text-earth/50'
-              }`}
-            >
-              <step.icon className="w-4 h-4" />
+              >
+                <step.icon className="w-4 h-4" />
+              </div>
+              <span
+                className={`mt-2 font-body text-[11px] sm:text-[12px] text-center ${
+                  active ? 'text-deep-brown font-medium' : 'text-earth/50'
+                }`}
+              >
+                {step.label}
+              </span>
             </div>
-            <span
-              className={`mt-2 font-body text-[11px] sm:text-[12px] text-center ${
-                active ? 'text-deep-brown font-medium' : 'text-earth/50'
-              }`}
-            >
-              {step.label}
-            </span>
-          </div>
-        );
-      })}
+          );
+        })}
+      </div>
     </div>
   );
 }

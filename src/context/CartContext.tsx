@@ -1,4 +1,4 @@
-import { createContext, useContext, useReducer, useCallback, useEffect, type ReactNode } from 'react';
+import { createContext, useContext, useReducer, useCallback, useMemo, useEffect, type ReactNode } from 'react';
 import type { CartItem, CartState, CartAction } from '@/types/cart';
 
 
@@ -163,8 +163,14 @@ export function CartProvider({ children }: { children: ReactNode }) {
     dispatch({ type: 'CLEAR_CART' });
   }, []);
 
-  const totalItems = state.items.reduce((sum, item) => sum + item.quantity, 0);
-  const subtotal = state.items.reduce((sum, item) => sum + item.price * item.quantity, 0);
+  const totalItems = useMemo(
+    () => state.items.reduce((sum, item) => sum + item.quantity, 0),
+    [state.items],
+  );
+  const subtotal = useMemo(
+    () => state.items.reduce((sum, item) => sum + item.price * item.quantity, 0),
+    [state.items],
+  );
   const getItemQuantity = useCallback((id: string) => {
     return state.items.find(item => item.id === id)?.quantity ?? 0;
   }, [state.items]);

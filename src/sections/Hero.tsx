@@ -68,48 +68,47 @@ export default function Hero() {
             ref={subRef}
             className="font-body font-medium text-[15px] text-earth max-w-[460px] mb-7 leading-relaxed"
           >
-            Raw and living, or pasteurized and shelf-stable. Two brews, one bold ginger kick — 7-day naturally fermented and now low in sugar.
+            Raw and living, or pasteurized and shelf-stable. Two brews, one bold ginger kick. 7-day naturally fermented and low in sugar.
           </p>
 
-          <div ref={ctaRef} className="flex flex-wrap items-center justify-center md:justify-start gap-4">
+          <div ref={ctaRef} className="flex flex-col xs:flex-row flex-wrap items-stretch xs:items-center justify-center md:justify-start gap-3">
             <button
               onClick={handleShopClick}
-              className="bg-deep-brown text-cream font-body font-medium text-sm uppercase tracking-[0.08em] px-9 py-3.5 rounded-full hover:bg-rust hover:scale-[1.02] active:scale-[0.98] transition-all duration-200"
+              className="bg-deep-brown text-cream font-body font-medium text-sm uppercase tracking-[0.08em] px-9 py-3.5 rounded-full hover:bg-rust hover:scale-[1.02] active:scale-[0.98] transition-all duration-200 text-center"
             >
               Shop the Brews
             </button>
             <button
               onClick={handleStoryClick}
-              className="bg-transparent text-deep-brown font-body font-medium text-sm uppercase tracking-[0.08em] px-9 py-3.5 rounded-full border-2 border-deep-brown hover:bg-deep-brown hover:text-cream active:scale-[0.98] transition-all duration-200"
+              className="bg-transparent text-deep-brown font-body font-medium text-sm uppercase tracking-[0.08em] px-9 py-3.5 rounded-full border-2 border-deep-brown hover:bg-deep-brown hover:text-cream active:scale-[0.98] transition-all duration-200 text-center"
             >
               Our Story
             </button>
           </div>
 
           {/* Trust row */}
-          <div ref={trustRef} className="flex items-center justify-center md:justify-start gap-x-2 mt-7">
+          <div ref={trustRef} className="flex items-center justify-center md:justify-start gap-x-3 mt-7">
             {['4 ingredients', 'Low in sugar', '7-day ferment'].map((label, i, arr) => (
-              <span key={label} className="flex items-center gap-x-2 font-body font-medium text-[13px] text-deep-brown/80">
+              <span key={label} className="flex items-center gap-x-3 font-body font-semibold text-[15px] text-deep-brown/90">
                 {label}
-                {i < arr.length - 1 && <span aria-hidden="true">·</span>}
+                {i < arr.length - 1 && <span aria-hidden="true" className="text-[20px] leading-none">·</span>}
               </span>
             ))}
           </div>
         </div>
 
-        {/* Right: the product, front and centre */}
+        {/* Right: product shot in a clean card */}
         <div ref={imageRef} className="flex justify-center md:justify-end order-1 md:order-2">
-          <div className="relative">
-            <div className="absolute -inset-4 bg-cream/30 rounded-[36px] blur-xl" aria-hidden="true" />
+          <div className="relative rounded-[28px] overflow-hidden shadow-[0_28px_72px_rgba(80,45,8,0.32)] ring-1 ring-black/5">
             <img
-              src="/images/product-unpasteurized-2.jpg"
+              src="/images/product-ginger-fizz.png"
               alt="GingerBros Unpasteurized Ginger Fizz bottle"
-              width={400}
-              height={500}
+              width={420}
+              height={560}
               loading="eager"
               fetchPriority="high"
               decoding="async"
-              className="relative w-[230px] sm:w-[280px] md:w-[360px] aspect-[4/5] object-cover rounded-[28px] shadow-[0_24px_60px_rgba(61,36,16,0.28)] border-4 border-cream/70"
+              className="w-[220px] sm:w-[270px] md:w-[340px] block"
             />
           </div>
         </div>

@@ -103,7 +103,8 @@ export default function Navigation() {
 
           {/* Mobile hamburger */}
           <button
-            className="md:hidden text-deep-brown"
+            className="md:hidden text-deep-brown p-2 -mr-2"
+            aria-label={mobileOpen ? 'Close menu' : 'Open menu'}
             onClick={() => setMobileOpen(!mobileOpen)}
           >
             {mobileOpen ? <CloseIcon /> : <MenuIcon />}
@@ -114,18 +115,17 @@ export default function Navigation() {
       {/* Mobile menu */}
       {mobileOpen && (
         <div className="md:hidden absolute top-full left-0 right-0 bg-warm-white/95 backdrop-blur-xl border-t border-soft-peach/50 shadow-lg">
-          <div className="flex flex-col p-6 gap-4">
+          <div className="flex flex-col px-6 py-2">
             {navLinks.map((link) => (
               <a
                 key={link.href}
                 href={link.href}
                 onClick={(e) => handleNavClick(e, link.href)}
-                className="font-body font-medium text-sm uppercase tracking-[0.08em] text-earth hover:text-deep-brown transition-colors"
+                className="flex items-center py-3 font-body font-medium text-sm uppercase tracking-[0.08em] text-earth hover:text-deep-brown transition-colors border-b border-soft-peach/30 last:border-0"
               >
                 {link.label}
               </a>
             ))}
-
           </div>
         </div>
       )}

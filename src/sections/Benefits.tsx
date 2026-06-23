@@ -1,25 +1,22 @@
 import { useRef, useEffect } from 'react';
 import gsap from 'gsap';
-import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { GutHealthIcon, LeafIcon, LightningIcon, SnowflakeIcon } from '@/components/Icons';
-
-gsap.registerPlugin(ScrollTrigger);
 
 const BENEFITS = [
   {
     icon: GutHealthIcon,
-    title: 'Gut Health',
-    description: "Ginger contains natural prebiotic compounds, and because we never pasteurize, our brew also delivers live fermentation cultures — prebiotic and probiotic in every bottle.",
+    title: 'Prebiotic Power',
+    description: 'We add acacia tree fibre, one of the most well-researched prebiotic sources available, to actively feed your gut bacteria and keep your microbiome thriving.',
   },
   {
     icon: LeafIcon,
-    title: 'All Natural',
-    description: 'Just four ingredients: ginger, water, sugar, and live cultures. No additives, no preservatives, no artificial anything. Brewed the way it should be.',
+    title: 'Clean Ingredients',
+    description: 'Core ingredients you can count on one hand: fresh ginger, water, sugar, and live cultures. No artificial additives, no preservatives, no shortcuts.',
   },
   {
     icon: LightningIcon,
-    title: 'Vitamin B Rich',
-    description: 'The slow natural ferment produces B vitamins that support energy metabolism — a gentle, real-food lift with no caffeine and no crash.',
+    title: 'Steady Energy',
+    description: 'When your gut is balanced, your energy follows. No caffeine, no spike, no crash. Just a real-food lift that comes from the inside out.',
   },
   {
     icon: SnowflakeIcon,
@@ -77,11 +74,11 @@ export default function Benefits() {
     <section
       id="benefits"
       ref={sectionRef}
-      className="bg-warm-white py-[120px] md:py-[80px] max-md:py-[60px]"
+      className="bg-warm-white py-[60px] md:py-[80px]"
     >
       <div className="max-w-[1100px] mx-auto px-6">
         {/* Header */}
-        <div ref={headerRef} className="text-center mb-16">
+        <div ref={headerRef} className="text-center mb-10 md:mb-16">
           <span className="font-body font-medium text-[13px] uppercase tracking-[0.08em] text-rust mb-3 block">
             WHY GINGER FIZZ
           </span>
@@ -134,6 +131,32 @@ export default function Benefits() {
               <p className="font-body text-earth text-[13px] leading-snug">{fact.label}</p>
             </div>
           ))}
+        </div>
+
+        {/* WHY prebiotics deep-dive */}
+        <div className="mt-16 bg-cream rounded-[24px] px-6 py-10 md:px-12 md:py-12">
+          <span className="block font-body font-medium text-[13px] uppercase tracking-[0.08em] text-rust mb-3">
+            WHY PREBIOTICS
+          </span>
+          <h3 className="font-display font-semibold text-deep-brown text-[clamp(1.25rem,2.5vw,1.75rem)] mb-3">
+            Feed the bacteria. Everything else follows.
+          </h3>
+          <p className="font-body text-earth text-[15px] leading-relaxed mb-8 max-w-[600px]">
+            Probiotics add new bacteria. Prebiotics feed the ones already doing the work. We use acacia tree fibre because it's one of the most extensively studied, gut-tolerated prebiotics available. It survives digestion intact and delivers where it counts.
+          </p>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            {[
+              { stat: 'Digestion', detail: 'Acacia fibre slows glucose absorption and smooths digestion, cutting bloating and irregular bowel patterns.' },
+              { stat: 'Immunity', detail: 'Over 70% of your immune cells live in the gut. A well-fed microbiome means a better-armed immune system.' },
+              { stat: 'Energy', detail: 'Short-chain fatty acids produced by prebiotic fermentation fuel your gut lining and support steady, caffeine-free energy.' },
+              { stat: 'Mood', detail: 'The gut-brain axis is real. Your microbiome produces neurotransmitters, and keeping it healthy directly affects how you feel.' },
+            ].map((item) => (
+              <div key={item.stat} className="bg-warm-white rounded-2xl p-5">
+                <p className="font-display font-bold text-rust text-[15px] mb-1.5">{item.stat}</p>
+                <p className="font-body text-earth text-[13px] leading-relaxed">{item.detail}</p>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
     </section>

@@ -1,37 +1,38 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router';
 import gsap from 'gsap';
-import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { useCart } from '@/context/CartContext';
-import { PlusIcon, MinusIcon, SnowflakeIcon, LeafIcon } from '@/components/Icons';
+import { PlusIcon, MinusIcon, SnowflakeIcon } from '@/components/Icons';
 import { useCatalog, defaultPrice, cheapestSubscription, maxSubscriptionSavings, intervalLabel, type CatalogProduct } from '@/lib/catalog';
-
-gsap.registerPlugin(ScrollTrigger);
 
 function ProductCard({ product }: { product: CatalogProduct }) {
   const navigate = useNavigate();
   const { addItem } = useCart();
   const [quantity, setQuantity] = useState(1);
   const [added, setAdded] = useState(false);
+  const addedTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => {
+    return () => { if (addedTimerRef.current) clearTimeout(addedTimerRef.current); };
+  }, []);
 
   const price = defaultPrice(product);
   const subPrice = cheapestSubscription(product);
   const subSavings = maxSubscriptionSavings(product);
   const detailLink = `/product/${product.id}`;
-  // Chilled products get the snowflake/blue treatment; shelf-stable ones a leaf.
+  // Chilled products get the snowflake/blue treatment; shelf-stable gets no icon.
   const isChilled = /chill|cold|fridge|refriger/i.test(product.badge ?? '');
-  const BadgeIcon = isChilled ? SnowflakeIcon : LeafIcon;
   const badgeClass = isChilled
     ? 'bg-sky-50 text-sky-700 border-sky-200/80'
     : 'bg-accent-green/10 text-accent-green border-accent-green/30';
   const shortDescription = product.metadata.short_description ?? product.description ?? '';
   const image = product.images[0] ?? '';
 
-  const changeQuantity = (delta: number) => {
+  const changeQuantity = useCallback((delta: number) => {
     setQuantity((prev) => Math.max(1, Math.min(24, prev + delta)));
-  };
+  }, []);
 
-  const handleAddToCart = () => {
+  const handleAddToCart = useCallback(() => {
     if (!price) return;
     addItem({
       id: price.priceId,
@@ -46,24 +47,29 @@ function ProductCard({ product }: { product: CatalogProduct }) {
       badgeColor: product.badgeColor ?? 'bg-sky-500',
     });
     setAdded(true);
-    setTimeout(() => setAdded(false), 800);
-  };
+    if (addedTimerRef.current) clearTimeout(addedTimerRef.current);
+    addedTimerRef.current = setTimeout(() => setAdded(false), 800);
+  }, [price, addItem, product, quantity, image]);
 
   return (
-    <div className="bg-white border border-soft-peach/60 shadow-[0_12px_40px_rgba(61,36,16,0.10)] rounded-[24px] p-8 flex flex-col">
-      {/* Product Image */}
-      <button
-        onClick={() => navigate(detailLink)}
-        className="flex items-center justify-center mb-6 h-[240px] rounded-2xl overflow-hidden bg-warm-white hover:opacity-95 transition-opacity"
-      >
-        <img src={image} alt={product.name} className="h-full w-full object-cover" />
-      </button>
+    <div
+      onClick={() => navigate(detailLink)}
+      className="bg-white border border-soft-peach/60 shadow-[0_12px_40px_rgba(61,36,16,0.10)] rounded-[24px] p-5 sm:p-8 flex flex-col cursor-pointer hover:shadow-[0_20px_56px_rgba(61,36,16,0.16)] transition-shadow duration-300"
+    >
+      {/* Product Image — sits directly on the white card, no inner container */}
+      <div className="flex items-center justify-center mb-6 h-[200px] sm:h-[240px]">
+        <img
+          src={image}
+          alt={product.name}
+          className="max-h-full w-auto object-contain"
+        />
+      </div>
 
       {/* Badge */}
       {product.badge && (
         <span className={`inline-flex items-center gap-1.5 self-start border font-body font-semibold text-[11px] uppercase tracking-[0.06em] px-3 py-1.5 rounded-full mb-3 ${badgeClass}`}>
-          <BadgeIcon className="w-3.5 h-3.5" />
-          {product.badge}
+          {isChilled && <SnowflakeIcon className="w-3.5 h-3.5" />}
+          {product.badge.replace(/\p{Emoji_Presentation}|\p{Extended_Pictographic}/gu, '').trim()}
         </span>
       )}
 
@@ -88,14 +94,27 @@ function ProductCard({ product }: { product: CatalogProduct }) {
       {/* Subscribe & save nudge */}
       {subPrice && subSavings > 0 && (
         <button
-          onClick={() => navigate(detailLink)}
-          className="self-start inline-flex items-center gap-1.5 mb-4 bg-accent-green/10 text-accent-green border border-accent-green/25 font-body font-semibold text-[12px] px-3 py-1.5 rounded-full hover:bg-accent-green/15 transition-colors"
+          onClick={() => navigate(`${detailLink}?plan=weekly`)}
+          className="w-full flex items-center justify-between gap-3 mb-4 rounded-xl border-2 border-amber bg-amber/10 px-4 py-3 text-left hover:bg-amber/20 transition-colors group"
         >
-          Subscribe from ฿{subPrice.unitAmount}/{intervalLabel(subPrice.recurring).replace(/^per |^every /, '')} — save up to {subSavings}%
+          <div>
+            <p className="font-display font-bold text-deep-brown text-[14px] leading-tight">
+              Subscribe &amp; Save {subSavings}%
+            </p>
+            <p className="font-body text-[11px] text-earth/70 mt-0.5">
+              From ฿{subPrice.unitAmount}/{intervalLabel(subPrice.recurring).replace(/^per |^every /, '')} · cancel anytime
+            </p>
+          </div>
+          <span className="flex-shrink-0 bg-deep-brown text-cream font-body font-semibold text-[11px] uppercase tracking-[0.05em] px-3 py-1.5 rounded-full group-hover:bg-rust transition-colors">
+            See plan →
+          </span>
         </button>
       )}
 
-      <div className="flex items-center justify-center gap-4 mb-4 border-2 border-soft-peach rounded-full py-2 px-4 self-start">
+      <div
+        onClick={(e) => e.stopPropagation()}
+        className="flex items-center justify-center gap-4 mb-4 border-2 border-soft-peach rounded-full py-2 px-4 self-start"
+      >
         <button
           onClick={() => changeQuantity(-1)}
           className="text-earth hover:text-deep-brown transition-colors"
@@ -114,7 +133,7 @@ function ProductCard({ product }: { product: CatalogProduct }) {
       </div>
 
       <button
-        onClick={handleAddToCart}
+        onClick={(e) => { e.stopPropagation(); handleAddToCart(); }}
         data-testid="add-to-cart"
         disabled={!price}
         className={`w-full font-body font-medium text-sm uppercase tracking-[0.08em] py-3.5 rounded-full transition-all duration-200 ${
@@ -131,10 +150,10 @@ function ProductCard({ product }: { product: CatalogProduct }) {
 
       {/* View Details Link */}
       <button
-        onClick={() => navigate(detailLink)}
+        onClick={(e) => e.stopPropagation()}
         className="mt-4 text-center font-body font-medium text-[13px] text-rust hover:text-deep-brown hover:underline transition-all"
       >
-        View Details
+        View Details →
       </button>
     </div>
   );
@@ -177,16 +196,16 @@ export default function Shop() {
       : 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8';
 
   return (
-    <section id="shop" ref={sectionRef} className="bg-warm-white py-[120px] md:py-[80px] max-md:py-[60px]">
+    <section id="shop" ref={sectionRef} className="bg-warm-white py-[60px] md:py-[80px]">
       <div className="max-w-[1100px] mx-auto px-6">
-        <div ref={headerRef} className="text-center mb-16">
+        <div ref={headerRef} className="text-center mb-10 md:mb-16">
           <span className="font-body font-medium text-[13px] uppercase tracking-[0.08em] text-rust mb-3 block">
             OUR BREWS
           </span>
           <h2 className="font-display font-semibold text-deep-brown text-[clamp(1.5rem,3vw,2.5rem)] mb-3">
             Choose Your Brew
           </h2>
-          <p className="font-body text-earth">Raw and living, or pasteurized and shelf-stable — real fermented ginger, your way.</p>
+          <p className="font-body text-earth">Raw and living, or pasteurized and shelf-stable. Real fermented ginger, your way.</p>
         </div>
 
         {loading ? (

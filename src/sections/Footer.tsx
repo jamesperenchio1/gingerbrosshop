@@ -1,9 +1,11 @@
+const CURRENT_YEAR = new Date().getFullYear();
+
 export default function Footer() {
-  const currentYear = new Date().getFullYear();
 
   const links = {
     shop: [
       { label: 'Unpasteurized Ginger Fizz', href: '/product/unpasteurized' },
+      { label: 'Ginger Pop (Shelf Stable)', href: '/product/pasteurized' },
       { label: 'Wholesale', href: '/wholesale' },
     ],
     company: [
@@ -16,28 +18,28 @@ export default function Footer() {
       { label: 'Shipping Info', href: '/shipping' },
       { label: 'FAQ', href: '/faq' },
       { label: 'Track Your Order', href: '/track' },
-      { label: 'Contact Us', href: 'mailto:hello@gingerbrosshop.com' },
+      { label: 'Contact Us', href: 'mailto:gingerbros.brew@gmail.com' },
     ],
   };
 
   const socials = [
     { label: 'Instagram', href: 'https://www.instagram.com/drinkgingerbros' },
     { label: 'TikTok', href: 'https://www.tiktok.com/@gingerbrosbrew' },
-    { label: 'Line', href: 'https://line.me/R/ti/p/@gingerbros' },
+    { label: 'Line', href: 'https://line.me/R/ti/p/@852nqred' },
     { label: 'Shopee', href: 'https://shopee.co.th/gingerbros' },
   ];
 
   return (
     <footer id="footer" className="bg-deep-brown text-cream py-16 md:py-20">
       <div className="max-w-[1100px] mx-auto px-6">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-12 mb-12">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-8 md:gap-12 mb-12">
           {/* Brand */}
           <div className="md:col-span-1">
             <h3 className="font-display font-bold text-[1.5rem] mb-4">GingerBros</h3>
             <p className="font-body text-[14px] text-cream/70 leading-relaxed mb-6">
               Naturally brewed craft ginger fizz from Thailand. 7-day fermentation, real ginger, zero shortcuts.
             </p>
-            <div className="flex gap-4">
+            <div className="flex flex-wrap gap-x-4 gap-y-2">
               {socials.map((social) => (
                 <a
                   key={social.label}
@@ -98,7 +100,7 @@ export default function Footer() {
         {/* Bottom Bar */}
         <div className="border-t border-cream/10 pt-8 flex flex-col md:flex-row items-center justify-between gap-4">
           <p className="font-body text-[13px] text-cream/50 text-center md:text-left">
-            © {currentYear} GingerBros. All rights reserved.
+            © {CURRENT_YEAR} GingerBros. All rights reserved.
           </p>
           <div className="flex items-center gap-6">
             <a href="/privacy" className="font-body text-[13px] text-cream/50 hover:text-amber transition-colors">

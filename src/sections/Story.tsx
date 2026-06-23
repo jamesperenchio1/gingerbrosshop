@@ -1,8 +1,5 @@
 import { useRef, useEffect } from 'react';
 import gsap from 'gsap';
-import { ScrollTrigger } from 'gsap/ScrollTrigger';
-
-gsap.registerPlugin(ScrollTrigger);
 
 export default function Story() {
   const sectionRef = useRef<HTMLElement>(null);
@@ -51,7 +48,7 @@ export default function Story() {
     <section
       id="story"
       ref={sectionRef}
-      className="py-[120px] md:py-[80px] max-md:py-[60px] relative"
+      className="py-[60px] md:py-[80px] relative"
       style={{ background: 'linear-gradient(to bottom, rgba(240,212,168,0.3) 0%, #FDF8F0 100%)' }}
     >
       <div className="max-w-[1280px] mx-auto px-6">
@@ -79,11 +76,24 @@ export default function Story() {
               Brewed with Patience, Served with Pride
             </h2>
             <p className="font-body text-earth leading-relaxed mb-4">
-              GingerBros started with a simple belief: the best things take time. Every batch of our ginger fizz undergoes a full 7-day natural fermentation process using only four ingredients — ginger, water, sugar, and live cultures.
+              GingerBros started with a simple belief: the best things take time. Every batch of our ginger fizz undergoes a full 7-day natural fermentation process using a handful of core ingredients: fresh ginger, water, sugar, and live cultures, along with acacia fibre, one of the most effective prebiotic sources on the planet.
             </p>
-            <p className="font-body text-earth leading-relaxed mb-8">
-              What begins as a humble blend transforms through patience into a crisp, refreshing drink that&apos;s naturally high in vitamin B and ginger-derived prebiotic compounds. Good for the gut, great for the soul.
+            <p className="font-body text-earth leading-relaxed mb-3">
+              Prebiotics matter because they feed the good bacteria already living in your gut, not just add more. When your gut bacteria thrive, everything else follows:
             </p>
+            <ul className="font-body text-earth text-[14px] leading-relaxed mb-8 space-y-1.5 pl-1">
+              {[
+                'Better digestion and less bloating',
+                'Stronger immunity. Over 70% of immune cells live in the gut',
+                'Steadier energy without caffeine spikes or crashes',
+                'Improved mood. The gut and brain are in constant conversation',
+              ].map((point) => (
+                <li key={point} className="flex items-start gap-2">
+                  <span className="mt-1.5 w-1.5 h-1.5 flex-shrink-0 rounded-full bg-rust" />
+                  {point}
+                </li>
+              ))}
+            </ul>
 
             {/* 7 Days Stamp */}
             <div className="mb-8">

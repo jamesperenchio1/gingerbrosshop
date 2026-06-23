@@ -1,5 +1,5 @@
-import { useState, useRef, useEffect, useLayoutEffect } from 'react';
-import { useParams } from 'react-router';
+import { useState, useRef, useEffect, useLayoutEffect, useCallback } from 'react';
+import { useParams, useSearchParams } from 'react-router';
 import gsap from 'gsap';
 import { useCart } from '@/context/CartContext';
 import { PlusIcon, MinusIcon } from '@/components/Icons';
@@ -31,6 +31,7 @@ function CheckIcon({ className = '' }: { className?: string }) {
 
 export default function ProductDetail() {
   const { id } = useParams<{ id: string }>();
+  const [searchParams] = useSearchParams();
   const { addItem } = useCart();
   const { products, loading } = useCatalog();
 
@@ -49,6 +50,18 @@ export default function ProductDetail() {
 
   const heroRef = useRef<HTMLDivElement>(null);
   const infoRef = useRef<HTMLDivElement>(null);
+  const mainImageContainerRef = useRef<HTMLDivElement>(null);
+  const [isZooming, setIsZooming] = useState(false);
+  const [zoomPos, setZoomPos] = useState({ x: 50, y: 50 });
+
+  const handleImageMouseMove = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
+    const rect = mainImageContainerRef.current?.getBoundingClientRect();
+    if (!rect) return;
+    setZoomPos({
+      x: Math.max(0, Math.min(100, ((e.clientX - rect.left) / rect.width) * 100)),
+      y: Math.max(0, Math.min(100, ((e.clientY - rect.top) / rect.height) * 100)),
+    });
+  }, []);
 
   // Reset per-product UI state when the product changes (render-phase, per React docs).
   const [prevId, setPrevId] = useState(id);
@@ -78,6 +91,15 @@ export default function ProductDetail() {
   useEffect(() => {
     window.scrollTo(0, 0);
   }, [id]);
+
+  // Auto-select weekly plan when arriving from the Subscribe & Save card button.
+  useEffect(() => {
+    if (!product || searchParams.get('plan') !== 'weekly') return;
+    const weeklyPrice = product.prices.find(
+      (p) => p.recurring?.interval === 'week' && p.recurring.intervalCount === 1,
+    );
+    if (weeklyPrice) setSelectedPriceId(weeklyPrice.priceId);
+  }, [product, searchParams]);
 
   useLayoutEffect(() => {
     if (!product) return;
@@ -169,12 +191,19 @@ export default function ProductDetail() {
         jsonLd={[productJsonLd, breadcrumbJsonLd]}
       />
       {/* Main Content */}
-      <div className="max-w-[1280px] mx-auto px-6 pt-24 md:pt-28 pb-12 md:pb-16">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16">
+      <div className="max-w-[1280px] mx-auto px-4 sm:px-6 pt-20 sm:pt-24 md:pt-28 pb-12 md:pb-16">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-16">
           {/* Left: Image Gallery */}
-          <div ref={heroRef}>
+          <div ref={heroRef} className="relative">
             {/* Main Media */}
-            <div className="rounded-[20px] overflow-hidden bg-cream mb-4 h-[400px] md:h-[500px] flex items-center justify-center group cursor-zoom-in">
+            <div
+              ref={mainImageContainerRef}
+              onMouseMove={handleImageMouseMove}
+              onMouseEnter={() => { if (!(video && activeImage === images.length)) setIsZooming(true); }}
+              onMouseLeave={() => setIsZooming(false)}
+              className="rounded-[20px] overflow-hidden mb-4 h-[400px] md:h-[500px] flex items-center justify-center select-none"
+              style={{ cursor: isZooming ? 'zoom-in' : 'default' }}
+            >
               {video && activeImage === images.length ? (
                 <video
                   src={video}
@@ -189,7 +218,13 @@ export default function ProductDetail() {
                 <img
                   src={images[activeImage] ?? images[0]}
                   alt={product.name}
-                  className="max-h-full max-w-full object-contain transition-transform duration-500 ease-out group-hover:scale-110"
+                  className="max-h-full max-w-full object-contain pointer-events-none"
+                  style={{
+                    transform: isZooming ? 'scale(2.2)' : 'scale(1)',
+                    transformOrigin: `${zoomPos.x}% ${zoomPos.y}%`,
+                    transition: isZooming ? 'transform-origin 0ms' : 'transform 0.25s ease',
+                  }}
+                  draggable={false}
                 />
               )}
             </div>
@@ -204,7 +239,7 @@ export default function ProductDetail() {
                     activeImage === i ? 'border-amber' : 'border-transparent hover:border-soft-peach'
                   }`}
                 >
-                  <img src={img} alt="" className="w-full h-full object-cover" />
+                  <img src={img} alt="" className="w-full h-full object-contain p-1" />
                 </button>
               ))}
               {video && (
@@ -247,7 +282,7 @@ export default function ProductDetail() {
             })()}
 
             {/* Name */}
-            <h1 className="font-display font-bold text-deep-brown text-[2rem] md:text-[2.5rem] leading-tight mb-3">
+            <h1 className="font-display font-bold text-deep-brown text-[1.75rem] sm:text-[2rem] md:text-[2.5rem] leading-tight mb-3">
               {product.name}
             </h1>
 
@@ -314,7 +349,7 @@ export default function ProductDetail() {
                     <p className="font-body font-semibold text-[13px] text-deep-brown mb-2">
                       Subscribe &amp; Save
                       {savingsPercent(selectedPrice, oneTimeForProduct) > 0 &&
-                        ` — ${savingsPercent(selectedPrice, oneTimeForProduct)}% off every delivery`}
+                        ` · ${savingsPercent(selectedPrice, oneTimeForProduct)}% off every delivery`}
                     </p>
                     <ul className="font-body text-[12px] text-earth/80 space-y-1.5">
                       <li className="flex items-start gap-2"><CheckIcon className="text-accent-green flex-shrink-0 mt-0.5" /> Delivered {intervalLabel(selectedPrice.recurring)} — never run out</li>
@@ -463,7 +498,7 @@ export default function ProductDetail() {
         {showTabs && (
           <div className="mt-16 border-t border-soft-peach/50 pt-12">
             {/* Tab Buttons */}
-            <div className="flex gap-6 mb-8 border-b border-soft-peach/50">
+            <div className="flex gap-4 mb-8 border-b border-soft-peach/50 overflow-x-auto -mx-6 px-6 md:mx-0 md:px-0 scrollbar-none">
               {(['details', 'nutrition', 'specs'] as const)
                 .filter((tab) =>
                   tab === 'details'
@@ -476,7 +511,7 @@ export default function ProductDetail() {
                   <button
                     key={tab}
                     onClick={() => setActiveTab(tab)}
-                    className={`font-body font-medium text-[14px] uppercase tracking-[0.08em] pb-3 transition-colors border-b-2 -mb-px ${
+                    className={`flex-shrink-0 font-body font-medium text-[13px] sm:text-[14px] uppercase tracking-[0.08em] pb-3 transition-colors border-b-2 -mb-px whitespace-nowrap ${
                       activeTab === tab
                         ? 'text-deep-brown border-amber'
                         : 'text-earth/60 border-transparent hover:text-earth'
