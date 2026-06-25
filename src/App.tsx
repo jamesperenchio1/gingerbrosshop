@@ -1,6 +1,7 @@
 import { Suspense, lazy, useEffect } from 'react';
 import { Routes, Route, useLocation } from 'react-router';
 import { Analytics } from '@vercel/analytics/react';
+import { SpeedInsights } from '@vercel/speed-insights/react';
 import { CartProvider } from '@/context/CartContext';
 import { I18nProvider } from '@/context/I18nContext';
 import { useLenis } from '@/hooks/useLenis';
@@ -78,6 +79,7 @@ export default function App() {
         <AppContent />
         <CartDrawer />
         <Analytics />
+        <SpeedInsights />
       </CartProvider>
     </I18nProvider>
   );
