@@ -314,6 +314,81 @@ export const PRODUCT_CONTENT: Record<string, ProductContent> = {
     relatedProducts: ['kl02899', 'corny-keg-2-5gal', 'kl24235', 'kl20763'],
   },
 
+  // ─── Sanitizer ────────────────────────────────────────────────────────────
+
+  'star-san': {
+    headline: 'No-rinse acid sanitizer trusted by brewers worldwide. Sanitize in 30 seconds.',
+    longDescription:
+      'Star San from Five Star Chemicals is the industry-standard no-rinse sanitizer for homebrewing and professional craft production. Its unique blend of phosphoric acid and dodecylbenzenesulfonic acid creates a low-pH surface coating that eliminates bacteria and wild yeast on contact — without requiring a rinse. Don\'t fear the foam: the fine white foam Star San produces is harmless to your beer and actually helps sanitize hard-to-reach surfaces. A 30-second contact time is all you need. Make up a solution, soak your equipment, and go straight to filling.',
+    features: [
+      'No-rinse formula — sanitize and fill immediately, no waiting',
+      'Works in 30 seconds — minimum contact time at recommended concentration',
+      'Don\'t fear the foam — residual foam is harmless to your beer',
+      'Highly concentrated — 2oz makes 20 litres of sanitizing solution (1oz per 5 gallons)',
+      'pH below 3 destroys bacteria and wild yeast on contact',
+      'Unaffected by organic soils — works even on imperfectly clean surfaces',
+      'NSF certified, ANSI accredited, SCC accredited',
+      'Fully biodegradable — breaks down to phosphate, water, and CO₂',
+    ],
+    specs: [
+      { label: 'Brand', value: 'Five Star Chemicals' },
+      { label: 'SKU', value: 'STAR-SAN' },
+      { label: 'Type', value: 'Acid-based no-rinse sanitizer' },
+      { label: 'Active Ingredients', value: 'Phosphoric acid + dodecylbenzenesulfonic acid' },
+      { label: 'Use Concentration', value: '1oz per 5 US gallons (approx. 0.8ml/L)' },
+      { label: 'Contact Time', value: '30 seconds minimum' },
+      { label: 'Rinse Required', value: 'No' },
+      { label: 'Available Sizes', value: '2oz, 8oz, 1 Gallon' },
+      { label: 'Certifications', value: 'NSF, ANSI, SCC' },
+    ],
+    compatibility: [
+      'Safe for stainless steel, glass, plastic, rubber, and silicone',
+      'Compatible with all fermenter types: conical, bucket, carboy',
+      'Safe for kegs, disconnects, taps, tubing, and fittings',
+      'Do not use on soft metals (aluminium, galvanised steel)',
+    ],
+    relatedProducts: ['kl02899', 'corny-keg-2-5gal', 'nukatap-fc', 'kl21418'],
+  },
+
+  // ─── Taps ─────────────────────────────────────────────────────────────────
+
+  'nukatap-fc': {
+    headline: 'The most sanitary forward-sealing tap available. Flow control built in.',
+    longDescription:
+      'The NukaTap FC Gen 2 is KegLand\'s most advanced beer faucet. The forward-sealing design keeps the beer line sealed when the tap is closed — meaning no oxygen ingress, no beer drying inside the body, and no bacterial growth between pours. The Gen 2 NukaShuttle is the world\'s first seamless single-piece shuttle: TPV rubber matrix formed directly over a PP skeleton, eliminating every fissure where bacteria traditionally harbour in older tap designs. The adjustable flow control lever on the right side lets you dial in exactly how fast your beer flows — essential for high-carbonation pours, keezer direct-mount setups, and short line lengths where foaming is otherwise unavoidable. The lower thermal mass of the Gen 2 body reduces first-pour foam further still.',
+    features: [
+      'Forward-sealing design — tap stays sealed when closed, zero oxygen ingress',
+      'NukaShuttle Gen 2: seamless single-piece TPV/PP shuttle, no bacterial fissures',
+      'Adjustable flow control lever — dial in pour speed at the tap',
+      'Laminar flow spout design — smooth, foam-free pours even at high carbonation',
+      'Reduced thermal mass vs Gen 1 — less first-pour foam effect',
+      'TPV rubber matrix seals tolerate sour beers, kombucha, and acidic beverages',
+      'Optional self-closing spring compatible (sold separately)',
+      'NSF certified, ANSI accredited, SCC accredited',
+      '2.5-degree reverse angle — compatible with a wider range of tap handles',
+    ],
+    specs: [
+      { label: 'SKU', value: 'KL15523' },
+      { label: 'Brand', value: 'KegLand / NukaTap' },
+      { label: 'Type', value: 'Forward-sealing flow control tap' },
+      { label: 'Generation', value: 'Gen 2' },
+      { label: 'Body Material', value: 'Stainless Steel 304' },
+      { label: 'Shuttle Material', value: 'Seamless TPV/PP overmoulded' },
+      { label: 'Thread', value: 'Standard shank thread (Intertap compatible)' },
+      { label: 'Handle Angle', value: '2.5° reverse angle' },
+      { label: 'Certifications', value: 'NSF, ANSI, SCC' },
+      { label: 'Weight', value: '~300g' },
+    ],
+    compatibility: [
+      'Fits all standard shanks with Intertap-compatible threading',
+      'Compatible with NukaTap stout spout, ball lock post spout, and growler spouts',
+      'Accepts NukaTap FC auto-close spring for hands-free closing',
+      'Works with NukaTap FC Gen 2 retrofit shuttle kit for existing Gen 1 owners',
+      'Suitable for beer, hard seltzer, kombucha, cold brew, and other beverages',
+    ],
+    relatedProducts: ['kl02899', 'corny-keg-2-5gal', 'kl21418', 'star-san'],
+  },
+
   // ─── Drink products ───────────────────────────────────────────────────────
 
   unpasteurized: {
