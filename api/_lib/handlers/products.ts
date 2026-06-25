@@ -31,6 +31,7 @@ interface CatalogProduct {
   images: string[];
   badge: string | null;
   badgeColor: string | null;
+  category: string | null;
   metadata: Record<string, string>;
   prices: CatalogPrice[];
 }
@@ -74,6 +75,10 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       }
 
       const metadata = product.metadata ?? {};
+      // Products marked hidden: true are internal (e.g. chilled delivery line items)
+      // and must never appear in the shop catalog.
+      if (metadata.hidden === 'true') continue;
+
       const appId = metadata.app_id || product.id;
 
       if (!productMap.has(product.id)) {
@@ -85,6 +90,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
           images: product.images ?? [],
           badge: metadata.badge ?? null,
           badgeColor: metadata.badge_color ?? null,
+          category: metadata.category ?? null,
           metadata,
           prices: [],
         });

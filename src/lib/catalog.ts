@@ -17,6 +17,7 @@ export interface CatalogProduct {
   images: string[];
   badge: string | null;
   badgeColor: string | null;
+  category: string | null;
   metadata: Record<string, string>;
   prices: CatalogPrice[];
 }
