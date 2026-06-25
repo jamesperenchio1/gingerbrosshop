@@ -174,7 +174,14 @@ export default function Shop() {
   const sectionRef = useRef<HTMLElement>(null);
   const headerRef = useRef<HTMLDivElement>(null);
   const cardsRef = useRef<HTMLDivElement>(null);
-  const [activeCategory, setActiveCategory] = useState<ActiveCategory>('drinks');
+  const [activeCategory, setActiveCategory] = useState<ActiveCategory>(
+    () => (sessionStorage.getItem('shopTab') as ActiveCategory | null) ?? 'drinks',
+  );
+
+  const handleCategoryChange = useCallback((cat: ActiveCategory) => {
+    sessionStorage.setItem('shopTab', cat);
+    setActiveCategory(cat);
+  }, []);
 
   const hasEquipment = products.some((p) => p.category === 'brewing-equipment');
   const hasDrinks = products.some((p) => p.category === 'drinks' || p.category === null);
@@ -240,7 +247,7 @@ export default function Shop() {
               return (
                 <button
                   key={cat}
-                  onClick={() => setActiveCategory(cat)}
+                  onClick={() => handleCategoryChange(cat)}
                   className={`flex-shrink-0 font-body font-semibold text-[13px] sm:text-[14px] uppercase tracking-[0.1em] pb-3.5 transition-colors border-b-2 -mb-px whitespace-nowrap ${
                     active
                       ? 'text-deep-brown border-amber'
