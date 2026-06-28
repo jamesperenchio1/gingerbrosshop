@@ -39,25 +39,24 @@ export default function Hero() {
   return (
     <section
       id="hero"
-      className="relative w-full min-h-[640px] md:min-h-[700px] md:h-screen flex items-center overflow-hidden"
+      className="relative w-full min-h-[540px] sm:min-h-[600px] md:min-h-[700px] md:h-screen flex items-center overflow-hidden"
       style={{ background: 'linear-gradient(135deg, #E8C97A 0%, #D4A34B 40%, #C9963A 100%)' }}
     >
       <NoiseCanvas />
       <BubbleCanvas />
 
-      <div className="relative z-10 w-full max-w-[1120px] mx-auto px-6 grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8 items-center pt-20 pb-32 md:py-0">
+      <div className="relative z-10 w-full max-w-[1120px] mx-auto px-6 grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-8 items-center pt-16 sm:pt-20 pb-36 md:py-0">
         {/* Left: copy */}
         <div className="flex flex-col items-center md:items-start text-center md:text-left order-2 md:order-1">
-          <div ref={badgeRef} className="mb-3 md:mb-5">
-            <span className="inline-block bg-cream text-deep-brown font-body font-medium text-[13px] px-5 py-2 rounded-full">
+          <div ref={badgeRef} className="mb-2 md:mb-5">
+            <span className="inline-block bg-cream text-deep-brown font-body font-medium text-[12px] md:text-[13px] px-4 py-1.5 md:px-5 md:py-2 rounded-full">
               GingerBros · Naturally Brewed in Thailand
             </span>
           </div>
 
           <h1
             ref={headlineRef}
-            className="font-display font-bold text-deep-brown leading-[0.95] mb-3 md:mb-4"
-            style={{ fontSize: 'clamp(2.25rem, 6vw, 4.75rem)' }}
+            className="font-display font-bold text-deep-brown leading-[0.95] mb-2 md:mb-4 text-[clamp(1.75rem,8vw,2.5rem)] md:text-[clamp(2.5rem,6vw,4.75rem)]"
           >
             Fermented Ginger,
             <br />
@@ -66,32 +65,32 @@ export default function Hero() {
 
           <p
             ref={subRef}
-            className="font-body font-medium text-[15px] text-earth max-w-[460px] mb-5 md:mb-7 leading-relaxed"
+            className="font-body font-medium text-[14px] md:text-[15px] text-earth max-w-[460px] mb-4 md:mb-7 leading-relaxed"
           >
             A bold ginger kick with prebiotic acacia fibre. 7-day naturally fermented, low in sugar, and made with real ingredients.
           </p>
 
-          <div ref={ctaRef} className="flex flex-col xs:flex-row flex-wrap items-stretch xs:items-center justify-center md:justify-start gap-3">
+          <div ref={ctaRef} className="flex flex-col xs:flex-row flex-wrap items-stretch xs:items-center justify-center md:justify-start gap-2 md:gap-3">
             <button
               onClick={handleShopClick}
-              className="bg-deep-brown text-cream font-body font-medium text-sm uppercase tracking-[0.08em] px-9 py-3.5 rounded-full hover:bg-rust hover:scale-[1.02] active:scale-[0.98] transition-all duration-200 text-center"
+              className="bg-deep-brown text-cream font-body font-medium text-sm uppercase tracking-[0.08em] px-7 py-3 md:px-9 md:py-3.5 rounded-full hover:bg-rust hover:scale-[1.02] active:scale-[0.98] transition-all duration-200 text-center"
             >
               Shop the Brews
             </button>
             <button
               onClick={handleStoryClick}
-              className="bg-transparent text-deep-brown font-body font-medium text-sm uppercase tracking-[0.08em] px-9 py-3.5 rounded-full border-2 border-deep-brown hover:bg-deep-brown hover:text-cream active:scale-[0.98] transition-all duration-200 text-center"
+              className="bg-transparent text-deep-brown font-body font-medium text-sm uppercase tracking-[0.08em] px-7 py-3 md:px-9 md:py-3.5 rounded-full border-2 border-deep-brown hover:bg-deep-brown hover:text-cream active:scale-[0.98] transition-all duration-200 text-center"
             >
               Our Story
             </button>
           </div>
 
           {/* Trust row */}
-          <div ref={trustRef} className="flex items-center justify-center md:justify-start gap-x-3 mt-5 md:mt-7">
+          <div ref={trustRef} className="flex flex-wrap items-center justify-center md:justify-start gap-x-2 md:gap-x-3 gap-y-1 mt-4 md:mt-7">
             {['7-day ferment', '<2g sugar', 'Prebiotic fibre'].map((label, i, arr) => (
-              <span key={label} className="flex items-center gap-x-3 font-body font-semibold text-[15px] text-deep-brown/90">
+              <span key={label} className="flex items-center gap-x-2 md:gap-x-3 font-body font-semibold text-[13px] md:text-[15px] text-deep-brown/90">
                 {label}
-                {i < arr.length - 1 && <span aria-hidden="true" className="text-[20px] leading-none">·</span>}
+                {i < arr.length - 1 && <span aria-hidden="true" className="text-[16px] md:text-[20px] leading-none">·</span>}
               </span>
             ))}
           </div>
@@ -108,7 +107,7 @@ export default function Hero() {
               loading="eager"
               fetchPriority="high"
               decoding="async"
-              className="w-[150px] sm:w-[200px] md:w-[340px] block drop-shadow-[0_20px_40px_rgba(80,45,8,0.30)]"
+              className="w-[120px] xs:w-[140px] sm:w-[200px] md:w-[340px] block drop-shadow-[0_20px_40px_rgba(80,45,8,0.30)]"
             />
           </div>
         </div>
