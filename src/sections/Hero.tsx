@@ -68,7 +68,7 @@ export default function Hero() {
             ref={subRef}
             className="font-body font-medium text-[15px] text-earth max-w-[460px] mb-7 leading-relaxed"
           >
-            Raw and living, or pasteurized and shelf-stable. Two brews, one bold ginger kick. 7-day naturally fermented and low in sugar.
+            A bold ginger kick with prebiotic acacia fibre. 7-day naturally fermented, low in sugar, and made with real ingredients.
           </p>
 
           <div ref={ctaRef} className="flex flex-col xs:flex-row flex-wrap items-stretch xs:items-center justify-center md:justify-start gap-3">
@@ -88,7 +88,7 @@ export default function Hero() {
 
           {/* Trust row */}
           <div ref={trustRef} className="flex items-center justify-center md:justify-start gap-x-3 mt-7">
-            {['4 ingredients', 'Low in sugar', '7-day ferment'].map((label, i, arr) => (
+            {['7-day ferment', '<2g sugar', 'Prebiotic fibre'].map((label, i, arr) => (
               <span key={label} className="flex items-center gap-x-3 font-body font-semibold text-[15px] text-deep-brown/90">
                 {label}
                 {i < arr.length - 1 && <span aria-hidden="true" className="text-[20px] leading-none">·</span>}
@@ -102,7 +102,7 @@ export default function Hero() {
           <div className="relative rounded-[28px] overflow-hidden shadow-[0_28px_72px_rgba(80,45,8,0.32)] ring-1 ring-black/5">
             <img
               src="/images/product-ginger-fizz.png"
-              alt="GingerBros Unpasteurized Ginger Fizz bottle"
+              alt="GingerBros Ginger Fizz bottle"
               width={420}
               height={560}
               loading="eager"

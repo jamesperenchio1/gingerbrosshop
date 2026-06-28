@@ -24,7 +24,7 @@ const STEPS = [
     number: '04',
     days: 'Ready',
     title: 'Enjoy Cold',
-    description: 'Chill thoroughly before opening. Expect a lively pop. This is living, effervescent ginger fizz at its finest.',
+    description: 'Chill thoroughly before opening. Expect a bright, refreshing pop. Real ginger fizz, naturally fermented and ready to drink.',
   },
 ];
 

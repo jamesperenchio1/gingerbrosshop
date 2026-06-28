@@ -11,12 +11,12 @@ const BENEFITS = [
   {
     icon: LeafIcon,
     title: 'Clean Ingredients',
-    description: 'Core ingredients you can count on one hand: fresh ginger, water, sugar, and live cultures. No artificial additives, no preservatives, no shortcuts.',
+    description: 'Core ingredients you can count on one hand: fresh ginger, water, sugar, and prebiotic acacia fibre. Non-GMO. No artificial additives, no preservatives, no shortcuts.'
   },
   {
     icon: LightningIcon,
     title: 'Steady Energy',
-    description: 'When your gut is balanced, your energy follows. No caffeine, no spike, no crash. Just a real-food lift that comes from the inside out.',
+    description: 'Prebiotics feed the good bacteria that help regulate energy metabolism over time. No caffeine, no spike, no crash. Just a steady, feel-good lift from the inside out.'
   },
   {
     icon: SnowflakeIcon,
@@ -27,10 +27,10 @@ const BENEFITS = [
 
 // Quick, scannable facts that reinforce the "why" without a wall of text.
 const FACTS = [
-  { stat: 'Low', label: 'in sugar' },
+  { stat: '<2g', label: 'sugar per serve' },
   { stat: '7 days', label: 'naturally fermented' },
-  { stat: 'Never', label: 'heated or filtered' },
-  { stat: '330ml', label: 'live, raw & chilled' },
+  { stat: 'Prebiotic', label: 'acacia fibre' },
+  { stat: '330ml', label: 'real ginger fizz' },
 ];
 
 export default function Benefits() {
@@ -86,7 +86,7 @@ export default function Benefits() {
             More Than a Drink
           </h2>
           <p className="font-body text-earth max-w-[560px] mx-auto">
-            For centuries ginger has been used to calm the stomach and fire up digestion. We just brew it the old, slow way — alive, raw, and barely sweet — so it does you good and tastes like it means it.
+            For centuries ginger has been used to calm the stomach and fire up digestion. We brew it the old, slow way — with real ingredients and prebiotic acacia fibre — so it does you good and tastes like it means it.
           </p>
         </div>
 

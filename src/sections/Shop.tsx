@@ -232,7 +232,7 @@ export default function Shop() {
 
   const categoryHeading = activeCategory === 'brewing-equipment'
     ? { eyebrow: 'BREWING EQUIPMENT', title: 'KegLand Equipment', sub: 'Precision-engineered components for homebrewing, carbonation, and draft systems.' }
-    : { eyebrow: 'OUR BREWS', title: 'Probiotic Drinks', sub: 'Raw and living, or pasteurized and shelf-stable. Real fermented ginger, your way.' };
+    : { eyebrow: 'OUR BREWS', title: 'Ginger Fizz', sub: 'Real fermented ginger with prebiotic acacia fibre. Brewed slow, enjoyed easy.' };
 
   return (
     <section id="shop" ref={sectionRef} className="bg-warm-white py-[60px] md:py-[80px]">
