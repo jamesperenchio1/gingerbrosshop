@@ -153,11 +153,14 @@ async function run() {
   const { data: existingProducts } = await stripe.products.list({ active: true, limit: 100 });
   console.log(`Found ${existingProducts.length} active products.\n`);
 
-  // ── 1. Hide Chilled Delivery ───────────────────────────────────────────────
-  const chilled = existingProducts.find((p) => p.name === 'Chilled Delivery' || p.metadata?.app_id === 'chilled-delivery');
-  if (chilled && chilled.metadata?.hidden !== 'true') {
-    await stripe.products.update(chilled.id, { metadata: { ...chilled.metadata, hidden: 'true' } });
-    console.log(`✓ Hid Chilled Delivery (${chilled.id})`);
+  // ── 1. Hide internal delivery-fee product ──────────────────────────────────
+  const deliveryFee = existingProducts.find((p) =>
+    ['Chilled Delivery', 'Delivery'].includes(p.name) ||
+    ['chilled-delivery', 'delivery'].includes(p.metadata?.app_id)
+  );
+  if (deliveryFee && deliveryFee.metadata?.hidden !== 'true') {
+    await stripe.products.update(deliveryFee.id, { metadata: { ...deliveryFee.metadata, hidden: 'true' } });
+    console.log(`✓ Hid delivery-fee product (${deliveryFee.id})`);
   }
 
   // ── 2. Tag drink products ──────────────────────────────────────────────────

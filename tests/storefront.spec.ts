@@ -13,11 +13,12 @@ test('home page loads with hero and shop sections', async ({ page }) => {
   await expect(page.getByTestId('add-to-cart')).toBeVisible({ timeout: 15_000 });
 });
 
-test('hero headline is visible without bottle overlay image', async ({ page }) => {
+test('hero shows the bottle and mug', async ({ page }) => {
   await page.goto('/');
   const hero = page.locator('#hero');
   await expect(hero.getByRole('heading', { name: /Fermented Ginger/i })).toBeVisible();
-  await expect(hero.locator('img[alt*="bottle" i]')).not.toBeVisible();
+  await expect(hero.locator('img[alt*="bottle" i]')).toBeVisible();
+  await expect(hero.locator('img[alt*="mug" i]')).toBeVisible();
 });
 
 test('add to cart opens drawer with item', async ({ page }) => {

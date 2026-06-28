@@ -282,7 +282,7 @@ export function boxReturnRewardHtml(amountBaht: number, code?: string | null): s
 
   return layout(
     `${heading('Thanks for returning your box! ♻️')}
-    <p style="margin:0 0 12px;">You're helping us cut waste and keep every brew chilled and fresh — so here's <strong>฿${amountBaht} off your next order</strong> as a thank-you.</p>
+    <p style="margin:0 0 12px;">You're helping us cut waste and keep every brew fresh — so here's <strong>฿${amountBaht} off your next order</strong> as a thank-you.</p>
     ${infoCard(redeem)}
     <p style="margin-top:20px;text-align:center;">${button('Order Your Next Brew →', 'https://gingerbrosshop.com/#shop')}</p>
     <p style="margin-top:16px;font-size:13px;color:${BRAND.earth};">Keep the foam boxes coming back and the rewards keep flowing. 🍺</p>`,

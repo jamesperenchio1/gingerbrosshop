@@ -15,12 +15,12 @@ export default function FAQPage() {
     {
       icon: <Truck className="w-6 h-6 text-amber" />,
       q: 'Where do you deliver?',
-      a: 'We deliver across Thailand. GingerBros ginger fizz is shipped chilled with insulation and ice packs, so it can travel safely to Bangkok, Chiang Mai, Phuket, Korat, and everywhere in between.',
+      a: 'We deliver across Thailand. Orders ship via standard courier by default, with an optional cold-chain upgrade for extra protection. We can reach Bangkok, Chiang Mai, Phuket, Korat, and everywhere in between.'
     },
     {
       icon: <Package className="w-6 h-6 text-amber" />,
       q: 'How is my order shipped?',
-      a: 'Orders are packed in insulated boxes with ice packs and dispatched Monday–Thursday via our chilled courier partner. You will receive a tracking link by email once your order is on the way.',
+      a: 'Orders are packed securely and dispatched Monday–Thursday via our courier partner. You will receive a tracking link by email once your order is on the way. A cold-chain upgrade with insulation and ice packs is available at checkout.'
     },
     {
       icon: <Thermometer className="w-6 h-6 text-amber" />,
@@ -30,7 +30,7 @@ export default function FAQPage() {
     {
       icon: <MapPin className="w-6 h-6 text-amber" />,
       q: 'Do you offer same-day local delivery?',
-      a: 'Yes! If you are in the Bangkok, Pathum Thani, or Rangsit area, we can deliver chilled same-day via Grab or Lineman. Just message us or note it at checkout and we will arrange a nearby drop — your fizz arrives cold and ready to refrigerate.',
+      a: 'Yes! If you are in the Bangkok, Pathum Thani, or Rangsit area, we can arrange same-day local delivery via Grab or Lineman. Just message us or note it at checkout and we will organise a nearby drop.'
     },
     {
       icon: <RefreshCw className="w-6 h-6 text-amber" />,

@@ -1,4 +1,4 @@
-import { useLayoutEffect, useRef } from 'react';
+import { useLayoutEffect, useRef, useEffect } from 'react';
 import gsap from 'gsap';
 import NoiseCanvas from '@/components/NoiseCanvas';
 import BubbleCanvas from '@/components/BubbleCanvas';
@@ -24,6 +24,20 @@ export default function Hero() {
       .from(scrollRef.current, { opacity: 0, duration: 0.5 }, '-=0.2');
 
     return () => { tl.kill(); };
+  }, []);
+
+  // Gentle looping float for the bottle + mug group
+  useEffect(() => {
+    if (!imageRef.current) return;
+    const tween = gsap.to(imageRef.current, {
+      y: -14,
+      duration: 2.4,
+      ease: 'sine.inOut',
+      yoyo: true,
+      repeat: -1,
+      delay: 4,
+    });
+    return () => { tween.kill(); };
   }, []);
 
   const handleShopClick = () => {
@@ -67,7 +81,7 @@ export default function Hero() {
             ref={subRef}
             className="font-body font-medium text-[14px] md:text-[15px] text-earth max-w-[460px] mb-4 md:mb-7 leading-relaxed"
           >
-            A bold ginger kick with prebiotic acacia fibre. 7-day naturally fermented, low in sugar, and made with real ingredients.
+            A bold ginger kick with fresh lime and prebiotic acacia fibre. 7-day naturally fermented, low in sugar, and made with real ingredients.
           </p>
 
           <div ref={ctaRef} className="flex flex-col xs:flex-row flex-wrap items-stretch xs:items-center justify-center md:justify-start gap-2 md:gap-3">
@@ -98,16 +112,28 @@ export default function Hero() {
 
         {/* Right: product shot */}
         <div ref={imageRef} className="flex justify-center md:justify-end order-1 md:order-2">
-          <img
-            src="/images/product-ginger-fizz.png"
-            alt="GingerBros Ginger Fizz bottle"
-            width={420}
-            height={560}
-            loading="eager"
-            fetchPriority="high"
-            decoding="async"
-            className="w-[120px] xs:w-[140px] sm:w-[200px] md:w-[380px] block drop-shadow-[0_24px_48px_rgba(80,45,8,0.32)] md:rotate-[-3deg] md:hover:rotate-0 transition-transform duration-500"
-          />
+          <div className="relative flex items-end justify-center md:justify-end group">
+            <img
+              src="/images/hero-mug.png"
+              alt="Frosty mug of GingerBros Ginger Fizz"
+              width={542}
+              height={804}
+              loading="eager"
+              fetchPriority="high"
+              decoding="async"
+              className="w-[100px] xs:w-[120px] sm:w-[170px] md:w-[280px] block drop-shadow-[0_20px_40px_rgba(80,45,8,0.28)] translate-y-2 md:translate-y-4 group-hover:rotate-[-2deg] transition-transform duration-500"
+            />
+            <img
+              src="/images/product-ginger-fizz.png"
+              alt="GingerBros Ginger Fizz bottle"
+              width={420}
+              height={560}
+              loading="eager"
+              fetchPriority="high"
+              decoding="async"
+              className="w-[120px] xs:w-[140px] sm:w-[200px] md:w-[360px] block drop-shadow-[0_24px_48px_rgba(80,45,8,0.32)] -ml-8 sm:-ml-10 md:-ml-16 rotate-[-3deg] group-hover:rotate-0 transition-transform duration-500"
+            />
+          </div>
         </div>
       </div>
 

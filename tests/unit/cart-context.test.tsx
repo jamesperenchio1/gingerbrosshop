@@ -14,7 +14,7 @@ const sampleItem: CartItem = {
   price: 140,
   quantity: 1,
   image: '/images/product-ginger-fizz-1.jpg',
-  badge: 'Chilled Delivery',
+  badge: 'Naturally Fermented',
   badgeColor: 'bg-sky-500',
 };
 

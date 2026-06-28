@@ -81,9 +81,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   }
 
   // Stripe Checkout subscription mode doesn't support shipping_options, so we
-  // inject chilled delivery as a matching recurring line item instead.
-  // Price IDs are the live "Chilled Delivery" prices created on the Stripe account.
-  const CHILLED_DELIVERY_PRICE: Record<string, string> = {
+  // inject a flat delivery fee as a matching recurring line item instead.
+  // Price IDs are the live delivery-fee prices created on the Stripe account.
+  const DELIVERY_PRICE: Record<string, string> = {
     'week_1':  'price_1TlT9f4xTvnGlHCDrZQrZ4kI',
     'week_2':  'price_1TlT9h4xTvnGlHCDBXJjknzd',
     'month_1': 'price_1TlT9j4xTvnGlHCDwrgy2MEu',
@@ -91,7 +91,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   const hasGingerFizzSub = recurringCount > 0 && items.some(i => i.productId === 'ginger-fizz');
   if (hasGingerFizzSub && subInterval) {
     const key = `${subInterval.interval}_${subInterval.intervalCount}`;
-    const deliveryPriceId = CHILLED_DELIVERY_PRICE[key];
+    const deliveryPriceId = DELIVERY_PRICE[key];
     if (deliveryPriceId) {
       lineItems.push({ price: deliveryPriceId, quantity: 1 });
       recurringCount++; // delivery is recurring — keep hasOneTime accurate
@@ -128,23 +128,34 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     metadata.giftMessage = giftInfo.message ?? '';
   }
 
-  // Shipping: ginger fizz always gets chilled delivery at ฿100 (no free tier).
+  // Shipping: standard delivery is the default for everyone; cold-chain is an
+  // optional upgrade when the cart contains ginger fizz.
   const FREE_SHIPPING_THRESHOLD = 50000; // ฿500 in satang
   const SHIPPING_FLAT = 10000; // ฿100 in satang
   const hasGingerFizz = items.some(i => i.productId === 'ginger-fizz');
-  const shippingFree = !hasGingerFizz && subtotalMinor >= FREE_SHIPPING_THRESHOLD;
+  const shippingFree = subtotalMinor >= FREE_SHIPPING_THRESHOLD;
+  const standardAmount = shippingFree ? 0 : SHIPPING_FLAT;
   const shippingOptions: Stripe.Checkout.SessionCreateParams.ShippingOption[] = [
     {
       shipping_rate_data: {
         type: 'fixed_amount',
-        fixed_amount: { amount: shippingFree ? 0 : SHIPPING_FLAT, currency: 'thb' },
-        display_name: hasGingerFizz ? 'Chilled Delivery' : shippingFree ? 'Free shipping' : 'Standard shipping',
-        delivery_estimate: hasGingerFizz
-          ? { minimum: { unit: 'business_day', value: 1 }, maximum: { unit: 'business_day', value: 2 } }
-          : { minimum: { unit: 'business_day', value: 2 }, maximum: { unit: 'business_day', value: 4 } },
+        fixed_amount: { amount: standardAmount, currency: 'thb' },
+        display_name: shippingFree ? 'Free standard shipping' : 'Standard shipping',
+        delivery_estimate: { minimum: { unit: 'business_day', value: 2 }, maximum: { unit: 'business_day', value: 4 } },
       },
     },
   ];
+  if (hasGingerFizz) {
+    const coldChainAmount = shippingFree ? SHIPPING_FLAT : SHIPPING_FLAT * 2;
+    shippingOptions.push({
+      shipping_rate_data: {
+        type: 'fixed_amount',
+        fixed_amount: { amount: coldChainAmount, currency: 'thb' },
+        display_name: 'Cold-chain delivery',
+        delivery_estimate: { minimum: { unit: 'business_day', value: 1 }, maximum: { unit: 'business_day', value: 2 } },
+      },
+    });
+  }
 
   // Auto-apply the returnable-box store credit when the shopper's email has a
   // balance. Capped to the product subtotal so none is wasted (coupons discount

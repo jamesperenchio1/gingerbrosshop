@@ -123,7 +123,7 @@ Together they form a tiny, self-regulating ecosystem: the yeasts and bacteria ba
 
 This is the part most people never see, and it is the single most important habit in the whole operation. A ginger bug is not an ingredient you buy once — it is a culture you keep alive, and a living culture has to be **fed**.
 
-**Building it from scratch (the first week).** We start by grating fresh, unpeeled organic ginger into filtered, non-chlorinated water with a measured spoon of cane sugar. The skin matters: the wild yeast and bacteria live on it, so we never peel and never use chlorinated tap water, which would kill the very microbes we are trying to wake up.
+**Building it from scratch (the first week).** We start by grating fresh, unpeeled organic ginger into filtered, non-chlorinated water with a measured spoon of white sugar. The skin matters: the wild yeast and bacteria live on it, so we never peel and never use chlorinated tap water, which would kill the very microbes we are trying to wake up.
 
 **Feeding it every single day.** For a bug to thrive, it needs fresh fuel daily. Each day we "feed" the culture with another spoonful of grated ginger and another spoonful of sugar, and then we **stir it well**. Both steps matter for a specific reason:
 
@@ -140,7 +140,7 @@ This is the part most people never see, and it is the single most important habi
 
 Once the mother bug is lively, we use it to inoculate a full batch. Our 7-day process is slow on purpose. Here is roughly how a batch moves through our Bangkok brewhouse:
 
-• Day 1 — We grate fresh, organic Thai ginger and combine it with filtered, non-chlorinated water, a measured amount of cane sugar, and a generous pour of active ginger bug to kick-start fermentation.
+• Day 1 — We grate fresh, organic Thai ginger and combine it with filtered, non-chlorinated water, a measured amount of white sugar, fresh lime, and a generous pour of active ginger bug to kick-start fermentation.
 • Day 2 to 3 — The wild cultures bloom. Tiny bubbles cling to the side of the vessel. The smell turns bright and peppery as the yeast population climbs into the millions.
 • Day 4 to 5 — Fermentation hits full stride. The ginger bug eats most of the sugar, leaving behind complexity instead of sweetness, while the pH drops into a safe, naturally acidic range.
 • Day 6 — We taste, adjust, and balance each batch by hand, checking aroma, acidity and carbonation.
@@ -150,7 +150,7 @@ Once the mother bug is lively, we use it to inoculate a full batch. Our 7-day pr
 
 Carbonation in a living soda is not pumped in — it is grown. As yeast metabolises sugar through fermentation, it releases carbon dioxide. In a sealed bottle that gas has nowhere to go, so it dissolves back into the liquid under pressure. The result is a fine, persistent bead that feels softer on the tongue than the aggressive sparkle of force-carbonated soda. It is the same principle that puts bubbles in traditional sparkling wine and farmhouse cider.
 
-This is also why a living soda keeps evolving in the bottle: as long as a little sugar and a few active cultures remain, fermentation creeps slowly forward. Keeping the bottle cold slows that process to a crawl, which is exactly why our raw line travels chilled.
+This is also why a living soda keeps evolving in the bottle: as long as a little sugar and a few active cultures remain, fermentation creeps slowly forward. Keeping the bottle cold slows that process to a crawl, which is why we recommend refrigerating on arrival and why a cold-chain delivery upgrade is available at checkout.
 
 ## Raw by default, pasteurized by choice
 
@@ -662,7 +662,7 @@ None of this means ginger fizz replaces medicine, vaccines, sleep, exercise or a
 
 ## The ginger bug eats the sugar
 
-This is the quiet superpower of real fermentation, and it is worth understanding because it is genuinely different from how a diet soda is made. During our 7-day natural process, the wild yeast and bacteria in the ginger bug *consume* much of the cane sugar we start with as their food, converting it into carbon dioxide (the bubbles), a trace of organic acids (the bright tang) and a cascade of flavour compounds. By the time we bottle, only a modest amount of residual sugar remains — just enough to balance the ginger's heat and sustain the natural carbonation.
+This is the quiet superpower of real fermentation, and it is worth understanding because it is genuinely different from how a diet soda is made. During our 7-day natural process, the wild yeast and bacteria in the ginger bug *consume* much of the white sugar we start with as their food, converting it into carbon dioxide (the bubbles), a trace of organic acids (the bright tang) and a cascade of flavour compounds. By the time we bottle, only a modest amount of residual sugar remains — just enough to balance the ginger's heat and sustain the natural carbonation.
 
 In other words, the lower sweetness is not something we engineer out with chemistry at the end. It is something the microbes do for us, gradually, over a week. The drink tastes less sweet because it genuinely *is* less sweet.
 
@@ -961,7 +961,7 @@ A ginger bug is a wild starter culture: a community of yeasts and bacteria that 
 
 • A clean glass jar (a 1-litre mason jar is perfect)
 • Fresh, **organic** ginger — the wild yeast and bacteria live on the skin, so do not peel it, and avoid conventional ginger that may have been irradiated or treated
-• White cane sugar (the microbes prefer simple sugar to start)
+• White sugar (the microbes prefer simple sugar to start)
 • Filtered, **non-chlorinated** water — chlorine and chloramine are literally designed to kill microbes, so tap water can sabotage your bug; leave tap water out overnight or filter it
 • A breathable cover: a cloth or coffee filter held with a rubber band, so gases escape but dust and insects cannot get in
 
@@ -1015,14 +1015,14 @@ And respect the pressure when you bottle: use bottles built for carbonation, "bu
 
 Here is the part most brands leave out. We will not pretend it is all solved:
 
-• **The cold chain.** Refrigerated shipping for our raw line uses real energy, and it is honestly the single biggest part of our footprint. Keeping a living product alive has an environmental cost.
+• **Delivery.** Shipping orders nationwide uses real energy, and it is honestly the single biggest part of our footprint. We keep standard delivery as the default and offer cold-chain upgrades only when customers want them, so we are not adding unnecessary insulation and ice packs to every box.
 • **The weight of glass.** Glass is heavier than plastic, so it takes more energy to transport. Lifecycle studies — including a widely reported University of Southampton analysis — actually found glass bottles can carry a *larger* overall environmental impact than plastic when they are shipped long distances and used only once. The honest takeaway is that the "best" packaging genuinely depends on how far it travels and, above all, whether it is reused.
 
 We sit with that tension rather than hiding it: glass is better for *your* drink and endlessly recyclable, but only truly wins environmentally if it stays in circulation.
 
 ## Where we are heading
 
-We are actively working on a few concrete things: lighter-weight bottles to cut transport emissions, denser regional shipping routes to reduce cold-chain mileage, and easier ways for customers to return and reuse packaging so glass does its best job.
+We are actively working on a few concrete things: lighter-weight bottles to cut transport emissions, denser regional shipping routes to reduce delivery mileage, and easier ways for customers to return and reuse packaging so glass does its best job.
 
 > We would rather make slow, real progress than greenwash. Every quarter we pick one concrete improvement and actually ship it — not a slogan, a change.
 

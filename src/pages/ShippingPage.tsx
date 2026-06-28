@@ -1,4 +1,4 @@
-import { MapPin, Truck, Clock, Box } from 'lucide-react';
+import { MapPin, Truck, Thermometer, Box } from 'lucide-react';
 import SEO from '@/components/SEO';
 
 export default function ShippingPage() {
@@ -6,7 +6,7 @@ export default function ShippingPage() {
     '@context': 'https://schema.org',
     '@type': 'WebPage',
     name: 'Shipping Information — GingerBros',
-    description: 'Shipping rates and delivery information for GingerBros ginger fizz. Chilled nationwide delivery across Thailand.',
+    description: 'Nationwide shipping for GingerBros ginger fizz. Standard delivery across Thailand with an optional cold-chain upgrade.',
     url: 'https://gingerbrosshop.com/shipping',
   };
 
@@ -14,7 +14,7 @@ export default function ShippingPage() {
     <div className="min-h-screen bg-warm-white">
       <SEO
         title="Shipping Information — GingerBros"
-        description="Shipping rates and delivery information for GingerBros ginger fizz. Chilled nationwide delivery across Thailand."
+        description="Nationwide shipping for GingerBros ginger fizz. Standard delivery across Thailand with an optional cold-chain upgrade."
         path="/shipping"
         jsonLd={jsonLd}
       />
@@ -28,7 +28,7 @@ export default function ShippingPage() {
               Shipping Information
             </h1>
             <p className="font-body text-earth text-lg max-w-[600px] mx-auto leading-relaxed">
-              Fresh ginger fizz shipped chilled to your door across Thailand.
+              Fresh ginger fizz delivered to your door across Thailand. Standard shipping is free over ฿500, or upgrade to cold-chain delivery for extra peace of mind.
             </p>
           </div>
 
@@ -37,38 +37,42 @@ export default function ShippingPage() {
             <div className="bg-cream rounded-2xl p-8">
               <Truck className="w-8 h-8 text-amber mb-4" />
               <h3 className="font-display font-semibold text-deep-brown text-[1.1rem] mb-3">
-                Chilled Nationwide Shipping
+                Standard Nationwide Shipping
               </h3>
               <p className="font-body text-[14px] text-earth leading-relaxed mb-4">
-                Our ginger fizz is naturally fermented and shipped fresh, so it has to stay cold from our fridge to yours. Every order travels in an insulated foam box packed with ice packs to lock in flavour and keep the brew happy in transit. We pack fresh Monday–Thursday and dispatch the same or next business day so your bottles spend as little time on the road as possible.
+                Standard delivery is the default for every order. We pack bottles securely and dispatch Monday–Thursday so your fizz reaches you quickly and in great shape. Reliable, trackable, and hassle-free.
               </p>
               <div className="border-t border-deep-brown/10 pt-4">
                 <p className="font-body text-[14px] text-deep-brown font-semibold mb-1">
-                  Flat ฿100 chilled shipping
+                  Flat ฿100 shipping · FREE on orders over ฿500
                 </p>
                 <p className="font-body text-[14px] text-earth leading-relaxed">
-                  One simple rate covers your insulated packaging, ice packs, and cold-chain courier anywhere in Thailand — and it's <strong className="text-deep-brown">FREE on orders over ฿500</strong>. Exact transit time depends on the courier and your destination, and you'll get a tracking link once you're on the way.
+                  One simple rate covers standard courier delivery anywhere in Thailand. You will get a tracking link once your order is on the way.
                 </p>
               </div>
               <div className="mt-4 flex items-start gap-2 text-[13px] text-earth">
                 <MapPin className="w-4 h-4 text-grab-green flex-shrink-0 mt-0.5" />
                 <span>
-                  Near us in Bangkok or Pathum Thani? We can deliver same-day chilled via Grab or Lineman — just reach out.
+                  Near us in Bangkok or Pathum Thani? Same-day local delivery via Grab or Lineman is available on request.
                 </span>
               </div>
             </div>
 
             <div className="bg-cream rounded-2xl p-8">
-              <MapPin className="w-8 h-8 text-grab-green mb-4" />
+              <Thermometer className="w-8 h-8 text-rust mb-4" />
               <h3 className="font-display font-semibold text-deep-brown text-[1.1rem] mb-3">
-                Chilled Nationwide
+                Optional Cold-Chain Upgrade
               </h3>
               <p className="font-body text-[14px] text-earth leading-relaxed mb-4">
-                Our ginger fizz is a fresh, naturally fermented product. It is packed in insulated boxes with ice packs and shipped via chilled courier across Thailand. Please refrigerate immediately on arrival.
+                Want extra protection? Choose cold-chain delivery at checkout and your order travels in an insulated box with ice packs. A good option for hot days or longer transit routes.
               </p>
-              <div className="flex items-center gap-2 text-[13px] text-earth">
-                <Clock className="w-4 h-4 text-rust" />
-                <span>Available for online purchase and nationwide delivery</span>
+              <div className="border-t border-deep-brown/10 pt-4">
+                <p className="font-body text-[14px] text-deep-brown font-semibold mb-1">
+                  +฿100 cold-chain upgrade
+                </p>
+                <p className="font-body text-[14px] text-earth leading-relaxed">
+                  Simply select the cold-chain shipping option during checkout. You still get tracking and the same dispatch schedule.
+                </p>
               </div>
             </div>
           </div>
@@ -80,9 +84,9 @@ export default function ShippingPage() {
             </h2>
             <div className="space-y-6">
               {[
-                { title: 'Order packed', desc: 'We prepare your insulated foam box with ice packs to keep the cultures cold.' },
-                { title: 'Courier pickup', desc: 'Dispatched Monday–Thursday via our cold-chain courier, with a tracking link by email.' },
-                { title: 'Arrives cold', desc: 'Refrigerate immediately. Best enjoyed within 30 days of bottling.' },
+                { title: 'Order packed', desc: 'We carefully pack your bottles so they travel safely.' },
+                { title: 'Courier pickup', desc: 'Dispatched Monday–Thursday with a tracking link sent by email.' },
+                { title: 'Arrives ready', desc: 'Refrigerate on arrival. Best enjoyed within 30 days of bottling.' },
               ].map((step, index) => (
                 <div key={step.title} className="flex gap-4">
                   <div className="flex-shrink-0 w-8 h-8 rounded-full bg-amber text-deep-brown font-display font-bold flex items-center justify-center">
@@ -103,7 +107,7 @@ export default function ShippingPage() {
             <div>
               <h3 className="font-display font-semibold text-[1.1rem] mb-2">Packaging Guarantee</h3>
               <p className="font-body text-[14px] text-cream/80 leading-relaxed">
-                Every order is sealed in an insulated liner with ice packs and a "Keep Refrigerated" label. If your order arrives warm or damaged, contact us within 24 hours and we will make it right.
+                Every order is sealed and protected for transit. If your order arrives damaged, contact us within 24 hours and we will make it right.
               </p>
             </div>
           </div>

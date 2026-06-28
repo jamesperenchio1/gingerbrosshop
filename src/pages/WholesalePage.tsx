@@ -10,13 +10,13 @@ export default function WholesalePage() {
     },
     {
       icon: <Truck className="w-8 h-8 text-amber" />,
-      title: 'Chilled Delivery',
-      description: 'Our ginger fizz is shipped chilled with insulated packaging and ice packs to keep it fresh.',
+      title: 'Reliable Delivery',
+      description: 'We ship wholesale orders across Thailand with standard or cold-chain options to suit your venue.',
     },
     {
       icon: <BadgeCheck className="w-8 h-8 text-amber" />,
       title: 'Consistent Quality',
-      description: 'Every batch is naturally fermented for 7 days using the same ginger-bug starter, Thai ginger, and raw cane sugar.',
+      description: 'Every batch is naturally fermented for 7 days using the same ginger-bug starter, Thai ginger, white sugar, and fresh lime.',
     },
   ];
 
@@ -29,7 +29,7 @@ export default function WholesalePage() {
     '@context': 'https://schema.org',
     '@type': 'WebPage',
     name: 'Wholesale — GingerBros',
-    description: 'Wholesale pricing for cafes, restaurants, bars, and retailers. Order chilled ginger fizz in Thailand.',
+    description: 'Wholesale pricing for cafes, restaurants, bars, and retailers. Order GingerBros ginger fizz in Thailand.',
     url: 'https://gingerbrosshop.com/wholesale',
     mainEntity: {
       '@type': 'Organization',

@@ -219,7 +219,7 @@ export default function CartDrawer() {
 
             {/* Fine print — kept to a few quiet lines */}
             <div className="font-body text-[12px] text-earth/60 leading-relaxed">
-              <p>{hasGingerFizz ? '+฿100 chilled delivery.' : subtotal >= 500 ? 'Free shipping included.' : '+฿100 shipping · free over ฿500'}</p>
+              <p>{hasGingerFizz ? (subtotal >= 500 ? 'Free standard shipping · cold-chain upgrade +฿100' : '฿100 standard shipping · cold-chain upgrade +฿100') : (subtotal >= 500 ? 'Free shipping included.' : '+฿100 shipping · free over ฿500')}</p>
               {state.items.some((i) => i.isSubscription) && (
                 <p>Subscription billed {state.items.find((i) => i.isSubscription)?.interval}.</p>
               )}

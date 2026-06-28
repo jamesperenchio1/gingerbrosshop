@@ -23,7 +23,7 @@ const KNOWN_ROUTES: Record<string, RouteMeta> = {
   '/': {
     title: 'GingerBros — Naturally Brewed Craft Ginger Fizz from Thailand',
     description:
-      '7-day naturally fermented craft ginger fizz brewed in Thailand. Real ginger, prebiotic acacia fibre, low in sugar, delivered chilled to your door nationwide.',
+      '7-day naturally fermented craft ginger fizz brewed in Thailand. Real ginger, fresh lime, prebiotic acacia fibre, low in sugar, delivered to your door nationwide.',
     image: FALLBACK_IMAGE,
     type: 'website',
     jsonLd: {
@@ -62,7 +62,7 @@ const KNOWN_ROUTES: Record<string, RouteMeta> = {
   '/product/ginger-fizz': {
     title: 'GingerBros Ginger Fizz',
     description:
-      '7-day naturally fermented craft ginger fizz brewed in Thailand. Real ginger, prebiotic acacia fibre, low in sugar, delivered chilled.',
+      '7-day naturally fermented craft ginger fizz brewed in Thailand. Real ginger, fresh lime, prebiotic acacia fibre, low in sugar, delivered to your door.',
     image: `${SITE_URL}/images/product-ginger-fizz-1.jpg`,
     type: 'product',
     jsonLd: {
@@ -70,7 +70,7 @@ const KNOWN_ROUTES: Record<string, RouteMeta> = {
       '@type': 'Product',
       name: 'GingerBros Ginger Fizz',
       description:
-        '7-day naturally fermented craft ginger fizz brewed in Thailand. Real ginger, prebiotic acacia fibre, low in sugar, delivered chilled.',
+        '7-day naturally fermented craft ginger fizz brewed in Thailand. Real ginger, fresh lime, prebiotic acacia fibre, low in sugar, delivered to your door.',
       image: [
         `${SITE_URL}/images/product-ginger-fizz-1.jpg`,
         `${SITE_URL}/images/product-ginger-fizz-2.jpg`,
@@ -104,14 +104,14 @@ const KNOWN_ROUTES: Record<string, RouteMeta> = {
   '/wholesale': {
     title: 'Wholesale — GingerBros',
     description:
-      'Wholesale pricing for cafes, restaurants, bars, and retailers. Order chilled ginger fizz in Thailand.',
+      'Wholesale pricing for cafes, restaurants, bars, and retailers. Order GingerBros ginger fizz in Thailand.',
     image: FALLBACK_IMAGE,
     type: 'website',
   },
   '/shipping': {
     title: 'Shipping Information — GingerBros',
     description:
-      'Shipping rates and delivery information for GingerBros ginger fizz. Chilled nationwide delivery across Thailand.',
+      'Shipping rates and delivery information for GingerBros ginger fizz. Standard nationwide delivery across Thailand with optional cold-chain upgrade.',
     image: FALLBACK_IMAGE,
     type: 'website',
   },

@@ -392,11 +392,11 @@ export const PRODUCT_CONTENT: Record<string, ProductContent> = {
   // ─── Drink products ───────────────────────────────────────────────────────
 
   'ginger-fizz': {
-    headline: 'Real fermented ginger fizz. Bold flavour, low sugar, made in Thailand.',
+    headline: 'Real fermented ginger fizz with a bright lime lift. Bold flavour, low sugar, made in Thailand.',
     longDescription:
-      'GingerBros Ginger Fizz is a 7-day naturally fermented craft soda made with fresh Thai ginger and real ingredients. Every bottle is brewed slow, bottled fresh, and delivered chilled so it reaches you at its best. With prebiotic acacia fibre and less than 2g sugar per serving, it is a crisp ginger kick you can feel good about.',
+      'GingerBros Ginger Fizz is a 7-day naturally fermented craft soda made with fresh Thai ginger, real lime, and simple ingredients. Every bottle is brewed slow, bottled fresh, and delivered to your door. With prebiotic acacia fibre and less than 2g sugar per serving, it is a crisp ginger kick you can feel good about.',
     video: '/images/product-ginger-fizz.mp4',
-    ingredients: ['Fresh Thai Ginger', 'Filtered Water', 'Erythritol', 'Raw Cane Sugar (ferment starter)', 'Ginger Bug Culture', 'Acacia Fibre'],
+    ingredients: ['Fresh Thai Ginger', 'Filtered Water', 'Erythritol', 'White Sugar (ferment starter)', 'Ginger Bug Culture', 'Acacia Fibre', 'Fresh Lime'],
     specs: [
       { label: 'Volume', value: '330ml per bottle' },
       { label: 'Shelf Life', value: '30 days (refrigerated)' },
@@ -415,12 +415,12 @@ export const PRODUCT_CONTENT: Record<string, ProductContent> = {
       { label: 'Sodium', value: '5mg' },
     ],
     features: [
-      'Low sugar — sweetened with erythritol, not loaded with cane sugar',
+      'Low sugar — sweetened with erythritol',
       '7-day natural fermentation for real ginger flavour',
+      'Fresh Thai ginger and real lime',
       'Prebiotic acacia fibre',
       'Bold, complex, naturally effervescent flavour',
       'Brewed and bottled in Thailand',
-      'Best consumed within 30 days for peak freshness',
     ],
   },
 };
