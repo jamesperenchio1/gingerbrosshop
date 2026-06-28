@@ -62,7 +62,7 @@ function RelatedProductCard({ product }: { product: CatalogProduct }) {
       <div className="flex items-center justify-between gap-3 mt-auto">
         <span className="font-display font-semibold text-deep-brown text-lg">฿{price?.unitAmount ?? '—'}</span>
         <button
-          onClick={(e) => { e.stopPropagation(); hasVariants ? navigate(`/product/${product.id}`) : handleAdd(); }}
+          onClick={(e) => { e.stopPropagation(); if (hasVariants) navigate(`/product/${product.id}`); else handleAdd(); }}
           className={`font-body font-medium text-[12px] uppercase tracking-[0.07em] px-4 py-2 rounded-full transition-all ${added ? 'bg-accent-green text-white' : 'bg-amber text-deep-brown hover:bg-warm-gold'}`}
         >
           {added ? 'Added!' : hasVariants ? 'Options →' : 'Add to Cart'}
@@ -92,8 +92,6 @@ export default function ProductDetail() {
   const [giftName, setGiftName] = useState('');
   const [giftMessage, setGiftMessage] = useState('');
   const [selectedPriceId, setSelectedPriceId] = useState<string | null>(null);
-  const [selectedSize, setSelectedSize] = useState<string | null>(null);
-  const [selectedType, setSelectedType] = useState<string | null>(null);
 
   const heroRef = useRef<HTMLDivElement>(null);
   const infoRef = useRef<HTMLDivElement>(null);
@@ -116,17 +114,25 @@ export default function ProductDetail() {
     setActiveImage(0);
     setQuantity(1);
     setSelectedPriceId(null);
-    setSelectedSize(null);
-    setSelectedType(null);
   }
 
   const images = product?.images ?? [];
   const video = content.video;
 
   const oneTimeForProduct = product ? oneTimePrice(product) : undefined;
-  const selectedPrice = product
-    ? (product.prices.find((p) => p.priceId === selectedPriceId) ?? defaultPrice(product))
-    : undefined;
+  const selectedPrice = (() => {
+    if (!product) return undefined;
+    if (selectedPriceId) {
+      return product.prices.find((p) => p.priceId === selectedPriceId) ?? defaultPrice(product);
+    }
+    if (searchParams.get('plan') === 'weekly') {
+      const weekly = product.prices.find(
+        (p) => p.recurring?.interval === 'week' && p.recurring.intervalCount === 1,
+      );
+      if (weekly) return weekly;
+    }
+    return defaultPrice(product);
+  })();
   const maxSavings = product
     ? product.prices.reduce(
         (acc, p) => (p.recurring ? Math.max(acc, savingsPercent(p, oneTimeForProduct)) : acc),
@@ -148,33 +154,33 @@ export default function ProductDetail() {
     ? [...new Set(product!.prices.map((p) => p.nickname!.split(' · ')[1]))]
     : [];
 
-  useEffect(() => {
-    if (!isVariantProduct || !product || selectedSize !== null) return;
-    const first = product.prices[0];
-    if (!first?.nickname) return;
-    const [size, type] = first.nickname.split(' · ');
-    setSelectedSize(size);
-    setSelectedType(type ?? null);
-  }, [isVariantProduct, product, selectedSize]);
+  const selectedSize = isVariantProduct && selectedPrice?.nickname
+    ? selectedPrice.nickname.split(' · ')[0]
+    : null;
+  const selectedType = isVariantProduct && selectedPrice?.nickname
+    ? selectedPrice.nickname.split(' · ')[1] ?? null
+    : null;
 
-  useEffect(() => {
-    if (!isVariantProduct || !selectedSize || !selectedType || !product) return;
-    const nickname = `${selectedSize} · ${selectedType}`;
-    const match = product.prices.find((p) => p.nickname === nickname);
+  const handleSizeSelect = (size: string) => {
+    if (!product || !isVariantProduct) return;
+    const match = product.prices.find((p) => p.nickname === `${size} · ${selectedType}`);
+    if (match) {
+      setSelectedPriceId(match.priceId);
+      return;
+    }
+    const fallback = product.prices.find((p) => p.nickname?.startsWith(`${size} ·`));
+    if (fallback) setSelectedPriceId(fallback.priceId);
+  };
+
+  const handleTypeSelect = (type: string) => {
+    if (!product || !isVariantProduct) return;
+    const match = product.prices.find((p) => p.nickname === `${selectedSize} · ${type}`);
     if (match) setSelectedPriceId(match.priceId);
-  }, [isVariantProduct, selectedSize, selectedType, product]);
+  };
 
   useEffect(() => {
     window.scrollTo(0, 0);
   }, [id]);
-
-  useEffect(() => {
-    if (!product || searchParams.get('plan') !== 'weekly') return;
-    const weeklyPrice = product.prices.find(
-      (p) => p.recurring?.interval === 'week' && p.recurring.intervalCount === 1,
-    );
-    if (weeklyPrice) setSelectedPriceId(weeklyPrice.priceId);
-  }, [product, searchParams]);
 
   useLayoutEffect(() => {
     if (!product) return;
@@ -367,7 +373,7 @@ export default function ProductDetail() {
                     {variantSizes.map((size) => (
                       <button
                         key={size}
-                        onClick={() => setSelectedSize(size)}
+                        onClick={() => handleSizeSelect(size)}
                         aria-pressed={selectedSize === size}
                         className={`font-body font-medium text-[13px] px-4 py-2 rounded-xl border-2 transition-all ${selectedSize === size ? 'border-amber bg-amber/10 text-deep-brown' : 'border-soft-peach text-earth hover:border-amber/50'}`}
                       >
@@ -382,7 +388,7 @@ export default function ProductDetail() {
                     {variantTypes.map((type) => (
                       <button
                         key={type}
-                        onClick={() => setSelectedType(type)}
+                        onClick={() => handleTypeSelect(type)}
                         aria-pressed={selectedType === type}
                         className={`flex items-center gap-2 font-body font-medium text-[13px] px-4 py-2.5 rounded-xl border-2 transition-all ${selectedType === type ? 'border-amber bg-amber/10 text-deep-brown' : 'border-soft-peach text-earth hover:border-amber/50'}`}
                       >
