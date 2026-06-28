@@ -45,7 +45,7 @@ export default function Hero() {
       <NoiseCanvas />
       <BubbleCanvas />
 
-      <div className="relative z-10 w-full max-w-[1120px] mx-auto px-6 grid grid-cols-1 md:grid-cols-2 gap-10 md:gap-8 items-center py-24 md:py-0">
+      <div className="relative z-10 w-full max-w-[1120px] mx-auto px-6 grid grid-cols-1 md:grid-cols-2 gap-10 md:gap-8 items-center pt-24 pb-28 md:py-0">
         {/* Left: copy */}
         <div className="flex flex-col items-center md:items-start text-center md:text-left order-2 md:order-1">
           <div ref={badgeRef} className="mb-5">
