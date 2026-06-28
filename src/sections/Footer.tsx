@@ -4,8 +4,7 @@ export default function Footer() {
 
   const links = {
     shop: [
-      { label: 'Unpasteurized Ginger Fizz', href: '/product/unpasteurized' },
-      { label: 'Ginger Pop (Shelf Stable)', href: '/product/pasteurized' },
+      { label: 'GingerBros Ginger Fizz', href: '/product/ginger-fizz' },
       { label: 'Wholesale', href: '/wholesale' },
     ],
     company: [
