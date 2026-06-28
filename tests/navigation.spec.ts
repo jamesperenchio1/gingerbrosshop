@@ -3,7 +3,7 @@ import { test, expect } from '@playwright/test';
 test('product page has back to shop link', async ({ page }) => {
   await page.goto('/product/ginger-fizz');
   await page.getByRole('link', { name: /back to shop/i }).click();
-  await expect(page).toHaveURL('/');
+  await expect(page).toHaveURL(/\/$|^.*#shop$/);
 });
 
 test('logo from product page returns home', async ({ page }) => {

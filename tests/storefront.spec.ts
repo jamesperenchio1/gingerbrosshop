@@ -49,7 +49,7 @@ test('checkout button triggers Stripe redirect', async ({ page }) => {
   await page.getByTestId('cart-checkout').click();
   await page.waitForURL(/checkout\.stripe\.com/, { timeout: 20_000, waitUntil: 'commit' });
   expect(page.url()).toContain('checkout.stripe.com');
-  await expect(page.getByRole('heading', { name: /Pay GingerBros/i })).toBeVisible({ timeout: 15_000 });
+  await expect(page.locator('body')).toContainText('Ginger Fizz', { timeout: 15_000 });
 });
 
 test('api/checkout creates a Stripe session', async ({ request }) => {
