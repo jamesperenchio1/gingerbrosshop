@@ -116,7 +116,7 @@ describe('webhook handler', () => {
         data: [
           {
             id: 'li_test',
-            description: 'Unpasteurized Ginger Fizz',
+            description: 'Ginger Fizz',
             quantity: 1,
             amount_total: 14000,
             price: { product: 'prod_test', unit_amount: 14000 },

@@ -50,7 +50,7 @@ export default function CartDrawer() {
   }, [state.isOpen, closeCart]);
 
   const hasMixedCart = state.items.some(i => i.isSubscription) && state.items.some(i => !i.isSubscription);
-  const hasUnpasteurized = state.items.some(i => i.productId === 'unpasteurized');
+  const hasGingerFizz = state.items.some(i => i.productId === 'ginger-fizz');
 
   // Pre-create the Stripe checkout session in the background as soon as the cart
   // opens, so clicking "Checkout" redirects instantly instead of waiting for the API.
@@ -219,7 +219,7 @@ export default function CartDrawer() {
 
             {/* Fine print — kept to a few quiet lines */}
             <div className="font-body text-[12px] text-earth/60 leading-relaxed">
-              <p>{hasUnpasteurized ? '+฿100 chilled delivery.' : subtotal >= 500 ? 'Free shipping included.' : '+฿100 shipping · free over ฿500'}</p>
+              <p>{hasGingerFizz ? '+฿100 chilled delivery.' : subtotal >= 500 ? 'Free shipping included.' : '+฿100 shipping · free over ฿500'}</p>
               {state.items.some((i) => i.isSubscription) && (
                 <p>Subscription billed {state.items.find((i) => i.isSubscription)?.interval}.</p>
               )}

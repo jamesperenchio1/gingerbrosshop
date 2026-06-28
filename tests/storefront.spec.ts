@@ -9,26 +9,26 @@ test('home page loads with hero and shop sections', async ({ page }) => {
   await page.goto('/');
   await expect(page).toHaveTitle(/GingerBros/);
   await expect(page.locator('body')).toBeVisible();
-  await expect(page.locator('#hero').getByRole('heading', { name: /GingerBros Ginger Fizz/i })).toBeVisible();
+  await expect(page.locator('#hero').getByRole('heading', { name: /Fermented Ginger/i })).toBeVisible();
   await expect(page.getByTestId('add-to-cart')).toBeVisible({ timeout: 15_000 });
 });
 
 test('hero headline is visible without bottle overlay image', async ({ page }) => {
   await page.goto('/');
   const hero = page.locator('#hero');
-  await expect(hero.getByRole('heading', { name: /GingerBros Ginger Fizz/i })).toBeVisible();
+  await expect(hero.getByRole('heading', { name: /Fermented Ginger/i })).toBeVisible();
   await expect(hero.locator('img[alt*="bottle" i]')).not.toBeVisible();
 });
 
 test('add to cart opens drawer with item', async ({ page }) => {
   await page.getByTestId('add-to-cart').click();
   await expect(page.getByTestId('cart-drawer')).toBeVisible({ timeout: 5_000 });
-  await expect(page.getByTestId('cart-items')).toContainText('Unpasteurized Ginger Fizz');
+  await expect(page.getByTestId('cart-items')).toContainText('Ginger Fizz');
 });
 
 test('product page loads directly', async ({ page }) => {
-  await page.goto('/product/unpasteurized');
-  await expect(page.locator('h1')).toContainText('Unpasteurized Ginger Fizz');
+  await page.goto('/product/ginger-fizz');
+  await expect(page.locator('h1')).toContainText('Ginger Fizz');
   await expect(page.getByRole('button', { name: /add to cart/i })).toBeVisible();
 });
 
@@ -57,7 +57,7 @@ test('api/checkout creates a Stripe session', async ({ request }) => {
     'Requires deployed env'
   );
   const res = await request.post('/api/checkout', {
-    data: { items: [{ id: 'unpasteurized', quantity: 1 }] },
+    data: { items: [{ priceId: 'price_1Tj1Gj4xTvnGlHCDPTwOQhDd', quantity: 1, productId: 'ginger-fizz' }] },
   });
   expect(res.status()).toBe(200);
   const body = await res.json();

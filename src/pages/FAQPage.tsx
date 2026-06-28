@@ -15,7 +15,7 @@ export default function FAQPage() {
     {
       icon: <Truck className="w-6 h-6 text-amber" />,
       q: 'Where do you deliver?',
-      a: 'We deliver across Thailand. Unpasteurized ginger fizz is shipped chilled with insulation and ice packs, so it can travel safely to Bangkok, Chiang Mai, Phuket, Korat, and everywhere in between.',
+      a: 'We deliver across Thailand. GingerBros ginger fizz is shipped chilled with insulation and ice packs, so it can travel safely to Bangkok, Chiang Mai, Phuket, Korat, and everywhere in between.',
     },
     {
       icon: <Package className="w-6 h-6 text-amber" />,
@@ -24,8 +24,8 @@ export default function FAQPage() {
     },
     {
       icon: <Thermometer className="w-6 h-6 text-amber" />,
-      q: 'How should I store unpasteurized ginger fizz?',
-      a: 'Unpasteurized ginger fizz is raw and alive — keep it refrigerated at 2–6°C at all times. It is best consumed within 30 days of bottling. Natural sediment is normal and safe; gently invert before opening.',
+      q: 'How should I store GingerBros ginger fizz?',
+      a: 'GingerBros ginger fizz is brewed fresh and naturally fermented — keep it refrigerated at 2–6°C at all times. It is best consumed within 30 days of bottling. Natural sediment is normal and safe; gently invert before opening.',
     },
     {
       icon: <MapPin className="w-6 h-6 text-amber" />,
@@ -35,7 +35,7 @@ export default function FAQPage() {
     {
       icon: <RefreshCw className="w-6 h-6 text-amber" />,
       q: 'Do you offer subscriptions?',
-      a: 'Yes. You can subscribe to regular deliveries of unpasteurized ginger fizz and save on every box. Manage, pause, or cancel anytime from your customer portal.',
+      a: 'Yes. You can subscribe to regular deliveries of GingerBros ginger fizz and save on every box. Manage, pause, or cancel anytime from your customer portal.',
     },
     {
       icon: <CreditCard className="w-6 h-6 text-amber" />,
@@ -90,7 +90,7 @@ export default function FAQPage() {
               Frequently Asked Questions
             </h1>
             <p className="font-body text-earth text-lg">
-              Everything you need to know about GingerBros unpasteurized ginger fizz.
+              Everything you need to know about GingerBros ginger fizz.
             </p>
           </div>
 

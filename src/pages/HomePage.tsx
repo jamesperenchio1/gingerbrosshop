@@ -13,7 +13,7 @@ const organizationSchema = {
   '@type': 'Organization',
   name: 'GingerBros',
   url: 'https://gingerbrosshop.com',
-  logo: 'https://gingerbrosshop.com/images/product-unpasteurized-2.jpg',
+  logo: 'https://gingerbrosshop.com/images/product-ginger-fizz-1.jpg',
   sameAs: [
     'https://www.instagram.com/drinkgingerbros',
     'https://www.tiktok.com/@gingerbrosbrew',

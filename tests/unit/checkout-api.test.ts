@@ -111,8 +111,8 @@ describe('checkout API handler', () => {
     const req = mockReq({
       body: {
         items: [
-          { id: 'unpasteurized', quantity: 1 },
-          { id: 'unpasteurized-sub-week', quantity: 1 },
+          { id: 'ginger-fizz', quantity: 1, productId: 'ginger-fizz' },
+          { id: 'ginger-fizz-sub-week', quantity: 1, productId: 'ginger-fizz' },
         ],
       },
     });
@@ -124,7 +124,7 @@ describe('checkout API handler', () => {
 
   it('rejects missing stripe secret', async () => {
     delete process.env.STRIPE_SECRET_KEY;
-    const req = mockReq({ body: { items: [{ id: 'unpasteurized', quantity: 1 }] } });
+    const req = mockReq({ body: { items: [{ id: 'ginger-fizz', quantity: 1, productId: 'ginger-fizz' }] } });
     const res = mockRes();
     await handler(req, res);
     expect(res.statusCode).toBe(500);
@@ -134,7 +134,7 @@ describe('checkout API handler', () => {
   it('passes gift info into Stripe session metadata', async () => {
     const req = mockReq({
       body: {
-        items: [{ id: 'unpasteurized', quantity: 1 }],
+        items: [{ id: 'ginger-fizz', quantity: 1, productId: 'ginger-fizz' }],
         giftInfo: {
           isGift: true,
           recipientEmail: 'gift@example.com',
@@ -160,7 +160,7 @@ describe('checkout API handler', () => {
   it('passes referral code into Stripe session metadata', async () => {
     const req = mockReq({
       body: {
-        items: [{ id: 'unpasteurized', quantity: 1 }],
+        items: [{ id: 'ginger-fizz', quantity: 1, productId: 'ginger-fizz' }],
         referralCode: 'BRO1234',
       },
     });

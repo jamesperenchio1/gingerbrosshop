@@ -4,9 +4,7 @@ const BASE = 'http://localhost:4174';
 
 const cases = [
   { path: '/', expectStatus: 200, title: 'GingerBros — Naturally Brewed Craft Ginger Fizz' },
-  { path: '/product/unpasteurized', expectStatus: 200, title: 'Unpasteurized Ginger Fizz — GingerBros' },
-  { path: '/product/pasteurized', expectStatus: 404, title: 'Page Not Found — GingerBros' },
-  { path: '/product/pasteurized-6pack', expectStatus: 404, title: 'Page Not Found — GingerBros' },
+  { path: '/product/ginger-fizz', expectStatus: 200, title: 'GingerBros Ginger Fizz' },
   { path: '/product/unknown-id', expectStatus: 404, title: 'Page Not Found — GingerBros' },
   { path: '/faq', expectStatus: 200, title: 'Frequently Asked Questions — GingerBros' },
   { path: '/shipping', expectStatus: 200, title: 'Shipping Information — GingerBros' },

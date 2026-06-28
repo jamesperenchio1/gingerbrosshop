@@ -9,7 +9,7 @@ interface CheckoutLine {
   priceId?: string;
   id?: string;
   quantity: number;
-  // The app-level product ID (e.g. "unpasteurized") used to determine shipping.
+  // The app-level product ID (e.g. "ginger-fizz") used to determine shipping.
   productId?: string;
 }
 
@@ -88,8 +88,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     'week_2':  'price_1TlT9h4xTvnGlHCDBXJjknzd',
     'month_1': 'price_1TlT9j4xTvnGlHCDwrgy2MEu',
   };
-  const hasUnpasteurizedSub = recurringCount > 0 && items.some(i => i.productId === 'unpasteurized');
-  if (hasUnpasteurizedSub && subInterval) {
+  const hasGingerFizzSub = recurringCount > 0 && items.some(i => i.productId === 'ginger-fizz');
+  if (hasGingerFizzSub && subInterval) {
     const key = `${subInterval.interval}_${subInterval.intervalCount}`;
     const deliveryPriceId = CHILLED_DELIVERY_PRICE[key];
     if (deliveryPriceId) {
@@ -128,19 +128,18 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     metadata.giftMessage = giftInfo.message ?? '';
   }
 
-  // Shipping: unpasteurized always gets chilled delivery at ฿100 (no free tier).
-  // Pasteurized/regular: free over ฿500, otherwise ฿100 standard.
+  // Shipping: ginger fizz always gets chilled delivery at ฿100 (no free tier).
   const FREE_SHIPPING_THRESHOLD = 50000; // ฿500 in satang
   const SHIPPING_FLAT = 10000; // ฿100 in satang
-  const hasUnpasteurized = items.some(i => i.productId === 'unpasteurized');
-  const shippingFree = !hasUnpasteurized && subtotalMinor >= FREE_SHIPPING_THRESHOLD;
+  const hasGingerFizz = items.some(i => i.productId === 'ginger-fizz');
+  const shippingFree = !hasGingerFizz && subtotalMinor >= FREE_SHIPPING_THRESHOLD;
   const shippingOptions: Stripe.Checkout.SessionCreateParams.ShippingOption[] = [
     {
       shipping_rate_data: {
         type: 'fixed_amount',
         fixed_amount: { amount: shippingFree ? 0 : SHIPPING_FLAT, currency: 'thb' },
-        display_name: hasUnpasteurized ? 'Chilled Delivery' : shippingFree ? 'Free shipping' : 'Standard shipping',
-        delivery_estimate: hasUnpasteurized
+        display_name: hasGingerFizz ? 'Chilled Delivery' : shippingFree ? 'Free shipping' : 'Standard shipping',
+        delivery_estimate: hasGingerFizz
           ? { minimum: { unit: 'business_day', value: 1 }, maximum: { unit: 'business_day', value: 2 } }
           : { minimum: { unit: 'business_day', value: 2 }, maximum: { unit: 'business_day', value: 4 } },
       },

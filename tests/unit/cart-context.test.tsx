@@ -8,12 +8,12 @@ const wrapper = ({ children }: { children: React.ReactNode }) => (
 );
 
 const sampleItem: CartItem = {
-  id: 'unpasteurized',
-  name: 'Unpasteurized Ginger Fizz',
-  variant: 'unpasteurized',
+  id: 'ginger-fizz',
+  name: 'Ginger Fizz',
+  variant: 'ginger-fizz',
   price: 140,
   quantity: 1,
-  image: '/images/product-unpasteurized-2.jpg',
+  image: '/images/product-ginger-fizz-1.jpg',
   badge: 'Chilled Delivery',
   badgeColor: 'bg-sky-500',
 };
@@ -21,7 +21,7 @@ const sampleItem: CartItem = {
 const sampleItem2: CartItem = {
   id: 'pasteurized',
   name: 'Pasteurized Ginger Fizz',
-  variant: 'unpasteurized',
+  variant: 'ginger-fizz',
   price: 120,
   quantity: 2,
   image: '/images/product-pasteurized.png',

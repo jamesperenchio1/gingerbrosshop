@@ -144,7 +144,7 @@ const PRODUCTS = [
   },
 ];
 
-const DRINK_APP_IDS = ['unpasteurized', 'pasteurized', 'pasteurized-6pack'];
+const DRINK_APP_IDS = ['ginger-fizz'];
 const OLD_VARIANT_APP_ID = 'duotight-ball-lock-disconnect';
 
 async function run() {

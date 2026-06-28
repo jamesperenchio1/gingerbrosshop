@@ -2,7 +2,7 @@ import { Helmet } from 'react-helmet-async';
 
 const SITE_URL = 'https://gingerbrosshop.com';
 const SITE_NAME = 'GingerBros';
-const DEFAULT_IMAGE = `${SITE_URL}/images/product-unpasteurized-2.jpg`;
+const DEFAULT_IMAGE = `${SITE_URL}/images/product-ginger-fizz-1.jpg`;
 
 interface SEOProps {
   title: string;

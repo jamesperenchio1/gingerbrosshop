@@ -98,18 +98,16 @@ export default function Hero() {
 
         {/* Right: product shot */}
         <div ref={imageRef} className="flex justify-center md:justify-end order-1 md:order-2">
-          <div className="relative md:rounded-[28px] md:overflow-hidden md:shadow-[0_28px_72px_rgba(80,45,8,0.32)] md:ring-1 md:ring-black/5">
-            <img
-              src="/images/product-ginger-fizz.png"
-              alt="GingerBros Ginger Fizz bottle"
-              width={420}
-              height={560}
-              loading="eager"
-              fetchPriority="high"
-              decoding="async"
-              className="w-[120px] xs:w-[140px] sm:w-[200px] md:w-[340px] block drop-shadow-[0_20px_40px_rgba(80,45,8,0.30)]"
-            />
-          </div>
+          <img
+            src="/images/product-ginger-fizz.png"
+            alt="GingerBros Ginger Fizz bottle"
+            width={420}
+            height={560}
+            loading="eager"
+            fetchPriority="high"
+            decoding="async"
+            className="w-[120px] xs:w-[140px] sm:w-[200px] md:w-[380px] block drop-shadow-[0_24px_48px_rgba(80,45,8,0.32)] md:rotate-[-3deg] md:hover:rotate-0 transition-transform duration-500"
+          />
         </div>
       </div>
 

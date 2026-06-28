@@ -17,13 +17,13 @@ interface RouteMeta {
   jsonLd?: object;
 }
 
-const FALLBACK_IMAGE = `${SITE_URL}/images/product-unpasteurized-2.jpg`;
+const FALLBACK_IMAGE = `${SITE_URL}/images/product-ginger-fizz-1.jpg`;
 
 const KNOWN_ROUTES: Record<string, RouteMeta> = {
   '/': {
     title: 'GingerBros — Naturally Brewed Craft Ginger Fizz from Thailand',
     description:
-      '7-day naturally fermented craft ginger fizz brewed in Thailand. Raw, unpasteurized, and delivered chilled to your door nationwide.',
+      '7-day naturally fermented craft ginger fizz brewed in Thailand. Real ginger, prebiotic acacia fibre, low in sugar, delivered chilled to your door nationwide.',
     image: FALLBACK_IMAGE,
     type: 'website',
     jsonLd: {
@@ -33,7 +33,7 @@ const KNOWN_ROUTES: Record<string, RouteMeta> = {
           '@type': 'Organization',
           name: 'GingerBros',
           url: SITE_URL,
-          logo: `${SITE_URL}/images/product-unpasteurized-2.jpg`,
+          logo: `${SITE_URL}/images/product-ginger-fizz-1.jpg`,
           sameAs: [
             'https://www.instagram.com/drinkgingerbros',
             'https://www.tiktok.com/@gingerbrosbrew',
@@ -51,35 +51,35 @@ const KNOWN_ROUTES: Record<string, RouteMeta> = {
             {
               '@type': 'ListItem',
               position: 1,
-              url: `${SITE_URL}/product/unpasteurized`,
-              name: 'Unpasteurized Ginger Fizz',
+              url: `${SITE_URL}/product/ginger-fizz`,
+              name: 'GingerBros Ginger Fizz',
             },
           ],
         },
       ],
     },
   },
-  '/product/unpasteurized': {
-    title: 'Unpasteurized Ginger Fizz — GingerBros',
+  '/product/ginger-fizz': {
+    title: 'GingerBros Ginger Fizz',
     description:
-      'Raw, living ginger fizz with active probiotic cultures. 7-day naturally fermented, refrigerated delivery across Thailand.',
-    image: `${SITE_URL}/images/product-unpasteurized-2.jpg`,
+      '7-day naturally fermented craft ginger fizz brewed in Thailand. Real ginger, prebiotic acacia fibre, low in sugar, delivered chilled.',
+    image: `${SITE_URL}/images/product-ginger-fizz-1.jpg`,
     type: 'product',
     jsonLd: {
       '@context': 'https://schema.org',
       '@type': 'Product',
-      name: 'Unpasteurized Ginger Fizz',
+      name: 'GingerBros Ginger Fizz',
       description:
-        'Raw, living ginger fizz with active probiotic cultures. 7-day naturally fermented, refrigerated delivery across Thailand.',
+        '7-day naturally fermented craft ginger fizz brewed in Thailand. Real ginger, prebiotic acacia fibre, low in sugar, delivered chilled.',
       image: [
-        `${SITE_URL}/images/product-unpasteurized-2.jpg`,
-        `${SITE_URL}/images/product-unpasteurized.jpg`,
+        `${SITE_URL}/images/product-ginger-fizz-1.jpg`,
+        `${SITE_URL}/images/product-ginger-fizz-2.jpg`,
       ],
       brand: { '@type': 'Brand', name: 'GingerBros' },
-      sku: 'unpasteurized',
+      sku: 'ginger-fizz',
       offers: {
         '@type': 'Offer',
-        url: `${SITE_URL}/product/unpasteurized`,
+        url: `${SITE_URL}/product/ginger-fizz`,
         priceCurrency: 'THB',
         price: '140',
         availability: 'https://schema.org/InStock',
@@ -104,14 +104,14 @@ const KNOWN_ROUTES: Record<string, RouteMeta> = {
   '/wholesale': {
     title: 'Wholesale — GingerBros',
     description:
-      'Wholesale pricing for cafes, restaurants, bars, and retailers. Order chilled unpasteurized ginger fizz in Thailand.',
+      'Wholesale pricing for cafes, restaurants, bars, and retailers. Order chilled ginger fizz in Thailand.',
     image: FALLBACK_IMAGE,
     type: 'website',
   },
   '/shipping': {
     title: 'Shipping Information — GingerBros',
     description:
-      'Shipping rates and delivery information for GingerBros unpasteurized ginger fizz. Chilled nationwide delivery across Thailand.',
+      'Shipping rates and delivery information for GingerBros ginger fizz. Chilled nationwide delivery across Thailand.',
     image: FALLBACK_IMAGE,
     type: 'website',
   },
@@ -156,7 +156,7 @@ const KNOWN_ROUTES: Record<string, RouteMeta> = {
   },
 };
 
-const VALID_PRODUCT_IDS = new Set(['unpasteurized']);
+const VALID_PRODUCT_IDS = new Set(['ginger-fizz']);
 
 interface BlogPostMeta {
   title: string;
@@ -186,7 +186,7 @@ const BLOG_POSTS: Record<string, BlogPostMeta> = {
       'Why our 7-day fermented ginger fizz makes the best Moscow Mule you have ever tasted — and the copper-mug ritual that goes with it.',
     date: '2026-05-28',
     author: 'The GingerBros Kitchen',
-    image: `${SITE_URL}/images/product-unpasteurized-2.jpg`,
+    image: `${SITE_URL}/images/product-ginger-fizz-1.jpg`,
   },
   'dark-and-stormy': {
     title: 'Dark ’n’ Stormy with a Thai Ginger Kick',
@@ -220,13 +220,13 @@ const BLOG_POSTS: Record<string, BlogPostMeta> = {
   },
   'gut-health': {
     title: 'Ginger Fizz & Gut Health: What You Should Know',
-    description: 'The science behind ginger, fermentation, and why your gut loves unpasteurized ginger fizz.',
+    description: 'The science behind ginger, fermentation, and why your gut loves naturally fermented ginger fizz.',
     date: '2026-06-08',
     author: 'GingerBros Wellness',
   },
   'probiotics-prebiotics': {
     title: 'Probiotics vs Prebiotics: A Simple Guide',
-    description: 'Learn the difference and how to pair unpasteurized ginger fizz with gut-friendly foods.',
+    description: 'Learn the difference and how to pair naturally fermented ginger fizz with gut-friendly foods.',
     date: '2026-05-30',
     author: 'GingerBros Wellness',
   },
@@ -248,12 +248,7 @@ const BLOG_POSTS: Record<string, BlogPostMeta> = {
     date: '2026-05-08',
     author: 'GingerBros Wellness',
   },
-  'unpasteurized-vs-pasteurized': {
-    title: 'Unpasteurized vs Pasteurized: The Honest Difference',
-    description: 'A clear, no-spin comparison so you can choose the bottle that fits your life.',
-    date: '2026-04-30',
-    author: 'GingerBros Wellness',
-  },
+
   'storing-living-fizz': {
     title: 'How to Store Living Fizz (and Open It Safely)',
     description:
@@ -285,7 +280,7 @@ const BLOG_POSTS: Record<string, BlogPostMeta> = {
       'The small Bangkok team that hand-balances every batch — and why they do it by taste, not by formula.',
     date: '2026-03-20',
     author: 'GingerBros Stories',
-    image: `${SITE_URL}/images/product-unpasteurized.jpg`,
+    image: `${SITE_URL}/images/product-ginger-fizz-2.jpg`,
   },
   'ginger-bug-at-home': {
     title: 'Start Your Own Ginger Bug at Home',
@@ -326,7 +321,7 @@ function blogPostMeta(slug: string): RouteMeta | null {
         name: 'GingerBros',
         logo: {
           '@type': 'ImageObject',
-          url: `${SITE_URL}/images/product-unpasteurized-2.jpg`,
+          url: `${SITE_URL}/images/product-ginger-fizz-1.jpg`,
         },
       },
     },

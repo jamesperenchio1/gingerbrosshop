@@ -152,7 +152,7 @@ Carbonation in a living soda is not pumped in — it is grown. As yeast metaboli
 
 This is also why a living soda keeps evolving in the bottle: as long as a little sugar and a few active cultures remain, fermentation creeps slowly forward. Keeping the bottle cold slows that process to a crawl, which is exactly why our raw line travels chilled.
 
-## Unpasteurized by default, pasteurized by choice
+## Raw by default, pasteurized by choice
 
 Here is where I want to be completely honest, because it is a question we get all the time: **do we pasteurize?** The answer is — it depends on the bottle, and we make both.
 
@@ -160,7 +160,7 @@ Pasteurization means gently heating a drink to a set temperature to kill microor
 
 So we offer two honest options instead of pretending one size fits all:
 
-• **Our unpasteurized (raw) line** keeps every live culture intact. It is brighter, more complex, and a little tart — but it must stay refrigerated and is best enjoyed fresh. This is the bottle for people who want the living, gut-friendly version.
+• **Our raw Ginger Fizz line** keeps every live culture intact. It is brighter, more complex, and a little tart — but it must stay refrigerated and is best enjoyed fresh. This is the bottle for people who want the living, gut-friendly version.
 • **Our pasteurized line** is gently heat-treated so it becomes shelf-stable, travel-friendly, and easy to gift. It trades the live cultures for convenience and a longer, more consistent shelf life.
 
 > We would rather give you a clear choice between living and shelf-stable than quietly pasteurize everything and call it "raw".
@@ -194,7 +194,7 @@ Great fizz is not manufactured — it is cultivated. Whether you choose the raw 
     date: '2026-05-28',
     author: 'The GingerBros Kitchen',
     tags: ['cocktail', 'vodka', 'classic'],
-    image: '/images/product-unpasteurized-2.jpg',
+    image: '/images/product-ginger-fizz-1.jpg',
     content: `The Moscow Mule is one of the simplest cocktails in the canon — vodka, lime, ginger — which is exactly why the *quality* of each part matters so much. There is nowhere to hide. A great Mule lives or dies on its ginger, and our 7-day naturally fermented brew brings a depth of flavour that mass-market ginger sodas simply cannot match. Most commercial mules lean on sweet, one-note ginger beer; ours leans on a living, lightly tart fizz that lets the lime and vodka breathe.
 
 ## A little history
@@ -205,7 +205,7 @@ The Moscow Mule was invented in the early 1940s in Los Angeles, reportedly a thr
 
 • 60ml vodka
 • 15ml fresh lime juice (always fresh — bottled lime tastes flat and slightly bitter)
-• 120ml GingerBros Unpasteurized Ginger Fizz, well chilled
+• 120ml GingerBros Ginger Fizz, well chilled
 • Lime wedge and a sprig of mint for garnish
 
 ## Instructions
@@ -225,7 +225,7 @@ Because vodka is meant to be neutral, people assume it does not matter here — 
 
 ## Why our fizz works so well
 
-The natural fermentation gives our unpasteurized ginger fizz a subtle funk and complexity that elevates this classic from good to unforgettable. Because our brew is less sweet than standard ginger beer, you taste the ginger heat and the citrus rather than syrup — the difference between a Mule that refreshes and one that cloys.
+The natural fermentation gives our ginger fizz a subtle funk and complexity that elevates this classic from good to unforgettable. Because our brew is less sweet than standard ginger beer, you taste the ginger heat and the citrus rather than syrup — the difference between a Mule that refreshes and one that cloys.
 
 ## Make it your own
 
@@ -262,7 +262,7 @@ Here is a fun bit of trivia: "Dark 'n Stormy" is a registered trademark held by 
 ## Ingredients
 
 • 60ml dark rum (Gosling’s Black Seal is traditional; any rich, dark rum works)
-• 120ml GingerBros Unpasteurized Ginger Fizz, well chilled
+• 120ml GingerBros Ginger Fizz, well chilled
 • 10ml fresh lime juice
 • Lime wheel and candied ginger for garnish
 
@@ -283,7 +283,7 @@ Reach for a dark or "black" rum rather than a light or spiced one. You want the 
 
 ## A note on the lime
 
-The classic Bermudian recipe is sometimes served without lime, but a squeeze of fresh lime brightens the whole thing and balances the rum's sweetness. Our unpasteurized fizz already carries a faint lactic tartness from its live cultures, so a little lime amplifies that fresh, clean edge rather than fighting it.
+The classic Bermudian recipe is sometimes served without lime, but a squeeze of fresh lime brightens the whole thing and balances the rum's sweetness. Our ginger fizz already carries a faint lactic tartness from its live cultures, so a little lime amplifies that fresh, clean edge rather than fighting it.
 
 > Pro tip: serve it tall and over plenty of ice. This is a long, slow sipper meant for a hot evening — the kind of drink that tastes like the tropics whether or not you are anywhere near them.`,
   },
@@ -305,7 +305,7 @@ The classic Bermudian recipe is sometimes served without lime, but a squeeze of 
 • 45ml blanco tequila (100% agave is worth it — it tastes cleaner and greener)
 • 30ml fresh lime juice
 • 15ml triple sec or orange liqueur
-• 60ml GingerBros Unpasteurized Ginger Fizz, chilled
+• 60ml GingerBros Ginger Fizz, chilled
 • Salt or chili-salt rim and a jalapeño slice (optional)
 
 ## Instructions
@@ -356,7 +356,7 @@ Scale the tequila, lime and triple sec for the crowd and keep that base chilled 
 
 • 30ml fresh lemon juice
 • 15ml honey or simple syrup (warm the honey slightly so it dissolves)
-• 120ml GingerBros Unpasteurized Ginger Fizz, chilled
+• 120ml GingerBros Ginger Fizz, chilled
 • Lemon wheel and a sprig of fresh mint
 • Optional: a pinch of sea salt to round out the flavour
 
@@ -398,13 +398,13 @@ Batch the lemon-and-honey base in a jug and keep it chilled, then top each glass
     date: '2026-04-26',
     author: 'The GingerBros Kitchen',
     tags: ['food', 'glaze', 'dinner'],
-    image: '/images/product-unpasteurized.jpg',
+    image: '/images/product-ginger-fizz-2.jpg',
     content: `Ginger fizz is not just for drinking. Reduce it down and it becomes a tangy, caramelised glaze that clings to wings, tofu or roasted vegetables in a glossy, sticky lacquer. It is one of our favourite ways to use up a bottle that has lost a little of its sparkle — the carbonation does not matter once it hits the pan, but all that real ginger flavour does.
 
 ## Ingredients
 
 • 500g chicken wings (or firm tofu cubes for a vegan version)
-• 240ml GingerBros Ginger Fizz (unpasteurized or pasteurized — both reduce beautifully)
+• 240ml GingerBros Ginger Fizz (raw or pasteurized — both reduce beautifully)
 • 2 tbsp soy sauce
 • 1 tbsp honey
 • 1 tsp grated fresh ginger
@@ -483,14 +483,14 @@ What makes this work as a dessert is the sheer number of contrasts happening at 
   {
     slug: 'gut-health',
     title: 'Ginger Fizz & Gut Health: What You Should Know',
-    excerpt: 'The science behind ginger, fermentation, and why your gut loves unpasteurized ginger fizz.',
+    excerpt: 'The science behind ginger, fermentation, and why your gut loves our ginger fizz.',
     category: 'Health',
     readTime: '9 min',
     icon: Heart,
     date: '2026-06-08',
     author: 'GingerBros Wellness',
     tags: ['gut health', 'probiotics', 'science'],
-    image: '/images/product-unpasteurized.png',
+    image: '/images/product-ginger-fizz-3.png',
     featured: true,
     content: `Ginger has been used for digestive health for thousands of years, from Ayurvedic medicine in India to traditional Chinese formulas to the kitchens of Southeast Asia. Modern research is now catching up to what traditional medicine long suspected — and in some areas, confirming it outright. This article walks through what the evidence actually says, where it is strong, and where the honest answer is "we are not sure yet."
 
@@ -511,22 +511,22 @@ Ginger's biological activity comes largely from a family of pungent compounds ca
 
 ## Where fermentation and live cultures come in
 
-This is where a *living* ginger soda differs from a flavoured one. Our unpasteurized line delivers live cultures straight from natural fermentation. A growing body of research links fermented foods to a more diverse microbiome: a widely cited Stanford study found that a diet high in fermented foods increased gut-microbiome diversity and lowered nearly twenty markers of inflammation in just ten weeks — an effect a high-fibre diet did not match over the same period.
+This is where a *living* ginger soda differs from a flavoured one. Our raw line delivers live cultures straight from natural fermentation. A growing body of research links fermented foods to a more diverse microbiome: a widely cited Stanford study found that a diet high in fermented foods increased gut-microbiome diversity and lowered nearly twenty markers of inflammation in just ten weeks — an effect a high-fibre diet did not match over the same period.
 
 It is worth being precise about what this does and does not mean. Fermented foods are not a magic bullet, and a single drink is not a clinical dose. But as part of a varied diet, foods and drinks carrying live cultures are one easy, enjoyable lever you can pull.
 
-> Keep in mind: the live-culture benefits apply only to our unpasteurized line. Our pasteurized bottles are gently heat-treated for shelf stability, which removes the live cultures — a fair trade for travel and gifting, but a different product nutritionally.
+> Keep in mind: the live-culture benefits apply only to our raw line. Our pasteurized bottles are gently heat-treated for shelf stability, which removes the live cultures — a fair trade for travel and gifting, but a different product nutritionally.
 
 ## How to actually get the benefit
 
-• Choose the **unpasteurized** bottle if live cultures are your goal, and keep it cold so the cultures stay viable.
+• Choose the **raw** bottle if live cultures are your goal, and keep it cold so the cultures stay viable.
 • Pair it with **prebiotic fibre** (think onions, garlic, oats, bananas) — fibre is the fuel your gut microbes live on.
 • Think **consistency over intensity**: a little variety of fermented foods across the week beats an occasional megadose.
 • Do not expect overnight miracles; the microbiome shifts gradually.
 
 ## A realistic bottom line
 
-Ginger fizz is not a supplement, and we will never pretend otherwise. But if you enjoy a drink made with real ginger and live cultures instead of artificial flavour and a heavy sugar load, you are making a small, pleasant choice that the science treats kindly. If gut health is your goal, the label matters more than the marketing — look for the word "unpasteurized," keep it cold, and let it be one good habit among many.`,
+Ginger fizz is not a supplement, and we will never pretend otherwise. But if you enjoy a drink made with real ginger and live cultures instead of artificial flavour and a heavy sugar load, you are making a small, pleasant choice that the science treats kindly. If gut health is your goal, the label matters more than the marketing — look for the word "raw," keep it cold, and let it be one good habit among many.`,
     references: [
       {
         label: 'The health benefits of ginger, including nausea, digestion and gastric motility',
@@ -548,7 +548,7 @@ Ginger fizz is not a supplement, and we will never pretend otherwise. But if you
   {
     slug: 'probiotics-prebiotics',
     title: 'Probiotics vs Prebiotics: A Simple Guide',
-    excerpt: 'Learn the difference and how to pair unpasteurized ginger fizz with gut-friendly foods.',
+    excerpt: 'Learn the difference and how to pair our ginger fizz with gut-friendly foods.',
     category: 'Guide',
     readTime: '6 min',
     icon: Leaf,
@@ -562,7 +562,7 @@ Ginger fizz is not a supplement, and we will never pretend otherwise. But if you
 
 Probiotics are the beneficial bacteria (and sometimes yeasts) themselves. The widely used scientific definition, from an expert panel convened around the World Health Organization's guidance, is "live microorganisms that, when administered in adequate amounts, confer a health benefit." Three things have to be true: the microbes must be **alive**, present in **adequate amounts**, and tied to a **documented benefit**.
 
-They turn up in fermented foods — yoghurt, kefir, kimchi, sauerkraut, miso — and in unpasteurized fermented drinks. Our unpasteurized ginger fizz carries live cultures straight from natural fermentation, so every chilled bottle delivers them to your gut. (Note the word *unpasteurized*: heat treatment, by design, removes live cultures.)
+They turn up in fermented foods — yoghurt, kefir, kimchi, sauerkraut, miso — and in raw fermented drinks. Our raw ginger fizz carries live cultures straight from natural fermentation, so every chilled bottle delivers them to your gut. (Note the word *raw*: heat treatment, by design, removes live cultures.)
 
 One nuance worth knowing: different strains do different things. "Probiotic" is a category, not a single magic ingredient, and the research is strain-specific. That is a reason to get your cultures from a *variety* of real fermented foods rather than relying on one source.
 
@@ -629,7 +629,7 @@ What the evidence actually supports is more useful: chronic, low-grade inflammat
 
 ## The gut-immune connection
 
-There is a reason gut health keeps coming up in immunity conversations: a large share of your immune cells live in and around the gut, in constant dialogue with your microbiome. That is one mechanism by which fermented foods appear to influence immune markers — the Stanford fermented-foods study, for instance, found reduced inflammatory proteins and calmer immune-cell activation. Our unpasteurized line adds that live-culture angle on top of the ginger.
+There is a reason gut health keeps coming up in immunity conversations: a large share of your immune cells live in and around the gut, in constant dialogue with your microbiome. That is one mechanism by which fermented foods appear to influence immune markers — the Stanford fermented-foods study, for instance, found reduced inflammatory proteins and calmer immune-cell activation. Our raw line adds that live-culture angle on top of the ginger.
 
 ## A realistic take
 
@@ -730,73 +730,6 @@ In short: use it to drink *more*, not as a medical rehydration drink.
     ],
   },
   {
-    slug: 'unpasteurized-vs-pasteurized',
-    title: 'Unpasteurized vs Pasteurized: The Honest Difference',
-    excerpt: 'A clear, no-spin comparison so you can choose the bottle that fits your life.',
-    category: 'Guide',
-    readTime: '6 min',
-    icon: Leaf,
-    date: '2026-04-30',
-    author: 'GingerBros Wellness',
-    tags: ['guide', 'probiotics', 'storage'],
-    image: '/images/product-pasteurized.png',
-    content: `People ask us this all the time, so here is the straight answer with no marketing spin.
-
-## First, what pasteurization actually does
-
-Pasteurization, named after Louis Pasteur who developed it in the 1860s, is the process of heating a food or drink to a specific temperature for a set time to kill microorganisms. It is a genuinely brilliant food-safety innovation that has saved countless lives — and it is also, by design, the thing that ends fermentation. Heat does not distinguish between bacteria you want and bacteria you do not.
-
-That single fact explains every difference below.
-
-## Unpasteurized
-
-• Contains live cultures from natural fermentation
-• Must stay refrigerated, always
-• Shorter shelf life
-• Brighter, slightly tart, more complex flavour that can keep evolving in the bottle
-• Best for gut-health seekers and flavour chasers
-
-## Pasteurized
-
-• Shelf-stable at room temperature
-• Longer shelf life, easier to travel with
-• No live cultures
-• Cleaner, more consistent, "locked-in" flavour
-• Best for convenience, gifting, and warm-climate storage
-
-## Side by side
-
-Think of it as the same drink at two different moments in its life:
-
-• **Flavour** — unpasteurized is brighter, tangier and more layered, with a faint lactic edge from the live cultures; pasteurized is cleaner, rounder and more uniform from bottle to bottle.
-• **Storage** — unpasteurized must live in the fridge; pasteurized is happy in the cupboard.
-• **Shelf life** — unpasteurized is best enjoyed fresh; pasteurized keeps for months.
-• **Cultures** — unpasteurized carries live cultures; pasteurized does not.
-• **Best for** — unpasteurized for gut-health seekers and flavour chasers at home; pasteurized for travel, gifting, offices and warm-climate storage.
-
-## A note on safety
-
-Both bottles are completely safe to drink. Unpasteurized does not mean unsafe — fermentation naturally lowers the pH into an acidic, self-protecting range, and we test every batch. What "unpasteurized" really means is *alive*: the cultures are intact, which is exactly why it needs to stay cold and is best enjoyed sooner rather than later. Pasteurization is simply a tool for shelf stability, not a safety rescue.
-
-## How to choose
-
-If live cultures are your priority and you have fridge space, go unpasteurized. If you want something to stash in a cupboard, take on a trip, or give as a gift, pasteurized is the practical pick. Both start from exactly the same 7-day brew with the same real ginger — the only difference is whether we apply gentle heat at the very end.
-
-> There is no wrong answer — only the bottle that fits your week.`,
-    references: [
-      {
-        label: 'Why is milk pasteurized? Temperatures, pathogen control, and shelf life',
-        source: 'Encyclopædia Britannica',
-        url: 'https://www.britannica.com/science/Why-Is-Milk-Pasteurized',
-      },
-      {
-        label: 'Louis Pasteur — fermentation, germ theory, and the origins of pasteurization',
-        source: 'Encyclopædia Britannica',
-        url: 'https://www.britannica.com/biography/Louis-Pasteur',
-      },
-    ],
-  },
-  {
     slug: 'storing-living-fizz',
     title: 'How to Store Living Fizz (and Open It Safely)',
     excerpt: 'Live cultures keep working in the bottle. Here is how to keep yours happy and avoid a fountain.',
@@ -806,8 +739,8 @@ If live cultures are your priority and you have fridge space, go unpasteurized. 
     date: '2026-04-22',
     author: 'The GingerBros Kitchen',
     tags: ['storage', 'tips', 'fermentation'],
-    image: '/images/product-unpasteurized.jpg',
-    content: `Our unpasteurized fizz is, quite literally, alive. Inside that sealed bottle the cultures keep slowly working — and that is a feature, not a flaw, because it is exactly what keeps the flavour bright and evolving. But a living drink behaves differently from a dead one in a can, so a handful of simple habits will keep every bottle perfect (and keep you from wearing it).
+    image: '/images/product-ginger-fizz-2.jpg',
+    content: `Our ginger fizz is, quite literally, alive. Inside that sealed bottle the cultures keep slowly working — and that is a feature, not a flaw, because it is exactly what keeps the flavour bright and evolving. But a living drink behaves differently from a dead one in a can, so a handful of simple habits will keep every bottle perfect (and keep you from wearing it).
 
 ## Why storage matters more than for normal soda
 
@@ -815,7 +748,7 @@ A regular soda is force-carbonated and biologically inert: the bubbles are pumpe
 
 ## Keep it cold
 
-Cold is the off-switch. Yeast activity drops dramatically near refrigerator temperatures, so the fridge essentially puts the ferment on pause. Store unpasteurized GingerBros in the fridge from the moment it arrives, and keep it there until you drink it. Leave it somewhere warm and the cultures wake up, eat more sugar, and steadily raise the internal pressure — which affects both taste and how lively the bottle is when you open it.
+Cold is the off-switch. Yeast activity drops dramatically near refrigerator temperatures, so the fridge essentially puts the ferment on pause. Store living GingerBros in the fridge from the moment it arrives, and keep it there until you drink it. Leave it somewhere warm and the cultures wake up, eat more sugar, and steadily raise the internal pressure — which affects both taste and how lively the bottle is when you open it.
 
 ## Open it slowly
 
@@ -993,7 +926,7 @@ To this day, every batch is smelled, tasted and adjusted by hand before it earns
 
 > Numbers tell us the batch is safe. Our tongues tell us the batch is good.
 
-![A glass of freshly poured GingerBros ginger fizz](/images/product-unpasteurized.jpg)
+![A glass of freshly poured GingerBros ginger fizz](/images/product-ginger-fizz-2.jpg)
 
 ## A drink with a place
 
@@ -1017,7 +950,7 @@ Staying small lets us keep making decisions by palate, pay our growers fairly, r
     date: '2026-03-12',
     author: 'James, Founder',
     tags: ['DIY', 'fermentation', 'tutorial'],
-    image: '/images/product-unpasteurized.png',
+    image: '/images/product-ginger-fizz-3.png',
     content: `Curious how the magic actually works? You can culture a simple ginger bug on your own kitchen counter with nothing more than ginger, sugar, water and a week of attention. It will not be GingerBros — that takes our specific cultures, our water and years of practice — but it is genuinely one of the most satisfying things you can grow at home, and it will teach you to respect the living process behind every fermented drink. Consider this your friendly, beginner-proof starting point.
 
 ## A quick word on what you are doing
@@ -1082,7 +1015,7 @@ And respect the pressure when you bottle: use bottles built for carbonation, "bu
 
 Here is the part most brands leave out. We will not pretend it is all solved:
 
-• **The cold chain.** Refrigerated shipping for our unpasteurized line uses real energy, and it is honestly the single biggest part of our footprint. Keeping a living product alive has an environmental cost.
+• **The cold chain.** Refrigerated shipping for our raw line uses real energy, and it is honestly the single biggest part of our footprint. Keeping a living product alive has an environmental cost.
 • **The weight of glass.** Glass is heavier than plastic, so it takes more energy to transport. Lifecycle studies — including a widely reported University of Southampton analysis — actually found glass bottles can carry a *larger* overall environmental impact than plastic when they are shipped long distances and used only once. The honest takeaway is that the "best" packaging genuinely depends on how far it travels and, above all, whether it is reused.
 
 We sit with that tension rather than hiding it: glass is better for *your* drink and endlessly recyclable, but only truly wins environmentally if it stays in circulation.
@@ -1514,7 +1447,7 @@ export default function BlogPage() {
           name: 'GingerBros',
           logo: {
             '@type': 'ImageObject',
-            url: 'https://gingerbrosshop.com/images/product-unpasteurized-2.jpg',
+            url: 'https://gingerbrosshop.com/images/product-ginger-fizz-1.jpg',
           },
         },
       }

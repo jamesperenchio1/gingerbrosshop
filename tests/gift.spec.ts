@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test';
 
 test.beforeEach(async ({ page }) => {
-  await page.goto('/product/unpasteurized');
+  await page.goto('/product/ginger-fizz');
   await page.evaluate(() => localStorage.clear());
 });
 

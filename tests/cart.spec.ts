@@ -11,18 +11,18 @@ test('add to cart from shop opens drawer and shows item', async ({ page }) => {
   await addBtn.click();
 
   await expect(page.getByTestId('cart-drawer')).toBeVisible();
-  await expect(page.getByTestId('cart-items')).toContainText('Unpasteurized Ginger Fizz');
+  await expect(page.getByTestId('cart-items')).toContainText('Ginger Fizz');
   await expect(page.getByTestId('cart-checkout')).toBeVisible();
 });
 
 test('add to cart from product page opens global drawer', async ({ page }) => {
-  await page.goto('/product/unpasteurized');
-  await expect(page.locator('h1')).toContainText('Unpasteurized Ginger Fizz');
+  await page.goto('/product/ginger-fizz');
+  await expect(page.locator('h1')).toContainText('Ginger Fizz');
 
   await page.getByRole('button', { name: /add to cart/i }).first().click();
 
   await expect(page.getByTestId('cart-drawer')).toBeVisible({ timeout: 5_000 });
-  await expect(page.getByTestId('cart-items')).toContainText('Unpasteurized Ginger Fizz');
+  await expect(page.getByTestId('cart-items')).toContainText('Ginger Fizz');
 });
 
 test('cart can be opened and closed via nav button and overlay', async ({ page }) => {
@@ -44,17 +44,17 @@ test('cart can be opened and closed via nav button and overlay', async ({ page }
 
 test('cart persists after reload', async ({ page }) => {
   await page.getByTestId('add-to-cart').click();
-  await expect(page.getByTestId('cart-items')).toContainText('Unpasteurized Ginger Fizz');
+  await expect(page.getByTestId('cart-items')).toContainText('Ginger Fizz');
 
   await page.reload();
   await page.getByTestId('cart-button').click();
-  await expect(page.getByTestId('cart-items')).toContainText('Unpasteurized Ginger Fizz');
+  await expect(page.getByTestId('cart-items')).toContainText('Ginger Fizz');
 });
 
 test('cart quantity can be increased and decreased', async ({ page }) => {
   await page.getByTestId('add-to-cart').click();
 
-  const item = page.getByTestId('cart-item-unpasteurized');
+  const item = page.getByTestId(/^cart-item-/).first();
   const increase = item.getByRole('button', { name: /increase quantity/i });
   const decrease = item.getByRole('button', { name: /decrease quantity/i });
 
@@ -70,7 +70,7 @@ test('cart quantity can be increased and decreased', async ({ page }) => {
 test('removing the last item shows empty cart', async ({ page }) => {
   await page.getByTestId('add-to-cart').click();
 
-  const item = page.getByTestId('cart-item-unpasteurized');
+  const item = page.getByTestId(/^cart-item-/).first();
   await item.getByRole('button', { name: /remove item/i }).click();
 
   await expect(page.getByTestId('cart-items')).not.toBeAttached();
@@ -89,9 +89,9 @@ test('cart stays open when navigating to a product page', async ({ page }) => {
   await expect(page.getByTestId('cart-drawer')).toBeVisible();
 
   // Click the product image in the cart to navigate via client-side routing
-  await page.getByTestId('cart-item-unpasteurized').locator('img').first().click();
+  await page.getByTestId(/^cart-item-/).first().locator('img').first().click();
 
-  await expect(page.locator('h1')).toContainText('Unpasteurized Ginger Fizz');
+  await expect(page.locator('h1')).toContainText('Ginger Fizz');
   await expect(page.getByTestId('cart-drawer')).toBeVisible();
   await expect(page.getByTestId('cart-overlay')).toBeAttached();
 });

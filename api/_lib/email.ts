@@ -195,7 +195,7 @@ export function customerInvoiceHtml(session: SessionWithShipping, items: Stripe.
   return layout(
     `${heading('Thank you for your order! 🍺')}
     <p style="margin:0 0 12px;">Hi ${session.customer_details?.name ?? 'there'},</p>
-    <p style="margin:0 0 4px;">We've received your order and will send tracking details once your GingerBros ships. Because it's a living, unpasteurized brew, please refrigerate it as soon as it arrives.</p>
+    <p style="margin:0 0 4px;">We've received your order and will send tracking details once your GingerBros ships. Because it's a fresh, naturally fermented brew, please refrigerate it as soon as it arrives.</p>
     <p style="font-size:14px;color:${BRAND.rust};font-weight:600;margin:12px 0 0;">Order #${orderId}</p>
     ${itemsTable(stripeRows(items))}
     ${totalLine(total, interval ? `/${interval}` : '')}
@@ -219,7 +219,7 @@ export function giftEmailHtml(
   return layout(
     `${heading('You have received a gift! 🎁')}
     <p style="margin:0 0 12px;">Hi ${recipientName ?? 'there'},</p>
-    <p style="margin:0 0 4px;"><strong>${senderName}</strong> has sent you a GingerBros gift — raw, living ginger fizz, brewed with patience.</p>
+    <p style="margin:0 0 4px;"><strong>${senderName}</strong> has sent you a GingerBros gift — naturally fermented ginger fizz, brewed with patience.</p>
     ${message ? infoCard(`<p style="margin:0;font-style:italic;">"${message}"</p>`) : ''}
     <p style="font-size:14px;color:${BRAND.rust};font-weight:600;margin:12px 0 0;">Order #${orderId}</p>
     ${itemsTable(stripeRows(items))}
@@ -245,7 +245,7 @@ export function shippingNotificationHtml(order: Order): string {
   return layout(
     `${heading('Your order is on its way! 🚚')}
     <p style="margin:0 0 12px;">Hi ${order.customerName ?? 'there'},</p>
-    <p style="margin:0 0 4px;">Good news — your GingerBros order has shipped. Because this is a living, unpasteurized brew, please refrigerate it as soon as it arrives.</p>
+    <p style="margin:0 0 4px;">Good news — your GingerBros order has shipped. Because it's a fresh, naturally fermented brew, please refrigerate it as soon as it arrives.</p>
     ${infoCard(
       `<p style="margin:0 0 4px;font-size:14px;"><strong>Order:</strong> #${orderId}</p>
        <p style="margin:0 0 4px;font-size:14px;"><strong>Tracking number:</strong> ${order.trackingNumber}</p>

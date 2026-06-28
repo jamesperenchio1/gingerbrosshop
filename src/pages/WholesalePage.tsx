@@ -11,7 +11,7 @@ export default function WholesalePage() {
     {
       icon: <Truck className="w-8 h-8 text-amber" />,
       title: 'Chilled Delivery',
-      description: 'Our unpasteurized ginger fizz is shipped chilled with insulated packaging and ice packs to keep cultures alive.',
+      description: 'Our ginger fizz is shipped chilled with insulated packaging and ice packs to keep it fresh.',
     },
     {
       icon: <BadgeCheck className="w-8 h-8 text-amber" />,
@@ -21,15 +21,15 @@ export default function WholesalePage() {
   ];
 
   const products = [
-    { product: 'Unpasteurized Bottles', moq: '24 bottles (1 case)' },
-    { product: 'Unpasteurized Cases', moq: '5+ cases' },
+    { product: 'Ginger Fizz Bottles', moq: '24 bottles (1 case)' },
+    { product: 'Ginger Fizz Cases', moq: '5+ cases' },
   ];
 
   const jsonLd = {
     '@context': 'https://schema.org',
     '@type': 'WebPage',
     name: 'Wholesale — GingerBros',
-    description: 'Wholesale pricing for cafes, restaurants, bars, and retailers. Order chilled unpasteurized ginger fizz in Thailand.',
+    description: 'Wholesale pricing for cafes, restaurants, bars, and retailers. Order chilled ginger fizz in Thailand.',
     url: 'https://gingerbrosshop.com/wholesale',
     mainEntity: {
       '@type': 'Organization',
@@ -42,7 +42,7 @@ export default function WholesalePage() {
     <div className="min-h-screen bg-warm-white">
       <SEO
         title="Wholesale — GingerBros"
-        description="Wholesale pricing for cafes, restaurants, bars, and retailers. Order chilled unpasteurized ginger fizz in Thailand."
+        description="Wholesale pricing for cafes, restaurants, bars, and retailers. Order chilled ginger fizz in Thailand."
         path="/wholesale"
         jsonLd={jsonLd}
       />

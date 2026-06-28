@@ -1,4 +1,8 @@
 {
+  "redirects": [
+    { "source": "/product/unpasteurized", "destination": "/product/ginger-fizz", "permanent": true },
+    { "source": "/blog/unpasteurized-vs-pasteurized", "destination": "/blog", "permanent": true }
+  ],
   "rewrites": [
     { "source": "/((?!api/).*)", "destination": "/index.html" }
   ],
