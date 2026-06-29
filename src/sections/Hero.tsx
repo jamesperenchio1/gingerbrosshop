@@ -114,16 +114,6 @@ export default function Hero() {
         <div ref={imageRef} className="flex justify-center md:justify-end order-1 md:order-2">
           <div className="relative flex items-end justify-center md:justify-end group">
             <img
-              src="/images/hero-mug.png"
-              alt="Frosty mug of GingerBros Ginger Fizz"
-              width={542}
-              height={804}
-              loading="eager"
-              fetchPriority="high"
-              decoding="async"
-              className="w-[100px] xs:w-[120px] sm:w-[170px] md:w-[280px] block drop-shadow-[0_20px_40px_rgba(80,45,8,0.28)] translate-y-2 md:translate-y-4 group-hover:rotate-[-2deg] transition-transform duration-500"
-            />
-            <img
               src="/images/product-ginger-fizz.png"
               alt="GingerBros Ginger Fizz bottle"
               width={420}
@@ -131,7 +121,17 @@ export default function Hero() {
               loading="eager"
               fetchPriority="high"
               decoding="async"
-              className="w-[120px] xs:w-[140px] sm:w-[200px] md:w-[360px] block drop-shadow-[0_24px_48px_rgba(80,45,8,0.32)] -ml-8 sm:-ml-10 md:-ml-16 rotate-[-3deg] group-hover:rotate-0 transition-transform duration-500"
+              className="relative w-[120px] xs:w-[140px] sm:w-[200px] md:w-[360px] block drop-shadow-[0_24px_48px_rgba(80,45,8,0.32)] rotate-[-3deg] group-hover:rotate-0 transition-transform duration-500"
+            />
+            <img
+              src="/images/hero-mug.png"
+              alt="Frosty mug of GingerBros Ginger Fizz"
+              width={542}
+              height={804}
+              loading="eager"
+              fetchPriority="high"
+              decoding="async"
+              className="absolute -left-[18%] xs:-left-[16%] sm:-left-[14%] md:-left-[12%] -bottom-[2%] sm:-bottom-[4%] md:-bottom-[6%] w-[55%] xs:w-[52%] sm:w-[48%] md:w-[46%] block drop-shadow-[0_16px_32px_rgba(80,45,8,0.22)] rotate-[8deg] sm:rotate-[10deg] md:rotate-[12deg] group-hover:rotate-[6deg] transition-transform duration-500"
             />
           </div>
         </div>
