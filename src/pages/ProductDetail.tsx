@@ -7,6 +7,21 @@ import SEO from '@/components/SEO';
 import NotFound from '@/pages/NotFound';
 import { useCatalog, defaultPrice, intervalLabel, oneTimePrice, savingsPercent, type CatalogProduct } from '@/lib/catalog';
 import { getProductContent } from '@/lib/productContent';
+import {
+  Leaf,
+  ThermometerSnowflake,
+  Package,
+  Droplets,
+  Clock,
+  MapPin,
+  Wheat,
+  Info,
+  FlaskConical,
+  Recycle,
+  CheckCircle2,
+  Scale,
+  GlassWater,
+} from 'lucide-react';
 
 /* ──────────────────────── Icons ──────────────────────── */
 
@@ -24,6 +39,97 @@ function CheckIcon({ className = '' }: { className?: string }) {
     <svg className={className} width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
       <polyline points="20 6 9 17 4 12" />
     </svg>
+  );
+}
+
+function SpecIcon({ label, className = '' }: { label: string; className?: string }) {
+  const map: Record<string, React.ComponentType<{ className?: string }>> = {
+    volume: GlassWater,
+    packaging: Package,
+    storage: ThermometerSnowflake,
+    servingtemp: ThermometerSnowflake,
+    servingtemperature: ThermometerSnowflake,
+    carbonation: Droplets,
+    fermentation: Clock,
+    ph: FlaskConical,
+    origin: MapPin,
+    dietary: Leaf,
+    allergens: Wheat,
+    bottlereturn: Recycle,
+    shelf: Clock,
+    shelflife: Clock,
+    weight: Scale,
+  };
+  const key = label.toLowerCase().replace(/[^a-z]/g, '');
+  const Icon = map[key] ?? Info;
+  return <Icon className={className} />;
+}
+
+function NutritionPanel({ nutrition }: { nutrition: { label: string; value: string }[] }) {
+  return (
+    <div className="bg-cream/40 rounded-[20px] border border-soft-peach/60 p-6 md:p-8">
+      <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 mb-6">
+        <div>
+          <h3 className="font-display font-bold text-deep-brown text-2xl">Nutrition Facts</h3>
+          <p className="font-body text-[13px] text-earth/70 mt-1">Amount per serving. %DV based on a 2,000-calorie diet.</p>
+        </div>
+        <div className="flex flex-wrap gap-2">
+          <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white border border-soft-peach/70 text-[12px] font-medium text-deep-brown">
+            <Leaf className="w-3.5 h-3.5 text-accent-green" /> Vegan
+          </span>
+          <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white border border-soft-peach/70 text-[12px] font-medium text-deep-brown">
+            <CheckCircle2 className="w-3.5 h-3.5 text-accent-green" /> Gluten-Free
+          </span>
+          <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white border border-soft-peach/70 text-[12px] font-medium text-deep-brown">
+            <Droplets className="w-3.5 h-3.5 text-amber" /> Low Sugar
+          </span>
+        </div>
+      </div>
+
+      <div className="bg-white rounded-[16px] border border-soft-peach/60 overflow-hidden">
+        {nutrition.map((item, i) => {
+          const isSub = item.label.startsWith('—');
+          const isSubSub = item.label.startsWith('——');
+          const isEnergy = item.label === 'Energy';
+          const displayLabel = item.label.replace(/^—+\s?/, '');
+          return (
+            <div
+              key={`${item.label}-${i}`}
+              className={`flex justify-between items-baseline gap-4 px-5 ${isEnergy ? 'py-4 bg-cream/30' : 'py-3'} ${i < nutrition.length - 1 ? 'border-b border-soft-peach/40' : ''}`}
+            >
+              <span
+                className={`font-body ${isSubSub ? 'pl-6 text-[13px]' : isSub ? 'pl-3 text-[13px]' : 'text-[14px]'} ${isEnergy ? 'text-[16px] font-semibold text-deep-brown' : 'text-earth'} ${isSub ? 'text-earth/80' : 'font-medium'}`}
+              >
+                {displayLabel}
+              </span>
+              <span
+                className={`font-body text-right whitespace-nowrap ${isEnergy ? 'text-[16px] font-bold text-deep-brown' : 'text-deep-brown'} ${isSub ? 'text-[13px]' : 'text-[14px]'} font-medium`}
+              >
+                {item.value}
+              </span>
+            </div>
+          );
+        })}
+      </div>
+
+      <p className="font-body text-[12px] text-earth/50 mt-4">
+        * Daily Value percentages are approximate. Values may vary slightly between batches due to natural fermentation.
+      </p>
+    </div>
+  );
+}
+
+function SpecCard({ spec }: { spec: { label: string; value: string } }) {
+  return (
+    <div className="group bg-cream/40 rounded-[16px] p-5 border border-soft-peach/60 flex gap-4 items-start hover:border-amber/40 transition-colors">
+      <div className="w-10 h-10 rounded-full bg-white border border-soft-peach/60 flex items-center justify-center flex-shrink-0 text-rust group-hover:text-amber transition-colors">
+        <SpecIcon label={spec.label} className="w-5 h-5" />
+      </div>
+      <div className="min-w-0">
+        <span className="font-body font-semibold text-[12px] uppercase tracking-[0.07em] text-rust mb-1 block">{spec.label}</span>
+        <span className="font-body text-[15px] text-deep-brown leading-snug">{spec.value}</span>
+      </div>
+    </div>
   );
 }
 
@@ -600,17 +706,26 @@ export default function ProductDetail() {
         {/* ── Drinks: Tab Sections ── */}
         {showDrinkTabs && (
           <div className="mt-16 border-t border-soft-peach/50 pt-12">
-            <div className="flex gap-4 mb-8 border-b border-soft-peach/50 overflow-x-auto -mx-6 px-6 md:mx-0 md:px-0 scrollbar-none">
+            <div
+              role="tablist"
+              aria-label="Product information"
+              className="flex gap-4 mb-8 border-b border-soft-peach/50 overflow-x-auto -mx-6 px-6 md:mx-0 md:px-0 scrollbar-none"
+            >
               {(['details', 'nutrition', 'specs'] as const)
                 .filter((tab) => tab === 'details' ? !!content.longDescription || hasFeatures : tab === 'nutrition' ? hasNutrition : hasSpecs)
                 .map((tab) => (
-                  <button key={tab} onClick={() => setActiveTab(tab)}
-                    className={`flex-shrink-0 font-body font-medium text-[13px] sm:text-[14px] uppercase tracking-[0.08em] pb-3 transition-colors border-b-2 -mb-px whitespace-nowrap ${activeTab === tab ? 'text-deep-brown border-amber' : 'text-earth/60 border-transparent hover:text-earth'}`}>
+                  <button
+                    key={tab}
+                    role="tab"
+                    aria-selected={activeTab === tab}
+                    onClick={() => setActiveTab(tab)}
+                    className={`flex-shrink-0 font-body font-medium text-[13px] sm:text-[14px] uppercase tracking-[0.08em] pb-3 transition-colors border-b-2 -mb-px whitespace-nowrap outline-none focus-visible:ring-2 focus-visible:ring-amber rounded-t ${activeTab === tab ? 'text-deep-brown border-amber' : 'text-earth/60 border-transparent hover:text-earth'}`}
+                  >
                     {tab === 'details' ? 'Product Details' : tab === 'nutrition' ? 'Nutrition Info' : 'Specifications'}
                   </button>
                 ))}
             </div>
-            <div className="max-w-[800px]">
+            <div className="max-w-[860px]">
               {activeTab === 'details' && (content.longDescription || hasFeatures) && (
                 <div>
                   {content.longDescription && <p className="font-body text-earth leading-relaxed mb-6">{content.longDescription}</p>}
@@ -629,28 +744,11 @@ export default function ProductDetail() {
                   )}
                 </div>
               )}
-              {activeTab === 'nutrition' && hasNutrition && (
-                <div className="bg-cream/50 rounded-[16px] p-6 md:p-8">
-                  <h3 className="font-display font-semibold text-deep-brown text-lg mb-2">Nutritional Information</h3>
-                  <p className="font-body text-[13px] text-earth/70 mb-6">Amount per serving. Percent Daily Values are based on a 2,000 calorie diet.</p>
-                  <div className="space-y-0">
-                    {content.nutrition!.map((item, i) => (
-                      <div key={item.label} className={`flex justify-between py-3 ${i < content.nutrition!.length - 1 ? 'border-b border-soft-peach/50' : ''}`}>
-                        <span className="font-body text-[14px] text-earth">{item.label}</span>
-                        <span className="font-body font-medium text-[14px] text-deep-brown">{item.value}</span>
-                      </div>
-                    ))}
-                  </div>
-                  <p className="font-body text-[12px] text-earth/50 mt-4">* Daily Value percentages are approximate. Values may vary slightly between batches due to natural fermentation.</p>
-                </div>
-              )}
+              {activeTab === 'nutrition' && hasNutrition && <NutritionPanel nutrition={content.nutrition!} />}
               {activeTab === 'specs' && hasSpecs && (
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   {content.specs!.map((spec) => (
-                    <div key={spec.label} className="bg-cream/50 rounded-[12px] p-4">
-                      <span className="font-body font-medium text-[12px] uppercase tracking-[0.08em] text-rust mb-1 block">{spec.label}</span>
-                      <span className="font-body text-[14px] text-deep-brown">{spec.value}</span>
-                    </div>
+                    <SpecCard key={spec.label} spec={spec} />
                   ))}
                 </div>
               )}
