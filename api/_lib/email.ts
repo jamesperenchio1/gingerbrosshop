@@ -45,7 +45,7 @@ const BRAND = {
 };
 
 // Hosted on the live site so it renders in every mail client without attachments.
-const LOGO_URL = 'https://gingerbrosshop.com/icon-192.png';
+const LOGO_URL = 'https://gingerbrosshop.com/images/logo-email.png';
 
 // ---------------------------------------------------------------------------
 // Shared presentation helpers
@@ -88,7 +88,7 @@ function layout(inner: string, preheader = ''): string {
       </tr>
       <tr>
         <td style="background:${BRAND.cream};padding:18px 28px;text-align:center;color:${BRAND.earth};font-size:12px;line-height:1.6;">
-          Raw, living ginger fizz · Brewed with patience in Thailand 🇹🇭<br>
+          Brewed and bottled in Thailand 🇹🇭<br>
           <a href="https://gingerbrosshop.com" style="color:${BRAND.rust};text-decoration:none;font-weight:600;">gingerbrosshop.com</a>
         </td>
       </tr>

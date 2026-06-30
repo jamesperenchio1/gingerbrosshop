@@ -97,16 +97,69 @@ export default function Story() {
 
             {/* 7 Days Stamp */}
             <div className="mb-8">
-              <div className="inline-flex items-center gap-4 bg-cream rounded-2xl px-6 py-4 border border-rust/10 shadow-sm">
-                <div className="flex items-center justify-center w-14 h-14 rounded-full bg-rust/10">
-                  <span className="font-display font-bold text-rust text-2xl">7</span>
-                </div>
-                <div>
-                  <span className="block font-display font-semibold text-deep-brown text-lg leading-none">Days</span>
-                  <span className="block font-body font-medium text-rust text-[13px] uppercase tracking-[0.06em] leading-tight mt-0.5">
-                    Naturally Fermented
-                  </span>
-                </div>
+              <div className="inline-block -rotate-6 transition-transform hover:-rotate-3">
+                <svg
+                  viewBox="0 0 180 180"
+                  className="w-[140px] h-[140px] drop-shadow-sm"
+                  aria-label="7 days naturally fermented stamp"
+                >
+                  <defs>
+                    <path id="topArc" d="M 26,90 A 64,64 0 0,1 154,90" />
+                    <path id="bottomArc" d="M 26,90 A 64,64 0 0,0 154,90" />
+                  </defs>
+                  <circle
+                    cx="90"
+                    cy="90"
+                    r="82"
+                    fill="#FAF3E6"
+                    stroke="#A65D2E"
+                    strokeWidth="3"
+                    strokeDasharray="7 5"
+                  />
+                  <circle
+                    cx="90"
+                    cy="90"
+                    r="74"
+                    fill="none"
+                    stroke="#A65D2E"
+                    strokeWidth="1"
+                    strokeDasharray="4 4"
+                    opacity="0.6"
+                  />
+                  <text
+                    className="font-body"
+                    fontSize="12"
+                    fontWeight="600"
+                    fill="#A65D2E"
+                    letterSpacing="2"
+                  >
+                    <textPath href="#topArc" startOffset="50%" textAnchor="middle">
+                      NATURALLY FERMENTED
+                    </textPath>
+                  </text>
+                  <text
+                    x="90"
+                    y="102"
+                    textAnchor="middle"
+                    className="font-display"
+                    fontSize="56"
+                    fontWeight="bold"
+                    fill="#4A2C10"
+                  >
+                    7
+                  </text>
+                  <text
+                    className="font-body"
+                    fontSize="12"
+                    fontWeight="600"
+                    fill="#A65D2E"
+                    letterSpacing="3"
+                  >
+                    <textPath href="#bottomArc" startOffset="50%" textAnchor="middle">
+                      DAYS
+                    </textPath>
+                  </text>
+                </svg>
               </div>
             </div>
 

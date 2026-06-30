@@ -46,25 +46,37 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
   // Resolve and validate every price directly against Stripe — Stripe is the
   // source of truth, so there is no per-product env var or hardcoded map.
-  const lineItems: Stripe.Checkout.SessionCreateParams.LineItem[] = [];
-  let recurringCount = 0;
-  let subtotalMinor = 0;
-  let subInterval: { interval: string; intervalCount: number } | null = null;
+  // Fetch all prices in one request instead of N round-trips to keep checkout fast.
+  const priceIdToQuantity = new Map<string, number>();
   for (const item of items) {
     const priceId = item.priceId ?? item.id;
     if (!priceId) {
       res.status(400).json({ error: 'Missing price in cart item' });
       return;
     }
+    const qty = Math.max(1, Math.min(24, Math.floor(Number(item.quantity) || 1)));
+    priceIdToQuantity.set(priceId, (priceIdToQuantity.get(priceId) ?? 0) + qty);
+  }
 
-    let price: Stripe.Price;
-    try {
-      price = await stripe.prices.retrieve(priceId);
-    } catch {
-      res.status(400).json({ error: `Unknown product: ${priceId}` });
-      return;
-    }
-    if (!price.active) {
+  let prices: Stripe.ApiList<Stripe.Price>;
+  try {
+    prices = await stripe.prices.list({
+      ids: Array.from(priceIdToQuantity.keys()),
+      limit: 100,
+    });
+  } catch {
+    res.status(400).json({ error: 'Unable to verify products. Please try again.' });
+    return;
+  }
+
+  const priceMap = new Map(prices.data.map(p => [p.id, p]));
+  const lineItems: Stripe.Checkout.SessionCreateParams.LineItem[] = [];
+  let recurringCount = 0;
+  let subtotalMinor = 0;
+  let subInterval: { interval: string; intervalCount: number } | null = null;
+  for (const [priceId, qty] of priceIdToQuantity.entries()) {
+    const price = priceMap.get(priceId);
+    if (!price || !price.active) {
       res.status(400).json({ error: `Unknown product: ${priceId}` });
       return;
     }
@@ -75,7 +87,6 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         subInterval = { interval: price.recurring.interval, intervalCount: price.recurring.interval_count };
       }
     }
-    const qty = Math.max(1, Math.min(24, Math.floor(Number(item.quantity) || 1)));
     subtotalMinor += (price.unit_amount ?? 0) * qty;
     lineItems.push({ price: price.id, quantity: qty });
   }

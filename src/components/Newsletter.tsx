@@ -12,6 +12,9 @@ export default function Newsletter() {
     if (!email.trim()) return;
     setLoading(true);
     setError('');
+    // Show the success state immediately; confirm the subscription in the background
+    // so the button feels instant.
+    setSubscribed(true);
 
     try {
       const res = await fetch('/api/subscribe', {
@@ -23,8 +26,8 @@ export default function Newsletter() {
       if (!res.ok) {
         throw new Error(data.error ?? 'Something went wrong. Please try again.');
       }
-      setSubscribed(true);
     } catch (err) {
+      setSubscribed(false);
       setError(err instanceof Error ? err.message : 'Failed to subscribe');
     } finally {
       setLoading(false);

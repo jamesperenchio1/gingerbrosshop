@@ -53,25 +53,35 @@ export default function CartDrawer() {
   const hasGingerFizz = state.items.some(i => i.productId === 'ginger-fizz');
 
   // Pre-create the Stripe checkout session in the background as soon as the cart
-  // opens, so clicking "Checkout" redirects instantly instead of waiting for the API.
+  // contents change, so clicking "Checkout" redirects instantly instead of waiting
+  // for the API. Mixed carts pre-fetch the one-time leg, which is the first step.
   const cartKey = state.items.map(i => `${i.id}:${i.quantity}`).join('|');
   useEffect(() => {
-    const isMixed = state.items.some(i => i.isSubscription) && state.items.some(i => !i.isSubscription);
-    if (!state.isOpen || state.items.length === 0 || isMixed) {
+    if (state.items.length === 0) {
       setPrefetchedUrl(null);
       return;
     }
     setPrefetchedUrl(null);
     let cancelled = false;
-    startCheckout(state.items).then(url => {
+    const itemsToPrefetch = hasMixedCart
+      ? state.items.filter(i => !i.isSubscription)
+      : state.items;
+    startCheckout(itemsToPrefetch).then(url => {
       if (!cancelled) setPrefetchedUrl(url);
     }).catch(() => { /* retry on click */ });
     return () => { cancelled = true; };
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [state.isOpen, cartKey]);
+  }, [cartKey, hasMixedCart]);
 
   const handleCheckout = async () => {
     if (state.items.length === 0) return;
+
+    // If the checkout URL was already prepared in the background, navigate instantly.
+    if (!hasMixedCart && prefetchedUrl) {
+      window.location.href = prefetchedUrl;
+      return;
+    }
+
     setIsCheckingOut(true);
     setCheckoutError('');
     try {
@@ -81,10 +91,10 @@ export default function CartDrawer() {
         // the subscription leg automatically once that session completes.
         const oneTimeItems = state.items.filter((i) => !i.isSubscription);
         sessionStorage.setItem(PENDING_SUBSCRIPTION_CHECKOUT_KEY, '1');
-        window.location.href = await startCheckout(oneTimeItems);
+        window.location.href = prefetchedUrl ?? await startCheckout(oneTimeItems);
         return;
       }
-      window.location.href = prefetchedUrl ?? await startCheckout(state.items);
+      window.location.href = await startCheckout(state.items);
     } catch (err) {
       setCheckoutError(err instanceof Error ? err.message : 'Something went wrong. Please try again.');
       setIsCheckingOut(false);
