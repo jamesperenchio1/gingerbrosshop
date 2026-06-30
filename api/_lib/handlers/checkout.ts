@@ -46,7 +46,6 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
   // Resolve and validate every price directly against Stripe — Stripe is the
   // source of truth, so there is no per-product env var or hardcoded map.
-  // Fetch all prices in one request instead of N round-trips to keep checkout fast.
   const priceIdToQuantity = new Map<string, number>();
   for (const item of items) {
     const priceId = item.priceId ?? item.id;
@@ -58,37 +57,41 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     priceIdToQuantity.set(priceId, (priceIdToQuantity.get(priceId) ?? 0) + qty);
   }
 
-  let prices: Stripe.ApiList<Stripe.Price>;
-  try {
-    prices = await stripe.prices.list({
-      ids: Array.from(priceIdToQuantity.keys()),
-      limit: 100,
-    });
-  } catch {
-    res.status(400).json({ error: 'Unable to verify products. Please try again.' });
-    return;
-  }
-
-  const priceMap = new Map(prices.data.map(p => [p.id, p]));
   const lineItems: Stripe.Checkout.SessionCreateParams.LineItem[] = [];
   let recurringCount = 0;
   let subtotalMinor = 0;
   let subInterval: { interval: string; intervalCount: number } | null = null;
-  for (const [priceId, qty] of priceIdToQuantity.entries()) {
-    const price = priceMap.get(priceId);
-    if (!price || !price.active) {
-      res.status(400).json({ error: `Unknown product: ${priceId}` });
-      return;
-    }
 
-    if (price.recurring) {
-      recurringCount++;
-      if (!subInterval) {
-        subInterval = { interval: price.recurring.interval, intervalCount: price.recurring.interval_count };
+  try {
+    const resolved = await Promise.all(
+      Array.from(priceIdToQuantity.entries()).map(async ([priceId, qty]) => {
+        let price: Stripe.Price;
+        try {
+          price = await stripe.prices.retrieve(priceId);
+        } catch {
+          throw new Error(`Unknown product: ${priceId}`);
+        }
+        if (!price.active) {
+          throw new Error(`Unknown product: ${priceId}`);
+        }
+        return { price, qty };
+      }),
+    );
+
+    for (const { price, qty } of resolved) {
+      if (price.recurring) {
+        recurringCount++;
+        if (!subInterval) {
+          subInterval = { interval: price.recurring.interval, intervalCount: price.recurring.interval_count };
+        }
       }
+      subtotalMinor += (price.unit_amount ?? 0) * qty;
+      lineItems.push({ price: price.id, quantity: qty });
     }
-    subtotalMinor += (price.unit_amount ?? 0) * qty;
-    lineItems.push({ price: price.id, quantity: qty });
+  } catch (err) {
+    const message = err instanceof Error ? err.message : 'Unable to verify products. Please try again.';
+    res.status(400).json({ error: message });
+    return;
   }
 
   // Stripe Checkout subscription mode doesn't support shipping_options, so we

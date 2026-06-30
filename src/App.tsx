@@ -4,7 +4,6 @@ import { Analytics } from '@vercel/analytics/react';
 import { SpeedInsights } from '@vercel/speed-insights/react';
 import { CartProvider } from '@/context/CartContext';
 import { I18nProvider } from '@/context/I18nContext';
-import { useLenis } from '@/hooks/useLenis';
 import Navigation from '@/sections/Navigation';
 import CartDrawer from '@/sections/CartDrawer';
 import HomePage from '@/pages/HomePage';
@@ -46,8 +45,6 @@ const BlogPage = lazy(() => import('@/pages/BlogPage'));
 const NotFound = lazy(() => import('@/pages/NotFound'));
 
 function AppContent() {
-  useLenis();
-
   return (
     <Suspense fallback={<PageLoader />}>
       <ScrollToTop />

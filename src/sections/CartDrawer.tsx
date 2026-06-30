@@ -50,7 +50,6 @@ export default function CartDrawer() {
   }, [state.isOpen, closeCart]);
 
   const hasMixedCart = state.items.some(i => i.isSubscription) && state.items.some(i => !i.isSubscription);
-  const hasGingerFizz = state.items.some(i => i.productId === 'ginger-fizz');
 
   // Pre-create the Stripe checkout session in the background as soon as the cart
   // contents change, so clicking "Checkout" redirects instantly instead of waiting
@@ -168,16 +167,11 @@ export default function CartDrawer() {
                             {item.name}
                           </h4>
                         </button>
-                        <div className="flex items-center gap-1.5 mt-1">
-                          <span className={`inline-block font-body font-semibold text-[11px] uppercase tracking-wider px-2 py-0.5 rounded-full text-white ${item.badgeColor}`}>
-                            {item.badge}
+                        {item.isSubscription && (
+                          <span className="inline-block mt-1 font-body font-semibold text-[10px] uppercase tracking-wider px-2 py-0.5 rounded-full bg-deep-brown text-cream">
+                            {item.interval}
                           </span>
-                          {item.isSubscription && (
-                            <span className="inline-block font-body font-semibold text-[10px] uppercase tracking-wider px-2 py-0.5 rounded-full bg-deep-brown text-cream">
-                              {item.interval}
-                            </span>
-                          )}
-                        </div>
+                        )}
                       </div>
                       <button
                         onClick={() => removeItem(item.id)}
@@ -227,14 +221,6 @@ export default function CartDrawer() {
               <span className="font-display font-semibold text-deep-brown text-lg">฿{subtotal}</span>
             </div>
 
-            {/* Fine print — kept to a few quiet lines */}
-            <div className="font-body text-[12px] text-earth/60 leading-relaxed">
-              <p>{hasGingerFizz ? (subtotal >= 500 ? 'Free standard shipping · cold-chain upgrade +฿100' : '฿100 standard shipping · cold-chain upgrade +฿100') : (subtotal >= 500 ? 'Free shipping included.' : '+฿100 shipping · free over ฿500')}</p>
-              {state.items.some((i) => i.isSubscription) && (
-                <p>Subscription billed {state.items.find((i) => i.isSubscription)?.interval}.</p>
-              )}
-              {hasMixedCart && <p>One-time &amp; subscription items check out in two quick steps.</p>}
-            </div>
 
             <button
               onClick={handleCheckout}

@@ -11,25 +11,25 @@ const createSessionMock = vi.fn(async (params: Record<string, unknown>) => {
   return { url: 'https://checkout.stripe.com/test-session' };
 });
 
-// Mock price catalog: ids containing "sub" are recurring; "does-not-exist" is not returned.
-const listPricesMock = vi.fn(async ({ ids }: { ids: string[] }) => {
-  const data = ids
-    .filter((id) => id !== 'does-not-exist')
-    .map((id) => ({
-      id,
-      active: true,
-      currency: 'thb',
-      unit_amount: 14000,
-      recurring: id.includes('sub') ? { interval: 'week', interval_count: 1 } : null,
-    }));
-  return { data };
+// Mock price catalog: ids containing "sub" are recurring; "does-not-exist" throws.
+const retrievePriceMock = vi.fn(async (id: string) => {
+  if (id === 'does-not-exist') {
+    throw new Error('No such price');
+  }
+  return {
+    id,
+    active: true,
+    currency: 'thb',
+    unit_amount: 14000,
+    recurring: id.includes('sub') ? { interval: 'week', interval_count: 1 } : null,
+  };
 });
 
 vi.mock('stripe', () => ({
   default: vi.fn().mockImplementation(function () {
     return {
       prices: {
-        list: listPricesMock,
+        retrieve: retrievePriceMock,
       },
       checkout: {
         sessions: {
@@ -80,7 +80,7 @@ describe('checkout API handler', () => {
     process.env.STRIPE_SECRET_KEY = 'sk_test_fake_key_for_validation';
     lastSessionCreateParams = null;
     createSessionMock.mockClear();
-    listPricesMock.mockClear();
+    retrievePriceMock.mockClear();
   });
 
   it('rejects non-POST requests', async () => {
