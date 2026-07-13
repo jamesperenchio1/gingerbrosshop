@@ -74,12 +74,8 @@ export default function Story() {
               ))}
             </ul>
 
-            <p className="font-body text-earth leading-relaxed mb-5">
-              We're based in Bangkok, where ginger has been part of everyday cooking and traditional medicine for centuries. Our relationships with local growers mean we get fresh, fiery rhizomes harvested at peak potency — not the pallid, month-old stuff shipped across continents. That provenance matters. You can taste it.
-            </p>
-
             <p className="font-body text-earth leading-relaxed mb-8">
-              GingerBros isn't trying to be the next mass-market soft drink. We're building something smaller, more intentional, and more honest — a drink that earns its place on your table because it actually does what it says. Brewed slow. Kept real. Enjoyed easy.
+              We're based in Bangkok and source our ginger locally. Fresh rhizomes, short supply chain, no compromises on quality. That's it.
             </p>
 
             <button
