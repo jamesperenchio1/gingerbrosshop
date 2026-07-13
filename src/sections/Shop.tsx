@@ -272,13 +272,6 @@ export default function Shop() {
           <p className="font-body text-earth max-w-[480px] mx-auto">{categoryHeading.sub}</p>
         </div>
 
-        {/* Processing time notice for brewing equipment */}
-        {activeCategory === 'brewing-equipment' && !loading && (
-          <p className="text-center font-body font-semibold text-[13px] text-red-600 mb-8">
-            ⏱ 7 days processing time
-          </p>
-        )}
-
         {loading ? (
           <div className="text-center font-body text-earth py-12">Loading…</div>
         ) : visibleProducts.length === 0 ? (
