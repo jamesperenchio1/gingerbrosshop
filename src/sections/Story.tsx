@@ -3,23 +3,10 @@ import gsap from 'gsap';
 
 export default function Story() {
   const sectionRef = useRef<HTMLElement>(null);
-  const imageRef = useRef<HTMLDivElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const ctx = gsap.context(() => {
-      gsap.from(imageRef.current, {
-        opacity: 0,
-        x: -40,
-        scale: 1.02,
-        duration: 0.9,
-        ease: 'power3.out',
-        scrollTrigger: {
-          trigger: sectionRef.current,
-          start: 'top 80%',
-        },
-      });
-
       const children = contentRef.current?.children;
       if (children) {
         gsap.from(Array.from(children), {
@@ -52,23 +39,8 @@ export default function Story() {
       style={{ background: 'linear-gradient(to bottom, rgba(240,212,168,0.3) 0%, #FDF8F0 100%)' }}
     >
       <div className="max-w-[1280px] mx-auto px-6">
-        <div className="grid grid-cols-1 md:grid-cols-[1.2fr_1fr] gap-12 md:gap-16 items-center">
-          {/* Left — Image */}
-          <div
-            ref={imageRef}
-            className="order-2 md:order-1 min-w-0"
-          >
-            <div className="rounded-[20px] overflow-hidden shadow-lg md:-mt-5">
-              <img
-                src="/images/story-brewing.webp"
-                alt="Craft brewing process with wooden barrels and ginger"
-                className="w-full h-[400px] md:h-[500px] object-cover"
-              />
-            </div>
-          </div>
-
-          {/* Right — Content */}
-          <div ref={contentRef} className="order-1 md:order-2 min-w-0">
+        <div className="max-w-[680px] mx-auto">
+          <div ref={contentRef}>
             <span className="block font-body font-medium text-[13px] uppercase tracking-[0.08em] text-rust mb-3">
               OUR STORY
             </span>
