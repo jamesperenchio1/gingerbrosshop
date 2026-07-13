@@ -584,7 +584,14 @@ export default function ProductDetail() {
                 </button>
               </div>
 
-              {/* Gift toggle (drinks only) */}
+              {/* Processing time notice (equipment only) */}
+              {isEquipment && (
+                <p className="mt-4 font-body font-semibold text-[13px] text-red-600">
+                  ⏱ 7 days processing time
+                </p>
+              )}
+
+            {/* Gift toggle (drinks only) */}
               {!isEquipment && (
                 <div className="mt-5 pt-4 border-t border-soft-peach/50">
                   <label className="flex items-center gap-3 cursor-pointer">
