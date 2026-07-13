@@ -2,7 +2,7 @@ import { useState, useRef, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router';
 import gsap from 'gsap';
 import { useCart } from '@/context/CartContext';
-import { PlusIcon, MinusIcon, SnowflakeIcon } from '@/components/Icons';
+import { PlusIcon, MinusIcon } from '@/components/Icons';
 import { useCatalog, defaultPrice, cheapestSubscription, maxSubscriptionSavings, intervalLabel, type CatalogProduct } from '@/lib/catalog';
 
 function ProductCard({ product }: { product: CatalogProduct }) {
@@ -20,10 +20,6 @@ function ProductCard({ product }: { product: CatalogProduct }) {
   const subPrice = cheapestSubscription(product);
   const subSavings = maxSubscriptionSavings(product);
   const detailLink = `/product/${product.id}`;
-  const isChilled = /chill|cold|fridge|refriger/i.test(product.badge ?? '');
-  const badgeClass = isChilled
-    ? 'bg-sky-50 text-sky-700 border-sky-200/80'
-    : 'bg-accent-green/10 text-accent-green border-accent-green/30';
   const shortDescription = product.metadata.short_description ?? product.description ?? '';
   const image = product.images[0] ?? '';
   const isEquipment = product.category === 'brewing-equipment';
