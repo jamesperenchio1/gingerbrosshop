@@ -39,7 +39,7 @@ export default function Story() {
       style={{ background: 'linear-gradient(to bottom, rgba(240,212,168,0.3) 0%, #FDF8F0 100%)' }}
     >
       <div className="max-w-[1280px] mx-auto px-6">
-        <div className="max-w-[680px] mx-auto">
+        <div>
           <div ref={contentRef}>
             <span className="block font-body font-medium text-[13px] uppercase tracking-[0.08em] text-rust mb-3">
               OUR STORY
