@@ -432,19 +432,11 @@ export default function ProductDetail() {
             </a>
 
             {/* Brand (equipment) or Badge (drinks) */}
-            {isEquipment ? (
+            {isEquipment && (
               <span className="inline-flex items-center font-body font-semibold text-[11px] uppercase tracking-[0.1em] text-rust/70 mb-3">
                 KegLand · Duotight
               </span>
-            ) : product.badge ? (() => {
-              const badgeText = product.badge.replace(/\p{Emoji_Presentation}|\p{Extended_Pictographic}/gu, '').trim();
-              const isChilled = /chill|cold|fridge|refriger/i.test(product.badge);
-              return (
-                <span className={`inline-flex items-center border font-body font-semibold text-[11px] uppercase tracking-[0.06em] px-3 py-1.5 rounded-full mb-4 ${isChilled ? 'bg-sky-50 text-sky-700 border-sky-200/80' : 'bg-accent-green/10 text-accent-green border-accent-green/30'}`}>
-                  {badgeText}
-                </span>
-              );
-            })() : null}
+            )}
 
             {/* Name */}
             <h1 className="font-display font-bold text-deep-brown text-[1.75rem] sm:text-[2rem] md:text-[2.5rem] leading-tight mb-3">

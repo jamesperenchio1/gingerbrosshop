@@ -71,13 +71,6 @@ function ProductCard({ product }: { product: CatalogProduct }) {
         />
       </div>
 
-      {/* Badge */}
-      {product.badge && (
-        <span className={`inline-flex items-center gap-1.5 self-start border font-body font-semibold text-[11px] uppercase tracking-[0.06em] px-3 py-1.5 rounded-full mb-3 ${badgeClass}`}>
-          {isChilled && <SnowflakeIcon className="w-3.5 h-3.5" />}
-          {product.badge.replace(/\p{Emoji_Presentation}|\p{Extended_Pictographic}/gu, '').trim()}
-        </span>
-      )}
 
       {/* Product Name */}
       <button onClick={() => navigate(detailLink)} className="text-left">
