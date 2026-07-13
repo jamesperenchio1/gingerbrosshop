@@ -47,18 +47,25 @@ export default function Story() {
             <h2 className="font-display font-semibold text-deep-brown text-[clamp(1.5rem,3vw,2.5rem)] mb-6">
               Brewed with Patience, Served with Pride
             </h2>
+
+            <p className="font-body text-earth leading-relaxed mb-5">
+              GingerBros started with a simple question: why does everything sold as "healthy" taste like compromise? We wanted something that was genuinely good for you — not because it had vitamins added in a lab, but because the process itself created something nourishing. That search led us to fermentation.
+            </p>
+
+            <p className="font-body text-earth leading-relaxed mb-5">
+              Every batch of our ginger fizz undergoes a full 7-day natural fermentation process. We keep the ingredient list short on purpose: fresh Thai ginger, water, cane sugar, and prebiotic acacia fibre. No concentrates, no artificial carbonation, no shortcuts. The slow ferment is where the magic happens — it's what gives each bottle its depth of flavour and its gentle, natural fizz.
+            </p>
+
             <p className="font-body text-earth leading-relaxed mb-4">
-              GingerBros started with a simple belief: the best things take time. Every batch of our ginger fizz undergoes a full 7-day natural fermentation process using a handful of core ingredients: fresh ginger, water, sugar, and prebiotic acacia fibre — one of the most effective prebiotic sources on the planet.
+              We source our acacia fibre specifically because it's one of the most well-studied prebiotic fibres in existence. Prebiotics aren't probiotics — they don't add new bacteria. Instead, they feed the good bacteria already living in your gut. When that ecosystem is well-fed, the effects ripple outward:
             </p>
-            <p className="font-body text-earth leading-relaxed mb-3">
-              Prebiotics matter because they feed the good bacteria already living in your gut, not just add more. When your gut bacteria thrive, everything else follows:
-            </p>
-            <ul className="font-body text-earth text-[14px] leading-relaxed mb-8 space-y-1.5 pl-1">
+
+            <ul className="font-body text-earth text-[14px] leading-relaxed mb-6 space-y-2 pl-1">
               {[
                 'Better digestion and less bloating',
-                'Stronger immunity. Over 70% of immune cells live in the gut',
+                'Stronger immunity — over 70% of immune cells live in the gut',
                 'Steadier energy without caffeine spikes or crashes',
-                'Improved mood. The gut and brain are in constant conversation',
+                'Improved mood — the gut and brain are in constant conversation',
               ].map((point) => (
                 <li key={point} className="flex items-start gap-2">
                   <span className="mt-1.5 w-1.5 h-1.5 flex-shrink-0 rounded-full bg-rust" />
@@ -66,6 +73,14 @@ export default function Story() {
                 </li>
               ))}
             </ul>
+
+            <p className="font-body text-earth leading-relaxed mb-5">
+              We're based in Bangkok, where ginger has been part of everyday cooking and traditional medicine for centuries. Our relationships with local growers mean we get fresh, fiery rhizomes harvested at peak potency — not the pallid, month-old stuff shipped across continents. That provenance matters. You can taste it.
+            </p>
+
+            <p className="font-body text-earth leading-relaxed mb-8">
+              GingerBros isn't trying to be the next mass-market soft drink. We're building something smaller, more intentional, and more honest — a drink that earns its place on your table because it actually does what it says. Brewed slow. Kept real. Enjoyed easy.
+            </p>
 
             <button
               onClick={handleProcessClick}
