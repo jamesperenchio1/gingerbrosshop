@@ -15,14 +15,20 @@ export function getGiftInfo(items: CartItem[]) {
   };
 }
 
-export async function startCheckout(items: CartItem[], email?: string): Promise<string> {
+export const REFERRAL_CODE_STORAGE_KEY = 'gbros-referral-code';
+
+export async function startCheckout(
+  items: CartItem[],
+  options?: { email?: string; referralCode?: string },
+): Promise<string> {
   const res = await fetch('/api/checkout', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
       items: items.map((i) => ({ priceId: i.priceId ?? i.id, quantity: i.quantity, productId: i.productId })),
       giftInfo: getGiftInfo(items),
-      email: email?.trim() || undefined,
+      email: options?.email?.trim() || undefined,
+      referralCode: options?.referralCode?.trim() || undefined,
     }),
   });
   const data = await res.json();

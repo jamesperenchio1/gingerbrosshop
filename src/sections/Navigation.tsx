@@ -11,6 +11,14 @@ const navLinks = [
   { label: 'Benefits', href: '#benefits' },
 ];
 
+// Only shown in the mobile menu — utility pages that otherwise have no nav
+// entry point at all (previously reachable only via footer or direct URL).
+const mobileOnlyLinks = [
+  { label: 'Track Order', to: '/track' },
+  { label: 'Wholesale', to: '/wholesale' },
+  { label: 'FAQ', to: '/faq' },
+];
+
 export default function Navigation() {
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -48,6 +56,27 @@ export default function Navigation() {
       navigate('/');
     }
   };
+
+  const handleMobileLinkNavigate = (e: React.MouseEvent<HTMLAnchorElement>, to: string) => {
+    e.preventDefault();
+    setMobileOpen(false);
+    navigate(to);
+  };
+
+  // Match the cart drawer's behavior: close on Escape, lock body scroll while open.
+  useEffect(() => {
+    const handleKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setMobileOpen(false);
+    };
+    if (mobileOpen) {
+      document.addEventListener('keydown', handleKey);
+      document.body.style.overflow = 'hidden';
+    }
+    return () => {
+      document.removeEventListener('keydown', handleKey);
+      document.body.style.overflow = '';
+    };
+  }, [mobileOpen]);
 
   return (
     <nav
@@ -105,6 +134,8 @@ export default function Navigation() {
           <button
             className="md:hidden text-deep-brown p-2 -mr-2"
             aria-label={mobileOpen ? 'Close menu' : 'Open menu'}
+            aria-expanded={mobileOpen}
+            aria-controls="mobile-nav-menu"
             onClick={() => setMobileOpen(!mobileOpen)}
           >
             {mobileOpen ? <CloseIcon /> : <MenuIcon />}
@@ -114,13 +145,23 @@ export default function Navigation() {
 
       {/* Mobile menu */}
       {mobileOpen && (
-        <div className="md:hidden absolute top-full left-0 right-0 bg-warm-white/95 backdrop-blur-xl border-t border-soft-peach/50 shadow-lg">
+        <div id="mobile-nav-menu" className="md:hidden absolute top-full left-0 right-0 bg-warm-white/95 backdrop-blur-xl border-t border-soft-peach/50 shadow-lg">
           <div className="flex flex-col px-6 py-2">
             {navLinks.map((link) => (
               <a
                 key={link.href}
                 href={link.href}
                 onClick={(e) => handleNavClick(e, link.href)}
+                className="flex items-center py-3 font-body font-medium text-sm uppercase tracking-[0.08em] text-earth hover:text-deep-brown transition-colors border-b border-soft-peach/30 last:border-0"
+              >
+                {link.label}
+              </a>
+            ))}
+            {mobileOnlyLinks.map((link) => (
+              <a
+                key={link.to}
+                href={link.to}
+                onClick={(e) => handleMobileLinkNavigate(e, link.to)}
                 className="flex items-center py-3 font-body font-medium text-sm uppercase tracking-[0.08em] text-earth hover:text-deep-brown transition-colors border-b border-soft-peach/30 last:border-0"
               >
                 {link.label}

@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router';
 import { ArrowLeft, Search, Package, Truck, CheckCircle } from 'lucide-react';
 import SEO from '@/components/SEO';
+import CopyButton from '@/components/CopyButton';
 
 interface OrderResult {
   sessionId: string;
@@ -111,7 +112,10 @@ export default function TrackOrderPage() {
             <div className="flex items-center justify-between pb-4 border-b border-soft-peach/50">
               <div>
                 <p className="font-body text-[13px] text-earth uppercase tracking-wider">Order</p>
-                <p className="font-display font-semibold text-deep-brown">#{orderNum.toUpperCase()}</p>
+                <div className="flex items-center gap-2">
+                  <p className="font-display font-semibold text-deep-brown">#{orderNum.toUpperCase()}</p>
+                  <CopyButton value={orderNum.toUpperCase()} />
+                </div>
               </div>
               <div className="text-right">
                 <p className="font-body text-[13px] text-earth uppercase tracking-wider">Total</p>

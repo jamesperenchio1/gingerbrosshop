@@ -157,7 +157,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 async function sendShippingNotification(order: Order): Promise<boolean> {
   const resend = getResend();
   if (!resend) {
-    console.log('[SHIPPING NOTIFICATION] RESEND_API_KEY not configured — skipping email for', order.sessionId);
+    console.warn('[SHIPPING NOTIFICATION] RESEND_API_KEY not configured — skipping email for', order.sessionId);
     return false;
   }
 

@@ -5,6 +5,8 @@ import { useCart } from '@/context/CartContext';
 import { PENDING_SUBSCRIPTION_CHECKOUT_KEY, startCheckout } from '@/lib/checkout';
 import type { CartItem } from '@/types/cart';
 import SEO from '@/components/SEO';
+import CopyButton from '@/components/CopyButton';
+import ReferralCard from '@/components/ReferralCard';
 
 interface OrderItem {
   description: string;
@@ -241,7 +243,10 @@ export default function OrderSuccess() {
           <div className="flex items-center justify-between mb-6 pb-5 border-b border-soft-peach/60">
             <div>
               <p className="font-body text-[12px] text-earth uppercase tracking-wider">Order #</p>
-              <p className="font-display font-semibold text-deep-brown text-lg">{orderNumber}</p>
+              <div className="flex items-center gap-2">
+                <p className="font-display font-semibold text-deep-brown text-lg">{orderNumber}</p>
+                <CopyButton value={orderNumber} />
+              </div>
             </div>
             <div className="text-right">
               <p className="font-body text-[12px] text-earth uppercase tracking-wider">Total</p>
@@ -369,6 +374,8 @@ export default function OrderSuccess() {
             </a>
           )}
         </div>
+
+        {order.customerEmail && <ReferralCard email={order.customerEmail} />}
 
         <div className="text-center">
           <Link

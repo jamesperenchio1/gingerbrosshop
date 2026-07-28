@@ -61,6 +61,20 @@ export function oneTimePrice(product: CatalogProduct): CatalogPrice | undefined 
   return product.prices.find((p) => !p.recurring);
 }
 
+export type StockStatus = 'in_stock' | 'low_stock' | 'out_of_stock';
+
+/**
+ * Reads stock status from the Stripe product's `stock_status` metadata key
+ * (set it to `low_stock` or `out_of_stock` in the Stripe dashboard to flag a
+ * product without fully deactivating it — deactivating removes it from the
+ * catalog entirely). Defaults to `in_stock` when unset, since the catalog only
+ * ever includes active Stripe products/prices in the first place.
+ */
+export function stockStatus(product: CatalogProduct): StockStatus {
+  const raw = product.metadata.stock_status;
+  return raw === 'low_stock' || raw === 'out_of_stock' ? raw : 'in_stock';
+}
+
 /**
  * Whole-number percent saved by `price` versus the one-time `reference` price.
  * Returns 0 when either amount is missing or there's no saving (so callers can

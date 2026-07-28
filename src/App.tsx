@@ -7,6 +7,19 @@ import { I18nProvider } from '@/context/I18nContext';
 import Navigation from '@/sections/Navigation';
 import CartDrawer from '@/sections/CartDrawer';
 import HomePage from '@/pages/HomePage';
+import { Toaster } from '@/components/ui/sonner';
+import ErrorBoundary from '@/components/ErrorBoundary';
+import { REFERRAL_CODE_STORAGE_KEY } from '@/lib/checkout';
+
+/** Picks up `?ref=CODE` from a shared referral link and remembers it for checkout. */
+function ReferralCapture() {
+  const location = useLocation();
+  useEffect(() => {
+    const ref = new URLSearchParams(location.search).get('ref');
+    if (ref) localStorage.setItem(REFERRAL_CODE_STORAGE_KEY, ref.toUpperCase());
+  }, [location.search]);
+  return null;
+}
 
 /**
  * Reset scroll to the top on every route change (but preserve in-page #hash
@@ -48,6 +61,7 @@ function AppContent() {
   return (
     <Suspense fallback={<PageLoader />}>
       <ScrollToTop />
+      <ReferralCapture />
       <Routes>
         <Route path="/" element={<HomePage />} />
         <Route path="/product/:id" element={<ProductDetail />} />
@@ -72,9 +86,12 @@ export default function App() {
   return (
     <I18nProvider>
       <CartProvider>
-        <Navigation />
-        <AppContent />
-        <CartDrawer />
+        <ErrorBoundary>
+          <Navigation />
+          <AppContent />
+          <CartDrawer />
+        </ErrorBoundary>
+        <Toaster position="bottom-right" />
         <Analytics />
         <SpeedInsights />
       </CartProvider>

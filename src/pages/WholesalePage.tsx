@@ -1,5 +1,102 @@
-import { Store, Truck, BadgeCheck, Mail } from 'lucide-react';
+import { useState } from 'react';
+import { Store, Truck, BadgeCheck, Mail, CheckCircle } from 'lucide-react';
 import SEO from '@/components/SEO';
+
+function WholesaleForm() {
+  const [businessName, setBusinessName] = useState('');
+  const [contactName, setContactName] = useState('');
+  const [email, setEmail] = useState('');
+  const [phone, setPhone] = useState('');
+  const [message, setMessage] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+  const [sent, setSent] = useState(false);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    setError('');
+    try {
+      const res = await fetch('/api/wholesale', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ businessName, contactName, email, phone, message }),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(data.error ?? 'Something went wrong. Please try again.');
+      setSent(true);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to send inquiry.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (sent) {
+    return (
+      <div className="flex items-center gap-3 text-cream">
+        <CheckCircle className="w-6 h-6 text-accent-green flex-shrink-0" />
+        <p className="font-body text-[15px]">
+          Thanks! We've got your inquiry for <strong>{businessName}</strong> and will reply within 24 hours.
+        </p>
+      </div>
+    );
+  }
+
+  return (
+    <form onSubmit={handleSubmit} className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      <input
+        required
+        value={businessName}
+        onChange={(e) => setBusinessName(e.target.value)}
+        placeholder="Business name"
+        className="bg-cream border border-soft-peach rounded-xl px-4 py-3 font-body text-deep-brown placeholder:text-earth/50 focus:outline-none focus:ring-2 focus:ring-amber/40"
+      />
+      <input
+        required
+        value={contactName}
+        onChange={(e) => setContactName(e.target.value)}
+        placeholder="Contact name"
+        className="bg-cream border border-soft-peach rounded-xl px-4 py-3 font-body text-deep-brown placeholder:text-earth/50 focus:outline-none focus:ring-2 focus:ring-amber/40"
+      />
+      <input
+        required
+        type="email"
+        value={email}
+        onChange={(e) => setEmail(e.target.value)}
+        placeholder="Email"
+        className="bg-cream border border-soft-peach rounded-xl px-4 py-3 font-body text-deep-brown placeholder:text-earth/50 focus:outline-none focus:ring-2 focus:ring-amber/40"
+      />
+      <input
+        value={phone}
+        onChange={(e) => setPhone(e.target.value)}
+        placeholder="Phone (optional)"
+        className="bg-cream border border-soft-peach rounded-xl px-4 py-3 font-body text-deep-brown placeholder:text-earth/50 focus:outline-none focus:ring-2 focus:ring-amber/40"
+      />
+      <textarea
+        required
+        value={message}
+        onChange={(e) => setMessage(e.target.value)}
+        placeholder="What you serve, and the volume you're interested in"
+        rows={4}
+        className="sm:col-span-2 bg-cream border border-soft-peach rounded-xl px-4 py-3 font-body text-deep-brown placeholder:text-earth/50 focus:outline-none focus:ring-2 focus:ring-amber/40 resize-none"
+      />
+      {error && <p className="sm:col-span-2 font-body text-[13px] text-red-400">{error}</p>}
+      <button
+        type="submit"
+        disabled={loading}
+        className="sm:col-span-2 inline-flex items-center justify-center gap-2 bg-amber text-deep-brown font-body font-medium text-sm uppercase tracking-[0.08em] px-8 py-3.5 rounded-full hover:bg-warm-gold transition-colors disabled:opacity-70"
+      >
+        {loading ? (
+          <span className="w-5 h-5 border-2 border-deep-brown/30 border-t-deep-brown rounded-full animate-spin" />
+        ) : (
+          <Mail className="w-5 h-5" />
+        )}
+        {loading ? 'Sending…' : 'Request Wholesale Quote'}
+      </button>
+    </form>
+  );
+}
 
 export default function WholesalePage() {
   const benefits = [
@@ -112,13 +209,7 @@ export default function WholesalePage() {
             <p className="font-body text-[15px] text-cream/80 leading-relaxed mb-6">
               Send us a short message with your business name, what you serve, and the volume you are interested in. We will respond with trade pricing and delivery options within 24 hours.
             </p>
-            <a
-              href="mailto:hello@gingerbrosshop.com?subject=Wholesale%20Inquiry"
-              className="inline-flex items-center gap-2 bg-amber text-deep-brown font-body font-medium text-sm uppercase tracking-[0.08em] px-8 py-3.5 rounded-full hover:bg-warm-gold transition-colors"
-            >
-              <Mail className="w-5 h-5" />
-              Request Wholesale Quote
-            </a>
+            <WholesaleForm />
           </div>
         </div>
       </main>

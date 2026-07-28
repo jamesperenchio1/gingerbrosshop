@@ -2,7 +2,6 @@ import { Redis } from '@upstash/redis';
 
 const redis = Redis.fromEnv();
 const REFERRAL_PREFIX = 'referral';
-const POINTS_PREFIX = 'points';
 
 function generateCode(email: string): string {
   const hash = email.split('').reduce((a, b) => ((a << 5) - a + b.charCodeAt(0)) | 0, 0);
@@ -29,15 +28,4 @@ export async function recordReferralUsage(code: string, referredEmail: string) {
 
 export async function getReferralCount(code: string): Promise<number> {
   return redis.scard(`${REFERRAL_PREFIX}:used:${code.toUpperCase()}`);
-}
-
-export async function getPoints(email: string): Promise<number> {
-  const pts = await redis.get<number>(`${POINTS_PREFIX}:${email.toLowerCase()}`);
-  return pts ?? 0;
-}
-
-export async function addPoints(email: string, points: number) {
-  const key = `${POINTS_PREFIX}:${email.toLowerCase()}`;
-  const current = await getPoints(email);
-  await redis.set(key, current + points);
 }

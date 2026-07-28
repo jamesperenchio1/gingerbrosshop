@@ -2,10 +2,12 @@ import { useState, useRef, useEffect, useLayoutEffect, useCallback } from 'react
 import { useParams, useSearchParams, useNavigate } from 'react-router';
 import gsap from 'gsap';
 import { useCart } from '@/context/CartContext';
+import { toast } from 'sonner';
 import { PlusIcon, MinusIcon } from '@/components/Icons';
 import SEO from '@/components/SEO';
 import NotFound from '@/pages/NotFound';
-import { useCatalog, defaultPrice, intervalLabel, oneTimePrice, savingsPercent, type CatalogProduct } from '@/lib/catalog';
+import { useCatalog, defaultPrice, intervalLabel, oneTimePrice, savingsPercent, stockStatus, type CatalogProduct } from '@/lib/catalog';
+import { Skeleton } from '@/components/ui/skeleton';
 import { getProductContent } from '@/lib/productContent';
 import {
   Leaf,
@@ -151,6 +153,7 @@ function RelatedProductCard({ product }: { product: CatalogProduct }) {
     if (!price || hasVariants) return;
     addItem({ id: price.priceId, priceId: price.priceId, productId: product.id, name: product.name, variant: product.id, price: price.unitAmount ?? 0, quantity: 1, image, badge: product.badge ?? '', badgeColor: product.badgeColor ?? '' });
     setAdded(true);
+    toast.success(`${product.name} added to cart`);
     if (timerRef.current) clearTimeout(timerRef.current);
     timerRef.current = setTimeout(() => setAdded(false), 800);
   }, [price, hasVariants, addItem, product, image]);
@@ -299,17 +302,34 @@ export default function ProductDetail() {
 
   if (loading && !product) {
     return (
-      <div className="min-h-screen bg-warm-white flex items-center justify-center">
-        <p className="font-body text-earth">Loading…</p>
+      <div className="min-h-screen bg-warm-white">
+        <div className="max-w-[1100px] mx-auto px-6 py-10 md:py-16 grid grid-cols-1 md:grid-cols-2 gap-10">
+          <div>
+            <Skeleton className="w-full h-[400px] md:h-[500px] rounded-[20px] mb-4" />
+            <div className="flex gap-3">
+              {Array.from({ length: 4 }).map((_, i) => <Skeleton key={i} className="w-20 h-20 rounded-xl" />)}
+            </div>
+          </div>
+          <div>
+            <Skeleton className="h-4 w-24 mb-4" />
+            <Skeleton className="h-9 w-3/4 mb-4" />
+            <Skeleton className="h-4 w-full mb-2" />
+            <Skeleton className="h-4 w-2/3 mb-8" />
+            <Skeleton className="h-8 w-32 mb-8" />
+            <Skeleton className="h-14 w-full rounded-full" />
+          </div>
+        </div>
       </div>
     );
   }
 
   if (!product || !selectedPrice) return <NotFound />;
 
+  const stock = stockStatus(product);
   const lineTotal = (selectedPrice.unitAmount ?? 0) * quantity;
 
   const handleAdd = () => {
+    if (stock === 'out_of_stock') return;
     addItem({
       id: selectedPrice.priceId,
       priceId: selectedPrice.priceId,
@@ -331,6 +351,7 @@ export default function ProductDetail() {
       giftMessage: isGift ? giftMessage : undefined,
     });
     setAdded(true);
+    toast.success(`${product.name} added to cart`);
     setTimeout(() => setAdded(false), 800);
   };
 
@@ -409,8 +430,8 @@ export default function ProductDetail() {
             </div>
             <div className="flex gap-3 overflow-x-auto pb-2">
               {images.map((img, i) => (
-                <button key={i} onClick={() => setActiveImage(i)} className={`flex-shrink-0 w-20 h-20 rounded-xl overflow-hidden border-2 transition-all ${activeImage === i ? 'border-amber' : 'border-transparent hover:border-soft-peach'}`}>
-                  <img src={img} alt="" className="w-full h-full object-contain p-1" />
+                <button key={i} onClick={() => setActiveImage(i)} aria-label={`View ${product.name} photo ${i + 1}`} className={`flex-shrink-0 w-20 h-20 rounded-xl overflow-hidden border-2 transition-all ${activeImage === i ? 'border-amber' : 'border-transparent hover:border-soft-peach'}`}>
+                  <img src={img} alt={`${product.name} thumbnail ${i + 1}`} className="w-full h-full object-contain p-1" />
                 </button>
               ))}
               {video && (
@@ -456,9 +477,9 @@ export default function ProductDetail() {
               {selectedPrice.recurring && (
                 <span className="font-body font-medium text-[15px] text-rust">{intervalLabel(selectedPrice.recurring)}</span>
               )}
-              <span className="flex items-center gap-1.5 font-body font-medium text-[13px] text-accent-green">
-                <span className="w-2 h-2 rounded-full bg-accent-green" />
-                In Stock
+              <span className={`flex items-center gap-1.5 font-body font-medium text-[13px] ${stock === 'out_of_stock' ? 'text-earth/60' : stock === 'low_stock' ? 'text-amber' : 'text-accent-green'}`}>
+                <span className={`w-2 h-2 rounded-full ${stock === 'out_of_stock' ? 'bg-earth/40' : stock === 'low_stock' ? 'bg-amber' : 'bg-accent-green'}`} />
+                {stock === 'out_of_stock' ? 'Out of Stock' : stock === 'low_stock' ? 'Low Stock' : 'In Stock'}
               </span>
             </div>
 
@@ -570,9 +591,16 @@ export default function ProductDetail() {
                 </div>
                 <button
                   onClick={handleAdd}
-                  className={`font-body font-medium text-sm uppercase tracking-[0.08em] px-10 py-3.5 rounded-full transition-all duration-200 active:scale-[0.98] ${added ? 'bg-accent-green text-white' : 'bg-amber text-deep-brown hover:bg-warm-gold'}`}
+                  disabled={stock === 'out_of_stock'}
+                  className={`font-body font-medium text-sm uppercase tracking-[0.08em] px-10 py-3.5 rounded-full transition-all duration-200 active:scale-[0.98] ${
+                    added
+                      ? 'bg-accent-green text-white'
+                      : stock === 'out_of_stock'
+                      ? 'bg-soft-peach text-earth/60 cursor-not-allowed active:scale-100'
+                      : 'bg-amber text-deep-brown hover:bg-warm-gold'
+                  }`}
                 >
-                  {added ? 'Added to Cart!' : `Add to Cart — ฿${lineTotal}`}
+                  {added ? 'Added to Cart!' : stock === 'out_of_stock' ? 'Out of Stock' : `Add to Cart — ฿${lineTotal}`}
                 </button>
               </div>
 

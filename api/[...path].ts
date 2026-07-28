@@ -12,6 +12,7 @@ import subscribe from './_lib/handlers/subscribe.js';
 import shippingRate from './_lib/handlers/shipping-rate.js';
 import abandonedCartCheck from './_lib/handlers/abandoned-cart-check.js';
 import credit from './_lib/handlers/credit.js';
+import wholesale from './_lib/handlers/wholesale.js';
 
 type Handler = (req: VercelRequest, res: VercelResponse) => unknown | Promise<unknown>;
 
@@ -32,6 +33,7 @@ const routes: Record<string, Handler> = {
   'shipping-rate': shippingRate,
   'abandoned-cart-check': abandonedCartCheck,
   'credit': credit,
+  'wholesale': wholesale,
 };
 
 /**

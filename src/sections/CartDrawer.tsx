@@ -1,17 +1,33 @@
 import { useRef, useEffect, useState } from 'react';
 import { useCart } from '@/context/CartContext';
 import { useNavigate } from 'react-router';
+import { toast } from 'sonner';
 import { CloseIcon, TrashIcon, LockIcon, ShoppingBagIcon, PlusIcon, MinusIcon } from '@/components/Icons';
-import { PENDING_SUBSCRIPTION_CHECKOUT_KEY, startCheckout } from '@/lib/checkout';
+import { PENDING_SUBSCRIPTION_CHECKOUT_KEY, REFERRAL_CODE_STORAGE_KEY, startCheckout } from '@/lib/checkout';
+import type { CartItem } from '@/types/cart';
 
 export default function CartDrawer() {
-  const { state, closeCart, removeItem, updateQuantity, decrementOrRemove, subtotal } = useCart();
+  const { state, closeCart, removeItem, addItem, updateQuantity, decrementOrRemove, subtotal } = useCart();
   const drawerRef = useRef<HTMLDivElement>(null);
   const [mounted, setMounted] = useState(state.isOpen);
   const [isCheckingOut, setIsCheckingOut] = useState(false);
   const [checkoutError, setCheckoutError] = useState('');
   const [prefetchedUrl, setPrefetchedUrl] = useState<string | null>(null);
+  const [referralInput, setReferralInput] = useState(false);
+  const [referralCode, setReferralCode] = useState(
+    () => localStorage.getItem(REFERRAL_CODE_STORAGE_KEY) ?? '',
+  );
   const navigate = useNavigate();
+
+  const handleReferralChange = (value: string) => {
+    const next = value.toUpperCase();
+    setReferralCode(next);
+    if (next.trim()) {
+      localStorage.setItem(REFERRAL_CODE_STORAGE_KEY, next);
+    } else {
+      localStorage.removeItem(REFERRAL_CODE_STORAGE_KEY);
+    }
+  };
 
   // Mount immediately when opening (state adjustment during render, per React
   // docs); the effect below only delays the unmount so the slide-out
@@ -65,12 +81,12 @@ export default function CartDrawer() {
     const itemsToPrefetch = hasMixedCart
       ? state.items.filter(i => !i.isSubscription)
       : state.items;
-    startCheckout(itemsToPrefetch).then(url => {
+    startCheckout(itemsToPrefetch, { referralCode }).then(url => {
       if (!cancelled) setPrefetchedUrl(url);
     }).catch(() => { /* retry on click */ });
     return () => { cancelled = true; };
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [cartKey, hasMixedCart]);
+  }, [cartKey, hasMixedCart, referralCode]);
 
   const handleCheckout = async () => {
     if (state.items.length === 0) return;
@@ -90,14 +106,24 @@ export default function CartDrawer() {
         // the subscription leg automatically once that session completes.
         const oneTimeItems = state.items.filter((i) => !i.isSubscription);
         sessionStorage.setItem(PENDING_SUBSCRIPTION_CHECKOUT_KEY, '1');
-        window.location.href = prefetchedUrl ?? await startCheckout(oneTimeItems);
+        window.location.href = prefetchedUrl ?? await startCheckout(oneTimeItems, { referralCode });
         return;
       }
-      window.location.href = await startCheckout(state.items);
+      window.location.href = await startCheckout(state.items, { referralCode });
     } catch (err) {
       setCheckoutError(err instanceof Error ? err.message : 'Something went wrong. Please try again.');
       setIsCheckingOut(false);
     }
+  };
+
+  const handleRemove = (item: CartItem) => {
+    removeItem(item.id);
+    toast(`Removed ${item.name}`, {
+      action: {
+        label: 'Undo',
+        onClick: () => addItem(item),
+      },
+    });
   };
 
   const handleViewProduct = (item: { productId?: string; id: string }) => {
@@ -174,7 +200,7 @@ export default function CartDrawer() {
                         )}
                       </div>
                       <button
-                        onClick={() => removeItem(item.id)}
+                        onClick={() => handleRemove(item)}
                         className="text-earth hover:text-rust transition-colors flex-shrink-0"
                         title="Remove item"
                       >
@@ -221,6 +247,42 @@ export default function CartDrawer() {
               <span className="font-display font-semibold text-deep-brown text-lg">฿{subtotal}</span>
             </div>
 
+            {/* Referral code */}
+            {referralCode && !referralInput ? (
+              <div className="flex items-center justify-between font-body text-[13px]">
+                <span className="text-earth">
+                  Referral code <span className="font-semibold text-deep-brown">{referralCode}</span> applied
+                </span>
+                <button
+                  onClick={() => setReferralInput(true)}
+                  className="text-rust hover:text-deep-brown underline"
+                >
+                  Change
+                </button>
+              </div>
+            ) : referralInput || referralCode ? (
+              <div className="flex items-center gap-2">
+                <input
+                  value={referralCode}
+                  onChange={(e) => handleReferralChange(e.target.value)}
+                  placeholder="Referral code"
+                  className="flex-1 bg-cream border border-soft-peach rounded-full px-4 py-2 font-body text-[13px] text-deep-brown placeholder:text-earth/50 focus:outline-none focus:ring-2 focus:ring-rust/30"
+                />
+                <button
+                  onClick={() => setReferralInput(false)}
+                  className="font-body text-[13px] text-rust hover:text-deep-brown"
+                >
+                  Done
+                </button>
+              </div>
+            ) : (
+              <button
+                onClick={() => setReferralInput(true)}
+                className="font-body text-[13px] text-rust hover:text-deep-brown underline"
+              >
+                Have a referral code?
+              </button>
+            )}
 
             <button
               onClick={handleCheckout}

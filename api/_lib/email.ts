@@ -56,6 +56,16 @@ export function money(minor: number | null | undefined): string {
   return ((minor ?? 0) / 100).toLocaleString();
 }
 
+/** Escapes free-text user input before interpolating it into email HTML. */
+function escapeHtml(text: string): string {
+  return text
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
 /**
  * Human label for the billing cadence of a subscription, derived from the
  * line items' price (e.g. "week", "2 weeks", "month"). Returns null when the
@@ -255,6 +265,42 @@ export function shippingNotificationHtml(order: Order): string {
     <p style="margin-top:8px;text-align:center;">${button('Track My Order →', 'https://gingerbrosshop.com/track')}</p>
     <p style="font-size:13px;color:${BRAND.earth};margin-top:16px;">Track anytime at gingerbrosshop.com/track using your email and order number <strong>${orderId}</strong>.</p>`,
     `Your GingerBros order #${orderId} has shipped`
+  );
+}
+
+export interface WholesaleInquiry {
+  businessName: string;
+  contactName: string;
+  email: string;
+  phone?: string;
+  message: string;
+}
+
+/** Notifies the team of a new wholesale inquiry submitted from /wholesale. */
+export function wholesaleInquiryHtml(inquiry: WholesaleInquiry): string {
+  const businessName = escapeHtml(inquiry.businessName);
+  const contactName = escapeHtml(inquiry.contactName);
+  const email = escapeHtml(inquiry.email);
+  const phone = inquiry.phone ? escapeHtml(inquiry.phone) : '';
+  const message = escapeHtml(inquiry.message);
+
+  return layout(
+    `${heading('New wholesale inquiry 🏪')}
+    <p style="margin:0 0 4px;"><strong>Business:</strong> ${businessName}</p>
+    <p style="margin:0 0 4px;"><strong>Contact:</strong> ${contactName} · ${email}${phone ? ` · ${phone}` : ''}</p>
+    ${infoCard(`<p style="margin:0;white-space:pre-wrap;">${message}</p>`)}
+    <p style="margin-top:24px;text-align:center;">${button('Reply →', `mailto:${inquiry.email}`)}</p>`,
+    `Wholesale inquiry from ${businessName}`
+  );
+}
+
+/** Confirmation sent back to whoever submitted the wholesale inquiry form. */
+export function wholesaleConfirmationHtml(inquiry: WholesaleInquiry): string {
+  return layout(
+    `${heading('Thanks for reaching out! 🍺')}
+    <p style="margin:0 0 4px;">We've got your wholesale inquiry for <strong>${escapeHtml(inquiry.businessName)}</strong> and will reply with trade pricing and delivery options within 24 hours.</p>
+    <p style="margin-top:16px;font-size:13px;color:${BRAND.earth};">In the meantime, feel free to reply to this email with any questions.</p>`,
+    'We got your wholesale inquiry'
   );
 }
 

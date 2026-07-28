@@ -130,7 +130,10 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         console.error('Failed to send seller email:', err);
       }
     } else {
-      console.log('[SELLER NOTIFICATION] New order:', order);
+      // Don't log the full order object — it carries customer PII (email, name,
+      // phone, shipping address). A summary is enough to confirm the order landed
+      // when Resend/SELLER_EMAIL aren't configured.
+      console.warn('[SELLER NOTIFICATION] RESEND_API_KEY or SELLER_EMAIL not configured — skipping email for', order.sessionId);
     }
 
     // Send customer invoice/receipt
@@ -161,15 +164,19 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       }
     }
 
-    // Record referral if code was used
+    // Record referral if code was used. Rewards are granted as real store credit
+    // (the same balance `api/_lib/credits.ts` already applies as an automatic
+    // discount on the referrer's/referred customer's *next* checkout) — not the
+    // separate "points" counter, which had no redemption path anywhere.
     if (referralCode && order.customerEmail) {
       try {
-        const { getReferralOwner, recordReferralUsage, addPoints } = await import('./_lib/referrals.js');
+        const { getReferralOwner, recordReferralUsage } = await import('./_lib/referrals.js');
+        const { addCredit } = await import('./_lib/credits.js');
         const owner = await getReferralOwner(referralCode);
         if (owner && owner !== order.customerEmail.toLowerCase()) {
           await recordReferralUsage(referralCode, order.customerEmail);
-          await addPoints(owner, 50);
-          await addPoints(order.customerEmail, 50);
+          await addCredit(owner, 500); // ฿5
+          await addCredit(order.customerEmail, 500); // ฿5
         }
       } catch {
         // silent

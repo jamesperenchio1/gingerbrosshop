@@ -2,8 +2,23 @@ import { useState, useRef, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router';
 import gsap from 'gsap';
 import { useCart } from '@/context/CartContext';
+import { toast } from 'sonner';
 import { PlusIcon, MinusIcon } from '@/components/Icons';
-import { useCatalog, defaultPrice, cheapestSubscription, maxSubscriptionSavings, intervalLabel, type CatalogProduct } from '@/lib/catalog';
+import { useCatalog, defaultPrice, cheapestSubscription, maxSubscriptionSavings, intervalLabel, stockStatus, type CatalogProduct } from '@/lib/catalog';
+import { Skeleton } from '@/components/ui/skeleton';
+
+function ProductCardSkeleton() {
+  return (
+    <div className="bg-white border border-soft-peach/60 shadow-[0_12px_40px_rgba(61,36,16,0.10)] rounded-[24px] p-5 sm:p-8 flex flex-col">
+      <Skeleton className="w-full aspect-square rounded-2xl mb-5" />
+      <Skeleton className="h-5 w-2/3 mb-3" />
+      <Skeleton className="h-4 w-full mb-2" />
+      <Skeleton className="h-4 w-5/6 mb-5" />
+      <Skeleton className="h-12 w-full rounded-full mb-3" />
+      <Skeleton className="h-4 w-1/3" />
+    </div>
+  );
+}
 
 function ProductCard({ product }: { product: CatalogProduct }) {
   const navigate = useNavigate();
@@ -17,6 +32,7 @@ function ProductCard({ product }: { product: CatalogProduct }) {
   }, []);
 
   const price = defaultPrice(product);
+  const stock = stockStatus(product);
   const subPrice = cheapestSubscription(product);
   const subSavings = maxSubscriptionSavings(product);
   const detailLink = `/product/${product.id}`;
@@ -49,6 +65,7 @@ function ProductCard({ product }: { product: CatalogProduct }) {
       badgeColor: product.badgeColor ?? 'bg-sky-500',
     });
     setAdded(true);
+    toast.success(`${product.name} added to cart`);
     if (addedTimerRef.current) clearTimeout(addedTimerRef.current);
     addedTimerRef.current = setTimeout(() => setAdded(false), 800);
   }, [price, addItem, product, quantity, image]);
@@ -131,19 +148,31 @@ function ProductCard({ product }: { product: CatalogProduct }) {
           <button
             onClick={(e) => { e.stopPropagation(); handleAddToCart(); }}
             data-testid="add-to-cart"
-            disabled={!price}
+            disabled={!price || stock === 'out_of_stock'}
             className={`w-full font-body font-medium text-sm uppercase tracking-[0.08em] py-3.5 rounded-full transition-all duration-200 ${
-              added ? 'bg-accent-green text-white' : 'bg-amber text-deep-brown hover:bg-warm-gold active:scale-[0.98]'
+              added
+                ? 'bg-accent-green text-white'
+                : stock === 'out_of_stock'
+                ? 'bg-soft-peach text-earth/60 cursor-not-allowed'
+                : 'bg-amber text-deep-brown hover:bg-warm-gold active:scale-[0.98]'
             }`}
           >
-            {added ? 'Added!' : price ? `Add to Cart — ฿${price.unitAmount}` : 'Unavailable'}
+            {added
+              ? 'Added!'
+              : stock === 'out_of_stock'
+              ? 'Out of Stock'
+              : price
+              ? `Add to Cart — ฿${price.unitAmount}`
+              : 'Unavailable'}
           </button>
         </>
       )}
 
       <div className="flex items-center gap-2 mt-3">
-        <span className="w-2 h-2 bg-accent-green rounded-full" />
-        <span className="font-body font-medium text-[13px] text-earth">In Stock</span>
+        <span className={`w-2 h-2 rounded-full ${stock === 'out_of_stock' ? 'bg-earth/40' : stock === 'low_stock' ? 'bg-amber' : 'bg-accent-green'}`} />
+        <span className="font-body font-medium text-[13px] text-earth">
+          {stock === 'out_of_stock' ? 'Out of Stock' : stock === 'low_stock' ? 'Low Stock' : 'In Stock'}
+        </span>
       </div>
 
       <button
@@ -262,7 +291,9 @@ export default function Shop() {
         </div>
 
         {loading ? (
-          <div className="text-center font-body text-earth py-12">Loading…</div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {Array.from({ length: 3 }).map((_, i) => <ProductCardSkeleton key={i} />)}
+          </div>
         ) : visibleProducts.length === 0 ? (
           <div className="text-center font-body text-earth py-12">No products available right now.</div>
         ) : (

@@ -1,15 +1,16 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import {
   getOrCreateReferralCode,
-  getPoints,
   getReferralCount,
   getReferralOwner,
   recordReferralUsage,
-  addPoints,
 } from '../referrals.js';
+import { getCredit, addCredit } from '../credits.js';
+
+const REFERRAL_CREDIT_MINOR = 500; // ฿5, granted to both sides of a referral
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
-  // GET: fetch a customer's referral code, points, and referral count.
+  // GET: fetch a customer's referral code, store-credit balance, and referral count.
   if (req.method === 'GET') {
     const email = (req.query.email as string)?.toLowerCase().trim();
     if (!email) {
@@ -18,14 +19,17 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     }
 
     const code = await getOrCreateReferralCode(email);
-    const points = await getPoints(email);
+    const creditMinor = await getCredit(email);
     const referrals = await getReferralCount(code);
 
-    res.status(200).json({ code, points, referrals });
+    res.status(200).json({ code, creditBaht: creditMinor / 100, referrals });
     return;
   }
 
-  // POST: apply a referral code for a new customer.
+  // POST: apply a referral code for a new customer (used when a code is entered
+  // outside the normal checkout flow, e.g. after account creation). The normal
+  // path is via `referralCode` on /api/checkout, recorded by the Stripe webhook
+  // once the order actually completes — this route exists for that alternate flow.
   if (req.method === 'POST') {
     const { code, email } = req.body ?? {};
     if (!code || !email) {
@@ -45,12 +49,12 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     }
 
     await recordReferralUsage(code, email);
-    // Give referrer 50 points (฿5 worth)
-    await addPoints(owner, 50);
-    // Give new customer 50 points
-    await addPoints(email, 50);
+    // Real, spendable store credit — automatically applied as a discount on
+    // each side's next checkout by api/_lib/handlers/checkout.ts.
+    await addCredit(owner, REFERRAL_CREDIT_MINOR);
+    await addCredit(email, REFERRAL_CREDIT_MINOR);
 
-    res.status(200).json({ success: true, discount: 50 });
+    res.status(200).json({ success: true, creditBaht: REFERRAL_CREDIT_MINOR / 100 });
     return;
   }
 

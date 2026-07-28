@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Package, Truck, Search, Eye, EyeOff } from 'lucide-react';
+import CopyButton from '@/components/CopyButton';
 
 interface Order {
   sessionId: string;
@@ -241,6 +242,7 @@ export default function AdminOrders() {
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-3 mb-1">
                       <span className="font-display font-semibold text-deep-brown">#{orderNum}</span>
+                      <CopyButton value={orderNum} />
                       <span className="inline-block font-body text-[11px] uppercase tracking-wider px-2 py-0.5 rounded-full bg-green-100 text-green-700">
                         Paid
                       </span>
