@@ -7,6 +7,7 @@ import type { CartItem } from '@/types/cart';
 import SEO from '@/components/SEO';
 import CopyButton from '@/components/CopyButton';
 import ReferralCard from '@/components/ReferralCard';
+import ReorderButton from '@/components/ReorderButton';
 
 interface OrderItem {
   description: string;
@@ -332,7 +333,7 @@ export default function OrderSuccess() {
             </p>
             <p className="font-body text-cream/60 text-[13px] mb-4">Keep it refrigerated as soon as it arrives 🧊</p>
             <a
-              href="https://gingerbrosshop.com/track"
+              href={`/track?email=${encodeURIComponent(order.customerEmail ?? '')}&order=${encodeURIComponent(orderNumber)}`}
               className="inline-block bg-cream text-deep-brown font-body font-medium px-6 py-2.5 rounded-full hover:bg-amber transition-colors text-sm"
             >
               Track Order
@@ -347,10 +348,36 @@ export default function OrderSuccess() {
             <p className="font-body text-earth">
               We're preparing your order with care. You'll get an email with tracking details the moment it ships — and remember, it's a living brew, so pop it in the fridge on arrival.
             </p>
+            {order.customerEmail && (
+              <a
+                href={`/track?email=${encodeURIComponent(order.customerEmail)}&order=${encodeURIComponent(orderNumber)}`}
+                className="inline-flex items-center gap-2 mt-4 font-body font-medium text-rust hover:text-deep-brown transition-colors"
+              >
+                Track your order <span aria-hidden="true">→</span>
+              </a>
+            )}
           </div>
         )}
 
-        {/* Self-service: receipt + portal */}
+        {/* Subscription management note */}
+        {order.isSubscription && (
+          <div className="bg-amber/10 border border-amber/30 rounded-2xl p-6 sm:p-8 mb-6">
+            <h3 className="font-display font-semibold text-deep-brown mb-2">Your Subscription</h3>
+            <p className="font-body text-earth text-[15px] leading-relaxed mb-4">
+              Your subscription is active. You can pause, skip a delivery, update your address, or cancel anytime from your customer portal — no lock-in, no hassle.
+            </p>
+            {order.customerEmail && (
+              <a
+                href={`/api/portal?email=${encodeURIComponent(order.customerEmail)}`}
+                className="inline-flex items-center gap-2 font-body font-medium text-rust hover:text-deep-brown transition-colors"
+              >
+                Manage subscription <span aria-hidden="true">→</span>
+              </a>
+            )}
+          </div>
+        )}
+
+        {/* Self-service: receipt + portal + reorder */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-6">
           {receiptUrl && (
             <a
@@ -373,6 +400,7 @@ export default function OrderSuccess() {
               {order.isSubscription ? 'Manage Subscription' : 'Manage Order & Receipts'}
             </a>
           )}
+          <ReorderButton items={order.items} className={receiptUrl || order.customerEmail ? '' : 'sm:col-span-2'} />
         </div>
 
         {order.customerEmail && <ReferralCard email={order.customerEmail} />}

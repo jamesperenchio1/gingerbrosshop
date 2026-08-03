@@ -4,10 +4,13 @@ import { useNavigate } from 'react-router';
 import { toast } from 'sonner';
 import { CloseIcon, TrashIcon, LockIcon, ShoppingBagIcon, PlusIcon, MinusIcon } from '@/components/Icons';
 import { PENDING_SUBSCRIPTION_CHECKOUT_KEY, REFERRAL_CODE_STORAGE_KEY, startCheckout } from '@/lib/checkout';
+import { FREE_SHIPPING_THRESHOLD, CURRENCY_SYMBOL, getDeliveryEstimateMessage } from '@/constants/store';
+import { useI18n } from '@/context/I18nContext';
 import type { CartItem } from '@/types/cart';
 
 export default function CartDrawer() {
   const { state, closeCart, removeItem, addItem, updateQuantity, decrementOrRemove, subtotal } = useCart();
+  const { t } = useI18n();
   const drawerRef = useRef<HTMLDivElement>(null);
   const [mounted, setMounted] = useState(state.isOpen);
   const [isCheckingOut, setIsCheckingOut] = useState(false);
@@ -158,7 +161,7 @@ export default function CartDrawer() {
       >
         <div className="flex items-center justify-between px-5 py-4 border-b border-soft-peach/50">
           <h2 className="font-display font-semibold text-deep-brown text-[1.1rem]">
-            Your Cart
+            {t('yourCart')}
           </h2>
           <button onClick={closeCart} aria-label="Close cart" data-testid="cart-close" className="text-deep-brown hover:text-rust transition-colors">
             <CloseIcon />
@@ -169,9 +172,9 @@ export default function CartDrawer() {
           {state.items.length === 0 ? (
             <div className="flex flex-col items-center justify-center h-full text-center">
               <ShoppingBagIcon className="text-soft-peach mb-4" />
-              <p className="font-body text-earth mb-2">Your cart is empty</p>
+              <p className="font-body text-earth mb-2">{t('cartEmpty')}</p>
               <button onClick={closeCart} className="font-body font-medium text-rust hover:underline">
-                Start shopping
+                {t('startShopping')}
               </button>
             </div>
           ) : (
@@ -247,6 +250,33 @@ export default function CartDrawer() {
               <span className="font-display font-semibold text-deep-brown text-lg">฿{subtotal}</span>
             </div>
 
+            {/* Delivery estimate */}
+            <p className="font-body text-[12px] text-accent-green">
+              🚚 {getDeliveryEstimateMessage()}
+            </p>
+
+            {/* Free shipping progress */}
+            {subtotal < FREE_SHIPPING_THRESHOLD && (
+              <div className="bg-cream rounded-xl px-4 py-3">
+                <p className="font-body text-[13px] text-earth mb-2">
+                  Add <span className="font-semibold text-deep-brown">{CURRENCY_SYMBOL}{FREE_SHIPPING_THRESHOLD - subtotal}</span> more for {t('freeShippingOver').replace(/.*฿\d+/, 'free shipping')}
+                </p>
+                <div className="h-2 bg-soft-peach rounded-full overflow-hidden">
+                  <div
+                    className="h-full bg-accent-green rounded-full transition-all duration-500"
+                    style={{ width: `${Math.min(100, (subtotal / FREE_SHIPPING_THRESHOLD) * 100)}%` }}
+                  />
+                </div>
+              </div>
+            )}
+            {subtotal >= FREE_SHIPPING_THRESHOLD && (
+              <div className="bg-accent-green/10 rounded-xl px-4 py-3">
+                <p className="font-body text-[13px] text-accent-green font-medium">
+                  🎉 {t('freeShippingUnlocked')}
+                </p>
+              </div>
+            )}
+
             {/* Referral code */}
             {referralCode && !referralInput ? (
               <div className="flex items-center justify-between font-body text-[13px]">
@@ -298,7 +328,7 @@ export default function CartDrawer() {
               ) : (
                 <>
                   <LockIcon />
-                  Checkout
+                  {t('checkout')}
                 </>
               )}
             </button>
@@ -312,7 +342,7 @@ export default function CartDrawer() {
               data-testid="cart-continue"
               className="w-full text-center font-body font-medium text-[13px] text-earth/60 hover:text-rust transition-colors"
             >
-              Continue shopping
+              {t('continueShopping')}
             </button>
           </div>
         )}

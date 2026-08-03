@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect, useLayoutEffect, useCallback } from 'react';
+import { useState, useRef, useEffect, useLayoutEffect, useCallback, useMemo } from 'react';
 import { useParams, useSearchParams, useNavigate } from 'react-router';
 import gsap from 'gsap';
 import { useCart } from '@/context/CartContext';
@@ -7,7 +7,10 @@ import { PlusIcon, MinusIcon } from '@/components/Icons';
 import SEO from '@/components/SEO';
 import NotFound from '@/pages/NotFound';
 import { useCatalog, defaultPrice, intervalLabel, oneTimePrice, savingsPercent, stockStatus, type CatalogProduct } from '@/lib/catalog';
+import { getDeliveryEstimateMessage } from '@/constants/store';
+import { useRecentlyViewed, getRecentlyViewed } from '@/hooks/use-recently-viewed';
 import { Skeleton } from '@/components/ui/skeleton';
+import ImageLightbox from '@/components/ImageLightbox';
 import { getProductContent } from '@/lib/productContent';
 import {
   Leaf,
@@ -135,6 +138,36 @@ function SpecCard({ spec }: { spec: { label: string; value: string } }) {
   );
 }
 
+/* ──────────────────────── Recently Viewed ──────────────────────── */
+
+function RecentlyViewed({ currentProductId }: { currentProductId: string }) {
+  const { products } = useCatalog();
+  const recentlyViewedIds = useMemo(
+    () => getRecentlyViewed(currentProductId),
+    [currentProductId],
+  );
+  const recentlyViewed = useMemo(
+    () => recentlyViewedIds.map((id) => products.find((p) => p.id === id)).filter((p): p is CatalogProduct => !!p),
+    [recentlyViewedIds, products],
+  );
+
+  if (recentlyViewed.length === 0) return null;
+
+  return (
+    <div className="mt-20 border-t border-soft-peach/50 pt-14">
+      <h3 className="font-display font-semibold text-deep-brown text-[1.35rem] mb-8 flex items-center gap-4">
+        Recently Viewed
+        <span className="flex-1 h-px bg-soft-peach/60 hidden sm:block" />
+      </h3>
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6">
+        {recentlyViewed.map((rp) => (
+          <RelatedProductCard key={rp.id} product={rp} />
+        ))}
+      </div>
+    </div>
+  );
+}
+
 /* ──────────────────────── Related Products ──────────────────────── */
 
 function RelatedProductCard({ product }: { product: CatalogProduct }) {
@@ -196,6 +229,7 @@ export default function ProductDetail() {
   const [quantity, setQuantity] = useState(1);
   const [added, setAdded] = useState(false);
   const [activeTab, setActiveTab] = useState<'details' | 'nutrition' | 'specs'>('details');
+  const [lightboxOpen, setLightboxOpen] = useState(false);
   const [isGift, setIsGift] = useState(false);
   const [giftEmail, setGiftEmail] = useState('');
   const [giftName, setGiftName] = useState('');
@@ -207,6 +241,8 @@ export default function ProductDetail() {
   const mainImageContainerRef = useRef<HTMLDivElement>(null);
   const [isZooming, setIsZooming] = useState(false);
   const [zoomPos, setZoomPos] = useState({ x: 50, y: 50 });
+  const [showStickyAtc, setShowStickyAtc] = useState(false);
+  const atcRef = useRef<HTMLDivElement>(null);
 
   const handleImageMouseMove = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
     const rect = mainImageContainerRef.current?.getBoundingClientRect();
@@ -251,6 +287,9 @@ export default function ProductDetail() {
 
   const isEquipment = product?.category === 'brewing-equipment';
 
+  // Track this product as recently viewed.
+  useRecentlyViewed(product?.id);
+
   const isVariantProduct =
     !!product &&
     product.prices.length > 1 &&
@@ -289,6 +328,22 @@ export default function ProductDetail() {
 
   useEffect(() => {
     window.scrollTo(0, 0);
+  }, [id]);
+
+  // Show sticky mobile ATC when the main CTA scrolls out of view.
+  useEffect(() => {
+    const el = atcRef.current;
+    if (!el || !('IntersectionObserver' in window)) return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        setShowStickyAtc(!entry.isIntersecting);
+      },
+      { threshold: 0, rootMargin: '-1px 0px 0px 0px' }
+    );
+
+    observer.observe(el);
+    return () => observer.disconnect();
   }, [id]);
 
   useLayoutEffect(() => {
@@ -415,17 +470,23 @@ export default function ProductDetail() {
               {video && activeImage === images.length ? (
                 <video src={video} controls autoPlay muted loop playsInline className="max-h-full max-w-full object-contain" />
               ) : (
-                <img
-                  src={images[activeImage] ?? images[0]}
-                  alt={product.name}
-                  className="max-h-full max-w-full object-contain pointer-events-none"
-                  style={{
-                    transform: isZooming ? 'scale(2.2)' : 'scale(1)',
-                    transformOrigin: `${zoomPos.x}% ${zoomPos.y}%`,
-                    transition: isZooming ? 'transform-origin 0ms' : 'transform 0.25s ease',
-                  }}
-                  draggable={false}
-                />
+                <button
+                  onClick={() => setLightboxOpen(true)}
+                  className="max-h-full max-w-full flex items-center justify-center cursor-zoom-in"
+                  aria-label={`Open ${product.name} image gallery`}
+                >
+                  <img
+                    src={images[activeImage] ?? images[0]}
+                    alt={product.name}
+                    className="max-h-full max-w-full object-contain pointer-events-none"
+                    style={{
+                      transform: isZooming ? 'scale(2.2)' : 'scale(1)',
+                      transformOrigin: `${zoomPos.x}% ${zoomPos.y}%`,
+                      transition: isZooming ? 'transform-origin 0ms' : 'transform 0.25s ease',
+                    }}
+                    draggable={false}
+                  />
+                </button>
               )}
             </div>
             <div className="flex gap-3 overflow-x-auto pb-2">
@@ -582,7 +643,7 @@ export default function ProductDetail() {
             )}
 
             {/* ── Quantity + Add to Cart ── */}
-            <div className="mb-8">
+            <div ref={atcRef} className="mb-8">
               <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
                 <div className="flex items-center gap-4 border-2 border-soft-peach rounded-full py-2.5 px-5">
                   <button onClick={() => setQuantity(Math.max(1, quantity - 1))} className="text-earth hover:text-deep-brown transition-colors"><MinusIcon /></button>
@@ -628,6 +689,13 @@ export default function ProductDetail() {
                 </div>
               )}
             </div>
+
+            {/* Delivery estimate */}
+            {!isEquipment && (
+              <p className="font-body text-[13px] text-accent-green mb-6">
+                🚚 {getDeliveryEstimateMessage()}
+              </p>
+            )}
 
             {/* Quick feature bullets (drinks) */}
             {!isEquipment && hasFeatures && (
@@ -794,6 +862,55 @@ export default function ProductDetail() {
               {relatedProducts.map((rp) => (
                 <RelatedProductCard key={rp.id} product={rp} />
               ))}
+            </div>
+          </div>
+        )}
+
+        <RecentlyViewed currentProductId={product.id} />
+
+        <ImageLightbox
+          images={images}
+          activeIndex={activeImage}
+          productName={product.name}
+          isOpen={lightboxOpen}
+          onClose={() => setLightboxOpen(false)}
+          onChange={setActiveImage}
+        />
+
+        {/* Sticky mobile Add to Cart bar */}
+        {showStickyAtc && (
+          <div className="fixed bottom-0 left-0 right-0 z-40 bg-warm-white/95 backdrop-blur-xl border-t border-soft-peach/50 px-4 py-3 md:hidden">
+            <div className="flex items-center gap-3 max-w-[1280px] mx-auto">
+              <div className="flex items-center gap-3 border-2 border-soft-peach rounded-full py-2 px-3 flex-shrink-0">
+                <button
+                  onClick={() => setQuantity(Math.max(1, quantity - 1))}
+                  className="text-earth hover:text-deep-brown transition-colors"
+                  aria-label="Decrease quantity"
+                >
+                  <MinusIcon className="w-4 h-4" />
+                </button>
+                <span className="font-body font-medium text-earth min-w-[20px] text-center text-sm">{quantity}</span>
+                <button
+                  onClick={() => setQuantity(Math.min(24, quantity + 1))}
+                  className="text-earth hover:text-deep-brown transition-colors"
+                  aria-label="Increase quantity"
+                >
+                  <PlusIcon className="w-4 h-4" />
+                </button>
+              </div>
+              <button
+                onClick={handleAdd}
+                disabled={stock === 'out_of_stock'}
+                className={`flex-1 font-body font-medium text-sm uppercase tracking-[0.08em] py-3 rounded-full transition-all duration-200 active:scale-[0.98] ${
+                  added
+                    ? 'bg-accent-green text-white'
+                    : stock === 'out_of_stock'
+                    ? 'bg-soft-peach text-earth/60 cursor-not-allowed active:scale-100'
+                    : 'bg-amber text-deep-brown hover:bg-warm-gold'
+                }`}
+              >
+                {added ? 'Added!' : stock === 'out_of_stock' ? 'Out of Stock' : `Add — ฿${lineTotal}`}
+              </button>
             </div>
           </div>
         )}

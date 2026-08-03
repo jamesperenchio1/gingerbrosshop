@@ -9,6 +9,7 @@ import CartDrawer from '@/sections/CartDrawer';
 import HomePage from '@/pages/HomePage';
 import { Toaster } from '@/components/ui/sonner';
 import ErrorBoundary from '@/components/ErrorBoundary';
+import BackToTop from '@/components/BackToTop';
 import { REFERRAL_CODE_STORAGE_KEY } from '@/lib/checkout';
 
 /** Picks up `?ref=CODE` from a shared referral link and remembers it for checkout. */
@@ -92,6 +93,7 @@ export default function App() {
           <CartDrawer />
         </ErrorBoundary>
         <Toaster position="bottom-right" />
+        <BackToTop />
         <Analytics />
         <SpeedInsights />
       </CartProvider>

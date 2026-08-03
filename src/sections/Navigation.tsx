@@ -5,19 +5,50 @@ import { useI18n } from '@/context/I18nContext';
 import { CartIcon, MenuIcon, CloseIcon } from '@/components/Icons';
 
 const navLinks = [
-  { label: 'Shop', href: '#shop' },
-  { label: 'Story', href: '#story' },
-  { label: 'Process', href: '#process' },
-  { label: 'Benefits', href: '#benefits' },
+  { key: 'shop', href: '#shop' },
+  { key: 'story', href: '#story' },
+  { key: 'process', href: '#process' },
+  { key: 'benefits', href: '#benefits' },
 ];
 
 // Only shown in the mobile menu — utility pages that otherwise have no nav
 // entry point at all (previously reachable only via footer or direct URL).
 const mobileOnlyLinks = [
-  { label: 'Track Order', to: '/track' },
-  { label: 'Wholesale', to: '/wholesale' },
-  { label: 'FAQ', to: '/faq' },
+  { key: 'trackOrder', to: '/track' },
+  { key: 'wholesale', to: '/wholesale' },
+  { key: 'faq', to: '/faq' },
 ];
+
+function LanguageToggle() {
+  const { locale, setLocale, t } = useI18n();
+
+  return (
+    <div className="flex items-center rounded-full border border-soft-peach/80 overflow-hidden">
+      <button
+        onClick={() => setLocale('en')}
+        aria-pressed={locale === 'en'}
+        className={`px-2 py-1 text-[11px] font-body font-medium transition-colors ${
+          locale === 'en'
+            ? 'bg-deep-brown text-cream'
+            : 'bg-transparent text-earth hover:text-deep-brown'
+        }`}
+      >
+        {t('english')}
+      </button>
+      <button
+        onClick={() => setLocale('th')}
+        aria-pressed={locale === 'th'}
+        className={`px-2 py-1 text-[11px] font-body font-medium transition-colors ${
+          locale === 'th'
+            ? 'bg-deep-brown text-cream'
+            : 'bg-transparent text-earth hover:text-deep-brown'
+        }`}
+      >
+        {t('thai')}
+      </button>
+    </div>
+  );
+}
 
 export default function Navigation() {
   const [scrolled, setScrolled] = useState(false);
@@ -105,14 +136,18 @@ export default function Navigation() {
               onClick={(e) => handleNavClick(e, link.href)}
               className="font-body font-medium text-sm uppercase tracking-[0.08em] text-earth hover:text-deep-brown relative group transition-colors duration-200"
             >
-              {link.label}
+              {t(link.key)}
               <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-rust transition-all duration-300 group-hover:w-full" />
             </a>
           ))}
         </div>
 
         {/* Right side */}
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-3 sm:gap-4">
+          <div className="hidden sm:block">
+            <LanguageToggle />
+          </div>
+
           <button
             onClick={toggleCart}
             data-testid="cart-button"
@@ -154,7 +189,7 @@ export default function Navigation() {
                 onClick={(e) => handleNavClick(e, link.href)}
                 className="flex items-center py-3 font-body font-medium text-sm uppercase tracking-[0.08em] text-earth hover:text-deep-brown transition-colors border-b border-soft-peach/30 last:border-0"
               >
-                {link.label}
+                {t(link.key)}
               </a>
             ))}
             {mobileOnlyLinks.map((link) => (
@@ -164,9 +199,15 @@ export default function Navigation() {
                 onClick={(e) => handleMobileLinkNavigate(e, link.to)}
                 className="flex items-center py-3 font-body font-medium text-sm uppercase tracking-[0.08em] text-earth hover:text-deep-brown transition-colors border-b border-soft-peach/30 last:border-0"
               >
-                {link.label}
+                {t(link.key)}
               </a>
             ))}
+            <div className="py-3 flex items-center justify-between border-b border-soft-peach/30">
+              <span className="font-body font-medium text-sm uppercase tracking-[0.08em] text-earth">
+                {t('language')}
+              </span>
+              <LanguageToggle />
+            </div>
           </div>
         </div>
       )}

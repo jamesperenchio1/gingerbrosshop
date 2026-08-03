@@ -1,23 +1,26 @@
+import { useI18n } from '@/context/I18nContext';
+
 const CURRENT_YEAR = new Date().getFullYear();
 
 export default function Footer() {
+  const { t } = useI18n();
 
   const links = {
     shop: [
       { label: 'GingerBros Ginger Fizz', href: '/product/ginger-fizz' },
-      { label: 'Wholesale', href: '/wholesale' },
+      { label: t('wholesale'), href: '/wholesale' },
     ],
     company: [
-      { label: 'Our Story', href: '/#story' },
-      { label: 'Process', href: '/#process' },
-      { label: 'Benefits', href: '/#benefits' },
-      { label: 'Blog', href: '/blog' },
+      { label: t('ourStory'), href: '/#story' },
+      { label: t('process'), href: '/#process' },
+      { label: t('benefits'), href: '/#benefits' },
+      { label: t('blog'), href: '/blog' },
     ],
     support: [
-      { label: 'Shipping Info', href: '/shipping' },
-      { label: 'FAQ', href: '/faq' },
-      { label: 'Track Your Order', href: '/track' },
-      { label: 'Contact Us', href: 'mailto:gingerbros.brew@gmail.com' },
+      { label: t('shipping'), href: '/shipping' },
+      { label: t('faq'), href: '/faq' },
+      { label: t('trackOrder'), href: '/track' },
+      { label: t('contact'), href: 'mailto:gingerbros.brew@gmail.com' },
     ],
   };
 
@@ -55,7 +58,7 @@ export default function Footer() {
 
           {/* Shop */}
           <div>
-            <h4 className="font-body font-semibold text-[13px] uppercase tracking-[0.08em] mb-4 text-amber">Shop</h4>
+            <h4 className="font-body font-semibold text-[13px] uppercase tracking-[0.08em] mb-4 text-amber">{t('shop')}</h4>
             <ul className="space-y-2.5">
               {links.shop.map((link) => (
                 <li key={link.label}>
@@ -69,7 +72,7 @@ export default function Footer() {
 
           {/* Company */}
           <div>
-            <h4 className="font-body font-semibold text-[13px] uppercase tracking-[0.08em] mb-4 text-amber">Company</h4>
+            <h4 className="font-body font-semibold text-[13px] uppercase tracking-[0.08em] mb-4 text-amber">{t('company')}</h4>
             <ul className="space-y-2.5">
               {links.company.map((link) => (
                 <li key={link.label}>
@@ -83,7 +86,7 @@ export default function Footer() {
 
           {/* Support */}
           <div>
-            <h4 className="font-body font-semibold text-[13px] uppercase tracking-[0.08em] mb-4 text-amber">Support</h4>
+            <h4 className="font-body font-semibold text-[13px] uppercase tracking-[0.08em] mb-4 text-amber">{t('support')}</h4>
             <ul className="space-y-2.5">
               {links.support.map((link) => (
                 <li key={link.label}>
@@ -103,10 +106,10 @@ export default function Footer() {
           </p>
           <div className="flex items-center gap-6">
             <a href="/privacy" className="font-body text-[13px] text-cream/50 hover:text-amber transition-colors">
-              Privacy Policy
+              {t('privacy')}
             </a>
             <a href="/terms" className="font-body text-[13px] text-cream/50 hover:text-amber transition-colors">
-              Terms of Service
+              {t('terms')}
             </a>
           </div>
         </div>

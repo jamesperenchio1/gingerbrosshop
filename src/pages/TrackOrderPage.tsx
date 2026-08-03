@@ -1,8 +1,9 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router';
+import { useNavigate, useSearchParams } from 'react-router';
 import { ArrowLeft, Search, Package, Truck, CheckCircle } from 'lucide-react';
 import SEO from '@/components/SEO';
 import CopyButton from '@/components/CopyButton';
+import ReorderButton from '@/components/ReorderButton';
 
 interface OrderResult {
   sessionId: string;
@@ -19,8 +20,9 @@ interface OrderResult {
 
 export default function TrackOrderPage() {
   const navigate = useNavigate();
-  const [email, setEmail] = useState('');
-  const [orderNum, setOrderNum] = useState('');
+  const [searchParams] = useSearchParams();
+  const [email, setEmail] = useState(searchParams.get('email') ?? '');
+  const [orderNum, setOrderNum] = useState(searchParams.get('order') ?? '');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [result, setResult] = useState<OrderResult | null>(null);
@@ -155,6 +157,8 @@ export default function TrackOrderPage() {
                 </div>
               )}
             </div>
+
+            <ReorderButton items={result.items} className="w-full mt-4" />
           </div>
         )}
       </div>
