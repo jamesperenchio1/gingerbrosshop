@@ -14,6 +14,7 @@ const navLinks = [
 // Only shown in the mobile menu — utility pages that otherwise have no nav
 // entry point at all (previously reachable only via footer or direct URL).
 const mobileOnlyLinks = [
+  { key: 'myOrders', to: '/orders', label: 'My Orders' },
   { key: 'trackOrder', to: '/track' },
   { key: 'wholesale', to: '/wholesale' },
   { key: 'faq', to: '/faq' },

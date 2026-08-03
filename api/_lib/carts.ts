@@ -31,6 +31,33 @@ export async function markCartRecovered(email: string) {
   }
 }
 
+// ---------------------------------------------------------------------------
+// Shareable cart links — stored by UUID with a 7-day TTL
+// ---------------------------------------------------------------------------
+
+export interface SharedCartItem {
+  id: string;
+  priceId: string;
+  productId?: string;
+  name: string;
+  variant?: string;
+  price: number;
+  quantity: number;
+  image: string;
+  badge?: string;
+  badgeColor?: string;
+  isSubscription?: boolean;
+  interval?: string;
+}
+
+export async function saveSharedCart(id: string, items: SharedCartItem[]): Promise<void> {
+  await redis.set(`shared_cart:${id}`, items, { ex: 60 * 60 * 24 * 7 }); // 7 days
+}
+
+export async function getSharedCart(id: string): Promise<SharedCartItem[] | null> {
+  return redis.get<SharedCartItem[]>(`shared_cart:${id}`);
+}
+
 export async function getAllAbandonedCarts(): Promise<Array<{ email: string; snapshot: CartSnapshot }>> {
   const keys = await redis.keys(`${ABANDONED_KEY}:*`);
   const result: Array<{ email: string; snapshot: CartSnapshot }> = [];

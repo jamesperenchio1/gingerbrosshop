@@ -11,6 +11,7 @@ import { getDeliveryEstimateMessage } from '@/constants/store';
 import { useRecentlyViewed, getRecentlyViewed } from '@/hooks/use-recently-viewed';
 import { Skeleton } from '@/components/ui/skeleton';
 import ImageLightbox from '@/components/ImageLightbox';
+import StockAlertForm from '@/components/StockAlertForm';
 import { getProductContent } from '@/lib/productContent';
 import {
   Leaf,
@@ -543,6 +544,14 @@ export default function ProductDetail() {
                 {stock === 'out_of_stock' ? 'Out of Stock' : stock === 'low_stock' ? 'Low Stock' : 'In Stock'}
               </span>
             </div>
+
+            {/* Back-in-stock alert signup */}
+            {stock === 'out_of_stock' && (
+              <div className="mb-6">
+                <p className="text-sm text-earth mb-2">Get notified when this is back:</p>
+                <StockAlertForm productId={product.stripeProductId} />
+              </div>
+            )}
 
             {/* ── Variant selector (equipment with size/type options) ── */}
             {isVariantProduct && (

@@ -19,6 +19,7 @@ export default function Footer() {
     support: [
       { label: t('shipping'), href: '/shipping' },
       { label: t('faq'), href: '/faq' },
+      { label: t('myOrders'), href: '/orders' },
       { label: t('trackOrder'), href: '/track' },
       { label: t('contact'), href: 'mailto:gingerbros.brew@gmail.com' },
     ],

@@ -11,7 +11,9 @@ import {
   sellerNotificationHtml,
   customerInvoiceHtml,
   giftEmailHtml,
+  backInStockHtml,
 } from './_lib/email.js';
+import { getStockAlertSubscribers, clearStockAlertSubscribers } from './_lib/stockAlerts.js';
 
 const stripeSecret = process.env.STRIPE_SECRET_KEY;
 const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
@@ -55,6 +57,33 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return;
   }
 
+  // When a product's stock_status metadata changes to a non-out-of-stock value,
+  // fire back-in-stock alerts to everyone who subscribed for that product.
+  if (event.type === 'product.updated') {
+    const product = event.data.object as Stripe.Product;
+    const stockStatus = product.metadata?.stock_status ?? 'in_stock';
+    if (stockStatus !== 'out_of_stock') {
+      const subscribers = await getStockAlertSubscribers(product.id);
+      if (subscribers.length > 0) {
+        const resend = getResend();
+        const productUrl = `https://gingerbrosshop.com/product/${product.metadata?.app_id ?? product.id}`;
+        if (resend) {
+          await Promise.allSettled(
+            subscribers.map((email) =>
+              resend.emails.send({
+                from: MAIL_FROM,
+                to: email,
+                subject: `${product.name} is back in stock! 🎉`,
+                html: backInStockHtml(product.name, productUrl),
+              })
+            )
+          );
+        }
+        await clearStockAlertSubscribers(product.id);
+      }
+    }
+  }
+
   if (event.type === 'checkout.session.completed') {
     const session = event.data.object as SessionWithShipping;
 
@@ -72,6 +101,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     const recipientName = session.metadata?.recipientName ?? null;
     const giftMessage = session.metadata?.giftMessage ?? null;
     const referralCode = session.metadata?.referralCode ?? '';
+    const orderNote = session.metadata?.orderNote ?? '';
 
     const order = {
       sessionId: session.id,
@@ -96,6 +126,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       recipientName,
       giftMessage,
       referralCode,
+      orderNote: orderNote || null,
       createdAt: new Date().toISOString(),
       trackingNumber: null,
       trackingCarrier: null,
@@ -124,7 +155,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
           from: `GingerBros Orders <${FROM_EMAIL}>`,
           to: SELLER_EMAIL,
           subject: `New Order #${session.id.slice(-8).toUpperCase()} — ฿${money(session.amount_total)}`,
-          html: sellerNotificationHtml(session, lineItems),
+          html: sellerNotificationHtml(session, lineItems, orderNote),
         });
       } catch (err) {
         console.error('Failed to send seller email:', err);

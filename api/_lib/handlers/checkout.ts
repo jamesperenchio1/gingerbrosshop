@@ -40,6 +40,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   const paymentMethod = (req.body?.paymentMethod as string | undefined) ?? 'card';
   const referralCode = (req.body?.referralCode as string | undefined) ?? '';
   const customerEmail = (req.body?.email as string | undefined)?.trim().toLowerCase() || '';
+  const orderNote = ((req.body?.orderNote as string | undefined) ?? '').trim().slice(0, 500);
   const giftInfo = req.body?.giftInfo as { isGift: boolean; recipientEmail?: string; recipientName?: string; message?: string } | undefined;
 
   const stripe = getStripe(secret);
@@ -134,6 +135,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
   const metadata: Record<string, string> = {
     referralCode: referralCode || '',
+    orderNote: orderNote || '',
   };
   if (giftInfo?.isGift) {
     metadata.isGift = 'true';

@@ -123,6 +123,7 @@ export default function OrderSuccess() {
     } else {
       clearCart();
     }
+    localStorage.removeItem('gingerbros-cart-note');
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 

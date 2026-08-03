@@ -20,7 +20,42 @@ export default function CartDrawer() {
   const [referralCode, setReferralCode] = useState(
     () => localStorage.getItem(REFERRAL_CODE_STORAGE_KEY) ?? '',
   );
+  const [orderNote, setOrderNote] = useState(
+    () => localStorage.getItem('gingerbros-cart-note') ?? '',
+  );
+  const [noteOpen, setNoteOpen] = useState(false);
+  const [isSharing, setIsSharing] = useState(false);
   const navigate = useNavigate();
+
+  const handleNoteChange = (value: string) => {
+    const next = value.slice(0, 500);
+    setOrderNote(next);
+    if (next) {
+      localStorage.setItem('gingerbros-cart-note', next);
+    } else {
+      localStorage.removeItem('gingerbros-cart-note');
+    }
+  };
+
+  const handleShareCart = async () => {
+    if (isSharing || state.items.length === 0) return;
+    setIsSharing(true);
+    try {
+      const res = await fetch('/api/share-cart', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ items: state.items }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data?.error ?? 'Failed to generate link');
+      await navigator.clipboard.writeText(data.url);
+      toast.success('Cart link copied to clipboard! Valid for 7 days.');
+    } catch {
+      toast.error('Could not generate share link. Please try again.');
+    } finally {
+      setIsSharing(false);
+    }
+  };
 
   const handleReferralChange = (value: string) => {
     const next = value.toUpperCase();
@@ -84,12 +119,12 @@ export default function CartDrawer() {
     const itemsToPrefetch = hasMixedCart
       ? state.items.filter(i => !i.isSubscription)
       : state.items;
-    startCheckout(itemsToPrefetch, { referralCode }).then(url => {
+    startCheckout(itemsToPrefetch, { referralCode, orderNote }).then(url => {
       if (!cancelled) setPrefetchedUrl(url);
     }).catch(() => { /* retry on click */ });
     return () => { cancelled = true; };
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [cartKey, hasMixedCart, referralCode]);
+  }, [cartKey, hasMixedCart, referralCode, orderNote]);
 
   const handleCheckout = async () => {
     if (state.items.length === 0) return;
@@ -109,10 +144,10 @@ export default function CartDrawer() {
         // the subscription leg automatically once that session completes.
         const oneTimeItems = state.items.filter((i) => !i.isSubscription);
         sessionStorage.setItem(PENDING_SUBSCRIPTION_CHECKOUT_KEY, '1');
-        window.location.href = prefetchedUrl ?? await startCheckout(oneTimeItems, { referralCode });
+        window.location.href = prefetchedUrl ?? await startCheckout(oneTimeItems, { referralCode, orderNote });
         return;
       }
-      window.location.href = await startCheckout(state.items, { referralCode });
+      window.location.href = await startCheckout(state.items, { referralCode, orderNote });
     } catch (err) {
       setCheckoutError(err instanceof Error ? err.message : 'Something went wrong. Please try again.');
       setIsCheckingOut(false);
@@ -314,6 +349,36 @@ export default function CartDrawer() {
               </button>
             )}
 
+            {/* Cart note / gift message */}
+            {noteOpen ? (
+              <div className="space-y-1.5">
+                <div className="flex items-center justify-between">
+                  <span className="font-body text-[13px] text-earth">Order note / gift message</span>
+                  <span className="font-body text-[11px] text-earth/50">{orderNote.length}/500</span>
+                </div>
+                <textarea
+                  value={orderNote}
+                  onChange={(e) => handleNoteChange(e.target.value)}
+                  placeholder="Any special instructions or a gift message…"
+                  rows={3}
+                  className="w-full bg-cream border border-soft-peach rounded-2xl px-4 py-2.5 font-body text-[13px] text-deep-brown placeholder:text-earth/40 focus:outline-none focus:ring-2 focus:ring-rust/30 resize-none"
+                />
+                <button
+                  onClick={() => setNoteOpen(false)}
+                  className="font-body text-[13px] text-rust hover:text-deep-brown"
+                >
+                  Done
+                </button>
+              </div>
+            ) : (
+              <button
+                onClick={() => setNoteOpen(true)}
+                className="font-body text-[13px] text-rust hover:text-deep-brown underline"
+              >
+                {orderNote ? `Note: "${orderNote.slice(0, 40)}${orderNote.length > 40 ? '…' : ''}"` : 'Add a note or gift message'}
+              </button>
+            )}
+
             <button
               onClick={handleCheckout}
               disabled={isCheckingOut}
@@ -337,13 +402,23 @@ export default function CartDrawer() {
               <p className="font-body text-[13px] text-center text-rust">{checkoutError}</p>
             )}
 
-            <button
-              onClick={closeCart}
-              data-testid="cart-continue"
-              className="w-full text-center font-body font-medium text-[13px] text-earth/60 hover:text-rust transition-colors"
-            >
-              {t('continueShopping')}
-            </button>
+            <div className="flex items-center justify-between">
+              <button
+                onClick={closeCart}
+                data-testid="cart-continue"
+                className="font-body font-medium text-[13px] text-earth/60 hover:text-rust transition-colors"
+              >
+                {t('continueShopping')}
+              </button>
+              <button
+                onClick={handleShareCart}
+                disabled={isSharing}
+                title="Copy a shareable link to this cart"
+                className="font-body text-[13px] text-earth/60 hover:text-rust transition-colors disabled:opacity-50"
+              >
+                {isSharing ? '…' : '🔗 Share cart'}
+              </button>
+            </div>
           </div>
         )}
       </div>

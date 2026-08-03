@@ -6,6 +6,7 @@ import { toast } from 'sonner';
 import { PlusIcon, MinusIcon } from '@/components/Icons';
 import { useCatalog, defaultPrice, cheapestSubscription, maxSubscriptionSavings, intervalLabel, stockStatus, type CatalogProduct } from '@/lib/catalog';
 import { Skeleton } from '@/components/ui/skeleton';
+import StockAlertForm from '@/components/StockAlertForm';
 
 function ProductCardSkeleton() {
   return (
@@ -174,6 +175,10 @@ function ProductCard({ product }: { product: CatalogProduct }) {
           {stock === 'out_of_stock' ? 'Out of Stock' : stock === 'low_stock' ? 'Low Stock' : 'In Stock'}
         </span>
       </div>
+
+      {stock === 'out_of_stock' && (
+        <StockAlertForm productId={product.stripeProductId} className="mt-3" />
+      )}
 
       <button
         onClick={(e) => { e.stopPropagation(); navigate(detailLink); }}

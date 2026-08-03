@@ -21,6 +21,7 @@ export interface Order {
   createdAt: string;
   trackingNumber: string | null;
   trackingCarrier: string | null;
+  orderNote?: string | null;
 }
 
 const redis = Redis.fromEnv();

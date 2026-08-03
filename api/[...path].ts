@@ -13,6 +13,9 @@ import shippingRate from './_lib/handlers/shipping-rate.js';
 import abandonedCartCheck from './_lib/handlers/abandoned-cart-check.js';
 import credit from './_lib/handlers/credit.js';
 import wholesale from './_lib/handlers/wholesale.js';
+import stockAlert from './_lib/handlers/stock-alert.js';
+import shareCart from './_lib/handlers/share-cart.js';
+import ordersByEmail from './_lib/handlers/orders-by-email.js';
 
 type Handler = (req: VercelRequest, res: VercelResponse) => unknown | Promise<unknown>;
 
@@ -34,6 +37,9 @@ const routes: Record<string, Handler> = {
   'abandoned-cart-check': abandonedCartCheck,
   'credit': credit,
   'wholesale': wholesale,
+  'stock-alert': stockAlert,
+  'share-cart': shareCart,
+  'orders-by-email': ordersByEmail,
 };
 
 /**

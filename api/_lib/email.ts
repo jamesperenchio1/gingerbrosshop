@@ -151,7 +151,7 @@ function infoCard(inner: string): string {
 // Templates
 // ---------------------------------------------------------------------------
 
-export function sellerNotificationHtml(session: SessionWithShipping, items: Stripe.LineItem[]): string {
+export function sellerNotificationHtml(session: SessionWithShipping, items: Stripe.LineItem[], orderNote?: string): string {
   const orderId = session.id.slice(-8).toUpperCase();
   const total = money(session.amount_total);
   const interval = session.mode === 'subscription' ? subscriptionInterval(items) : null;
@@ -178,6 +178,9 @@ export function sellerNotificationHtml(session: SessionWithShipping, items: Stri
     : '';
 
   const adminBase = process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'https://gingerbrosshop.com';
+  const noteHtml = orderNote?.trim()
+    ? infoCard(`<p style="margin:0 0 4px;font-weight:700;">📝 Order note</p><p style="margin:0;white-space:pre-wrap;">${escapeHtml(orderNote)}</p>`)
+    : '';
 
   return layout(
     `${heading('New order received 🍺')}
@@ -186,6 +189,7 @@ export function sellerNotificationHtml(session: SessionWithShipping, items: Stri
     ${itemsTable(stripeRows(items))}
     ${totalLine(total, interval ? `/${interval}` : '')}
     ${giftHtml}
+    ${noteHtml}
     ${shippingHtml}
     <p style="margin-top:24px;text-align:center;">${button('Add Tracking →', `${adminBase}/admin/orders`)}</p>`,
     `New order #${orderId} — ฿${total}`
@@ -336,6 +340,16 @@ export function boxReturnRewardHtml(amountBaht: number, code?: string | null): s
   );
 }
 
+
+export function backInStockHtml(productName: string, productUrl: string): string {
+  return layout(
+    `${heading('Good news — it\'s back in stock! 🎉')}
+    <p style="margin:0 0 12px;"><strong>${escapeHtml(productName)}</strong> is available again.</p>
+    <p style="margin:0 0 4px;font-size:13px;color:${BRAND.earth};">We can't hold it for you, so grab yours before it sells out again.</p>
+    <p style="margin-top:24px;text-align:center;">${button('Shop Now →', productUrl)}</p>`,
+    `${productName} is back in stock`
+  );
+}
 
 export function abandonedCartHtml(snapshot: CartSnapshot): string {
   const rows = snapshot.items

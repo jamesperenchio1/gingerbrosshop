@@ -19,7 +19,7 @@ export const REFERRAL_CODE_STORAGE_KEY = 'gbros-referral-code';
 
 export async function startCheckout(
   items: CartItem[],
-  options?: { email?: string; referralCode?: string },
+  options?: { email?: string; referralCode?: string; orderNote?: string },
 ): Promise<string> {
   const res = await fetch('/api/checkout', {
     method: 'POST',
@@ -29,6 +29,7 @@ export async function startCheckout(
       giftInfo: getGiftInfo(items),
       email: options?.email?.trim() || undefined,
       referralCode: options?.referralCode?.trim() || undefined,
+      orderNote: options?.orderNote?.trim() || undefined,
     }),
   });
   const data = await res.json();

@@ -2,7 +2,7 @@ import { Suspense, lazy, useEffect } from 'react';
 import { Routes, Route, useLocation } from 'react-router';
 import { Analytics } from '@vercel/analytics/react';
 import { SpeedInsights } from '@vercel/speed-insights/react';
-import { CartProvider } from '@/context/CartContext';
+import { CartProvider, useCart } from '@/context/CartContext';
 import { I18nProvider } from '@/context/I18nContext';
 import Navigation from '@/sections/Navigation';
 import CartDrawer from '@/sections/CartDrawer';
@@ -11,6 +11,32 @@ import { Toaster } from '@/components/ui/sonner';
 import ErrorBoundary from '@/components/ErrorBoundary';
 import BackToTop from '@/components/BackToTop';
 import { REFERRAL_CODE_STORAGE_KEY } from '@/lib/checkout';
+
+/** Loads a shared cart from `?cart=<uuid>` and pre-fills CartContext, then removes the param. */
+function CartLinkLoader() {
+  const location = useLocation();
+  const { clearCart, addItem, openCart } = useCart();
+  useEffect(() => {
+    const id = new URLSearchParams(location.search).get('cart');
+    if (!id) return;
+    // Remove the param from the URL immediately so refreshing doesn't re-load
+    const params = new URLSearchParams(location.search);
+    params.delete('cart');
+    window.history.replaceState(null, '', params.toString() ? `?${params}` : window.location.pathname);
+    fetch(`/api/share-cart?id=${encodeURIComponent(id)}`)
+      .then((r) => r.json())
+      .then((data) => {
+        if (Array.isArray(data.items) && data.items.length > 0) {
+          clearCart();
+          for (const item of data.items) addItem(item);
+          openCart();
+        }
+      })
+      .catch(() => {});
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+  return null;
+}
 
 /** Picks up `?ref=CODE` from a shared referral link and remembers it for checkout. */
 function ReferralCapture() {
@@ -56,6 +82,7 @@ const TermsPage = lazy(() => import('@/pages/TermsPage'));
 const WholesalePage = lazy(() => import('@/pages/WholesalePage'));
 const TrackOrderPage = lazy(() => import('@/pages/TrackOrderPage'));
 const BlogPage = lazy(() => import('@/pages/BlogPage'));
+const OrdersPage = lazy(() => import('@/pages/OrdersPage'));
 const NotFound = lazy(() => import('@/pages/NotFound'));
 
 function AppContent() {
@@ -63,6 +90,7 @@ function AppContent() {
     <Suspense fallback={<PageLoader />}>
       <ScrollToTop />
       <ReferralCapture />
+      <CartLinkLoader />
       <Routes>
         <Route path="/" element={<HomePage />} />
         <Route path="/product/:id" element={<ProductDetail />} />
@@ -77,6 +105,7 @@ function AppContent() {
         <Route path="/track" element={<TrackOrderPage />} />
         <Route path="/blog" element={<BlogPage />} />
         <Route path="/blog/:slug" element={<BlogPage />} />
+        <Route path="/orders" element={<OrdersPage />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
     </Suspense>
