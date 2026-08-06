@@ -361,7 +361,7 @@ export default function ProductDetail() {
       <div className="min-h-screen bg-warm-white">
         <div className="max-w-[1100px] mx-auto px-6 py-10 md:py-16 grid grid-cols-1 md:grid-cols-2 gap-10">
           <div>
-            <Skeleton className="w-full h-[400px] md:h-[500px] rounded-[20px] mb-4" />
+            <Skeleton className="w-full h-[480px] md:h-[600px] rounded-[20px] mb-4" />
             <div className="flex gap-3">
               {Array.from({ length: 4 }).map((_, i) => <Skeleton key={i} className="w-20 h-20 rounded-xl" />)}
             </div>
@@ -465,7 +465,7 @@ export default function ProductDetail() {
               onMouseMove={handleImageMouseMove}
               onMouseEnter={() => { if (!(video && activeImage === images.length)) setIsZooming(true); }}
               onMouseLeave={() => setIsZooming(false)}
-              className="rounded-[20px] overflow-hidden mb-4 h-[400px] md:h-[500px] flex items-center justify-center select-none bg-cream/40"
+              className="rounded-[20px] overflow-hidden mb-4 h-[480px] md:h-[600px] flex items-center justify-center select-none bg-cream/40"
               style={{ cursor: isZooming ? 'zoom-in' : 'default' }}
             >
               {video && activeImage === images.length ? (

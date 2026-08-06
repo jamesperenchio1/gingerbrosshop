@@ -3,8 +3,12 @@ import gsap from 'gsap';
 import NoiseCanvas from '@/components/NoiseCanvas';
 import BubbleCanvas from '@/components/BubbleCanvas';
 import { ChevronDownIcon } from '@/components/Icons';
+import { useCatalog } from '@/lib/catalog';
 
 export default function Hero() {
+  const { products } = useCatalog();
+  const gingerFizzBottle = products.find((p) => p.id === 'ginger-fizz')?.images[0] ?? '/images/product-ginger-fizz.png';
+
   const badgeRef = useRef<HTMLDivElement>(null);
   const headlineRef = useRef<HTMLHeadingElement>(null);
   const subRef = useRef<HTMLParagraphElement>(null);
@@ -114,7 +118,7 @@ export default function Hero() {
         <div ref={imageRef} className="flex justify-center md:justify-end order-1 md:order-2">
           <div className="relative flex items-end justify-center md:justify-end group">
             <img
-              src="/images/product-ginger-fizz.png"
+              src={gingerFizzBottle}
               alt="GingerBros Ginger Fizz bottle"
               width={420}
               height={560}

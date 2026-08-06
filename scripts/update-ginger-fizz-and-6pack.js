@@ -34,10 +34,11 @@ async function run() {
 
   if (gingerFizz) {
     console.log(`Found Ginger Fizz: ${gingerFizz.id} — "${gingerFizz.name}"`);
+    const existing = gingerFizz.images.filter(u => !u.includes('ginger-fizz-new'));
     const updated = await stripe.products.update(gingerFizz.id, {
-      images: [SINGLE_IMAGE, ...gingerFizz.images.filter(u => !u.includes('ginger-fizz-new'))].slice(0, 8),
+      images: [...existing, SINGLE_IMAGE].slice(0, 8),
     });
-    console.log(`✓  Updated images → ${updated.images[0]}`);
+    console.log(`✓  Updated images → primary: ${updated.images[0]}, fizz-happens: ${updated.images[updated.images.length - 1]}`);
   } else {
     console.log('⚠️  Ginger Fizz product not found by app_id or name — skipping image update');
   }
