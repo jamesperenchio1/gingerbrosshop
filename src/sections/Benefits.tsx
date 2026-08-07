@@ -1,34 +1,34 @@
 import { useRef, useEffect } from 'react';
 import gsap from 'gsap';
-import { GutHealthIcon, LeafIcon, LightningIcon, SnowflakeIcon } from '@/components/Icons';
+import { GutHealthIcon, LeafIcon, LightningIcon, FlameIcon } from '@/components/Icons';
 
 const BENEFITS = [
   {
     icon: GutHealthIcon,
     title: 'Prebiotic Power',
-    description: 'We add acacia tree fibre, one of the most well-researched prebiotic sources available, to actively feed your gut bacteria and keep your microbiome thriving.',
+    description: 'We add acacia tree fibre, one of the most well-researched prebiotic sources available, to actively (and gently) feed your gut bacteria and keep your microbiome thriving.',
   },
   {
     icon: LeafIcon,
     title: 'Clean Ingredients',
-    description: 'Core ingredients you can count on one hand: fresh ginger, water, sugar, and prebiotic acacia fibre. Non-GMO. No artificial additives, no preservatives, no shortcuts.'
+    description: 'Fresh ginger, water, sugar, acacia fibre. That is it. No numbers on the label you need to Google. Nothing added to extend shelf life or make the colour pop.',
   },
   {
     icon: LightningIcon,
     title: 'Steady Energy',
-    description: 'Prebiotics feed the good bacteria that help regulate energy metabolism over time. No caffeine, no spike, no crash. Just a steady, feel-good lift from the inside out.'
+    description: 'No caffeine, no sugar spike, no 3pm crash. The prebiotic fibre feeds your gut bacteria, and a healthy gut regulates energy better than any energy drink.',
   },
   {
-    icon: SnowflakeIcon,
+    icon: FlameIcon,
     title: 'Soothes & Settles',
-    description: 'Real ginger is a time-tested remedy for nausea, bloating, and sluggish digestion. Our fizz makes the daily dose something you actually look forward to.',
+    description: 'Ginger has been used for gut complaints for thousands of years across Asia. Ours is fresh, fermented, and actually strong enough to feel it working.',
   },
 ];
 
 // Quick, scannable facts that reinforce the "why" without a wall of text.
 const FACTS = [
   { stat: '<2g', label: 'sugar per serve' },
-  { stat: '7 days', label: 'naturally fermented' },
+  { stat: '5 days', label: 'naturally fermented' },
   { stat: 'Prebiotic', label: 'acacia fibre' },
   { stat: '330ml', label: 'real ginger fizz' },
 ];
@@ -88,7 +88,9 @@ export default function Benefits() {
             More Than a Drink
           </h2>
           <p className="font-body text-earth max-w-[560px] mx-auto">
-            For centuries ginger has been used to calm the stomach and fire up digestion. We brew it the old, slow way — with real ingredients and prebiotic acacia fibre — so it does you good and tastes like it means it.
+            Thailand grows and exports a huge amount of ginger, ranking among the top producers in the world, but the country barely shows up on the list of places that actually consume it. Thailand's ginger industry is built mainly around exporting, not local use. It has been part of Thai food and medicine for centuries, but most of what is grown now leaves the country and gets turned into products elsewhere, often without much of that value returning to the farmers who grew it.
+
+That is the deeper issue here. The people producing a resource are often not the ones who profit most from it. This is a pattern seen across many raw materials worldwide, not just ginger. Growing something and actually benefiting from it are frequently two very different things. Just something to think about while you drink the fizz....
           </p>
         </div>
 
@@ -144,7 +146,7 @@ export default function Benefits() {
             Feed the bacteria. Everything else follows.
           </h3>
           <p className="font-body text-earth text-[15px] leading-relaxed mb-8 max-w-[600px]">
-            Probiotics add new bacteria. Prebiotics feed the ones already doing the work. We use acacia tree fibre because it's one of the most extensively studied, gut-tolerated prebiotics available. It survives digestion intact and delivers where it counts.
+            Probiotics add new bacteria. Prebiotics feed the ones already doing the work right now. No new ones. We use acacia tree fibre for its slow and gentle fermentation, a process in which it converts sugars into into energy your body can use.
           </p>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             {[

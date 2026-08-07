@@ -46,7 +46,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     await resend.emails.send({
       from: MAIL_FROM,
       to: email,
-      subject: 'Welcome to the Brew Crew 🍺',
+      subject: 'Welcome to GingerBros 🫚',
       html: welcomeHtml(),
     });
 

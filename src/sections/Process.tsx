@@ -10,13 +10,13 @@ const STEPS = [
   },
   {
     number: '02',
-    days: 'Day 3-5',
+    days: 'Day 3-4',
     title: 'Natural Ferment',
     description: 'Wild yeast and beneficial bacteria transform the sugars. Bubbles begin to form as CO2 develops naturally. The brew develops its signature bite.',
   },
   {
     number: '03',
-    days: 'Day 6-7',
+    days: 'Day 5',
     title: 'Condition & Bottle',
     description: 'The ginger fizz is strained and conditioned for flavor development, then carbonated and bottled.',
   },
@@ -62,7 +62,7 @@ export default function Process() {
             THE PROCESS
           </span>
           <h2 className="font-display font-semibold text-cream text-[clamp(1.5rem,3vw,2.5rem)]">
-            7 Days to Perfection
+            5 Days to Perfection
           </h2>
         </div>
 

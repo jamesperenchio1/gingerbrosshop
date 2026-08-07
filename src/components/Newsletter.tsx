@@ -38,9 +38,9 @@ export default function Newsletter() {
     <section className="bg-cream py-16">
       <div className="max-w-[600px] mx-auto px-6 text-center">
         <Mail className="w-8 h-8 text-rust mx-auto mb-4" />
-        <h2 className="font-display font-bold text-deep-brown text-2xl mb-2">Join the Brew Crew</h2>
+        <h2 className="font-display font-bold text-deep-brown text-2xl mb-2">Get First Dibs</h2>
         <p className="font-body text-earth mb-6">
-          Get exclusive offers, new flavor announcements, and ginger fizz tips delivered to your inbox.
+          New drops, restocks, and offers before anyone else. No spam, unsubscribe any time.
         </p>
         {subscribed ? (
           <div className="flex items-center justify-center gap-2 text-accent-green">

@@ -113,7 +113,7 @@ export default function WholesalePage() {
     {
       icon: <BadgeCheck className="w-8 h-8 text-amber" />,
       title: 'Consistent Quality',
-      description: 'Every batch is naturally fermented for 7 days using the same ginger-bug starter, Thai ginger, white sugar, and fresh lime.',
+      description: 'Every batch is naturally fermented for 5 days using the same ginger-bug starter, Thai ginger, white sugar, and fresh lime.',
     },
   ];
 

@@ -59,7 +59,7 @@ export default function HomePage() {
     <div className="min-h-screen bg-warm-white">
       <SEO
         title="GingerBros — Naturally Brewed Craft Ginger Fizz from Thailand"
-        description="7-day naturally fermented craft ginger fizz brewed in Thailand. Real ginger, prebiotic acacia fibre, low in sugar, delivered to your door nationwide."
+        description="5-day naturally fermented craft ginger fizz brewed in Thailand. Real ginger, prebiotic acacia fibre, low in sugar, delivered to your door nationwide."
         path="/"
         jsonLd={[organizationSchema, websiteSchema, productListSchema]}
       />

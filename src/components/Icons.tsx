@@ -156,6 +156,15 @@ export function TikTokIcon({ className = '' }: { className?: string }) {
   );
 }
 
+export function FlameIcon({ className = '' }: { className?: string }) {
+  return (
+    <svg className={className} width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M8.5 14.5A2.5 2.5 0 0 0 11 17h2a2.5 2.5 0 0 0 2.5-2.5c0-.5-.2-1-.5-1.5L13 11l-1.5-3L10 11l-1 1.5c-.3.5-.5 1-.5 2z" />
+      <path d="M15 8c0-2.5-2-4.5-4-6C9 4.5 7.5 7 7 10c0 1 .2 2 .6 2.8" />
+    </svg>
+  );
+}
+
 export function LineIcon({ className = '' }: { className?: string }) {
   return (
     <svg className={className} width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">

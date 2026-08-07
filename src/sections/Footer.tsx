@@ -40,7 +40,7 @@ export default function Footer() {
           <div className="md:col-span-1">
             <h3 className="font-display font-bold text-[1.5rem] mb-4">GingerBros</h3>
             <p className="font-body text-[14px] text-cream/70 leading-relaxed mb-6">
-              Naturally brewed craft ginger fizz from Thailand. 7-day fermentation, real ginger, zero shortcuts.
+              Naturally brewed craft ginger fizz from Thailand. 5-day fermentation, real ginger, zero shortcuts.
             </p>
             <div className="flex flex-wrap gap-x-4 gap-y-2">
               {socials.map((social) => (

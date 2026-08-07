@@ -138,7 +138,7 @@ This is the part most people never see, and it is the single most important habi
 
 ## Day by day in the brewhouse
 
-Once the mother bug is lively, we use it to inoculate a full batch. Our 7-day process is slow on purpose. Here is roughly how a batch moves through our Bangkok brewhouse:
+Once the mother bug is lively, we use it to inoculate a full batch. Our 5-day process is slow on purpose. Here is roughly how a batch moves through our Bangkok brewhouse:
 
 • Day 1 — We grate fresh, organic Thai ginger and combine it with filtered, non-chlorinated water, a measured amount of white sugar, fresh lime, and a generous pour of active ginger bug to kick-start fermentation.
 • Day 2 to 3 — The wild cultures bloom. Tiny bubbles cling to the side of the vessel. The smell turns bright and peppery as the yeast population climbs into the millions.
@@ -165,7 +165,7 @@ So we offer two honest options instead of pretending one size fits all:
 
 > We would rather give you a clear choice between living and shelf-stable than quietly pasteurize everything and call it "raw".
 
-Same 7-day brew, same real ginger, same care — the only difference is whether we apply heat at the very end. If live cultures are your priority, reach for the raw bottle and keep it cold. If you want something for the cupboard or a long trip, the pasteurized bottle is the practical pick.
+Same 5-day brew, same real ginger, same care — the only difference is whether we apply heat at the very end. If live cultures are your priority, reach for the raw bottle and keep it cold. If you want something for the cupboard or a long trip, the pasteurized bottle is the practical pick.
 
 ## The takeaway
 
@@ -187,7 +187,7 @@ Great fizz is not manufactured — it is cultivated. Whether you choose the raw 
     slug: 'moscow-mule',
     title: 'The Perfect Moscow Mule with GingerBros',
     excerpt:
-      'Why our 7-day fermented ginger fizz makes the best Moscow Mule you have ever tasted — and the copper-mug ritual that goes with it.',
+      'Why our 5-day fermented ginger fizz makes the best Moscow Mule you have ever tasted — and the copper-mug ritual that goes with it.',
     category: 'Recipe',
     readTime: '5 min',
     icon: ChefHat,
@@ -195,7 +195,7 @@ Great fizz is not manufactured — it is cultivated. Whether you choose the raw 
     author: 'The GingerBros Kitchen',
     tags: ['cocktail', 'vodka', 'classic'],
     image: '/images/product-ginger-fizz-1.jpg',
-    content: `The Moscow Mule is one of the simplest cocktails in the canon — vodka, lime, ginger — which is exactly why the *quality* of each part matters so much. There is nowhere to hide. A great Mule lives or dies on its ginger, and our 7-day naturally fermented brew brings a depth of flavour that mass-market ginger sodas simply cannot match. Most commercial mules lean on sweet, one-note ginger beer; ours leans on a living, lightly tart fizz that lets the lime and vodka breathe.
+    content: `The Moscow Mule is one of the simplest cocktails in the canon — vodka, lime, ginger — which is exactly why the *quality* of each part matters so much. There is nowhere to hide. A great Mule lives or dies on its ginger, and our 5-day naturally fermented brew brings a depth of flavour that mass-market ginger sodas simply cannot match. Most commercial mules lean on sweet, one-note ginger beer; ours leans on a living, lightly tart fizz that lets the lime and vodka breathe.
 
 ## A little history
 
@@ -662,7 +662,7 @@ None of this means ginger fizz replaces medicine, vaccines, sleep, exercise or a
 
 ## The ginger bug eats the sugar
 
-This is the quiet superpower of real fermentation, and it is worth understanding because it is genuinely different from how a diet soda is made. During our 7-day natural process, the wild yeast and bacteria in the ginger bug *consume* much of the white sugar we start with as their food, converting it into carbon dioxide (the bubbles), a trace of organic acids (the bright tang) and a cascade of flavour compounds. By the time we bottle, only a modest amount of residual sugar remains — just enough to balance the ginger's heat and sustain the natural carbonation.
+This is the quiet superpower of real fermentation, and it is worth understanding because it is genuinely different from how a diet soda is made. During our 5-day natural process, the wild yeast and bacteria in the ginger bug *consume* much of the white sugar we start with as their food, converting it into carbon dioxide (the bubbles), a trace of organic acids (the bright tang) and a cascade of flavour compounds. By the time we bottle, only a modest amount of residual sugar remains — just enough to balance the ginger's heat and sustain the natural carbonation.
 
 In other words, the lower sweetness is not something we engineer out with chemistry at the end. It is something the microbes do for us, gradually, over a week. The drink tastes less sweet because it genuinely *is* less sweet.
 
@@ -1752,7 +1752,7 @@ export default function BlogPage() {
             <div className="mt-12 bg-gradient-to-br from-amber/20 to-soft-peach/30 rounded-3xl p-8 text-center border border-soft-peach/60">
               <h3 className="font-display font-bold text-deep-brown text-2xl mb-2">Taste the difference</h3>
               <p className="font-body text-earth mb-6 max-w-[420px] mx-auto">
-                Real ginger, 7-day fermentation, live cultures. Get a bottle of GingerBros and try it for yourself.
+                Real ginger, 5-day fermentation, live cultures. Get a bottle of GingerBros and try it for yourself.
               </p>
               <button
                 onClick={() => navigate('/')}

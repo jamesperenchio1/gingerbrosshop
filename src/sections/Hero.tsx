@@ -85,7 +85,7 @@ export default function Hero() {
             ref={subRef}
             className="font-body font-medium text-[14px] md:text-[15px] text-earth max-w-[460px] mb-4 md:mb-7 leading-relaxed"
           >
-            A bold ginger kick with fresh lime and 3.5g of prebiotics. 7-day naturally fermented, low in sugar, and made with real ingredients.
+            A bold ginger kick with fresh lime and 3.5g of prebiotics. 5-day naturally fermented, low in sugar, and made with real ingredients.
           </p>
 
           <div ref={ctaRef} className="flex flex-col xs:flex-row flex-wrap items-stretch xs:items-center justify-center md:justify-start gap-2 md:gap-3">
@@ -105,7 +105,7 @@ export default function Hero() {
 
           {/* Trust row */}
           <div ref={trustRef} className="flex flex-wrap items-center justify-center md:justify-start gap-x-2 md:gap-x-3 gap-y-1 mt-4 md:mt-7">
-            {['7-day ferment', '<2g sugar', 'Prebiotic fibre'].map((label, i, arr) => (
+            {['5-day ferment', '<2g sugar', 'Prebiotic fibre'].map((label, i, arr) => (
               <span key={label} className="flex items-center gap-x-2 md:gap-x-3 font-body font-semibold text-[13px] md:text-[15px] text-deep-brown/90">
                 {label}
                 {i < arr.length - 1 && <span aria-hidden="true" className="text-[16px] md:text-[20px] leading-none">·</span>}
