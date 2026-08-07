@@ -125,7 +125,7 @@ export default function Hero() {
               loading="eager"
               fetchPriority="high"
               decoding="async"
-              className="relative w-[120px] xs:w-[140px] sm:w-[200px] md:w-[360px] block drop-shadow-[0_24px_48px_rgba(80,45,8,0.32)] rotate-[-3deg] group-hover:rotate-0 transition-transform duration-500"
+              className="relative w-[120px] xs:w-[140px] sm:w-[200px] md:w-[360px] block drop-shadow-[0_24px_48px_rgba(80,45,8,0.32)] rotate-[-3deg] group-hover:rotate-0 transition-transform duration-500 mix-blend-multiply"
             />
             <img
               src="/images/hero-mug.png"
