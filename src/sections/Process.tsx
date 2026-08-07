@@ -18,7 +18,7 @@ const STEPS = [
     number: '03',
     days: 'Day 6-7',
     title: 'Condition & Bottle',
-    description: 'The ginger fizz is strained, conditioned for flavor development, then carefully bottled to capture natural carbonation.',
+    description: 'The ginger fizz is strained and conditioned for flavor development, then carbonated and bottled.',
   },
   {
     number: '04',
@@ -72,7 +72,7 @@ export default function Process() {
               className="bg-cream rounded-[20px] p-5 sm:p-8"
             >
               {/* Step Number */}
-              <span className="font-display font-bold text-deep-brown/30 text-[4rem] leading-none block">
+              <span className="font-display font-bold text-deep-brown text-[4rem] leading-none block">
                 {step.number}
               </span>
 
