@@ -63,7 +63,7 @@ export default function Story() {
                 'Stronger immunity — over 70% of immune cells live in the gut',
                 'Steadier energy without caffeine spikes or crashes',
                 'Better mineral absorption',
-                'Helps regulate blood sugar levels and promotes a feeling of fullness for weight management'
+                'Helps regulate blood sugar levels and promotes a feeling of fullness for weight management',
                 'Increases helpful gut bacteria strains like Bifidobacteria and Lactobacilli.',
               ].map((point) => (
                 <li key={point} className="flex items-start gap-2">

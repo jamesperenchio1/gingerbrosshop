@@ -9,6 +9,7 @@ import portal from './_lib/handlers/portal.js';
 import referral from './_lib/handlers/referral.js';
 import saveCart from './_lib/handlers/save-cart.js';
 import subscribe from './_lib/handlers/subscribe.js';
+import verifyEmail from './_lib/handlers/verify-email.js';
 import shippingRate from './_lib/handlers/shipping-rate.js';
 import abandonedCartCheck from './_lib/handlers/abandoned-cart-check.js';
 import credit from './_lib/handlers/credit.js';
@@ -33,6 +34,7 @@ const routes: Record<string, Handler> = {
   'referral': referral,
   'save-cart': saveCart,
   'subscribe': subscribe,
+  'verify-email': verifyEmail,
   'shipping-rate': shippingRate,
   'abandoned-cart-check': abandonedCartCheck,
   'credit': credit,
