@@ -219,6 +219,7 @@ export default function Shop() {
     const ctx = gsap.context(() => {
       gsap.from(headerRef.current, {
         opacity: 0, y: 40, duration: 0.7, ease: 'power3.out',
+        immediateRender: false,
         scrollTrigger: { trigger: sectionRef.current, start: 'top 80%' },
       });
     }, sectionRef);
@@ -232,6 +233,7 @@ export default function Shop() {
     const ctx = gsap.context(() => {
       gsap.from(Array.from(cards), {
         opacity: 0, y: 50, scale: 0.96, duration: 0.8, stagger: 0.15, ease: 'power3.out',
+        immediateRender: false,
         scrollTrigger: { trigger: cardsRef.current, start: 'top 80%' },
       });
     }, sectionRef);

@@ -45,6 +45,7 @@ export default function Benefits() {
         y: 30,
         duration: 0.6,
         ease: 'power3.out',
+        immediateRender: false,
         scrollTrigger: {
           trigger: sectionRef.current,
           start: 'top 80%',
@@ -59,6 +60,7 @@ export default function Benefits() {
           duration: 0.7,
           stagger: 0.12,
           ease: 'power3.out',
+          immediateRender: false,
           scrollTrigger: {
             trigger: cardsRef.current,
             start: 'top 80%',

@@ -15,6 +15,7 @@ export default function Story() {
           duration: 0.6,
           stagger: 0.1,
           ease: 'power3.out',
+          immediateRender: false,
           scrollTrigger: {
             trigger: contentRef.current,
             start: 'top 80%',
@@ -49,15 +50,11 @@ export default function Story() {
             </h2>
 
             <p className="font-body text-earth leading-relaxed mb-5">
-              GingerBros started with a simple question: why does everything sold as "healthy" taste like compromise? We wanted something that was genuinely good for you — not because it had vitamins added in a lab, but because the process itself created something nourishing. That search led us to fermentation.
-            </p>
-
-            <p className="font-body text-earth leading-relaxed mb-5">
-              Every batch of our ginger fizz undergoes a full 7-day natural fermentation process. We keep the ingredient list short on purpose: fresh Thai ginger, water, cane sugar, and prebiotic acacia fibre. No concentrates, no artificial carbonation, no shortcuts. The slow ferment is where the magic happens — it's what gives each bottle its depth of flavour and its gentle, natural fizz.
+              GingerBros started with a simple question: why does everything sold as "healthy" taste like sh*t? We wanted something that was genuinely good for you, not because it had vitamins added just for the sake of having it, but because the process itself created something nourishing. That search led us to fizz that we know today.
             </p>
 
             <p className="font-body text-earth leading-relaxed mb-4">
-              We source our acacia fibre specifically because it's one of the most well-studied prebiotic fibres in existence. Prebiotics aren't probiotics — they don't add new bacteria. Instead, they feed the good bacteria already living in your gut. When that ecosystem is well-fed, the effects ripple outward:
+              We source our acacia fibre specifically because it's one of the most well-studied prebiotic fibres in existence. Prebiotics and probiotics are NOT the same. Probiotics add new bacteria into your gut. Prebiotics on the other hand, feed the good bacteria already living in your gut, making them more resilient and function much better. When that ecosystem is well-fed, the effects ripple outward:
             </p>
 
             <ul className="font-body text-earth text-[14px] leading-relaxed mb-6 space-y-2 pl-1">
@@ -65,7 +62,9 @@ export default function Story() {
                 'Better digestion and less bloating',
                 'Stronger immunity — over 70% of immune cells live in the gut',
                 'Steadier energy without caffeine spikes or crashes',
-                'Improved mood — the gut and brain are in constant conversation',
+                'Better mineral absorption',
+                'Helps regulate blood sugar levels and promotes a feeling of fullness for weight management'
+                'Increases helpful gut bacteria strains like Bifidobacteria and Lactobacilli.',
               ].map((point) => (
                 <li key={point} className="flex items-start gap-2">
                   <span className="mt-1.5 w-1.5 h-1.5 flex-shrink-0 rounded-full bg-rust" />
@@ -75,11 +74,7 @@ export default function Story() {
             </ul>
 
             <p className="font-body text-earth leading-relaxed mb-5">
-              We're based in Bangkok, where ginger has been part of everyday cooking and traditional medicine for centuries. Our relationships with local growers mean we get fresh, fiery rhizomes harvested at peak potency — not the pallid, month-old stuff shipped across continents. That provenance matters. You can taste it.
-            </p>
-
-            <p className="font-body text-earth leading-relaxed mb-8">
-              GingerBros isn't trying to be the next mass-market soft drink. We're building something smaller, more intentional, and more honest — a drink that earns its place on your table because it actually does what it says. Brewed slow. Kept real. Enjoyed easy.
+              We're based in Thailand, where ginger has been part of everyday cooking and traditional medicine for centuries. Our relationships with local growers mean we get fresh rhizomes harvested at peak potency. That provenance matters. You can 100% taste the difference.
             </p>
 
             <button

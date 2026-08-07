@@ -37,6 +37,7 @@ export default function Process() {
     const ctx = gsap.context(() => {
       gsap.from(headerRef.current, {
         opacity: 0, y: 30, duration: 0.6, ease: 'power3.out',
+        immediateRender: false,
         scrollTrigger: { trigger: sectionRef.current, start: 'top 80%' },
       });
 
@@ -44,6 +45,7 @@ export default function Process() {
       if (cards) {
         gsap.from(Array.from(cards), {
           opacity: 0, y: 40, duration: 0.7, stagger: 0.15, ease: 'power3.out',
+          immediateRender: false,
           scrollTrigger: { trigger: cardsRef.current, start: 'top 80%' },
         });
       }
