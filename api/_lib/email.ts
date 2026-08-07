@@ -310,8 +310,8 @@ export function wholesaleConfirmationHtml(inquiry: WholesaleInquiry): string {
 
 export function welcomeHtml(): string {
   return layout(
-    `${heading('Welcome to the Brew Crew! 🍺')}
-    <p style="margin:0 0 4px;">Thanks for subscribing. You'll be the first to hear about new flavors, exclusive offers, and ginger fizz tips.</p>
+    `${heading('You\'re in. 🫚')}
+    <p style="margin:0 0 4px;">New drops, restocks, and offers — you'll hear about them before anyone else.</p>
     <p style="margin-top:24px;text-align:center;">${button('Shop the Brews →', 'https://gingerbrosshop.com/#shop')}</p>`,
     'Welcome to GingerBros'
   );
