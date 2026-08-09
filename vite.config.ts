@@ -21,7 +21,6 @@ export default defineConfig({
         manualChunks: {
           vendor: ['react', 'react-dom', 'react-router'],
           gsap: ['gsap'],
-          stripe: ['@stripe/stripe-js'],
         },
       },
     },
