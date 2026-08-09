@@ -115,7 +115,7 @@ export default function Hero() {
         <div ref={imageRef} className="flex justify-center md:justify-end order-1 md:order-2">
           <div className="relative flex items-end justify-center md:justify-end group">
             <img
-              src="/images/hero-bottle.png"
+              src="/images/bottle-hero.png"
               alt="GingerBros Ginger Fizz bottle"
               width={420}
               height={630}
