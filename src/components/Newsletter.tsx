@@ -1,9 +1,11 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { Mail, CheckCircle, AlertCircle, ArrowRight, RefreshCw } from 'lucide-react';
+import { useI18n } from '@/context/I18nContext';
 
 type Step = 'subscribe' | 'verify' | 'done';
 
 export default function Newsletter() {
+  const { t } = useI18n();
   const [step, setStep] = useState<Step>('subscribe');
   const [email, setEmail] = useState('');
   const [digits, setDigits] = useState(['', '', '', '', '', '']);
@@ -136,19 +138,19 @@ export default function Newsletter() {
         {step === 'subscribe' && (
           <>
             <Mail className="w-8 h-8 text-rust mx-auto mb-5" />
-            <h2 className="font-display font-bold text-deep-brown text-2xl mb-2">Get First Dibs</h2>
+            <h2 className="font-display font-bold text-deep-brown text-2xl mb-2">{t('newsletterTitle')}</h2>
             <p className="font-body text-earth mb-2">
-              New drops, restocks, and offers before anyone else.
+              {t('newsletterSub')}
             </p>
             <p className="font-body text-earth/70 text-sm mb-8">
-              Verify your email and get <span className="font-semibold text-rust">10% off</span> your first order.
+              {t('newsletterVerifyHint')}
             </p>
             <form onSubmit={handleSubscribe} className="flex flex-col sm:flex-row gap-3">
               <input
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                placeholder="Enter your email"
+                placeholder={t('newsletterEmailPlaceholder')}
                 required
                 className="flex-1 bg-warm-white border border-soft-peach rounded-full px-5 py-3 font-body text-deep-brown placeholder:text-earth/50 focus:outline-none focus:ring-2 focus:ring-rust/30"
               />
@@ -157,7 +159,7 @@ export default function Newsletter() {
                 disabled={loading}
                 className="bg-deep-brown text-cream font-body font-medium px-6 py-3 rounded-full hover:bg-rust transition-colors disabled:opacity-60 flex items-center justify-center gap-2"
               >
-                {loading ? 'Sending…' : <>Subscribe <ArrowRight className="w-4 h-4" /></>}
+                {loading ? t('newsletterSubscribingBtn') : <>{t('newsletterSubscribeBtn')} <ArrowRight className="w-4 h-4" /></>}
               </button>
             </form>
             {error && (
@@ -166,7 +168,7 @@ export default function Newsletter() {
                 <span className="font-body text-sm">{error}</span>
               </div>
             )}
-            <p className="font-body text-earth/50 text-xs mt-4">No spam. Unsubscribe any time.</p>
+            <p className="font-body text-earth/50 text-xs mt-4">{t('newsletterNoSpam')}</p>
           </>
         )}
 
@@ -175,9 +177,9 @@ export default function Newsletter() {
             <div className="w-12 h-12 rounded-full bg-deep-brown/10 flex items-center justify-center mx-auto mb-5">
               <Mail className="w-5 h-5 text-deep-brown" />
             </div>
-            <h2 className="font-display font-bold text-deep-brown text-2xl mb-2">Check your inbox</h2>
+            <h2 className="font-display font-bold text-deep-brown text-2xl mb-2">{t('newsletterCheckInbox')}</h2>
             <p className="font-body text-earth mb-1">
-              We sent a 6-digit code to
+              {t('newsletterCodeSentTo')}
             </p>
             <p className="font-body font-semibold text-deep-brown mb-8 break-all">{email}</p>
 
@@ -214,7 +216,7 @@ export default function Newsletter() {
                 disabled={digits.join('').length < 6 || loading}
                 className="w-full bg-deep-brown text-cream font-body font-medium px-6 py-3.5 rounded-full hover:bg-rust transition-colors disabled:opacity-40 mb-4"
               >
-                {loading ? 'Verifying…' : 'Claim my 10% off →'}
+                {loading ? t('newsletterVerifyingBtn') : t('newsletterClaimBtn')}
               </button>
             </form>
 
@@ -231,7 +233,7 @@ export default function Newsletter() {
               className="flex items-center justify-center gap-1.5 mx-auto text-earth/60 hover:text-earth text-sm font-body transition-colors disabled:opacity-40"
             >
               <RefreshCw className="w-3.5 h-3.5" />
-              {resendCooldown > 0 ? `Resend in ${resendCooldown}s` : 'Resend code'}
+              {resendCooldown > 0 ? `${t('newsletterResendIn')} ${resendCooldown}s` : t('newsletterResend')}
             </button>
           </>
         )}
@@ -239,9 +241,9 @@ export default function Newsletter() {
         {step === 'done' && (
           <div className="py-4">
             <CheckCircle className="w-12 h-12 text-accent-green mx-auto mb-5" />
-            <h2 className="font-display font-bold text-deep-brown text-2xl mb-2">Your discount is on its way.</h2>
+            <h2 className="font-display font-bold text-deep-brown text-2xl mb-2">{t('newsletterDoneTitle')}</h2>
             <p className="font-body text-earth">
-              Check your inbox for your 10% off code. It's valid for 24 hours.
+              {t('newsletterDoneSub')}
             </p>
           </div>
         )}
