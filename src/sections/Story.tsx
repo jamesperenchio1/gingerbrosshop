@@ -9,21 +9,11 @@ export default function Story() {
 
   useEffect(() => {
     const ctx = gsap.context(() => {
-      const children = contentRef.current?.children;
-      if (children) {
-        gsap.from(Array.from(children), {
-          opacity: 0,
-          y: 30,
-          duration: 0.6,
-          stagger: 0.1,
-          ease: 'power3.out',
-          immediateRender: false,
-          scrollTrigger: {
-            trigger: contentRef.current,
-            start: 'top 80%',
-          },
-        });
-      }
+      gsap.from(contentRef.current, {
+        opacity: 0, duration: 0.5, ease: 'power2.out',
+        immediateRender: false,
+        scrollTrigger: { trigger: sectionRef.current, start: 'top 88%' },
+      });
     }, sectionRef);
 
     return () => ctx.revert();

@@ -18,20 +18,12 @@ export default function Process() {
 
   useEffect(() => {
     const ctx = gsap.context(() => {
-      gsap.from(headerRef.current, {
-        opacity: 0, y: 30, duration: 0.6, ease: 'power3.out',
+      gsap.from([headerRef.current, cardsRef.current], {
+        opacity: 0, duration: 0.5, ease: 'power2.out',
         immediateRender: false,
-        scrollTrigger: { trigger: sectionRef.current, start: 'top 80%' },
+        stagger: 0.1,
+        scrollTrigger: { trigger: sectionRef.current, start: 'top 88%' },
       });
-
-      const cards = cardsRef.current?.children;
-      if (cards) {
-        gsap.from(Array.from(cards), {
-          opacity: 0, y: 40, duration: 0.7, stagger: 0.15, ease: 'power3.out',
-          immediateRender: false,
-          scrollTrigger: { trigger: cardsRef.current, start: 'top 80%' },
-        });
-      }
     }, sectionRef);
     return () => ctx.revert();
   }, []);

@@ -17,14 +17,12 @@ export default function Hero() {
   const scrollRef = useRef<HTMLDivElement>(null);
 
   useLayoutEffect(() => {
-    const tl = gsap.timeline({ defaults: { ease: 'power3.out' } });
-    tl.from(badgeRef.current, { opacity: 0, y: -10, duration: 0.5, delay: 0.15 })
-      .from(headlineRef.current, { opacity: 0, y: 30, duration: 0.8 }, '-=0.2')
-      .from(subRef.current, { opacity: 0, y: 20, duration: 0.6 }, '-=0.4')
-      .from(ctaRef.current, { opacity: 0, y: 15, duration: 0.5 }, '-=0.3')
-      .from(trustRef.current, { opacity: 0, y: 10, duration: 0.5 }, '-=0.3')
-      .from(imageRef.current, { opacity: 0, y: 30, scale: 0.94, duration: 0.9 }, '-=0.9')
-      .from(scrollRef.current, { opacity: 0, duration: 0.5 }, '-=0.2');
+    const tl = gsap.timeline({ defaults: { ease: 'power2.out' } });
+    tl.from([badgeRef.current, headlineRef.current, subRef.current, ctaRef.current, trustRef.current], {
+        opacity: 0, y: 12, duration: 0.55, stagger: 0.07, delay: 0.1,
+      })
+      .from(imageRef.current, { opacity: 0, duration: 0.6 }, '-=0.45')
+      .from(scrollRef.current, { opacity: 0, duration: 0.4 }, '-=0.2');
 
     return () => { tl.kill(); };
   }, []);
@@ -113,19 +111,18 @@ export default function Hero() {
           </div>
         </div>
 
-        {/* Right: product shot — mix-blend-multiply on the container so the
-            GSAP stacking context blends the entire group against the amber bg */}
-        <div ref={imageRef} className="flex justify-center md:justify-end order-1 md:order-2 mix-blend-multiply">
+        {/* Right: product shot — RGBA transparent PNG, no blend-multiply needed */}
+        <div ref={imageRef} className="flex justify-center md:justify-end order-1 md:order-2">
           <div className="relative flex items-end justify-center md:justify-end group">
             <img
-              src="/images/product-ginger-fizz.png"
+              src="/images/hero-bottle.png"
               alt="GingerBros Ginger Fizz bottle"
               width={420}
-              height={560}
+              height={630}
               loading="eager"
               fetchPriority="high"
               decoding="async"
-              className="relative w-[120px] xs:w-[140px] sm:w-[200px] md:w-[360px] block drop-shadow-[0_24px_48px_rgba(80,45,8,0.32)] rotate-[-3deg] group-hover:rotate-0 transition-transform duration-500"
+              className="relative w-[130px] xs:w-[150px] sm:w-[220px] md:w-[380px] block drop-shadow-[0_24px_48px_rgba(80,45,8,0.28)] rotate-[-2deg] group-hover:rotate-0 transition-transform duration-500"
             />
             <img
               src="/images/hero-mug.png"
