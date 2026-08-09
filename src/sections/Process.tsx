@@ -1,37 +1,20 @@
 import { useRef, useEffect } from 'react';
 import gsap from 'gsap';
-
-const STEPS = [
-  {
-    number: '01',
-    days: 'Day 1-2',
-    title: 'Ginger & Sugar',
-    description: 'Fresh ginger is grated and combined with raw sugar and filtered water. The ginger bug (our live culture starter) is added to begin the fermentation.',
-  },
-  {
-    number: '02',
-    days: 'Day 3-4',
-    title: 'Natural Ferment',
-    description: 'Wild yeast and beneficial bacteria transform the sugars. Bubbles begin to form as CO2 develops naturally. The brew develops its signature bite.',
-  },
-  {
-    number: '03',
-    days: 'Day 5',
-    title: 'Condition & Bottle',
-    description: 'The ginger fizz is strained and conditioned for flavor development, then carbonated and bottled.',
-  },
-  {
-    number: '04',
-    days: 'Ready',
-    title: 'Enjoy Cold',
-    description: 'Chill thoroughly before opening. Expect a bright, refreshing pop. Real ginger fizz, naturally fermented and ready to drink.',
-  },
-];
+import { useI18n } from '@/context/I18nContext';
 
 export default function Process() {
+  const { t } = useI18n();
+
   const sectionRef = useRef<HTMLElement>(null);
   const headerRef = useRef<HTMLDivElement>(null);
   const cardsRef = useRef<HTMLDivElement>(null);
+
+  const steps = [
+    { number: '01', daysKey: 'step01Days', titleKey: 'step01Title', descKey: 'step01Desc' },
+    { number: '02', daysKey: 'step02Days', titleKey: 'step02Title', descKey: 'step02Desc' },
+    { number: '03', daysKey: 'step03Days', titleKey: 'step03Title', descKey: 'step03Desc' },
+    { number: '04', daysKey: 'step04Days', titleKey: 'step04Title', descKey: 'step04Desc' },
+  ];
 
   useEffect(() => {
     const ctx = gsap.context(() => {
@@ -56,44 +39,30 @@ export default function Process() {
   return (
     <section id="process" ref={sectionRef} className="bg-amber py-[60px] md:py-[80px]">
       <div className="max-w-[1000px] mx-auto px-6">
-        {/* Header */}
         <div ref={headerRef} className="text-center mb-10 md:mb-16">
           <span className="font-body font-medium text-[13px] uppercase tracking-[0.08em] text-cream mb-3 block">
-            THE PROCESS
+            {t('processLabel')}
           </span>
           <h2 className="font-display font-semibold text-cream text-[clamp(1.5rem,3vw,2.5rem)]">
-            5 Days to Perfection
+            {t('processSectionTitle')}
           </h2>
         </div>
 
-        {/* Steps Grid */}
         <div ref={cardsRef} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          {STEPS.map((step) => (
-            <div
-              key={step.number}
-              className="bg-cream rounded-[20px] p-5 sm:p-8"
-            >
-              {/* Step Number */}
+          {steps.map((step) => (
+            <div key={step.number} className="bg-cream rounded-[20px] p-5 sm:p-8">
               <span className="font-display font-bold text-deep-brown text-[4rem] leading-none block">
                 {step.number}
               </span>
-
-              {/* Divider */}
               <div className="w-10 h-0.5 bg-deep-brown/40 my-4" />
-
-              {/* Days */}
               <span className="font-display font-semibold text-deep-brown text-[1.25rem] block mb-1">
-                {step.days}
+                {t(step.daysKey)}
               </span>
-
-              {/* Title */}
               <h3 className="font-display font-semibold text-deep-brown text-lg mb-3">
-                {step.title}
+                {t(step.titleKey)}
               </h3>
-
-              {/* Description */}
               <p className="font-body text-earth text-[15px] leading-relaxed">
-                {step.description}
+                {t(step.descKey)}
               </p>
             </div>
           ))}

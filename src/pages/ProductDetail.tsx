@@ -479,7 +479,7 @@ export default function ProductDetail() {
                   <img
                     src={images[activeImage] ?? images[0]}
                     alt={product.name}
-                    className="max-h-full max-w-full object-contain pointer-events-none"
+                    className="max-h-full max-w-full object-contain pointer-events-none mix-blend-multiply"
                     style={{
                       transform: isZooming ? 'scale(2.2)' : 'scale(1)',
                       transformOrigin: `${zoomPos.x}% ${zoomPos.y}%`,
@@ -647,7 +647,7 @@ export default function ProductDetail() {
             {/* Short description (from Stripe) */}
             {product.description && (
               <p className="font-body text-earth leading-relaxed mb-8">
-                {product.description}
+                {product.description.replace(/7-day/gi, '5-day')}
               </p>
             )}
 
