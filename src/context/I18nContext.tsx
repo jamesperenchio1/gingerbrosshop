@@ -134,9 +134,9 @@ const translations: Record<Locale, Record<string, string>> = {
     storyCtaProcess: 'Learn Our Process',
 
     // Newsletter
-    newsletterTitle: 'Get First Dibs',
-    newsletterSub: 'New drops, restocks, and offers before anyone else.',
-    newsletterVerifyHint: 'Verify your email and get 10% off your first order.',
+    newsletterTitle: 'First Access',
+    newsletterSub: 'New drops, restocks, and exclusive offers — before anyone else.',
+    newsletterVerifyHint: 'Verify your email. Get 10% off your first order.',
     newsletterEmailPlaceholder: 'Enter your email',
     newsletterSubscribeBtn: 'Subscribe',
     newsletterSubscribingBtn: 'Sending…',
@@ -286,9 +286,9 @@ const translations: Record<Locale, Record<string, string>> = {
     storyCtaProcess: 'เรียนรู้กระบวนการของเรา',
 
     // Newsletter
-    newsletterTitle: 'รับข้อมูลก่อนใคร',
-    newsletterSub: 'เครื่องดื่มใหม่ การเติมสต็อก และโปรโมชั่น — รู้ก่อนคนอื่น',
-    newsletterVerifyHint: 'ยืนยันอีเมลของคุณและรับส่วนลด 10% สำหรับการสั่งซื้อครั้งแรก',
+    newsletterTitle: 'สิทธิ์ก่อนใคร',
+    newsletterSub: 'เครื่องดื่มใหม่ การเติมสต็อก และโปรโมชั่นพิเศษ — รู้ก่อนคนอื่น',
+    newsletterVerifyHint: 'ยืนยันอีเมล รับส่วนลด 10% สำหรับการสั่งซื้อครั้งแรก',
     newsletterEmailPlaceholder: 'กรอกอีเมลของคุณ',
     newsletterSubscribeBtn: 'สมัครรับข้อมูล',
     newsletterSubscribingBtn: 'กำลังส่ง…',

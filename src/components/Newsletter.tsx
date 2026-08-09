@@ -133,31 +133,31 @@ export default function Newsletter() {
 
   return (
     <section id="newsletter" className="bg-cream py-20">
-      <div className="max-w-[560px] mx-auto px-6 text-center">
+      <div className="w-full max-w-[520px] mx-auto px-6 text-center">
 
         {step === 'subscribe' && (
           <>
             <Mail className="w-8 h-8 text-rust mx-auto mb-5" />
-            <h2 className="font-display font-bold text-deep-brown text-2xl mb-2">{t('newsletterTitle')}</h2>
-            <p className="font-body text-earth mb-2">
+            <h2 className="font-display font-bold text-deep-brown text-[1.75rem] mb-2">{t('newsletterTitle')}</h2>
+            <p className="font-body text-earth mb-1">
               {t('newsletterSub')}
             </p>
-            <p className="font-body text-earth/70 text-sm mb-8">
+            <p className="font-body text-earth/60 text-sm mb-8">
               {t('newsletterVerifyHint')}
             </p>
-            <form onSubmit={handleSubscribe} className="flex flex-col sm:flex-row gap-3">
+            <form onSubmit={handleSubscribe} className="flex flex-col sm:flex-row gap-3 w-full">
               <input
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder={t('newsletterEmailPlaceholder')}
                 required
-                className="flex-1 bg-warm-white border border-soft-peach rounded-full px-5 py-3 font-body text-deep-brown placeholder:text-earth/50 focus:outline-none focus:ring-2 focus:ring-rust/30"
+                className="flex-1 min-w-0 bg-warm-white border border-soft-peach rounded-full px-5 py-3 font-body text-deep-brown placeholder:text-earth/50 focus:outline-none focus:ring-2 focus:ring-rust/30"
               />
               <button
                 type="submit"
                 disabled={loading}
-                className="bg-deep-brown text-cream font-body font-medium px-6 py-3 rounded-full hover:bg-rust transition-colors disabled:opacity-60 flex items-center justify-center gap-2"
+                className="flex-shrink-0 bg-deep-brown text-cream font-body font-medium px-7 py-3 rounded-full hover:bg-rust transition-colors disabled:opacity-60 flex items-center justify-center gap-2"
               >
                 {loading ? t('newsletterSubscribingBtn') : <>{t('newsletterSubscribeBtn')} <ArrowRight className="w-4 h-4" /></>}
               </button>
@@ -168,7 +168,6 @@ export default function Newsletter() {
                 <span className="font-body text-sm">{error}</span>
               </div>
             )}
-            <p className="font-body text-earth/50 text-xs mt-4">{t('newsletterNoSpam')}</p>
           </>
         )}
 
