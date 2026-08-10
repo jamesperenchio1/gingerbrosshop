@@ -18,7 +18,7 @@ We reserve the right to update or modify these terms at any time without prior n
       title: 'Products & Availability',
       content: `All products are subject to availability. We reserve the right to discontinue any product, limit quantities, or refuse any order at our sole discretion. Product descriptions, images, and prices are displayed as accurately as possible, but we do not guarantee that all details are error-free.
 
-GingerBros ginger fizz is a fresh, naturally fermented, perishable beverage. Because we do not pasteurise or use preservatives, shelf life is limited. Each bottle displays a "bottled on" date. We recommend consumption within 30 days of bottling when stored refrigerated at 2–6°C.`
+GingerBros ginger fizz is a fresh, naturally fermented, perishable beverage. We lightly pasteurise to stabilise the brew while keeping live cultures intact, but no artificial preservatives are added. Each bottle displays a "bottled on" date. When stored refrigerated at 2–6°C, GingerBros stays fresh and flavourful for 3–4 months. For the best taste and fizz, we recommend enjoying within 30 days of bottling.`
     },
     {
       icon: <CreditCard className="w-6 h-6 text-amber" />,
@@ -62,7 +62,7 @@ Subscription pricing is locked at the rate you signed up for, subject to our rig
       title: 'Product Safety & Allergens',
       content: `GingerBros ginger fizz contains: fresh ginger, water, erythritol, white sugar (fermentation starter), ginger bug culture, acacia fibre (prebiotic), and fresh lime. It is naturally fermented and contains trace alcohol (typically less than 0.5% ABV). It is not suitable for individuals with severe allergies to any of these ingredients.
 
-Our products are manufactured in a facility that may handle other allergens. While we take precautions, we cannot guarantee complete absence of cross-contamination. If you have specific dietary concerns, please contact us before ordering.`
+GingerBros is produced in a dedicated facility that only handles our own ingredients: fresh ginger, water, erythritol, white sugar (fermentation starter), ginger bug culture, acacia fibre, and fresh lime. We do not process nuts, dairy, gluten, or shellfish in our facility. If you have a severe allergy or specific dietary concern, please contact us before ordering and we will be happy to discuss our production process in detail.`
     },
     {
       icon: <Copyright className="w-6 h-6 text-amber" />,

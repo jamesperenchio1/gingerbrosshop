@@ -500,3 +500,63 @@ export function trackingInfoEmailHtml(order: Order): string {
     `Your GingerBros order #${orderId} status`
   );
 }
+
+export function abandonedCartHtml(snapshot: CartSnapshot): string {
+  const rows = snapshot.items
+    .map(
+      (item) =>
+        `<tr>
+          <td style="padding:11px 8px;border-bottom:1px solid ${BRAND.line};color:${BRAND.brown};font-size:14px;">${item.name}</td>
+          <td style="padding:11px 8px;border-bottom:1px solid ${BRAND.line};text-align:center;color:${BRAND.earth};font-size:14px;">${item.quantity}</td>
+          <td style="padding:11px 8px;border-bottom:1px solid ${BRAND.line};text-align:right;color:${BRAND.brown};font-size:14px;font-weight:600;">฿${item.price * item.quantity}</td>
+        </tr>`
+    )
+    .join('');
+
+  return layout(
+    `${heading('You left something brewing. 🛒')}
+    ${body('These are still in your cart. Complete your order while they\'re in stock:')}
+    ${itemsTable(rows)}
+    ${totalLine(String(snapshot.subtotal))}
+    <p style="margin-top:16px;text-align:center;">${button('Complete My Order →', snapshot.url)}</p>
+    ${divider()}
+    <p style="margin:0;font-size:13px;color:${BRAND.earth};text-align:center;">Free shipping on orders over ฿500.</p>`,
+    'You left something brewing in your cart'
+  );
+}
+  const orderId = order.sessionId.slice(-8).toUpperCase();
+  const carrier = order.trackingCarrier?.trim();
+  const hasTracking = !!order.trackingNumber;
+
+  const rows = order.items
+    .map(
+      (li) =>
+        `<tr>
+          <td style="padding:11px 8px;border-bottom:1px solid ${BRAND.line};color:${BRAND.brown};font-size:14px;">${li.description}</td>
+          <td style="padding:11px 8px;border-bottom:1px solid ${BRAND.line};text-align:center;color:${BRAND.earth};font-size:14px;">${li.quantity}</td>
+        </tr>`
+    )
+    .join('');
+
+  const trackingInfo = hasTracking
+    ? infoCard(
+        `<p style="margin:0 0 6px;font-size:14px;color:${BRAND.earth};"><strong style="color:${BRAND.brown};">Order:</strong> #${orderId}</p>
+         <p style="margin:0 0 6px;font-size:14px;color:${BRAND.earth};"><strong style="color:${BRAND.brown};">Tracking:</strong> ${order.trackingNumber}</p>
+         ${carrier ? `<p style="margin:0;font-size:14px;color:${BRAND.earth};"><strong style="color:${BRAND.brown};">Carrier:</strong> ${carrier}</p>` : ''}`
+      )
+    : infoCard(
+        `<p style="margin:0;font-size:14px;color:${BRAND.earth};">Your order <strong>#${orderId}</strong> is confirmed and being prepared for shipment. You will receive another email with tracking details once it ships.</p>`
+      );
+
+  return layout(
+    `${heading('Your order status. 🍺')}
+    ${body(`Hi ${order.customerName ?? 'there'},`)}
+    ${body(`Here is the latest update on your GingerBros order:`)}
+    ${trackingInfo}
+    ${itemsTable(rows, false)}
+    <p style="margin-top:8px;text-align:center;">${button('Track My Order →', 'https://gingerbrosshop.com/track')}</p>
+    ${divider()}
+    <p style="margin:0;font-size:13px;color:${BRAND.earth};">Track anytime at gingerbrosshop.com/track with your email and order number <strong>${orderId}</strong>.</p>`,
+    `Your GingerBros order #${orderId} status`
+  );
+}

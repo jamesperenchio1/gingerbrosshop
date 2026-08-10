@@ -158,12 +158,24 @@ export default function ShippingPage() {
             <p className="font-body text-earth text-[14px] max-w-[480px] mx-auto mb-4">
               Have a special delivery request, need same-day local delivery, or have questions about your shipment? We are here to help.
             </p>
-            <a
-              href="mailto:gingerbros.brew@gmail.com"
-              className="inline-flex items-center gap-2 bg-amber text-deep-brown font-body font-medium text-sm uppercase tracking-[0.08em] px-7 py-3 rounded-full hover:bg-warm-gold transition-colors"
-            >
-              Contact Us
-            </a>
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
+              <a
+                href="tel:0945285166"
+                className="inline-flex items-center gap-2 bg-amber text-deep-brown font-body font-medium text-sm uppercase tracking-[0.08em] px-7 py-3 rounded-full hover:bg-warm-gold transition-colors"
+              >
+                <Phone className="w-4 h-4" />
+                094-528-5166
+              </a>
+              <a
+                href="https://lin.ee/qRnVI6E"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 bg-[#06C755] text-white font-body font-medium text-sm uppercase tracking-[0.08em] px-7 py-3 rounded-full hover:bg-[#05b34d] transition-colors"
+              >
+                <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 14.3c-.3.85-1.5 1.55-2.73 1.74-.73.11-1.46.08-2.16-.06-.5-.1-1.1-.28-1.88-.57-.38-.14-.85-.34-1.39-.6-.72-.34-1.16-.6-1.45-.84-.55-.44-.52-.92.1-1.15.36-.13.84-.15 1.28-.05.16.04.32.1.46.17l.18.09c.37.19.74.4 1.08.63.6.4 1.1.73 1.5.97.5.3.9.48 1.22.55.33.07.56-.01.7-.23.13-.21.17-.48.11-.8-.06-.33-.2-.7-.43-1.1-.23-.4-.53-.82-.9-1.26-.37-.44-.8-.88-1.3-1.32-.5-.44-1.04-.83-1.63-1.17-.58-.34-1.18-.6-1.8-.77-.62-.17-1.2-.22-1.74-.15-.54.07-.97.27-1.3.6-.33.33-.54.75-.63 1.26-.1.51-.06 1.08.1 1.7.17.62.46 1.25.88 1.88.42.63.95 1.22 1.6 1.76.65.54 1.4 1 2.26 1.38.86.38 1.78.63 2.76.74.98.11 1.94.06 2.88-.15.94-.21 1.78-.56 2.52-1.05.74-.49 1.3-1.08 1.68-1.77.38-.69.53-1.42.45-2.2-.08-.78-.35-1.55-.8-2.3z"/></svg>
+                Line
+              </a>
+            </div>
           </div>
         </div>
       </main>

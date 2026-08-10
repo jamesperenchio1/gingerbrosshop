@@ -1,5 +1,9 @@
 import { useNavigate } from 'react-router';
-import { ArrowLeft, Shield, Cookie, CreditCard, Mail, Eye, Trash2, Lock, UserCheck, Baby, Globe, AlertTriangle, FileKey } from 'lucide-react';
+import {
+  ArrowLeft, Shield, Cookie, CreditCard, Mail, Eye, Lock,
+  UserCheck, Baby, Globe, AlertTriangle, FileKey, Server, Phone,
+  HardDrive, FileText, Scale
+} from 'lucide-react';
 import SEO from '@/components/SEO';
 
 export default function PrivacyPage() {
@@ -17,7 +21,7 @@ export default function PrivacyPage() {
 • Order history and preferences
 • Any notes or messages you include with your order
 
-We also automatically collect certain technical information when you visit our website, including your IP address, browser type, device information, pages visited, and referring URL. This helps us understand how people use our site and improve the experience.`
+We also automatically collect certain technical information when you visit our website, including your IP address, browser type, device information, pages visited, and referring URL. This helps us understand how people use our site and improve the experience.`,
     },
     {
       icon: <Shield className="w-6 h-6 text-amber" />,
@@ -32,12 +36,22 @@ We also automatically collect certain technical information when you visit our w
 • Improve our products, website, and customer experience
 • Comply with legal obligations
 
-We do not sell, rent, or trade your personal information to third parties for marketing purposes.`
+We do not sell, rent, or trade your personal information to third parties for marketing purposes.`,
+    },
+    {
+      icon: <Scale className="w-6 h-6 text-amber" />,
+      title: 'Legal Basis for Processing (GDPR)',
+      content: `If you are located in the European Economic Area (EEA), our legal basis for collecting and using your personal information depends on the information we collect and the specific context in which we collect it. We process your personal data because:
+
+• We need to perform a contract with you (e.g., to fulfil your order)
+• You have given us permission to do so (e.g., newsletter subscription)
+• The processing is in our legitimate interests and is not overridden by your rights
+• We need to comply with the law`,
     },
     {
       icon: <CreditCard className="w-6 h-6 text-amber" />,
       title: 'Payment Security',
-      content: `All payments are processed securely through Stripe, a PCI DSS Level 1 certified payment processor. We do not store your credit card details on our servers. When you enter your card information, it is encrypted and sent directly to Stripe. We only retain a tokenised reference that allows us to process refunds or subscription renewals if needed.`
+      content: `All payments are processed securely through Stripe, a PCI DSS Level 1 certified payment processor. We do not store your credit card details on our servers. When you enter your card information, it is encrypted and sent directly to Stripe. We only retain a tokenised reference that allows us to process refunds or subscription renewals if needed.`,
     },
     {
       icon: <Lock className="w-6 h-6 text-amber" />,
@@ -49,7 +63,12 @@ We do not sell, rent, or trade your personal information to third parties for ma
 • Access controls limiting who can view customer data
 • Regular security reviews and dependency updates
 
-While we take these precautions, no method of transmission over the internet is 100% secure. We cannot guarantee absolute security.`
+While we take these precautions, no method of transmission over the internet is 100% secure. We cannot guarantee absolute security.`,
+    },
+    {
+      icon: <Server className="w-6 h-6 text-amber" />,
+      title: 'Data Storage & Hosting',
+      content: `Our website is hosted on Vercel, and order data is stored in Upstash Redis (EU region). Payment data is handled entirely by Stripe. Email communications are sent via Resend. We choose providers with strong security track records and appropriate data processing agreements in place.`,
     },
     {
       icon: <Globe className="w-6 h-6 text-amber" />,
@@ -62,7 +81,7 @@ While we take these precautions, no method of transmission over the internet is 
 • Upstash Redis — order data storage
 • Courier partners — shipping and delivery
 
-Each of these providers maintains their own privacy policy and security standards. We do not authorise them to use your data for their own marketing purposes.`
+Each of these providers maintains their own privacy policy and security standards. We do not authorise them to use your data for their own marketing purposes.`,
     },
     {
       icon: <Cookie className="w-6 h-6 text-amber" />,
@@ -74,14 +93,24 @@ Each of these providers maintains their own privacy policy and security standard
 • Maintain your session state during checkout
 • Analyse website traffic and usage patterns via basic analytics
 
-You can disable cookies in your browser settings, but this may affect your shopping experience — for example, your cart may not persist between pages.`
+You can disable cookies in your browser settings, but this may affect your shopping experience — for example, your cart may not persist between pages.`,
     },
     {
       icon: <Mail className="w-6 h-6 text-amber" />,
       title: 'Marketing Communications',
       content: `With your consent, we may send you marketing emails about new products, restocks, and special offers. You can unsubscribe at any time by clicking the unsubscribe link at the bottom of any marketing email or by contacting us directly.
 
-Transactional emails (order confirmations, shipping updates, password resets) are necessary to fulfil our service and cannot be opted out of while you have an active order or account.`
+Transactional emails (order confirmations, shipping updates, password resets) are necessary to fulfil our service and cannot be opted out of while you have an active order or account.`,
+    },
+    {
+      icon: <Phone className="w-6 h-6 text-amber" />,
+      title: 'SMS & Messaging',
+      content: `We do not currently send SMS or WhatsApp marketing messages. If this changes in the future, we will only message you with explicit consent and will provide an easy opt-out method. Order-related communication is handled via email only.`,
+    },
+    {
+      icon: <FileText className="w-6 h-6 text-amber" />,
+      title: 'Analytics',
+      content: `We use Vercel Analytics and Speed Insights to understand how visitors interact with our website. This data is anonymised and aggregated. We do not use Google Analytics or Facebook Pixel, and we do not track you across other websites.`,
     },
     {
       icon: <UserCheck className="w-6 h-6 text-amber" />,
@@ -93,33 +122,41 @@ Transactional emails (order confirmations, shipping updates, password resets) ar
 • Request deletion of your personal data (subject to legal retention requirements)
 • Object to or restrict certain processing activities
 • Withdraw consent for marketing communications
+• Request a copy of your data in a portable format
 
-To exercise any of these rights, contact us at gingerbros.brew@gmail.com. We will respond within 30 days.`
+To exercise any of these rights, contact us at gingerbros.brew@gmail.com. We will respond within 30 days.`,
+    },
+    {
+      icon: <HardDrive className="w-6 h-6 text-amber" />,
+      title: 'Data Retention',
+      content: `We retain your personal information for as long as necessary to fulfil the purposes outlined in this policy, unless a longer retention period is required by law.
+
+• Order and payment records: retained for at least 7 years for tax and accounting purposes
+• Newsletter subscriber data: retained until you unsubscribe or request deletion
+• Customer portal access links: retained for the duration of your active subscription plus 1 year
+• Server logs: retained for 30 days`,
     },
     {
       icon: <Baby className="w-6 h-6 text-amber" />,
-      title: 'Children\'s Privacy',
-      content: `Our website and products are not intended for children under 13 years of age. We do not knowingly collect personal information from children under 13. If you believe we have inadvertently collected such information, please contact us immediately and we will delete it.`
-    },
-    {
-      icon: <Trash2 className="w-6 h-6 text-amber" />,
-      title: 'Data Retention',
-      content: `We retain your personal information for as long as necessary to fulfil the purposes outlined in this policy, unless a longer retention period is required by law. Order and payment records are retained for at least 7 years for tax and accounting purposes. Marketing data is retained until you unsubscribe or request deletion.`
+      title: "Children's Privacy",
+      content: `Our website and products are not intended for children under 13 years of age. We do not knowingly collect personal information from children under 13. If you believe we have inadvertently collected such information, please contact us immediately and we will delete it.`,
     },
     {
       icon: <Globe className="w-6 h-6 text-amber" />,
       title: 'International Transfers',
-      content: `Your data may be transferred to and processed in countries other than Thailand, including the United States, where our hosting and payment processing partners operate. We ensure appropriate safeguards are in place to protect your data during such transfers, including the use of Standard Contractual Clauses where required.`
+      content: `Your data may be transferred to and processed in countries other than Thailand, including the United States and the European Union, where our hosting and payment processing partners operate. We ensure appropriate safeguards are in place to protect your data during such transfers, including the use of Standard Contractual Clauses where required.`,
     },
     {
       icon: <AlertTriangle className="w-6 h-6 text-amber" />,
       title: 'Data Breaches',
-      content: `In the unlikely event of a data breach that poses a risk to your rights and freedoms, we will notify the relevant supervisory authority within 72 hours and affected individuals without undue delay.`
+      content: `In the unlikely event of a data breach that poses a risk to your rights and freedoms, we will notify the relevant supervisory authority within 72 hours and affected individuals without undue delay.`,
     },
     {
       icon: <FileKey className="w-6 h-6 text-amber" />,
       title: 'Changes to This Policy',
-      content: `We may update this privacy policy from time to time to reflect changes in our practices or for legal reasons. We will post the updated policy on this page with a revised "last updated" date. We encourage you to review this page periodically.`
+      content: `We may update this privacy policy from time to time to reflect changes in our practices or for legal reasons. We will post the updated policy on this page with a revised "last updated" date. We encourage you to review this page periodically.
+
+For significant changes that materially affect your rights, we will notify you via email before the changes take effect.`,
     },
   ];
 

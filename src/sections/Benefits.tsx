@@ -1,39 +1,10 @@
 import { useRef, useEffect } from 'react';
 import gsap from 'gsap';
 import { ShieldCheck, Sprout, BatteryCharging, HeartPulse, Flame, Droplets, Microscope, Sparkles } from 'lucide-react';
-
-const BENEFITS = [
-  {
-    icon: ShieldCheck,
-    title: 'Prebiotic Power',
-    description: 'Acacia tree fibre — one of the most well-researched prebiotic sources — feeds your gut bacteria and keeps your microbiome thriving.',
-  },
-  {
-    icon: Sprout,
-    title: 'Clean Ingredients',
-    description: 'Fresh Thai ginger, filtered water, erythritol, white sugar for fermentation, ginger bug culture, acacia fibre, fresh lime. Nothing else.',
-  },
-  {
-    icon: BatteryCharging,
-    title: 'Steady Energy',
-    description: 'No caffeine, no sugar spike, no 3pm crash. Prebiotic fibre feeds gut bacteria that regulate energy better than any energy drink.',
-  },
-  {
-    icon: HeartPulse,
-    title: 'Soothes & Settles',
-    description: 'Ginger has been used for gut health across Asia for thousands of years. Ours is fresh, fermented, and strong enough to feel working.',
-  },
-];
-
-// Quick, scannable facts that reinforce the "why" without a wall of text.
-const FACTS = [
-  { stat: '<2g', label: 'sugar per serve' },
-  { stat: '5 days', label: 'naturally fermented' },
-  { stat: 'Prebiotic', label: 'acacia fibre' },
-  { stat: '330ml', label: 'real ginger fizz' },
-];
+import { useI18n } from '@/context/I18nContext';
 
 export default function Benefits() {
+  const { t } = useI18n();
   const sectionRef = useRef<HTMLElement>(null);
   const headerRef = useRef<HTMLDivElement>(null);
   const cardsRef = useRef<HTMLDivElement>(null);
@@ -72,6 +43,27 @@ export default function Benefits() {
     return () => ctx.revert();
   }, []);
 
+  const benefits = [
+    { icon: ShieldCheck, title: t('benefit1Title'), description: t('benefit1Desc') },
+    { icon: Sprout, title: t('benefit2Title'), description: t('benefit2Desc') },
+    { icon: BatteryCharging, title: t('benefit3Title'), description: t('benefit3Desc') },
+    { icon: HeartPulse, title: t('benefit4Title'), description: t('benefit4Desc') },
+  ];
+
+  const facts = [
+    { stat: t('factStat1'), label: t('factLabel1') },
+    { stat: t('factStat2'), label: t('factLabel2') },
+    { stat: t('factStat3'), label: t('factLabel3') },
+    { stat: t('factStat4'), label: t('factLabel4') },
+  ];
+
+  const prebioticCards = [
+    { stat: t('prebioticDigestion'), detail: t('prebioticDigestionDetail') },
+    { stat: t('prebioticImmunity'), detail: t('prebioticImmunityDetail') },
+    { stat: t('prebioticEnergy'), detail: t('prebioticEnergyDetail') },
+    { stat: t('prebioticMood'), detail: t('prebioticMoodDetail') },
+  ];
+
   return (
     <section
       id="benefits"
@@ -82,16 +74,16 @@ export default function Benefits() {
         {/* Header */}
         <div ref={headerRef} className="text-center mb-10 md:mb-16">
           <span className="font-body font-medium text-[13px] uppercase tracking-[0.08em] text-rust mb-3 block">
-            WHY GINGER FIZZ
+            {t('benefitsLabel')}
           </span>
           <h2 className="font-display font-semibold text-deep-brown text-[clamp(1.5rem,3vw,2.5rem)] mb-3">
-            More Than a Drink
+            {t('benefitsSectionTitle')}
           </h2>
         </div>
 
         {/* Benefits Grid */}
         <div ref={cardsRef} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-          {BENEFITS.map((benefit) => {
+          {benefits.map((benefit) => {
             const Icon = benefit.icon;
             return (
               <div
@@ -119,7 +111,7 @@ export default function Benefits() {
 
         {/* Quick facts strip */}
         <div className="mt-14 grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4">
-          {FACTS.map((fact) => (
+          {facts.map((fact) => (
             <div
               key={fact.label}
               className="bg-cream rounded-2xl px-4 py-6 text-center"
@@ -135,23 +127,18 @@ export default function Benefits() {
         {/* WHY PREBIOTICS deep-dive */}
         <div id="prebiotics" className="mt-16 bg-cream rounded-[24px] px-6 py-10 md:px-12 md:py-12 scroll-mt-24">
           <span className="block font-body font-medium text-[13px] uppercase tracking-[0.08em] text-rust mb-3">
-            WHY PREBIOTICS
+            {t('prebioticsLabel')}
           </span>
           <h3 className="font-display font-semibold text-deep-brown text-[clamp(1.25rem,2.5vw,1.75rem)] mb-3">
-            Feed the bacteria. Everything else follows.
+            {t('prebioticsTitle')}
           </h3>
           <p className="font-body text-earth text-[15px] leading-relaxed mb-8 max-w-[600px]">
-            Probiotics add new bacteria. Prebiotics feed the ones already doing the work. We use acacia tree fibre for its slow, gentle fermentation — converting sugars into energy your body can actually use.
+            {t('prebioticsDesc')}
           </p>
 
           {/* Core benefit cards */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8">
-            {[
-              { stat: 'Digestion', detail: 'Acacia fibre slows glucose absorption and smooths digestion, cutting bloating and irregular patterns.' },
-              { stat: 'Immunity', detail: 'Over 70% of immune cells live in the gut. A well-fed microbiome means a better-armed immune system.' },
-              { stat: 'Energy', detail: 'Short-chain fatty acids from prebiotic fermentation fuel your gut lining and support steady, caffeine-free energy.' },
-              { stat: 'Mood', detail: 'The gut-brain axis is real. Your microbiome produces neurotransmitters that directly affect how you feel.' },
-            ].map((item) => (
+            {prebioticCards.map((item) => (
               <div key={item.stat} className="bg-warm-white rounded-2xl p-5">
                 <p className="font-display font-bold text-rust text-[15px] mb-1.5">{item.stat}</p>
                 <p className="font-body text-earth text-[13px] leading-relaxed">{item.detail}</p>
@@ -186,39 +173,45 @@ export default function Benefits() {
             The root that does the work.
           </h3>
           <p className="font-body text-earth text-[15px] leading-relaxed mb-8 max-w-[600px]">
-            Ginger is not a trend. It is a root that has been used medicinally for over 2,500 years, backed by modern research for digestion, inflammation, and immune support. We use fresh Thai ginger — not powder, not extract — fermented slowly so the active compounds stay intact.
+            Ginger is not a trend. It is a root that has been used medicinally for over 2,500 years, backed by modern research for digestion, inflammation, and immune support. We use fresh Thai ginger fermented slowly so the active compounds stay intact.
           </p>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            {[
-              { 
-                icon: Flame, 
-                stat: 'Digestive Relief', 
-                detail: 'Gingerol and shogaol — the active compounds in ginger — stimulate gastric emptying and reduce bloating. Studies show ginger can speed stomach emptying by up to 50% (Wu et al., World J Gastroenterol).' 
-              },
-              { 
-                icon: Droplets, 
-                stat: 'Anti-Inflammatory', 
-                detail: 'Ginger inhibits COX-2 and reduces pro-inflammatory cytokines. Clinical trials show it is as effective as ibuprofen for menstrual pain and osteoarthritis discomfort (Black et al., Arthritis Rheum).' 
-              },
-              { 
-                icon: Microscope, 
-                stat: 'Immune Support', 
-                detail: 'Fresh ginger has antiviral and antibacterial properties. Research from the University of Minnesota found ginger extract inhibits respiratory pathogens and stimulates macrophage activity.' 
-              },
-              { 
-                icon: Sparkles, 
-                stat: 'Nausea & Motion Sickness', 
-                detail: 'Ginger is one of the most studied natural anti-nausea remedies. Multiple RCTs confirm it reduces post-operative and chemotherapy-induced nausea without the drowsiness of conventional drugs (Marx et al., Integr Med Insights).' 
-              },
-            ].map((item) => (
-              <div key={item.stat} className="bg-cream rounded-2xl p-5">
-                <div className="flex items-center gap-2 mb-2">
-                  <item.icon className="w-5 h-5 text-rust" />
-                  <p className="font-display font-bold text-rust text-[15px]">{item.stat}</p>
-                </div>
-                <p className="font-body text-earth text-[13px] leading-relaxed">{item.detail}</p>
+            <div className="bg-cream rounded-2xl p-5">
+              <div className="flex items-center gap-2 mb-2">
+                <Flame className="w-5 h-5 text-rust" />
+                <p className="font-display font-bold text-rust text-[15px]">Digestive Relief</p>
               </div>
-            ))}
+              <p className="font-body text-earth text-[13px] leading-relaxed">
+                Gingerol and shogaol — the active compounds in ginger — stimulate gastric emptying and reduce bloating. Studies show ginger can speed stomach emptying by up to 50% (<a href="https://pubmed.ncbi.nlm.nih.gov/18442245/" target="_blank" rel="noopener noreferrer" className="text-rust underline hover:text-deep-brown">Wu et al., World J Gastroenterol</a>).
+              </p>
+            </div>
+            <div className="bg-cream rounded-2xl p-5">
+              <div className="flex items-center gap-2 mb-2">
+                <Droplets className="w-5 h-5 text-rust" />
+                <p className="font-display font-bold text-rust text-[15px]">Anti-Inflammatory</p>
+              </div>
+              <p className="font-body text-earth text-[13px] leading-relaxed">
+                Ginger inhibits COX-2 and reduces pro-inflammatory cytokines. Clinical trials show it is as effective as ibuprofen for menstrual pain and osteoarthritis discomfort (<a href="https://pubmed.ncbi.nlm.nih.gov/20418184/" target="_blank" rel="noopener noreferrer" className="text-rust underline hover:text-deep-brown">Black et al., Arthritis Rheum</a>).
+              </p>
+            </div>
+            <div className="bg-cream rounded-2xl p-5">
+              <div className="flex items-center gap-2 mb-2">
+                <Microscope className="w-5 h-5 text-rust" />
+                <p className="font-display font-bold text-rust text-[15px]">Immune Support</p>
+              </div>
+              <p className="font-body text-earth text-[13px] leading-relaxed">
+                Fresh ginger has antiviral and antibacterial properties. Research found ginger extract inhibits respiratory pathogens and stimulates macrophage activity (<a href="https://pubmed.ncbi.nlm.nih.gov/23123794/" target="_blank" rel="noopener noreferrer" className="text-rust underline hover:text-deep-brown">PubMed</a>).
+              </p>
+            </div>
+            <div className="bg-cream rounded-2xl p-5">
+              <div className="flex items-center gap-2 mb-2">
+                <Sparkles className="w-5 h-5 text-rust" />
+                <p className="font-display font-bold text-rust text-[15px]">Nausea & Motion Sickness</p>
+              </div>
+              <p className="font-body text-earth text-[13px] leading-relaxed">
+                Ginger is one of the most studied natural anti-nausea remedies. Multiple RCTs confirm it reduces post-operative and chemotherapy-induced nausea without the drowsiness of conventional drugs (<a href="https://pubmed.ncbi.nlm.nih.gov/27094916/" target="_blank" rel="noopener noreferrer" className="text-rust underline hover:text-deep-brown">Marx et al., Integr Med Insights</a>).
+              </p>
+            </div>
           </div>
         </div>
       </div>
