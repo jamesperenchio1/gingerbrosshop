@@ -3,10 +3,11 @@ import gsap from 'gsap';
 import NoiseCanvas from '@/components/NoiseCanvas';
 import BubbleCanvas from '@/components/BubbleCanvas';
 import { ChevronDownIcon } from '@/components/Icons';
-import { useI18n } from '@/context/I18nContext';
+import { useCatalog } from '@/lib/catalog';
 
 export default function Hero() {
-  const { t } = useI18n();
+  const { products } = useCatalog();
+  const gingerFizzBottle = products.find((p) => p.id === 'ginger-fizz')?.images[0] ?? '/images/bottle hero.png';
 
   const badgeRef = useRef<HTMLDivElement>(null);
   const headlineRef = useRef<HTMLHeadingElement>(null);
@@ -17,12 +18,14 @@ export default function Hero() {
   const scrollRef = useRef<HTMLDivElement>(null);
 
   useLayoutEffect(() => {
-    const tl = gsap.timeline({ defaults: { ease: 'power2.out' } });
-    tl.from([badgeRef.current, headlineRef.current, subRef.current, ctaRef.current, trustRef.current], {
-        opacity: 0, y: 12, duration: 0.55, stagger: 0.07, delay: 0.1,
-      })
-      .from(imageRef.current, { opacity: 0, duration: 0.6 }, '-=0.45')
-      .from(scrollRef.current, { opacity: 0, duration: 0.4 }, '-=0.2');
+    const tl = gsap.timeline({ defaults: { ease: 'power3.out' } });
+    tl.from(badgeRef.current, { opacity: 0, y: -10, duration: 0.5, delay: 0.15 })
+      .from(headlineRef.current, { opacity: 0, y: 30, duration: 0.8 }, '-=0.2')
+      .from(subRef.current, { opacity: 0, y: 20, duration: 0.6 }, '-=0.4')
+      .from(ctaRef.current, { opacity: 0, y: 15, duration: 0.5 }, '-=0.3')
+      .from(trustRef.current, { opacity: 0, y: 10, duration: 0.5 }, '-=0.3')
+      .from(imageRef.current, { opacity: 0, y: 30, scale: 0.94, duration: 0.9 }, '-=0.9')
+      .from(scrollRef.current, { opacity: 0, duration: 0.5 }, '-=0.2');
 
     return () => { tl.kill(); };
   }, []);
@@ -54,35 +57,35 @@ export default function Hero() {
   return (
     <section
       id="hero"
-      className="relative w-full min-h-[540px] sm:min-h-[600px] md:min-h-[680px] md:max-h-[900px] flex items-center overflow-hidden"
+      className="relative w-full min-h-[540px] sm:min-h-[600px] md:min-h-[700px] md:h-screen flex items-center overflow-hidden"
       style={{ background: 'linear-gradient(135deg, #E8C97A 0%, #D4A34B 40%, #C9963A 100%)' }}
     >
       <NoiseCanvas />
       <BubbleCanvas />
 
-      <div className="relative z-10 w-full max-w-[1120px] mx-auto px-6 grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-8 items-center pt-16 sm:pt-20 pb-32 md:py-20">
+      <div className="relative z-10 w-full max-w-[1120px] mx-auto px-6 grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-8 items-center pt-16 sm:pt-20 pb-36 md:py-0">
         {/* Left: copy */}
         <div className="flex flex-col items-center md:items-start text-center md:text-left order-2 md:order-1">
           <div ref={badgeRef} className="mb-2 md:mb-5">
             <span className="inline-block bg-cream text-deep-brown font-body font-medium text-[12px] md:text-[13px] px-4 py-1.5 md:px-5 md:py-2 rounded-full">
-              {t('heroBadge')}
+              GingerBros · Naturally Brewed in Thailand
             </span>
           </div>
 
           <h1
             ref={headlineRef}
-            className="font-display font-bold text-deep-brown leading-[0.95] mb-2 md:mb-4 text-[clamp(1.75rem,8vw,2.5rem)] md:text-[clamp(2rem,4.5vw,3.75rem)]"
+            className="font-display font-bold text-deep-brown leading-[0.95] mb-2 md:mb-4 text-[clamp(1.75rem,8vw,2.5rem)] md:text-[clamp(2.5rem,6vw,4.75rem)]"
           >
-            {t('heroHeadline1')}
+            Fermented Ginger,
             <br />
-            {t('heroHeadline2')}
+            Your Way
           </h1>
 
           <p
             ref={subRef}
             className="font-body font-medium text-[14px] md:text-[15px] text-earth max-w-[460px] mb-4 md:mb-7 leading-relaxed"
           >
-            {t('heroSub')}
+            A bold ginger kick with fresh lime and 3.5g of prebiotics. 5-day naturally fermented, low in sugar, and made with real ingredients.
           </p>
 
           <div ref={ctaRef} className="flex flex-col xs:flex-row flex-wrap items-stretch xs:items-center justify-center md:justify-start gap-2 md:gap-3">
@@ -90,19 +93,19 @@ export default function Hero() {
               onClick={handleShopClick}
               className="bg-deep-brown text-cream font-body font-medium text-sm uppercase tracking-[0.08em] px-7 py-3 md:px-9 md:py-3.5 rounded-full hover:bg-rust hover:scale-[1.02] active:scale-[0.98] transition-all duration-200 text-center"
             >
-              {t('heroCtaShop')}
+              Shop the Brews
             </button>
             <button
               onClick={handleStoryClick}
               className="bg-transparent text-deep-brown font-body font-medium text-sm uppercase tracking-[0.08em] px-7 py-3 md:px-9 md:py-3.5 rounded-full border-2 border-deep-brown hover:bg-deep-brown hover:text-cream active:scale-[0.98] transition-all duration-200 text-center"
             >
-              {t('heroCtaStory')}
+              Our Story
             </button>
           </div>
 
           {/* Trust row */}
           <div ref={trustRef} className="flex flex-wrap items-center justify-center md:justify-start gap-x-2 md:gap-x-3 gap-y-1 mt-4 md:mt-7">
-            {[t('heroTrust1'), t('heroTrust2'), t('heroTrust3')].map((label, i, arr) => (
+            {['5-day ferment', '<2g sugar', 'Prebiotic fibre'].map((label, i, arr) => (
               <span key={label} className="flex items-center gap-x-2 md:gap-x-3 font-body font-semibold text-[13px] md:text-[15px] text-deep-brown/90">
                 {label}
                 {i < arr.length - 1 && <span aria-hidden="true" className="text-[16px] md:text-[20px] leading-none">·</span>}
@@ -111,18 +114,18 @@ export default function Hero() {
           </div>
         </div>
 
-        {/* Right: product shot — RGBA transparent PNG, no blend-multiply needed */}
+        {/* Right: product shot */}
         <div ref={imageRef} className="flex justify-center md:justify-end order-1 md:order-2">
           <div className="relative flex items-end justify-center md:justify-end group">
             <img
-              src="/images/bottle-hero.png"
+              src={gingerFizzBottle}
               alt="GingerBros Ginger Fizz bottle"
               width={420}
-              height={630}
+              height={560}
               loading="eager"
               fetchPriority="high"
               decoding="async"
-              className="relative w-[130px] xs:w-[150px] sm:w-[220px] md:w-[380px] block drop-shadow-[0_24px_48px_rgba(80,45,8,0.28)] rotate-[-2deg] group-hover:rotate-0 transition-transform duration-500"
+              className="w-[120px] xs:w-[140px] sm:w-[200px] md:w-[360px] block drop-shadow-[0_24px_48px_rgba(80,45,8,0.32)] rotate-[-3deg] group-hover:rotate-0 transition-transform duration-500 mix-blend-multiply"
             />
             <img
               src="/images/hero-mug.png"
@@ -132,7 +135,7 @@ export default function Hero() {
               loading="eager"
               fetchPriority="high"
               decoding="async"
-              className="absolute -left-[18%] xs:-left-[16%] sm:-left-[14%] md:-left-[12%] -bottom-[2%] sm:-bottom-[4%] md:-bottom-[6%] w-[55%] xs:w-[52%] sm:w-[48%] md:w-[46%] block drop-shadow-[0_16px_32px_rgba(80,45,8,0.22)] rotate-[8deg] sm:rotate-[10deg] md:rotate-[12deg] group-hover:rotate-[6deg] transition-transform duration-500"
+              className="absolute -left-[18%] xs:-left-[16%] sm:-left-[14%] md:-left-[12%] -bottom-[2%] sm:-bottom-[4%] md:-bottom-[6%] w-[55%] xs:w-[52%] sm:w-[48%] md:w-[46%] block drop-shadow-[0_16px_32px_rgba(80,45,8,0.22)] rotate-[8deg] sm:rotate-[10deg] md:rotate-[12deg] group-hover:rotate-[6deg] transition-transform duration-500 mix-blend-multiply"
             />
           </div>
         </div>

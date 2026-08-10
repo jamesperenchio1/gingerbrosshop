@@ -21,6 +21,7 @@ function ProductCardSkeleton() {
   );
 }
 
+
 function ProductCard({ product }: { product: CatalogProduct }) {
   const navigate = useNavigate();
   const { addItem } = useCart();
@@ -40,9 +41,9 @@ function ProductCard({ product }: { product: CatalogProduct }) {
   const shortDescription = product.metadata.short_description ?? product.description ?? '';
   const image = product.images[0] ?? '';
   const isEquipment = product.category === 'brewing-equipment';
-  const unitLabel = isEquipment ? 'per unit' : 'per bottle';
+  const isSixPack = product.id === 'ginger-fizz-6pack';
+  const unitLabel = isEquipment ? 'per unit' : isSixPack ? 'per 6-pack' : 'per bottle';
 
-  // Variant products go to PDP for size/type selection
   const hasVariants =
     product.prices.length > 1 &&
     product.prices.every((p) => !p.recurring && p.nickname?.includes(' · '));
@@ -76,35 +77,21 @@ function ProductCard({ product }: { product: CatalogProduct }) {
       onClick={() => navigate(detailLink)}
       className="bg-white border border-soft-peach/60 shadow-[0_12px_40px_rgba(61,36,16,0.10)] rounded-[24px] p-5 sm:p-8 flex flex-col cursor-pointer hover:shadow-[0_20px_56px_rgba(61,36,16,0.16)] transition-shadow duration-300"
     >
-      {/* Product Image */}
-      <div className="flex items-center justify-center mb-6 h-[200px] sm:h-[240px]">
-        <img
-          src={image}
-          alt={product.name}
-          className="max-h-full w-auto object-contain"
-        />
+      <div className="flex items-center justify-center mb-6 h-[180px] sm:h-[200px] bg-cream/50 rounded-2xl p-4">
+        <img src={image} alt={product.name} className="max-h-full max-w-full object-contain" />
       </div>
-
-
-      {/* Product Name */}
       <button onClick={() => navigate(detailLink)} className="text-left">
         <h3 className="font-display font-semibold text-deep-brown text-[1.15rem] mb-2 hover:text-rust transition-colors">
           {product.name}
         </h3>
       </button>
-
-      {/* Description */}
       <p className="font-body text-earth text-[14px] leading-relaxed mb-4 flex-grow">
         {shortDescription}
       </p>
-
-      {/* Price */}
       <div className="flex items-baseline gap-2 mb-2">
         <span className="font-display font-semibold text-deep-brown text-2xl">฿{price?.unitAmount ?? '—'}</span>
         <span className="font-body font-medium text-[13px] text-rust">{unitLabel}</span>
       </div>
-
-      {/* Subscribe & save nudge (drinks only) */}
       {subPrice && subSavings > 0 && (
         <button
           onClick={(e) => { e.stopPropagation(); navigate(`${detailLink}?plan=weekly`); }}
@@ -123,8 +110,6 @@ function ProductCard({ product }: { product: CatalogProduct }) {
           </span>
         </button>
       )}
-
-      {/* CTA */}
       {hasVariants ? (
         <button
           onClick={(e) => { e.stopPropagation(); navigate(detailLink); }}
@@ -134,10 +119,7 @@ function ProductCard({ product }: { product: CatalogProduct }) {
         </button>
       ) : (
         <>
-          <div
-            onClick={(e) => e.stopPropagation()}
-            className="flex items-center justify-center gap-4 mb-4 border-2 border-soft-peach rounded-full py-2 px-4 self-start"
-          >
+          <div onClick={(e) => e.stopPropagation()} className="flex items-center justify-center gap-4 mb-4 border-2 border-soft-peach rounded-full py-2 px-4 self-start">
             <button onClick={() => changeQuantity(-1)} className="text-earth hover:text-deep-brown transition-colors" aria-label="Decrease quantity">
               <MinusIcon />
             </button>
@@ -168,18 +150,15 @@ function ProductCard({ product }: { product: CatalogProduct }) {
           </button>
         </>
       )}
-
       <div className="flex items-center gap-2 mt-3">
         <span className={`w-2 h-2 rounded-full ${stock === 'out_of_stock' ? 'bg-earth/40' : stock === 'low_stock' ? 'bg-amber' : 'bg-accent-green'}`} />
         <span className="font-body font-medium text-[13px] text-earth">
           {stock === 'out_of_stock' ? 'Out of Stock' : stock === 'low_stock' ? 'Low Stock' : 'In Stock'}
         </span>
       </div>
-
       {stock === 'out_of_stock' && (
         <StockAlertForm productId={product.stripeProductId} className="mt-3" />
       )}
-
       <button
         onClick={(e) => { e.stopPropagation(); navigate(detailLink); }}
         className="mt-4 text-center font-body font-medium text-[13px] text-rust hover:text-deep-brown hover:underline transition-all"
@@ -250,8 +229,9 @@ export default function Shop() {
     );
   }, [activeCategory]);
 
+  const totalCards = visibleProducts.length;
   const gridClass =
-    visibleProducts.length === 1
+    totalCards === 1
       ? 'grid grid-cols-1 md:grid-cols-3 gap-8 [&>*]:md:col-start-2'
       : 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8';
 
@@ -262,8 +242,6 @@ export default function Shop() {
   return (
     <section id="shop" ref={sectionRef} className="bg-warm-white py-[60px] md:py-[80px]">
       <div className="max-w-[1100px] mx-auto px-6">
-
-        {/* Category tabs */}
         {showTabs && !loading && (
           <div className="flex gap-8 mb-10 border-b border-soft-peach/60 overflow-x-auto -mx-6 px-6 md:mx-0 md:px-0 scrollbar-none">
             {(['drinks', 'brewing-equipment'] as const).map((cat) => {
@@ -286,7 +264,6 @@ export default function Shop() {
           </div>
         )}
 
-        {/* Header */}
         <div ref={headerRef} className="text-center mb-10 md:mb-14">
           <span className="font-body font-medium text-[12px] uppercase tracking-[0.1em] text-rust mb-3 block">
             {categoryHeading.eyebrow}

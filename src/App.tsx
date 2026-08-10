@@ -1,5 +1,6 @@
 import { Suspense, lazy, useEffect } from 'react';
 import { Routes, Route, useLocation } from 'react-router';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { Analytics } from '@vercel/analytics/react';
 import { SpeedInsights } from '@vercel/speed-insights/react';
 import { CartProvider, useCart } from '@/context/CartContext';
@@ -19,7 +20,6 @@ function CartLinkLoader() {
   useEffect(() => {
     const id = new URLSearchParams(location.search).get('cart');
     if (!id) return;
-    // Remove the param from the URL immediately so refreshing doesn't re-load
     const params = new URLSearchParams(location.search);
     params.delete('cart');
     window.history.replaceState(null, '', params.toString() ? `?${params}` : window.location.pathname);
@@ -56,8 +56,22 @@ function ReferralCapture() {
 function ScrollToTop() {
   const { pathname, hash } = useLocation();
   useEffect(() => {
-    if (hash) return;
+    if (hash) {
+      const timer = setTimeout(() => {
+        const el = document.querySelector(hash);
+        if (el) el.scrollIntoView({ behavior: 'smooth' });
+      }, 100);
+      return () => clearTimeout(timer);
+    }
     window.scrollTo({ top: 0, left: 0, behavior: 'instant' as ScrollBehavior });
+    // When coming back to the home page, kill stale ScrollTriggers first then
+    // refresh after a short delay so the DOM has settled and animations re-fire.
+    if (pathname === '/') {
+      ScrollTrigger.getAll().forEach((t) => t.kill());
+      const timer = setTimeout(() => ScrollTrigger.refresh(true), 50);
+      return () => clearTimeout(timer);
+    }
+    requestAnimationFrame(() => ScrollTrigger.refresh());
   }, [pathname, hash]);
   return null;
 }

@@ -677,7 +677,7 @@ export default function ProductDetail() {
               {/* Processing time notice (equipment only) */}
               {isEquipment && (
                 <p className="mt-4 font-body font-semibold text-[13px] text-red-600">
-                  ⏱ 7 days processing time
+                  ⏱ 5 days processing time
                 </p>
               )}
 

@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router';
-import { ArrowLeft, Search, Package, Truck, CheckCircle } from 'lucide-react';
+import { ArrowLeft, Search, Package, Truck, CheckCircle, Mail } from 'lucide-react';
 import SEO from '@/components/SEO';
 import CopyButton from '@/components/CopyButton';
 import ReorderButton from '@/components/ReorderButton';
@@ -27,12 +27,18 @@ export default function TrackOrderPage() {
   const [error, setError] = useState('');
   const [result, setResult] = useState<OrderResult | null>(null);
 
+  const [emailLoading, setEmailLoading] = useState(false);
+  const [emailSent, setEmailSent] = useState(false);
+  const [emailError, setEmailError] = useState('');
+
   const handleTrack = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!email.trim() || !orderNum.trim()) return;
     setLoading(true);
     setError('');
     setResult(null);
+    setEmailSent(false);
+    setEmailError('');
     try {
       const res = await fetch(`/api/track-order?email=${encodeURIComponent(email)}&order=${encodeURIComponent(orderNum)}`);
       const data = await res.json();
@@ -42,6 +48,27 @@ export default function TrackOrderPage() {
       setError(err instanceof Error ? err.message : 'Something went wrong');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleEmailTracking = async () => {
+    if (!email.trim() || !orderNum.trim()) return;
+    setEmailLoading(true);
+    setEmailError('');
+    setEmailSent(false);
+    try {
+      const res = await fetch('/api/email-tracking', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: email.trim(), order: orderNum.trim() }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error ?? 'Failed to send email');
+      setEmailSent(true);
+    } catch (err) {
+      setEmailError(err instanceof Error ? err.message : 'Something went wrong');
+    } finally {
+      setEmailLoading(false);
     }
   };
 
@@ -155,6 +182,34 @@ export default function TrackOrderPage() {
                     <p className="font-body text-earth text-[13px]">We are preparing your order for shipment.</p>
                   </div>
                 </div>
+              )}
+            </div>
+
+            {/* Email tracking button */}
+            <div className="pt-2">
+              {emailSent ? (
+                <div className="flex items-center gap-2 text-accent-green font-body text-[14px]">
+                  <CheckCircle className="w-4 h-4" />
+                  Tracking info emailed to {email}
+                </div>
+              ) : (
+                <button
+                  onClick={handleEmailTracking}
+                  disabled={emailLoading}
+                  className="w-full flex items-center justify-center gap-2 bg-warm-white border-2 border-soft-peach text-deep-brown font-body font-medium text-sm py-3 rounded-full hover:bg-cream transition-colors disabled:opacity-60"
+                >
+                  {emailLoading ? (
+                    <span className="w-4 h-4 border-2 border-deep-brown/30 border-t-deep-brown rounded-full animate-spin" />
+                  ) : (
+                    <>
+                      <Mail className="w-4 h-4" />
+                      Email me this tracking info
+                    </>
+                  )}
+                </button>
+              )}
+              {emailError && (
+                <p className="font-body text-[13px] text-red-500 mt-2 text-center">{emailError}</p>
               )}
             </div>
 

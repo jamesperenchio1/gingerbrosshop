@@ -86,34 +86,6 @@ export function FacebookIcon({ className = '' }: { className?: string }) {
   );
 }
 
-export function GutHealthIcon({ className = '' }: { className?: string }) {
-  return (
-    <svg className={className} width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M12 2C8.5 2 6 4.5 6 7c0 1.5.5 2.5 1.5 3.5C5 12 3 14.5 3 17c0 3 2.5 5 5 5h8c2.5 0 5-2 5-5 0-2.5-2-5-4.5-6.5C17.5 9.5 18 8.5 18 7c0-2.5-2.5-5-6-5z" />
-      <path d="M9 14h6" />
-      <path d="M10 10h4" />
-    </svg>
-  );
-}
-
-export function LeafIcon({ className = '' }: { className?: string }) {
-  return (
-    <svg className={className} width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M11 20A7 7 0 019.8 6.9C15.5 5.5 20 9.5 20 15a7 7 0 01-9 5z" />
-      <path d="M12 20v-10" />
-      <path d="M12 10c0-3-1.5-5-4-6.5" />
-    </svg>
-  );
-}
-
-export function LightningIcon({ className = '' }: { className?: string }) {
-  return (
-    <svg className={className} width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-      <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />
-    </svg>
-  );
-}
-
 export function SnowflakeIcon({ className = '' }: { className?: string }) {
   return (
     <svg className={className} width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
@@ -137,7 +109,6 @@ export function MenuIcon({ className = '' }: { className?: string }) {
   );
 }
 
-
 export function ShoppingBagIcon({ className = '' }: { className?: string }) {
   return (
     <svg className={className} width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round">
@@ -152,15 +123,6 @@ export function TikTokIcon({ className = '' }: { className?: string }) {
   return (
     <svg className={className} width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
       <path d="M9 12a4 4 0 1 0 4 4V4a5 5 0 0 0 5 5" />
-    </svg>
-  );
-}
-
-export function FlameIcon({ className = '' }: { className?: string }) {
-  return (
-    <svg className={className} width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M8.5 14.5A2.5 2.5 0 0 0 11 17h2a2.5 2.5 0 0 0 2.5-2.5c0-.5-.2-1-.5-1.5L13 11l-1.5-3L10 11l-1 1.5c-.3.5-.5 1-.5 2z" />
-      <path d="M15 8c0-2.5-2-4.5-4-6C9 4.5 7.5 7 7 10c0 1 .2 2 .6 2.8" />
     </svg>
   );
 }

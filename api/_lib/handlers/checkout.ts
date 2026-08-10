@@ -103,7 +103,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     'week_2':  'price_1TlT9h4xTvnGlHCDBXJjknzd',
     'month_1': 'price_1TlT9j4xTvnGlHCDwrgy2MEu',
   };
-  const hasGingerFizzSub = recurringCount > 0 && items.some(i => i.productId === 'ginger-fizz');
+  const hasGingerFizzSub = recurringCount > 0 && items.some(i => i.productId === 'ginger-fizz' || i.productId === 'ginger-fizz-6pack');
   if (hasGingerFizzSub && subInterval) {
     const key = `${subInterval.interval}_${subInterval.intervalCount}`;
     const deliveryPriceId = DELIVERY_PRICE[key];
@@ -148,7 +148,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   // optional upgrade when the cart contains ginger fizz.
   const FREE_SHIPPING_THRESHOLD = 50000; // ฿500 in satang
   const SHIPPING_FLAT = 10000; // ฿100 in satang
-  const hasGingerFizz = items.some(i => i.productId === 'ginger-fizz');
+  const hasGingerFizz = items.some(i => i.productId === 'ginger-fizz' || i.productId === 'ginger-fizz-6pack');
   const shippingFree = subtotalMinor >= FREE_SHIPPING_THRESHOLD;
   const standardAmount = shippingFree ? 0 : SHIPPING_FLAT;
   const shippingOptions: Stripe.Checkout.SessionCreateParams.ShippingOption[] = [

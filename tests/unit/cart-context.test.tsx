@@ -13,7 +13,7 @@ const sampleItem: CartItem = {
   variant: 'ginger-fizz',
   price: 140,
   quantity: 1,
-  image: '/images/product-ginger-fizz-1.jpg',
+  image: '/images/ginger-fizz-new.png',
   badge: 'Naturally Fermented',
   badgeColor: 'bg-sky-500',
 };

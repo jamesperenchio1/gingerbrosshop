@@ -1,4 +1,4 @@
-import { MapPin, Truck, Thermometer, Box } from 'lucide-react';
+import { MapPin, Truck, Thermometer, Box, Clock, ShieldCheck, Phone } from 'lucide-react';
 import SEO from '@/components/SEO';
 
 export default function ShippingPage() {
@@ -77,6 +77,32 @@ export default function ShippingPage() {
             </div>
           </div>
 
+          {/* Transit Times */}
+          <div className="bg-cream rounded-2xl p-8 mb-12">
+            <div className="flex items-center gap-3 mb-6">
+              <Clock className="w-6 h-6 text-rust" />
+              <h2 className="font-display font-semibold text-deep-brown text-[1.35rem]">
+                Estimated Transit Times
+              </h2>
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              {[
+                { region: 'Bangkok & Metro', time: '1–2 business days' },
+                { region: 'Pathum Thani / Rangsit', time: '1–2 business days' },
+                { region: 'Chiang Mai / Phuket / Korat', time: '2–4 business days' },
+                { region: 'Other provinces', time: '3–5 business days' },
+              ].map((row) => (
+                <div key={row.region} className="flex items-center justify-between bg-warm-white rounded-xl px-4 py-3">
+                  <span className="font-body text-deep-brown text-[14px]">{row.region}</span>
+                  <span className="font-body font-semibold text-rust text-[14px]">{row.time}</span>
+                </div>
+              ))}
+            </div>
+            <p className="font-body text-[13px] text-earth/70 mt-4">
+              Transit times are estimates and may vary during holidays or peak periods. Remote areas may take an additional 1–2 days.
+            </p>
+          </div>
+
           {/* Timeline */}
           <div className="bg-cream rounded-2xl p-8 mb-12">
             <h2 className="font-display font-semibold text-deep-brown text-[1.35rem] mb-6">
@@ -101,15 +127,43 @@ export default function ShippingPage() {
             </div>
           </div>
 
-          {/* Packaging Note */}
-          <div className="flex items-start gap-4 bg-deep-brown rounded-2xl p-8 text-cream">
-            <Box className="w-8 h-8 text-amber flex-shrink-0" />
-            <div>
-              <h3 className="font-display font-semibold text-[1.1rem] mb-2">Packaging Guarantee</h3>
-              <p className="font-body text-[14px] text-cream/80 leading-relaxed">
-                Every order is sealed and protected for transit. If your order arrives damaged, contact us within 24 hours and we will make it right.
-              </p>
+          {/* Packaging + Damage Guarantee */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12">
+            <div className="flex items-start gap-4 bg-deep-brown rounded-2xl p-8 text-cream">
+              <Box className="w-8 h-8 text-amber flex-shrink-0" />
+              <div>
+                <h3 className="font-display font-semibold text-[1.1rem] mb-2">Packaging Guarantee</h3>
+                <p className="font-body text-[14px] text-cream/80 leading-relaxed">
+                  Every order is sealed and protected for transit. If your order arrives damaged, contact us within 24 hours and we will make it right.
+                </p>
+              </div>
             </div>
+            <div className="flex items-start gap-4 bg-cream rounded-2xl p-8">
+              <ShieldCheck className="w-8 h-8 text-accent-green flex-shrink-0" />
+              <div>
+                <h3 className="font-display font-semibold text-deep-brown text-[1.1rem] mb-2">Delivery Guarantee</h3>
+                <p className="font-body text-[14px] text-earth leading-relaxed">
+                  If your order is lost in transit or significantly delayed beyond our estimates, we will reship or refund at no extra cost.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {/* Contact CTA */}
+          <div className="bg-warm-white border-2 border-cream rounded-2xl p-8 text-center">
+            <Phone className="w-8 h-8 text-rust mx-auto mb-4" />
+            <h3 className="font-display font-semibold text-deep-brown text-[1.1rem] mb-2">
+              Need Help With Delivery?
+            </h3>
+            <p className="font-body text-earth text-[14px] max-w-[480px] mx-auto mb-4">
+              Have a special delivery request, need same-day local delivery, or have questions about your shipment? We are here to help.
+            </p>
+            <a
+              href="mailto:gingerbros.brew@gmail.com"
+              className="inline-flex items-center gap-2 bg-amber text-deep-brown font-body font-medium text-sm uppercase tracking-[0.08em] px-7 py-3 rounded-full hover:bg-warm-gold transition-colors"
+            >
+              Contact Us
+            </a>
           </div>
         </div>
       </main>

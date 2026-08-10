@@ -1,6 +1,39 @@
+import { useNavigate, useLocation } from 'react-router';
 import { useI18n } from '@/context/I18nContext';
 
 const CURRENT_YEAR = new Date().getFullYear();
+
+function FooterNavLink({ href, children }: { href: string; children: React.ReactNode }) {
+  const navigate = useNavigate();
+  const location = useLocation();
+  const isHome = location.pathname === '/';
+
+  const handleClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    if (href.startsWith('#')) {
+      if (isHome) {
+        const el = document.querySelector(href);
+        if (el) el.scrollIntoView({ behavior: 'smooth' });
+      } else {
+        navigate('/' + href);
+      }
+    } else if (href.startsWith('mailto:')) {
+      window.location.href = href;
+    } else {
+      navigate(href);
+    }
+  };
+
+  return (
+    <a
+      href={href}
+      onClick={handleClick}
+      className="font-body text-[14px] text-cream/70 hover:text-amber transition-colors"
+    >
+      {children}
+    </a>
+  );
+}
 
 export default function Footer() {
   const { t } = useI18n();
@@ -11,14 +44,15 @@ export default function Footer() {
       { label: t('wholesale'), href: '/wholesale' },
     ],
     company: [
-      { label: t('ourStory'), href: '/#story' },
-      { label: t('process'), href: '/#process' },
-      { label: t('benefits'), href: '/#benefits' },
+      { label: t('ourStory'), href: '#story' },
+      { label: t('process'), href: '#process' },
+      { label: t('benefits'), href: '#prebiotics' },
       { label: t('blog'), href: '/blog' },
     ],
     support: [
       { label: t('shipping'), href: '/shipping' },
       { label: t('faq'), href: '/faq' },
+      { label: 'Returns', href: '/returns' },
       { label: t('myOrders'), href: '/orders' },
       { label: t('trackOrder'), href: '/track' },
       { label: t('contact'), href: 'mailto:gingerbros.brew@gmail.com' },
@@ -63,9 +97,7 @@ export default function Footer() {
             <ul className="space-y-2.5">
               {links.shop.map((link) => (
                 <li key={link.label}>
-                  <a href={link.href} className="font-body text-[14px] text-cream/70 hover:text-amber transition-colors">
-                    {link.label}
-                  </a>
+                  <FooterNavLink href={link.href}>{link.label}</FooterNavLink>
                 </li>
               ))}
             </ul>
@@ -77,9 +109,7 @@ export default function Footer() {
             <ul className="space-y-2.5">
               {links.company.map((link) => (
                 <li key={link.label}>
-                  <a href={link.href} className="font-body text-[14px] text-cream/70 hover:text-amber transition-colors">
-                    {link.label}
-                  </a>
+                  <FooterNavLink href={link.href}>{link.label}</FooterNavLink>
                 </li>
               ))}
             </ul>
@@ -91,9 +121,7 @@ export default function Footer() {
             <ul className="space-y-2.5">
               {links.support.map((link) => (
                 <li key={link.label}>
-                  <a href={link.href} className="font-body text-[14px] text-cream/70 hover:text-amber transition-colors">
-                    {link.label}
-                  </a>
+                  <FooterNavLink href={link.href}>{link.label}</FooterNavLink>
                 </li>
               ))}
             </ul>

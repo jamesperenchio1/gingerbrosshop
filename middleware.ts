@@ -17,7 +17,7 @@ interface RouteMeta {
   jsonLd?: object;
 }
 
-const FALLBACK_IMAGE = `${SITE_URL}/images/product-ginger-fizz-1.jpg`;
+const FALLBACK_IMAGE = `${SITE_URL}/images/ginger-fizz-new.png`;
 
 const KNOWN_ROUTES: Record<string, RouteMeta> = {
   '/': {
@@ -33,7 +33,7 @@ const KNOWN_ROUTES: Record<string, RouteMeta> = {
           '@type': 'Organization',
           name: 'GingerBros',
           url: SITE_URL,
-          logo: `${SITE_URL}/images/product-ginger-fizz-1.jpg`,
+          logo: `${SITE_URL}/images/ginger-fizz-new.png`,
           sameAs: [
             'https://www.instagram.com/drinkgingerbros',
             'https://www.tiktok.com/@gingerbrosbrew',
@@ -63,7 +63,7 @@ const KNOWN_ROUTES: Record<string, RouteMeta> = {
     title: 'GingerBros Ginger Fizz',
     description:
       '7-day naturally fermented craft ginger fizz brewed in Thailand. Real ginger, fresh lime, prebiotic acacia fibre, low in sugar, delivered to your door.',
-    image: `${SITE_URL}/images/product-ginger-fizz-1.jpg`,
+    image: `${SITE_URL}/images/ginger-fizz-new.png`,
     type: 'product',
     jsonLd: {
       '@context': 'https://schema.org',
@@ -72,8 +72,8 @@ const KNOWN_ROUTES: Record<string, RouteMeta> = {
       description:
         '7-day naturally fermented craft ginger fizz brewed in Thailand. Real ginger, fresh lime, prebiotic acacia fibre, low in sugar, delivered to your door.',
       image: [
-        `${SITE_URL}/images/product-ginger-fizz-1.jpg`,
-        `${SITE_URL}/images/product-ginger-fizz-2.jpg`,
+        `${SITE_URL}/images/ginger-fizz-new.png`,
+        `${SITE_URL}/images/story-brewing.webp`,
       ],
       brand: { '@type': 'Brand', name: 'GingerBros' },
       sku: 'ginger-fizz',
@@ -186,7 +186,7 @@ const BLOG_POSTS: Record<string, BlogPostMeta> = {
       'Why our 7-day fermented ginger fizz makes the best Moscow Mule you have ever tasted — and the copper-mug ritual that goes with it.',
     date: '2026-05-28',
     author: 'The GingerBros Kitchen',
-    image: `${SITE_URL}/images/product-ginger-fizz-1.jpg`,
+    image: `${SITE_URL}/images/ginger-fizz-new.png`,
   },
   'dark-and-stormy': {
     title: 'Dark ’n’ Stormy with a Thai Ginger Kick',
@@ -280,7 +280,7 @@ const BLOG_POSTS: Record<string, BlogPostMeta> = {
       'The small Bangkok team that hand-balances every batch — and why they do it by taste, not by formula.',
     date: '2026-03-20',
     author: 'GingerBros Stories',
-    image: `${SITE_URL}/images/product-ginger-fizz-2.jpg`,
+    image: `${SITE_URL}/images/story-brewing.webp`,
   },
   'ginger-bug-at-home': {
     title: 'Start Your Own Ginger Bug at Home',
@@ -321,7 +321,7 @@ function blogPostMeta(slug: string): RouteMeta | null {
         name: 'GingerBros',
         logo: {
           '@type': 'ImageObject',
-          url: `${SITE_URL}/images/product-ginger-fizz-1.jpg`,
+          url: `${SITE_URL}/images/ginger-fizz-new.png`,
         },
       },
     },

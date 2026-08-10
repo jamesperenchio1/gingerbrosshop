@@ -8,7 +8,7 @@ const navLinks = [
   { key: 'shop', href: '#shop' },
   { key: 'story', href: '#story' },
   { key: 'process', href: '#process' },
-  { key: 'benefits', href: '#benefits' },
+  { key: 'benefits', href: '#prebiotics' },
 ];
 
 // Only shown in the mobile menu — utility pages that otherwise have no nav

@@ -194,7 +194,7 @@ Great fizz is not manufactured — it is cultivated. Whether you choose the raw 
     date: '2026-05-28',
     author: 'The GingerBros Kitchen',
     tags: ['cocktail', 'vodka', 'classic'],
-    image: '/images/product-ginger-fizz-1.jpg',
+    image: '/images/ginger-fizz-new.png',
     content: `The Moscow Mule is one of the simplest cocktails in the canon — vodka, lime, ginger — which is exactly why the *quality* of each part matters so much. There is nowhere to hide. A great Mule lives or dies on its ginger, and our 5-day naturally fermented brew brings a depth of flavour that mass-market ginger sodas simply cannot match. Most commercial mules lean on sweet, one-note ginger beer; ours leans on a living, lightly tart fizz that lets the lime and vodka breathe.
 
 ## A little history
@@ -252,7 +252,7 @@ The natural fermentation gives our ginger fizz a subtle funk and complexity that
     date: '2026-05-20',
     author: 'The GingerBros Kitchen',
     tags: ['cocktail', 'rum', 'classic'],
-    image: '/images/product-detail-1.jpg',
+    image: '/images/ginger-fizz-new.png',
     content: `The Dark ’n’ Stormy is Bermuda’s national drink for a reason: dark rum and ginger were made for each other. The rum brings molasses, caramel and a little funk; the ginger brings heat and brightness to cut straight through it. Our version swaps the usual flat soda for GingerBros, so instead of sugar water you get real, living ginger and natural carbonation. The drink is named for its appearance — dark rum clouding through pale, stormy ginger like a squall rolling in off the Atlantic.
 
 ## The most protected cocktail in the world
@@ -297,7 +297,7 @@ The classic Bermudian recipe is sometimes served without lime, but a squeeze of 
     date: '2026-05-12',
     author: 'The GingerBros Kitchen',
     tags: ['cocktail', 'tequila', 'spicy'],
-    image: '/images/product-detail-2.jpg',
+    image: '/images/ginger-fizz-new.png',
     content: `The classic margarita is a near-perfect balance of strong (tequila), sour (lime) and sweet (orange liqueur). This version keeps that balance but adds a fourth dimension — spice and effervescence — by replacing some of the orange liqueur with ginger fizz. The result is lighter, drier and more refreshing, with a warm ginger backbone that makes it perfect for a hot Bangkok afternoon.
 
 ## Ingredients
@@ -349,7 +349,7 @@ Scale the tequila, lime and triple sec for the crowd and keep that base chilled 
     date: '2026-05-05',
     author: 'The GingerBros Kitchen',
     tags: ['mocktail', 'zero-proof', 'citrus'],
-    image: '/images/product-detail-3.jpg',
+    image: '/images/ginger-fizz-new.png',
     content: `Not every great drink needs alcohol. A well-made zero-proof drink is not a sad consolation prize — it is a deliberately built beverage with the same attention to balance you would give a cocktail. This spicy ginger lemonade leans on real ginger heat, fresh citrus and natural carbonation to wake up your palate, with no hangover and no compromise. It is the drink we reach for when we want something that *feels* like an occasion without the alcohol.
 
 ## Ingredients
@@ -609,7 +609,7 @@ You do not have to overthink any of this. Aim for a little variety of fermented 
     date: '2026-05-22',
     author: 'GingerBros Wellness',
     tags: ['immunity', 'science', 'inflammation'],
-    image: '/images/hero-bottle.png',
+    image: '/images/bottle hero.png',
     content: `"Boosts your immune system" might be the most overused phrase in all of wellness marketing. So let us be careful and honest here. Ginger is one of the most studied spices on the planet, and the results are genuinely promising — but promising is not the same as magical, and the word "immunity" deserves a lot more nuance than a label usually gives it.
 
 ## What the studies actually suggest
@@ -657,7 +657,7 @@ None of this means ginger fizz replaces medicine, vaccines, sleep, exercise or a
     date: '2026-05-14',
     author: 'GingerBros Wellness',
     tags: ['low sugar', 'fermentation', 'nutrition'],
-    image: '/images/product-detail-1.jpg',
+    image: '/images/ginger-fizz-new.png',
     content: `A typical can of commercial ginger ale or soda contains somewhere around 30–40 grams of sugar. To put that in perspective: the World Health Organization recommends adults keep "free sugars" under 10% of daily energy — roughly 50 grams, or about 12 teaspoons — and suggests that dropping to 5% brings further benefit. A single sweet soda can eat most of that allowance in one go. Worse, most so-called ginger "ale" is not even fermented; it is carbonated sugar water with ginger flavouring added. We take a fundamentally different approach.
 
 ## The ginger bug eats the sugar
@@ -700,7 +700,7 @@ We could push the sugar number to zero with stevia, sucralose or aspartame. We c
     date: '2026-05-08',
     author: 'GingerBros Wellness',
     tags: ['hydration', 'summer', 'electrolytes'],
-    image: '/images/product-detail-2.jpg',
+    image: '/images/ginger-fizz-new.png',
     content: `Bangkok is hot, and staying hydrated here is not optional — it is daily maintenance. When you sweat, you lose water *and* electrolytes — mainly sodium, with smaller amounts of potassium, magnesium and chloride. These minerals carry the electrical signals your nerves and muscles run on, which is why serious dehydration leaves you foggy, crampy and drained. So can a fizzy ginger drink actually help on a sweaty afternoon? The honest answer is: in the right way, yes — but not for the reason most "hydration" marketing implies.
 
 ## The most underrated factor in hydration: taste
@@ -1001,7 +1001,7 @@ And respect the pressure when you bottle: use bottles built for carbonation, "bu
     date: '2026-03-04',
     author: 'GingerBros Stories',
     tags: ['sustainability', 'glass', 'compost'],
-    image: '/images/product-detail-3.jpg',
+    image: '/images/ginger-fizz-new.png',
     content: `Making a living drink that is also kind to the planet is a moving target, and we want to be honest about where we actually stand. We are a small brewery, not a climate authority, so treat this as a candid progress report rather than a glossy sustainability brochure — including, especially, the parts we have not solved yet. Greenwashing is easy; real accounting is harder, and far more useful to you.
 
 ## What we are genuinely proud of
@@ -1051,7 +1051,7 @@ Sustainability is not a finish line we will one day cross and celebrate. It is a
     date: '2026-06-12',
     author: 'The GingerBros Trade Team',
     tags: ['bar', 'menu', 'restaurants', 'cocktails'],
-    image: '/images/product-detail-2.jpg',
+    image: '/images/ginger-fizz-new.png',
     content: `A good ginger fizz menu does not try to be everything. It picks a few strong ideas, executes them consistently, and gives guests a reason to order something they cannot make at home. For bars and restaurants, that is the difference between a dead list and one that sells.
 
 GingerBros works on a drinks menu because it brings three things at once: real ginger heat, natural effervescence, and a fermentation story that sounds interesting when a server describes it. Guests notice the difference between a flat ginger ale and something that actually bites back.
@@ -1102,7 +1102,7 @@ Cold glass, fresh citrus, gentle stir, no shaking. If your team can remember tha
     date: '2026-06-10',
     author: 'The GingerBros Trade Team',
     tags: ['batching', 'service', 'speed', 'cocktails'],
-    image: '/images/product-detail-3.jpg',
+    image: '/images/ginger-fizz-new.png',
     content: `Speed kills quality unless you build for it. The smartest way to serve ginger fizz cocktails during a busy shift is to pre-batch everything except the fizz itself. Spirit, citrus, syrups, and bitters can all be combined ahead of time. The carbonation must go in last.
 
 This approach cuts pour time to under ten seconds per drink and keeps every serve identical. It also protects the most important part of the drink: the bubbles.
@@ -1152,7 +1152,7 @@ Taste one batched drink at the start of every shift. Batches can drift if citrus
     date: '2026-06-07',
     author: 'The GingerBros Trade Team',
     tags: ['mocktails', 'zero-proof', 'restaurants', 'menu'],
-    image: '/images/product-detail-1.jpg',
+    image: '/images/ginger-fizz-new.png',
     content: `The non-drinking guest is no longer an afterthought. Designated drivers, pregnant guests, people on medication, and the simply not-drinking-today crowd all want something that feels considered. A good zero-proof menu turns that obligation into a sales opportunity.
 
 Ginger fizz is an ideal base for mocktails because it already has complexity. It is spicy, tart, effervescent, and slightly savoury. You do not need to hide it under sugar or fake spirits.
@@ -1447,7 +1447,7 @@ export default function BlogPage() {
           name: 'GingerBros',
           logo: {
             '@type': 'ImageObject',
-            url: 'https://gingerbrosshop.com/images/product-ginger-fizz-1.jpg',
+            url: 'https://gingerbrosshop.com/images/ginger-fizz-new.png',
           },
         },
       }

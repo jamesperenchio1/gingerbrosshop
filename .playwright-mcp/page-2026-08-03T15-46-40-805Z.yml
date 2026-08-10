@@ -1,0 +1,198 @@
+- generic [ref=e2]:
+  - navigation [ref=e3]:
+    - generic [ref=e4]:
+      - link "GingerBros" [ref=e5] [cursor=pointer]:
+        - /url: /
+      - generic [ref=e6]:
+        - link "Shop" [ref=e7] [cursor=pointer]:
+          - /url: "#shop"
+        - link "Story" [ref=e8] [cursor=pointer]:
+          - /url: "#story"
+        - link "Process" [ref=e9] [cursor=pointer]:
+          - /url: "#process"
+        - link "Benefits" [ref=e10] [cursor=pointer]:
+          - /url: "#benefits"
+      - generic [ref=e11]:
+        - button "Cart" [ref=e12] [cursor=pointer]
+        - generic [ref=e18]: THB
+  - generic [ref=e19]:
+    - generic [ref=e22]:
+      - generic [ref=e23]:
+        - generic [ref=e24]: GingerBros · Naturally Brewed in Thailand
+        - heading "Fermented Ginger, Your Way" [level=1] [ref=e26]: Fermented Ginger,Your Way
+        - paragraph [ref=e27]: A bold ginger kick with fresh lime and 3.5g of prebiotics. 7-day naturally fermented, low in sugar, and made with real ingredients.
+        - generic [ref=e28]:
+          - button "Shop the Brews" [ref=e29] [cursor=pointer]
+          - button "Our Story" [ref=e30] [cursor=pointer]
+        - generic [ref=e31]:
+          - generic [ref=e32]:
+            - text: 7-day ferment
+            - generic [ref=e33]: ·
+          - generic [ref=e34]:
+            - text: <2g sugar
+            - generic [ref=e35]: ·
+          - generic [ref=e36]: Prebiotic fibre
+      - generic [ref=e38]:
+        - img "GingerBros Ginger Fizz bottle" [ref=e39]
+        - img "Frosty mug of GingerBros Ginger Fizz" [ref=e40]
+    - generic [ref=e46]:
+      - generic [ref=e47]: OUR BREWS
+      - heading "Ginger Fizz" [level=2] [ref=e48]
+      - paragraph [ref=e49]: Real fermented ginger with prebiotic acacia fibre. Brewed slow, enjoyed easy.
+    - generic [ref=e75]:
+      - generic [ref=e76]: OUR STORY
+      - heading "Brewed with Patience, Served with Pride" [level=2] [ref=e77]
+      - paragraph [ref=e78]: "GingerBros started with a simple question: why does everything sold as \"healthy\" taste like compromise? We wanted something that was genuinely good for you — not because it had vitamins added in a lab, but because the process itself created something nourishing. That search led us to fermentation."
+      - paragraph [ref=e79]: "Every batch of our ginger fizz undergoes a full 7-day natural fermentation process. We keep the ingredient list short on purpose: fresh Thai ginger, water, cane sugar, and prebiotic acacia fibre. No concentrates, no artificial carbonation, no shortcuts. The slow ferment is where the magic happens — it's what gives each bottle its depth of flavour and its gentle, natural fizz."
+      - paragraph [ref=e80]: "We source our acacia fibre specifically because it's one of the most well-studied prebiotic fibres in existence. Prebiotics aren't probiotics — they don't add new bacteria. Instead, they feed the good bacteria already living in your gut. When that ecosystem is well-fed, the effects ripple outward:"
+      - list [ref=e81]:
+        - listitem [ref=e82]: Better digestion and less bloating
+        - listitem [ref=e84]: Stronger immunity — over 70% of immune cells live in the gut
+        - listitem [ref=e86]: Steadier energy without caffeine spikes or crashes
+        - listitem [ref=e88]: Improved mood — the gut and brain are in constant conversation
+      - paragraph [ref=e90]: We're based in Bangkok, where ginger has been part of everyday cooking and traditional medicine for centuries. Our relationships with local growers mean we get fresh, fiery rhizomes harvested at peak potency — not the pallid, month-old stuff shipped across continents. That provenance matters. You can taste it.
+      - paragraph [ref=e91]: GingerBros isn't trying to be the next mass-market soft drink. We're building something smaller, more intentional, and more honest — a drink that earns its place on your table because it actually does what it says. Brewed slow. Kept real. Enjoyed easy.
+      - button "Learn Our Process" [ref=e92] [cursor=pointer]
+    - generic [ref=e94]:
+      - generic [ref=e95]:
+        - generic [ref=e96]: THE PROCESS
+        - heading "7 Days to Perfection" [level=2] [ref=e97]
+      - generic [ref=e98]:
+        - generic [ref=e99]:
+          - generic [ref=e100]: "01"
+          - generic [ref=e102]: Day 1-2
+          - heading "Ginger & Sugar" [level=3] [ref=e103]
+          - paragraph [ref=e104]: Fresh ginger is grated and combined with raw sugar and filtered water. The ginger bug (our live culture starter) is added to begin the fermentation.
+        - generic [ref=e105]:
+          - generic [ref=e106]: "02"
+          - generic [ref=e108]: Day 3-5
+          - heading "Natural Ferment" [level=3] [ref=e109]
+          - paragraph [ref=e110]: Wild yeast and beneficial bacteria transform the sugars. Bubbles begin to form as CO2 develops naturally. The brew develops its signature bite.
+        - generic [ref=e111]:
+          - generic [ref=e112]: "03"
+          - generic [ref=e114]: Day 6-7
+          - heading "Condition & Bottle" [level=3] [ref=e115]
+          - paragraph [ref=e116]: The ginger fizz is strained, conditioned for flavor development, then carefully bottled to capture natural carbonation.
+        - generic [ref=e117]:
+          - generic [ref=e118]: "04"
+          - generic [ref=e120]: Ready
+          - heading "Enjoy Cold" [level=3] [ref=e121]
+          - paragraph [ref=e122]: Chill thoroughly before opening. Expect a bright, refreshing pop. Real ginger fizz, naturally fermented and ready to drink.
+    - generic [ref=e124]:
+      - generic [ref=e125]:
+        - generic [ref=e126]: WHY GINGER FIZZ
+        - heading "More Than a Drink" [level=2] [ref=e127]
+        - paragraph [ref=e128]: For centuries ginger has been used to calm the stomach and fire up digestion. We brew it the old, slow way — with real ingredients and prebiotic acacia fibre — so it does you good and tastes like it means it.
+      - generic [ref=e129]:
+        - generic [ref=e130]:
+          - heading "Prebiotic Power" [level=3] [ref=e134]
+          - paragraph [ref=e135]: We add acacia tree fibre, one of the most well-researched prebiotic sources available, to actively feed your gut bacteria and keep your microbiome thriving.
+        - generic [ref=e136]:
+          - heading "Clean Ingredients" [level=3] [ref=e141]
+          - paragraph [ref=e142]: "Core ingredients you can count on one hand: fresh ginger, water, sugar, and prebiotic acacia fibre. Non-GMO. No artificial additives, no preservatives, no shortcuts."
+        - generic [ref=e143]:
+          - heading "Steady Energy" [level=3] [ref=e147]
+          - paragraph [ref=e148]: Prebiotics feed the good bacteria that help regulate energy metabolism over time. No caffeine, no spike, no crash. Just a steady, feel-good lift from the inside out.
+        - generic [ref=e149]:
+          - heading "Soothes & Settles" [level=3] [ref=e156]
+          - paragraph [ref=e157]: Real ginger is a time-tested remedy for nausea, bloating, and sluggish digestion. Our fizz makes the daily dose something you actually look forward to.
+      - generic [ref=e158]:
+        - generic [ref=e159]:
+          - paragraph [ref=e160]: <2g
+          - paragraph [ref=e161]: sugar per serve
+        - generic [ref=e162]:
+          - paragraph [ref=e163]: 7 days
+          - paragraph [ref=e164]: naturally fermented
+        - generic [ref=e165]:
+          - paragraph [ref=e166]: Prebiotic
+          - paragraph [ref=e167]: acacia fibre
+        - generic [ref=e168]:
+          - paragraph [ref=e169]: 330ml
+          - paragraph [ref=e170]: real ginger fizz
+      - generic [ref=e171]:
+        - generic [ref=e172]: WHY PREBIOTICS
+        - heading "Feed the bacteria. Everything else follows." [level=3] [ref=e173]
+        - paragraph [ref=e174]: Probiotics add new bacteria. Prebiotics feed the ones already doing the work. We use acacia tree fibre because it's one of the most extensively studied, gut-tolerated prebiotics available. It survives digestion intact and delivers where it counts.
+        - generic [ref=e175]:
+          - generic [ref=e176]:
+            - paragraph [ref=e177]: Digestion
+            - paragraph [ref=e178]: Acacia fibre slows glucose absorption and smooths digestion, cutting bloating and irregular bowel patterns.
+          - generic [ref=e179]:
+            - paragraph [ref=e180]: Immunity
+            - paragraph [ref=e181]: Over 70% of your immune cells live in the gut. A well-fed microbiome means a better-armed immune system.
+          - generic [ref=e182]:
+            - paragraph [ref=e183]: Energy
+            - paragraph [ref=e184]: Short-chain fatty acids produced by prebiotic fermentation fuel your gut lining and support steady, caffeine-free energy.
+          - generic [ref=e185]:
+            - paragraph [ref=e186]: Mood
+            - paragraph [ref=e187]: The gut-brain axis is real. Your microbiome produces neurotransmitters, and keeping it healthy directly affects how you feel.
+    - generic [ref=e189]:
+      - heading "Join the Brew Crew" [level=2] [ref=e193]
+      - paragraph [ref=e194]: Get exclusive offers, new flavor announcements, and ginger fizz tips delivered to your inbox.
+      - generic [ref=e195]:
+        - textbox "Enter your email" [ref=e196]
+        - button "Subscribe" [ref=e197] [cursor=pointer]
+    - contentinfo [ref=e198]:
+      - generic [ref=e199]:
+        - generic [ref=e200]:
+          - generic [ref=e201]:
+            - heading "GingerBros" [level=3] [ref=e202]
+            - paragraph [ref=e203]: Naturally brewed craft ginger fizz from Thailand. 7-day fermentation, real ginger, zero shortcuts.
+            - generic [ref=e204]:
+              - link "Instagram" [ref=e205] [cursor=pointer]:
+                - /url: https://www.instagram.com/drinkgingerbros
+              - link "TikTok" [ref=e206] [cursor=pointer]:
+                - /url: https://www.tiktok.com/@gingerbrosbrew
+              - link "Line" [ref=e207] [cursor=pointer]:
+                - /url: https://line.me/R/ti/p/@852nqred
+              - link "Shopee" [ref=e208] [cursor=pointer]:
+                - /url: https://shopee.co.th/gingerbros
+          - generic [ref=e209]:
+            - heading "Shop" [level=4] [ref=e210]
+            - list [ref=e211]:
+              - listitem [ref=e212]:
+                - link "GingerBros Ginger Fizz" [ref=e213] [cursor=pointer]:
+                  - /url: /product/ginger-fizz
+              - listitem [ref=e214]:
+                - link "Wholesale" [ref=e215] [cursor=pointer]:
+                  - /url: /wholesale
+          - generic [ref=e216]:
+            - heading "Company" [level=4] [ref=e217]
+            - list [ref=e218]:
+              - listitem [ref=e219]:
+                - link "Our Story" [ref=e220] [cursor=pointer]:
+                  - /url: /#story
+              - listitem [ref=e221]:
+                - link "Process" [ref=e222] [cursor=pointer]:
+                  - /url: /#process
+              - listitem [ref=e223]:
+                - link "Benefits" [ref=e224] [cursor=pointer]:
+                  - /url: /#benefits
+              - listitem [ref=e225]:
+                - link "Blog" [ref=e226] [cursor=pointer]:
+                  - /url: /blog
+          - generic [ref=e227]:
+            - heading "Support" [level=4] [ref=e228]
+            - list [ref=e229]:
+              - listitem [ref=e230]:
+                - link "Shipping Info" [ref=e231] [cursor=pointer]:
+                  - /url: /shipping
+              - listitem [ref=e232]:
+                - link "FAQ" [ref=e233] [cursor=pointer]:
+                  - /url: /faq
+              - listitem [ref=e234]:
+                - link "Track Your Order" [ref=e235] [cursor=pointer]:
+                  - /url: /track
+              - listitem [ref=e236]:
+                - link "Contact Us" [ref=e237] [cursor=pointer]:
+                  - /url: mailto:gingerbros.brew@gmail.com
+        - generic [ref=e238]:
+          - paragraph [ref=e239]: © 2026 GingerBros. All rights reserved.
+          - generic [ref=e240]:
+            - link "Privacy Policy" [ref=e241] [cursor=pointer]:
+              - /url: /privacy
+            - link "Terms of Service" [ref=e242] [cursor=pointer]:
+              - /url: /terms
+    - link "Chat with us on Line" [ref=e243] [cursor=pointer]:
+      - /url: https://line.me/R/ti/p/@852nqred
+  - region "Notifications alt+T"

@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router';
-import { ArrowLeft, Search, Package, Truck, CheckCircle, ChevronDown, ChevronUp } from 'lucide-react';
+import { ArrowLeft, Search, Package, Truck, CheckCircle, ChevronDown, ChevronUp, Mail, RotateCcw, Clock } from 'lucide-react';
 import SEO from '@/components/SEO';
 import CopyButton from '@/components/CopyButton';
 
@@ -77,13 +77,17 @@ function OrderCard({ order }: { order: OrderSummary }) {
                 </span>
               </div>
             ) : (
-              <p className="font-body text-[13px] text-earth">Preparing for shipment — tracking will appear here once shipped.</p>
+              <div className="flex items-start gap-2">
+                <Clock className="w-4 h-4 text-earth flex-shrink-0 mt-0.5" />
+                <p className="font-body text-[13px] text-earth">Preparing for shipment — tracking will appear here once shipped.</p>
+              </div>
             )}
 
             <Link
               to={`/track?email=&order=${order.orderId}`}
-              className="inline-block font-body text-[13px] text-rust hover:text-deep-brown underline"
+              className="inline-flex items-center gap-1.5 font-body text-[13px] text-rust hover:text-deep-brown underline"
             >
+              <Search className="w-3.5 h-3.5" />
               Track this order →
             </Link>
           </div>
@@ -162,6 +166,7 @@ export default function OrdersPage() {
             ) : (
               <Search className="w-4 h-4" />
             )}
+            Find
           </button>
         </form>
 
@@ -189,6 +194,30 @@ export default function OrdersPage() {
             </div>
           )
         )}
+
+        {/* Help section */}
+        <div className="mt-12 bg-cream rounded-2xl p-6 space-y-4">
+          <h3 className="font-display font-semibold text-deep-brown text-[1.1rem]">Need help with an order?</h3>
+          <div className="space-y-3">
+            <div className="flex items-start gap-3">
+              <Mail className="w-5 h-5 text-rust flex-shrink-0 mt-0.5" />
+              <p className="font-body text-earth text-[14px]">
+                Email us at{' '}
+                <a href="mailto:gingerbros.brew@gmail.com" className="text-rust font-semibold underline">
+                  gingerbros.brew@gmail.com
+                </a>{' '}
+                with your order number and we will sort it out.
+              </p>
+            </div>
+            <div className="flex items-start gap-3">
+              <RotateCcw className="w-5 h-5 text-rust flex-shrink-0 mt-0.5" />
+              <p className="font-body text-earth text-[14px]">
+                <Link to="/track" className="text-rust font-semibold underline">Track an order</Link>{' '}
+                by email and order number to see the latest status.
+              </p>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );
