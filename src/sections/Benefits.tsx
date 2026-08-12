@@ -148,12 +148,12 @@ export default function Benefits() {
 
           {/* Extra prebiotic detail */}
           <div className="bg-warm-white rounded-2xl p-6 md:p-8">
-            <h4 className="font-display font-semibold text-deep-brown text-[1.1rem] mb-4">Why Acacia Fibre?</h4>
+            <h4 className="font-display font-semibold text-deep-brown text-[1.1rem] mb-4">{t('whyAcaciaTitle')}</h4>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
               {[
-                { title: 'Slow Fermentation', desc: 'Unlike aggressive prebiotics that cause gas and bloating, acacia ferments slowly throughout the entire colon.' },
-                { title: 'Clinically Studied', desc: 'Randomised trials show acacia fibre increases Bifidobacteria and Lactobacilli — the good guys — within 4 weeks.' },
-                { title: 'Gentle on Everyone', desc: 'Low FODMAP certified. Works for sensitive stomachs, IBS sufferers, and people new to fibre supplements.' },
+                { title: t('acaciaFermentTitle'), desc: t('acaciaFermentDesc') },
+                { title: t('acaciaStudiedTitle'), desc: t('acaciaStudiedDesc') },
+                { title: t('acaciaGentleTitle'), desc: t('acaciaGentleDesc') },
               ].map((item) => (
                 <div key={item.title}>
                   <p className="font-body font-semibold text-deep-brown text-[14px] mb-1.5">{item.title}</p>
@@ -167,49 +167,49 @@ export default function Benefits() {
         {/* WHY GINGER deep-dive */}
         <div id="ginger" className="mt-8 bg-warm-white border-2 border-cream rounded-[24px] px-6 py-10 md:px-12 md:py-12 scroll-mt-24">
           <span className="block font-body font-medium text-[13px] uppercase tracking-[0.08em] text-rust mb-3">
-            WHY GINGER
+            {t('whyGingerLabel')}
           </span>
           <h3 className="font-display font-semibold text-deep-brown text-[clamp(1.25rem,2.5vw,1.75rem)] mb-3">
-            The root that does the work.
+            {t('whyGingerTitle')}
           </h3>
           <p className="font-body text-earth text-[15px] leading-relaxed mb-8 max-w-[600px]">
-            Ginger is not a trend. It is a root that has been used medicinally for over 2,500 years, backed by modern research for digestion, inflammation, and immune support. We use fresh Thai ginger fermented slowly so the active compounds stay intact.
+            {t('whyGingerDesc')}
           </p>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="bg-cream rounded-2xl p-5">
               <div className="flex items-center gap-2 mb-2">
                 <Flame className="w-5 h-5 text-rust" />
-                <p className="font-display font-bold text-rust text-[15px]">Digestive Relief</p>
+                <p className="font-display font-bold text-rust text-[15px]">{t('gingerDigestiveTitle')}</p>
               </div>
               <p className="font-body text-earth text-[13px] leading-relaxed">
-                Gingerol and shogaol — the active compounds in ginger — stimulate gastric emptying and reduce bloating. Studies show ginger can speed stomach emptying by up to 50% (<a href="https://pubmed.ncbi.nlm.nih.gov/18442245/" target="_blank" rel="noopener noreferrer" className="text-rust underline hover:text-deep-brown">Wu et al., World J Gastroenterol</a>).
+                {t('gingerDigestiveDesc')} (<a href="https://pubmed.ncbi.nlm.nih.gov/18442245/" target="_blank" rel="noopener noreferrer" className="text-rust underline hover:text-deep-brown">Wu et al., World J Gastroenterol</a>).
               </p>
             </div>
             <div className="bg-cream rounded-2xl p-5">
               <div className="flex items-center gap-2 mb-2">
                 <Droplets className="w-5 h-5 text-rust" />
-                <p className="font-display font-bold text-rust text-[15px]">Anti-Inflammatory</p>
+                <p className="font-display font-bold text-rust text-[15px]">{t('gingerInflammationTitle')}</p>
               </div>
               <p className="font-body text-earth text-[13px] leading-relaxed">
-                Ginger inhibits COX-2 and reduces pro-inflammatory cytokines. Clinical trials show it is as effective as ibuprofen for menstrual pain and osteoarthritis discomfort (<a href="https://pubmed.ncbi.nlm.nih.gov/20418184/" target="_blank" rel="noopener noreferrer" className="text-rust underline hover:text-deep-brown">Black et al., Arthritis Rheum</a>).
+                {t('gingerInflammationDesc')} (<a href="https://pubmed.ncbi.nlm.nih.gov/20418184/" target="_blank" rel="noopener noreferrer" className="text-rust underline hover:text-deep-brown">Black et al., Arthritis Rheum</a>).
               </p>
             </div>
             <div className="bg-cream rounded-2xl p-5">
               <div className="flex items-center gap-2 mb-2">
                 <Microscope className="w-5 h-5 text-rust" />
-                <p className="font-display font-bold text-rust text-[15px]">Immune Support</p>
+                <p className="font-display font-bold text-rust text-[15px]">{t('gingerImmuneTitle')}</p>
               </div>
               <p className="font-body text-earth text-[13px] leading-relaxed">
-                Fresh ginger has antiviral and antibacterial properties. Research found ginger extract inhibits respiratory pathogens and stimulates macrophage activity (<a href="https://pubmed.ncbi.nlm.nih.gov/23123794/" target="_blank" rel="noopener noreferrer" className="text-rust underline hover:text-deep-brown">PubMed</a>).
+                {t('gingerImmuneDesc')} (<a href="https://pubmed.ncbi.nlm.nih.gov/23123794/" target="_blank" rel="noopener noreferrer" className="text-rust underline hover:text-deep-brown">PubMed</a>).
               </p>
             </div>
             <div className="bg-cream rounded-2xl p-5">
               <div className="flex items-center gap-2 mb-2">
                 <Sparkles className="w-5 h-5 text-rust" />
-                <p className="font-display font-bold text-rust text-[15px]">Nausea & Motion Sickness</p>
+                <p className="font-display font-bold text-rust text-[15px]">{t('gingerNauseaTitle')}</p>
               </div>
               <p className="font-body text-earth text-[13px] leading-relaxed">
-                Ginger is one of the most studied natural anti-nausea remedies. Multiple RCTs confirm it reduces post-operative and chemotherapy-induced nausea without the drowsiness of conventional drugs (<a href="https://pubmed.ncbi.nlm.nih.gov/27094916/" target="_blank" rel="noopener noreferrer" className="text-rust underline hover:text-deep-brown">Marx et al., Integr Med Insights</a>).
+                {t('gingerNauseaDesc')} (<a href="https://pubmed.ncbi.nlm.nih.gov/27094916/" target="_blank" rel="noopener noreferrer" className="text-rust underline hover:text-deep-brown">Marx et al., Integr Med Insights</a>).
               </p>
             </div>
           </div>

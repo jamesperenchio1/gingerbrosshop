@@ -118,6 +118,28 @@ const translations: Record<Locale, Record<string, string>> = {
     prebioticMood: 'Mood',
     prebioticMoodDetail: 'The gut-brain axis is real. Your microbiome produces neurotransmitters, and keeping it healthy directly affects how you feel.',
 
+    // Why Acacia Fibre
+    whyAcaciaTitle: 'Why Acacia Fibre?',
+    acaciaFermentTitle: 'Slow Fermentation',
+    acaciaFermentDesc: 'Unlike aggressive prebiotics that cause gas and bloating, acacia ferments slowly throughout the entire colon.',
+    acaciaStudiedTitle: 'Clinically Studied',
+    acaciaStudiedDesc: 'Randomised trials show acacia fibre increases Bifidobacteria and Lactobacilli — the good guys — within 4 weeks.',
+    acaciaGentleTitle: 'Gentle on Everyone',
+    acaciaGentleDesc: 'Low FODMAP certified. Works for sensitive stomachs, IBS sufferers, and people new to fibre supplements.',
+
+    // Why Ginger deep-dive
+    whyGingerLabel: 'WHY GINGER',
+    whyGingerTitle: 'The root that does the work.',
+    whyGingerDesc: 'Ginger is not a trend. It is a root that has been used medicinally for over 2,500 years, backed by modern research for digestion, inflammation, and immune support. We use fresh Thai ginger fermented slowly so the active compounds stay intact.',
+    gingerDigestiveTitle: 'Digestive Relief',
+    gingerDigestiveDesc: 'Gingerol and shogaol — the active compounds in ginger — stimulate gastric emptying and reduce bloating. Studies show ginger can speed stomach emptying by up to 50%',
+    gingerInflammationTitle: 'Anti-Inflammatory',
+    gingerInflammationDesc: 'Ginger inhibits COX-2 and reduces pro-inflammatory cytokines. Clinical trials show it is as effective as ibuprofen for menstrual pain and osteoarthritis discomfort',
+    gingerImmuneTitle: 'Immune Support',
+    gingerImmuneDesc: 'Fresh ginger has antiviral and antibacterial properties. Research found ginger extract inhibits respiratory pathogens and stimulates macrophage activity',
+    gingerNauseaTitle: 'Nausea & Motion Sickness',
+    gingerNauseaDesc: 'Ginger is one of the most studied natural anti-nausea remedies. Multiple RCTs confirm it reduces post-operative and chemotherapy-induced nausea without the drowsiness of conventional drugs',
+
     // Story
     ourStory: 'Our Story',
     storyLabel: 'OUR STORY',
@@ -180,7 +202,7 @@ const translations: Record<Locale, Record<string, string>> = {
     // Cart
     cart: 'ตะกร้า',
     addToCart: 'ใส่ตะกร้า',
-    subscribeSave: 'สมัครสมาชิก & ประหยัด',
+    subscribeSave: 'สมัครสมาชิกและประหยัด',
     checkout: 'ชำระเงิน',
     subtotal: 'ยอดรวม',
     shippingAtCheckout: 'ค่าจัดส่งคำนวณที่หน้าชำระเงิน',
@@ -197,7 +219,7 @@ const translations: Record<Locale, Record<string, string>> = {
     outOfStock: 'สินค้าหมด',
 
     // Shop section
-    chooseYourBrew: 'เลือกเบียร์ขิงของคุณ',
+    chooseYourBrew: 'เลือกขิงสปาร์กลิ้งของคุณ',
     ourProducts: 'สินค้าของเรา',
     naturallyBrewed: 'หมักตามธรรมชาติในประเทศไทย',
     shopNow: 'ช้อปเลย',
@@ -207,14 +229,14 @@ const translations: Record<Locale, Record<string, string>> = {
     // Order
     orderSuccess: 'ขอบคุณ!',
     orderConfirmed: 'คำสั่งซื้อของคุณได้รับการยืนยันแล้ว',
-    whatsNext: 'ต่อไปนี้?',
+    whatsNext: 'ขั้นตอนต่อไป',
     preparingOrder: 'เรากำลังเตรียมคำสั่งซื้อของคุณ คุณจะได้รับรายละเอียดการติดตามเมื่อจัดส่ง',
     orderShipped: 'คำสั่งซื้อของคุณจัดส่งแล้ว',
 
     // Hero
     heroBadge: 'GingerBros · หมักธรรมชาติในไทย',
-    heroHeadline1: 'ขิงหมักดอง,',
-    heroHeadline2: 'สูตรเฉพาะคุณ',
+    heroHeadline1: 'ขิงหมักธรรมชาติ,',
+    heroHeadline2: 'ในแบบฉบับของคุณ',
     heroSub: 'ขิงสดรสเข้มกับมะนาวสดและพรีไบโอติก 3.5 กรัม หมักธรรมชาติ 5 วัน น้ำตาลน้อย ทำจากวัตถุดิบจริง',
     heroCtaShop: 'เลือกซื้อเครื่องดื่ม',
     heroCtaStory: 'เรื่องราวของเรา',
@@ -230,7 +252,7 @@ const translations: Record<Locale, Record<string, string>> = {
     step01Desc: 'ขูดขิงสดผสมกับน้ำตาลดิบและน้ำกรอง เติม Ginger Bug (หัวเชื้อจุลินทรีย์มีชีวิต) เพื่อเริ่มกระบวนการหมัก',
     step02Days: 'วันที่ 3-4',
     step02Title: 'หมักตามธรรมชาติ',
-    step02Desc: 'ยีสต์ธรรมชาติและแบคทีเรียที่มีประโยชน์เปลี่ยนน้ำตาลให้เป็นพลังงาน ฟองก๊าซ CO₂ เริ่มก่อตัวตามธรรมชาติ เบียร์ขิงพัฒนารสชาติที่โดดเด่น',
+    step02Desc: 'ยีสต์ธรรมชาติและแบคทีเรียที่มีประโยชน์เปลี่ยนน้ำตาลให้เป็นพลังงาน ฟองก๊าซ CO₂ เริ่มก่อตัวตามธรรมชาติ ขิงสปาร์กลิ้งพัฒนารสชาติที่โดดเด่น',
     step03Days: 'วันที่ 5',
     step03Title: 'บ่มและบรรจุขวด',
     step03Desc: 'กรองและบ่มเพื่อพัฒนารสชาติ จากนั้นอัดก๊าซและบรรจุขวด',
@@ -239,7 +261,7 @@ const translations: Record<Locale, Record<string, string>> = {
     step04Desc: 'แช่เย็นให้ทั่วก่อนเปิด สัมผัสความสดชื่นและรสชาติที่เต็มอิ่ม ขิงสปาร์กลิ้งแท้ หมักธรรมชาติ พร้อมดื่ม',
 
     // Benefits
-    benefitsLabel: 'ทำไมต้องเจอร์ขิง',
+    benefitsLabel: 'ทำไมต้องขิงสปาร์กลิ้ง',
     benefitsSectionTitle: 'มากกว่าแค่เครื่องดื่ม',
     benefitsSectionSub: 'ประเทศไทยผลิตและส่งออกขิงเป็นจำนวนมาก ติดอันดับหนึ่งในผู้ผลิตชั้นนำของโลก แต่กลับแทบไม่ปรากฏในรายชื่อประเทศที่บริโภคขิงมากที่สุด อุตสาหกรรมขิงของไทยส่วนใหญ่มุ่งเน้นการส่งออก ไม่ใช่การบริโภคในประเทศ ขิงเป็นส่วนหนึ่งของอาหารและยาพื้นบ้านไทยมาหลายศตวรรษ แต่ขิงส่วนใหญ่ที่ปลูกได้ถูกส่งออกและแปรรูปในต่างประเทศ โดยที่มูลค่าเพิ่มนั้นไม่ค่อยตกถึงมือเกษตรกรผู้ปลูก\n\nนี่คือประเด็นที่ลึกกว่านั้น คนที่ผลิตทรัพยากรมักไม่ใช่คนที่ได้กำไรสูงสุดจากมัน รูปแบบนี้พบเห็นได้ทั่วโลก ไม่ใช่แค่เรื่องขิง การปลูกสิ่งหนึ่งกับการได้รับประโยชน์จากมันนั้นมักเป็นสองเรื่องที่แตกต่างกัน แค่ฝากไว้ให้คิดตอนดื่มขิงสปาร์กลิ้ง...',
     benefit1Title: 'พลังพรีไบโอติก',
@@ -269,6 +291,28 @@ const translations: Record<Locale, Record<string, string>> = {
     prebioticEnergyDetail: 'กรดไขมันสายสั้นจากการหมักพรีไบโอติกเลี้ยงเยื่อบุลำไส้และให้พลังงานสม่ำเสมอโดยไม่ต้องพึ่งคาเฟอีน',
     prebioticMood: 'อารมณ์',
     prebioticMoodDetail: 'แกนลำไส้-สมองมีอยู่จริง ไมโครไบโอมของคุณผลิตสารสื่อประสาท และการดูแลให้แข็งแรงส่งผลโดยตรงต่อความรู้สึกของคุณ',
+
+    // Why Acacia Fibre
+    whyAcaciaTitle: 'ทำไมต้องใยอาหารอะคาเซีย?',
+    acaciaFermentTitle: 'หมักอย่างช้าๆ',
+    acaciaFermentDesc: 'ต่างจากพรีไบโอติกชนิดเข้มข้นที่มักทำให้ท้องอืดหรือมีแก๊สในกระเพาะ ใยอาหารอะคาเซียหมักอย่างช้าๆ ตลอดทั้งลำไส้ใหญ่',
+    acaciaStudiedTitle: 'ผ่านการวิจัยทางคลินิก',
+    acaciaStudiedDesc: 'งานวิจัยแบบสุ่มพบว่าใยอาหารอะคาเซียช่วยเพิ่มปริมาณ Bifidobacteria และ Lactobacilli ซึ่งเป็นแบคทีเรียชนิดดีในลำไส้ ได้ภายใน 4 สัปดาห์',
+    acaciaGentleTitle: 'อ่อนโยนสำหรับทุกคน',
+    acaciaGentleDesc: 'ได้รับการรับรอง Low FODMAP เหมาะสำหรับคนท้องไวต่อสิ่งเร้า ผู้ที่มีภาวะลำไส้แปรปรวน (IBS) และผู้ที่เพิ่งเริ่มทานใยอาหารเสริม',
+
+    // Why Ginger deep-dive
+    whyGingerLabel: 'ทำไมต้องขิง',
+    whyGingerTitle: 'รากที่ทำงานหนักเพื่อคุณ',
+    whyGingerDesc: 'ขิงไม่ใช่แค่กระแส แต่เป็นรากที่ถูกใช้เป็นยามานานกว่า 2,500 ปี และมีงานวิจัยสมัยใหม่รองรับทั้งด้านการย่อยอาหาร การอักเสบ และภูมิคุ้มกัน เราใช้ขิงไทยสดหมักอย่างช้าๆ เพื่อคงสารสำคัญไว้ให้ครบถ้วน',
+    gingerDigestiveTitle: 'ช่วยระบบย่อยอาหาร',
+    gingerDigestiveDesc: 'สาร Gingerol และ Shogaol ซึ่งเป็นสารออกฤทธิ์ในขิง ช่วยกระตุ้นการบีบตัวของกระเพาะอาหารและลดอาการท้องอืด งานวิจัยพบว่าขิงช่วยให้กระเพาะอาหารย่อยเร็วขึ้นได้ถึง 50%',
+    gingerInflammationTitle: 'ต้านการอักเสบ',
+    gingerInflammationDesc: 'ขิงยับยั้งเอนไซม์ COX-2 และลดสารที่กระตุ้นการอักเสบในร่างกาย งานวิจัยทางคลินิกพบว่ามีประสิทธิภาพเทียบเท่ายาไอบูโพรเฟนในการบรรเทาอาการปวดประจำเดือนและข้อเข่าเสื่อม',
+    gingerImmuneTitle: 'เสริมภูมิคุ้มกัน',
+    gingerImmuneDesc: 'ขิงสดมีคุณสมบัติต้านไวรัสและต้านแบคทีเรีย งานวิจัยพบว่าสารสกัดจากขิงช่วยยับยั้งเชื้อโรคทางเดินหายใจและกระตุ้นการทำงานของเม็ดเลือดขาวชนิด Macrophage',
+    gingerNauseaTitle: 'บรรเทาอาการคลื่นไส้และเมารถ',
+    gingerNauseaDesc: 'ขิงเป็นหนึ่งในสมุนไพรธรรมชาติที่มีงานวิจัยรองรับมากที่สุดในการบรรเทาอาการคลื่นไส้ งานวิจัยแบบ RCT หลายชิ้นยืนยันว่าขิงช่วยลดอาการคลื่นไส้หลังผ่าตัดและจากเคมีบำบัด โดยไม่ทำให้ง่วงซึมเหมือนยาแผนปัจจุบัน',
 
     // Story
     ourStory: 'เรื่องราวของเรา',
