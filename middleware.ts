@@ -360,6 +360,26 @@ const BLOG_POSTS: Record<string, BlogPostMeta> = {
     date: '2026-03-04',
     author: 'GingerBros Stories',
   },
+  'ginger-fizz-bar-menu': {
+    title: 'Building a Ginger Fizz Cocktail Menu for Your Bar',
+    description:
+      'How bars and restaurants can build a focused, profitable ginger fizz menu — from signature serves to garnish stations and staff training.',
+    date: '2026-06-12',
+    author: 'The GingerBros Trade Team',
+  },
+  'batching-cocktails-for-service': {
+    title: 'Batching Ginger Fizz Cocktails for Busy Service',
+    description:
+      'Pre-batch the base, pour the fizz fresh. A practical guide to speed, consistency, and carbonation for high-volume bars.',
+    date: '2026-06-10',
+    author: 'The GingerBros Trade Team',
+  },
+  'zero-proof-restaurant-drinks': {
+    title: 'Zero-Proof Drinks That Restaurants Can Actually Sell',
+    description: 'Why the mocktail menu matters, how to price it, and three zero-proof builds that work on a restaurant floor.',
+    date: '2026-06-07',
+    author: 'The GingerBros Trade Team',
+  },
 };
 
 function blogPostMeta(slug: string): RouteMeta | null {
