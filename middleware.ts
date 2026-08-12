@@ -156,7 +156,72 @@ const KNOWN_ROUTES: Record<string, RouteMeta> = {
   },
 };
 
-const VALID_PRODUCT_IDS = new Set(['ginger-fizz']);
+interface CatalogPrice {
+  unitAmount: number | null;
+  currency: string;
+  recurring: unknown;
+}
+
+interface CatalogProduct {
+  id: string;
+  name: string;
+  description: string | null;
+  images: string[];
+  metadata: Record<string, string>;
+  prices: CatalogPrice[];
+}
+
+/**
+ * Products live only in Stripe (see CLAUDE.md) — there is no static id list to
+ * check against. We fetch the same catalog the SPA uses so /product/:id meta
+ * (and the 200/404 status) stays correct as products are added or removed in
+ * the Stripe dashboard, instead of drifting out of sync like a hardcoded set.
+ */
+async function fetchCatalogProduct(origin: string, id: string): Promise<CatalogProduct | null> {
+  try {
+    const res = await fetch(new URL('/api/products', origin));
+    if (!res.ok) return null;
+    const data = (await res.json()) as { products: CatalogProduct[] };
+    return data.products?.find((p) => p.id === id) ?? null;
+  } catch {
+    return null;
+  }
+}
+
+function productRouteMeta(product: CatalogProduct, pathname: string): RouteMeta {
+  const image = product.images[0] ?? FALLBACK_IMAGE;
+  const description =
+    product.metadata.short_description ?? product.description ?? `${product.name} from GingerBros.`;
+  const price = product.prices.find((p) => !p.recurring) ?? product.prices[0];
+
+  return {
+    title: `${product.name} — GingerBros`,
+    description,
+    image,
+    type: 'product',
+    jsonLd: {
+      '@context': 'https://schema.org',
+      '@type': 'Product',
+      name: product.name,
+      description,
+      image: [image],
+      brand: { '@type': 'Brand', name: 'GingerBros' },
+      sku: product.id,
+      ...(price?.unitAmount != null
+        ? {
+            offers: {
+              '@type': 'Offer',
+              url: `${SITE_URL}${pathname}`,
+              priceCurrency: price.currency.toUpperCase(),
+              price: String(price.unitAmount),
+              availability: 'https://schema.org/InStock',
+              seller: { '@type': 'Organization', name: 'GingerBros' },
+            },
+          }
+        : {}),
+    },
+  };
+}
 
 interface BlogPostMeta {
   title: string;
@@ -433,7 +498,14 @@ export default async function middleware(request: Request): Promise<Response> {
   const productMatch = pathname.match(/^\/product\/([^/]+)\/?$/);
   if (productMatch) {
     const productId = productMatch[1];
-    if (!VALID_PRODUCT_IDS.has(productId)) {
+    // A handful of flagship products (e.g. ginger-fizz) have hand-tuned copy in
+    // KNOWN_ROUTES; everything else in the live Stripe catalog gets meta
+    // generated from the catalog itself so new products aren't 404s by default.
+    const knownMeta = KNOWN_ROUTES[pathname];
+    const catalogProduct = knownMeta ? null : await fetchCatalogProduct(url.origin, productId);
+    const meta = knownMeta ?? (catalogProduct ? productRouteMeta(catalogProduct, pathname) : null);
+
+    if (!meta) {
       const notFoundMeta: RouteMeta = {
         title: 'Page Not Found — GingerBros',
         description: 'The page you are looking for could not be found.',
@@ -446,6 +518,12 @@ export default async function middleware(request: Request): Promise<Response> {
         headers: { 'Content-Type': 'text/html; charset=utf-8' },
       });
     }
+
+    html = injectMeta(html, meta, pathname);
+    return new Response(html, {
+      status: 200,
+      headers: { 'Content-Type': 'text/html; charset=utf-8' },
+    });
   }
 
   // Individual blog articles live at /blog/:slug. Valid slugs return 200 with
