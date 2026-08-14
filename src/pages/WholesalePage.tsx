@@ -56,21 +56,27 @@ function WholesaleForm() {
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <label htmlFor="wholesale-business-name" className="sr-only">Business name</label>
         <input
+          id="wholesale-business-name"
           required
           value={businessName}
           onChange={(e) => setBusinessName(e.target.value)}
           placeholder="Business name *"
           className="bg-cream border border-soft-peach rounded-xl px-4 py-3 font-body text-deep-brown placeholder:text-earth/50 focus:outline-none focus:ring-2 focus:ring-amber/40"
         />
+        <label htmlFor="wholesale-contact-name" className="sr-only">Contact name</label>
         <input
+          id="wholesale-contact-name"
           required
           value={contactName}
           onChange={(e) => setContactName(e.target.value)}
           placeholder="Contact name *"
           className="bg-cream border border-soft-peach rounded-xl px-4 py-3 font-body text-deep-brown placeholder:text-earth/50 focus:outline-none focus:ring-2 focus:ring-amber/40"
         />
+        <label htmlFor="wholesale-email" className="sr-only">Email</label>
         <input
+          id="wholesale-email"
           required
           type="email"
           value={email}
@@ -78,7 +84,9 @@ function WholesaleForm() {
           placeholder="Email *"
           className="bg-cream border border-soft-peach rounded-xl px-4 py-3 font-body text-deep-brown placeholder:text-earth/50 focus:outline-none focus:ring-2 focus:ring-amber/40"
         />
+        <label htmlFor="wholesale-phone" className="sr-only">Phone</label>
         <input
+          id="wholesale-phone"
           value={phone}
           onChange={(e) => setPhone(e.target.value)}
           placeholder="Phone (optional)"
@@ -87,7 +95,9 @@ function WholesaleForm() {
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <label htmlFor="wholesale-business-type" className="sr-only">Business type</label>
         <select
+          id="wholesale-business-type"
           value={businessType}
           onChange={(e) => setBusinessType(e.target.value)}
           className="bg-cream border border-soft-peach rounded-xl px-4 py-3 font-body text-deep-brown focus:outline-none focus:ring-2 focus:ring-amber/40 appearance-none"
@@ -103,7 +113,9 @@ function WholesaleForm() {
           <option value="Event / Catering">Event / Catering</option>
           <option value="Other">Other</option>
         </select>
+        <label htmlFor="wholesale-monthly-volume" className="sr-only">Monthly volume</label>
         <select
+          id="wholesale-monthly-volume"
           value={monthlyVolume}
           onChange={(e) => setMonthlyVolume(e.target.value)}
           className="bg-cream border border-soft-peach rounded-xl px-4 py-3 font-body text-deep-brown focus:outline-none focus:ring-2 focus:ring-amber/40 appearance-none"
@@ -136,7 +148,9 @@ function WholesaleForm() {
         </div>
       </div>
 
+      <label htmlFor="wholesale-message" className="sr-only">Message</label>
       <textarea
+        id="wholesale-message"
         required
         value={message}
         onChange={(e) => setMessage(e.target.value)}
@@ -144,11 +158,11 @@ function WholesaleForm() {
         rows={4}
         className="w-full bg-cream border border-soft-peach rounded-xl px-4 py-3 font-body text-deep-brown placeholder:text-earth/50 focus:outline-none focus:ring-2 focus:ring-amber/40 resize-none"
       />
-      {error && <p className="font-body text-[13px] text-red-400">{error}</p>}
+      {error && <p className="font-body text-[13px] text-rust">{error}</p>}
       <button
         type="submit"
         disabled={loading}
-        className="w-full inline-flex items-center justify-center gap-2 bg-amber text-deep-brown font-body font-medium text-sm uppercase tracking-[0.08em] px-8 py-3.5 rounded-full hover:bg-warm-gold transition-colors disabled:opacity-70"
+        className="w-full inline-flex items-center justify-center gap-2 bg-amber text-deep-brown font-body font-medium text-sm uppercase tracking-[0.08em] px-8 py-3.5 rounded-full hover:bg-warm-gold active:scale-[0.98] transition-all duration-200 disabled:opacity-70"
       >
         {loading ? (
           <span className="w-5 h-5 border-2 border-deep-brown/30 border-t-deep-brown rounded-full animate-spin" />
@@ -260,7 +274,7 @@ export default function WholesalePage() {
           {/* Benefits Grid */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-16">
             {benefits.map((benefit) => (
-              <div key={benefit.title} className="bg-cream rounded-[20px] p-6">
+              <div key={benefit.title} className="bg-cream rounded-xxl p-6">
                 <div className="mb-4">{benefit.icon}</div>
                 <h3 className="font-display font-semibold text-deep-brown text-[1.1rem] mb-2">
                   {benefit.title}
@@ -273,7 +287,7 @@ export default function WholesalePage() {
           </div>
 
           {/* Volume Tiers */}
-          <div className="bg-cream rounded-[20px] p-8 md:p-10 mb-12">
+          <div className="bg-cream rounded-xxl p-8 md:p-10 mb-12">
             <h2 className="font-display font-semibold text-deep-brown text-[1.35rem] mb-6">
               Volume Pricing Tiers
             </h2>
@@ -293,7 +307,7 @@ export default function WholesalePage() {
           </div>
 
           {/* Products Table */}
-          <div className="bg-cream rounded-[20px] p-8 md:p-10 mb-12">
+          <div className="bg-cream rounded-xxl p-8 md:p-10 mb-12">
             <h2 className="font-display font-semibold text-deep-brown text-[1.35rem] mb-6">
               Wholesale Products
             </h2>
@@ -322,7 +336,7 @@ export default function WholesalePage() {
           </div>
 
           {/* How to Order */}
-          <div className="bg-deep-brown rounded-[20px] p-8 md:p-10 text-cream">
+          <div className="bg-deep-brown rounded-xxl p-8 md:p-10 text-cream">
             <h2 className="font-display font-semibold text-[1.35rem] mb-4">
               Request a Quote
             </h2>

@@ -10,7 +10,7 @@ import StockAlertForm from '@/components/StockAlertForm';
 
 function ProductCardSkeleton() {
   return (
-    <div className="bg-white border border-soft-peach/60 shadow-[0_12px_40px_rgba(61,36,16,0.10)] rounded-[24px] p-5 sm:p-8 flex flex-col">
+    <div className="bg-white border border-soft-peach/60 shadow-card rounded-3xl p-5 sm:p-8 flex flex-col">
       <Skeleton className="w-full aspect-square rounded-2xl mb-5" />
       <Skeleton className="h-5 w-2/3 mb-3" />
       <Skeleton className="h-4 w-full mb-2" />
@@ -75,10 +75,14 @@ function ProductCard({ product }: { product: CatalogProduct }) {
   return (
     <div
       onClick={() => navigate(detailLink)}
-      className="bg-white border border-soft-peach/60 shadow-[0_12px_40px_rgba(61,36,16,0.10)] rounded-[24px] p-5 sm:p-8 flex flex-col cursor-pointer hover:shadow-[0_20px_56px_rgba(61,36,16,0.16)] transition-shadow duration-300"
+      role="link"
+      tabIndex={0}
+      aria-label={product.name}
+      onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); navigate(detailLink); } }}
+      className="bg-white border border-soft-peach/60 shadow-card rounded-3xl p-5 sm:p-8 flex flex-col cursor-pointer hover:shadow-card-hover transition-shadow duration-300 focus-visible:outline focus-visible:outline-2 focus-visible:outline-amber focus-visible:outline-offset-2"
     >
       <div className="flex items-center justify-center mb-6 h-[180px] sm:h-[200px] bg-cream/50 rounded-2xl p-4">
-        <img src={image} alt={product.name} className="max-h-full max-w-full object-contain" />
+        <img src={image} alt={product.name} loading="lazy" decoding="async" className="max-h-full max-w-full object-contain" />
       </div>
       <button onClick={() => navigate(detailLink)} className="text-left">
         <h3 className="font-display font-semibold text-deep-brown text-[1.15rem] mb-2 hover:text-rust transition-colors">
@@ -119,12 +123,12 @@ function ProductCard({ product }: { product: CatalogProduct }) {
         </button>
       ) : (
         <>
-          <div onClick={(e) => e.stopPropagation()} className="flex items-center justify-center gap-4 mb-4 border-2 border-soft-peach rounded-full py-2 px-4 self-start">
-            <button onClick={() => changeQuantity(-1)} className="text-earth hover:text-deep-brown transition-colors" aria-label="Decrease quantity">
+          <div onClick={(e) => e.stopPropagation()} className="flex items-center justify-center gap-2 mb-4 border-2 border-soft-peach rounded-full py-1 px-2 self-start">
+            <button onClick={() => changeQuantity(-1)} className="text-earth hover:text-deep-brown transition-colors p-2" aria-label="Decrease quantity">
               <MinusIcon />
             </button>
             <span className="font-body font-medium text-earth min-w-[20px] text-center">{quantity}</span>
-            <button onClick={() => changeQuantity(1)} className="text-earth hover:text-deep-brown transition-colors" aria-label="Increase quantity">
+            <button onClick={() => changeQuantity(1)} className="text-earth hover:text-deep-brown transition-colors p-2" aria-label="Increase quantity">
               <PlusIcon />
             </button>
           </div>
@@ -243,13 +247,15 @@ export default function Shop() {
     <section id="shop" ref={sectionRef} className="bg-warm-white py-[60px] md:py-[80px]">
       <div className="max-w-[1100px] mx-auto px-6">
         {showTabs && !loading && (
-          <div className="flex gap-8 mb-10 border-b border-soft-peach/60 overflow-x-auto -mx-6 px-6 md:mx-0 md:px-0 scrollbar-none">
+          <div role="tablist" className="flex gap-8 mb-10 border-b border-soft-peach/60 overflow-x-auto -mx-6 px-6 md:mx-0 md:px-0 scrollbar-none">
             {(['drinks', 'brewing-equipment'] as const).map((cat) => {
               const label = cat === 'drinks' ? 'Drinks' : 'Brewing Equipment';
               const active = activeCategory === cat;
               return (
                 <button
                   key={cat}
+                  role="tab"
+                  aria-selected={active}
                   onClick={() => handleCategoryChange(cat)}
                   className={`flex-shrink-0 font-body font-semibold text-[13px] sm:text-[14px] uppercase tracking-[0.1em] pb-3.5 transition-colors border-b-2 -mb-px whitespace-nowrap ${
                     active

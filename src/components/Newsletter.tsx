@@ -146,7 +146,9 @@ export default function Newsletter() {
               {t('newsletterVerifyHint')}
             </p>
             <form onSubmit={handleSubscribe} className="flex flex-col sm:flex-row gap-3 w-full">
+              <label htmlFor="newsletter-email" className="sr-only">Email address</label>
               <input
+                id="newsletter-email"
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
@@ -157,7 +159,7 @@ export default function Newsletter() {
               <button
                 type="submit"
                 disabled={loading}
-                className="flex-shrink-0 bg-deep-brown text-cream font-body font-medium px-7 py-3 rounded-full hover:bg-rust transition-colors disabled:opacity-60 flex items-center justify-center gap-2"
+                className="flex-shrink-0 bg-deep-brown text-cream font-body font-medium px-7 py-3 rounded-full hover:bg-rust active:scale-[0.98] transition-all duration-200 disabled:opacity-60 flex items-center justify-center gap-2"
               >
                 {loading ? t('newsletterSubscribingBtn') : <>{t('newsletterSubscribeBtn')} <ArrowRight className="w-4 h-4" /></>}
               </button>
@@ -193,6 +195,7 @@ export default function Newsletter() {
                     inputMode="numeric"
                     pattern="[0-9]"
                     maxLength={6}
+                    aria-label={`Verification code digit ${i + 1}`}
                     value={digit}
                     onChange={(e) => handleDigitChange(i, e.target.value)}
                     onKeyDown={(e) => handleDigitKeyDown(i, e)}

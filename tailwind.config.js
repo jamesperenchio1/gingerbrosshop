@@ -9,6 +9,7 @@ module.exports = {
       },
       colors: {
         amber: '#D4A34B',
+        'amber-ink': '#8A6423',
         'warm-gold': '#C9963A',
         'pale-amber': '#E8C97A',
         cream: '#F5E6C8',
@@ -17,6 +18,7 @@ module.exports = {
         'warm-white': '#FDF8F0',
         earth: '#5C3D1E',
         'accent-green': '#6B8E4E',
+        'green-ink': '#4F6E36',
         'grab-green': '#00B14F',
         'soft-peach': '#F0D4A8',
         border: "hsl(var(--border))",
@@ -63,6 +65,13 @@ module.exports = {
         md: "calc(var(--radius) - 2px)",
         sm: "calc(var(--radius) - 4px)",
         xs: "calc(var(--radius) - 6px)",
+        xxl: "20px",
+      },
+      boxShadow: {
+        card: "0 12px 40px rgba(61,36,16,0.10)",
+        "card-hover": "0 20px 56px rgba(61,36,16,0.16)",
+        panel: "0 8px 30px rgba(61,36,16,0.06)",
+        "panel-hover": "0 12px 32px rgba(61,36,16,0.12)",
       },
       keyframes: {
         "accordion-down": {

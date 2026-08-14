@@ -152,23 +152,27 @@ export default function Navigation() {
           <button
             onClick={toggleCart}
             data-testid="cart-button"
+            aria-label={totalItems > 0 ? `Cart, ${totalItems} item${totalItems === 1 ? '' : 's'}` : 'Cart'}
             className="flex items-center gap-2 font-body font-medium text-sm uppercase tracking-[0.08em] text-earth hover:text-deep-brown transition-colors"
           >
             <span className="hidden sm:inline">{t('cart')}</span>
             <span className="relative">
               <CartIcon className="w-5 h-5" />
               {totalItems > 0 && (
-                <span className="absolute -top-2 -right-2 w-[18px] h-[18px] bg-amber text-deep-brown text-[10px] font-semibold rounded-full flex items-center justify-center">
+                <span aria-hidden="true" className="absolute -top-2 -right-2 w-[18px] h-[18px] bg-amber text-deep-brown text-[10px] font-semibold rounded-full flex items-center justify-center">
                   {totalItems}
                 </span>
               )}
+            </span>
+            <span aria-live="polite" className="sr-only">
+              {totalItems > 0 ? `${totalItems} item${totalItems === 1 ? '' : 's'} in cart` : ''}
             </span>
           </button>
           <span className="hidden sm:inline font-body font-medium text-[13px] text-rust">THB</span>
 
           {/* Mobile hamburger */}
           <button
-            className="md:hidden text-deep-brown p-2 -mr-2"
+            className="md:hidden text-deep-brown p-2.5 -mr-2.5"
             aria-label={mobileOpen ? 'Close menu' : 'Open menu'}
             aria-expanded={mobileOpen}
             aria-controls="mobile-nav-menu"

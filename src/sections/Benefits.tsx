@@ -125,7 +125,7 @@ export default function Benefits() {
         </div>
 
         {/* WHY PREBIOTICS deep-dive */}
-        <div id="prebiotics" className="mt-16 bg-cream rounded-[24px] px-6 py-10 md:px-12 md:py-12 scroll-mt-24">
+        <div id="prebiotics" className="mt-16 bg-cream rounded-3xl px-6 py-10 md:px-12 md:py-12 scroll-mt-24">
           <span className="block font-body font-medium text-[13px] uppercase tracking-[0.08em] text-rust mb-3">
             {t('prebioticsLabel')}
           </span>
@@ -165,7 +165,7 @@ export default function Benefits() {
         </div>
 
         {/* WHY GINGER deep-dive */}
-        <div id="ginger" className="mt-8 bg-warm-white border-2 border-cream rounded-[24px] px-6 py-10 md:px-12 md:py-12 scroll-mt-24">
+        <div id="ginger" className="mt-8 bg-warm-white border-2 border-cream rounded-3xl px-6 py-10 md:px-12 md:py-12 scroll-mt-24">
           <span className="block font-body font-medium text-[13px] uppercase tracking-[0.08em] text-rust mb-3">
             {t('whyGingerLabel')}
           </span>

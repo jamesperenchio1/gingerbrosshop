@@ -23,18 +23,44 @@ export interface CatalogProduct {
 }
 
 // Module-level cache so the catalog is fetched once per page load and shared
-// across Shop, ProductDetail, etc.
-let cache: CatalogProduct[] | null = null;
+// across Shop, ProductDetail, etc. Also persisted to sessionStorage (matching
+// the server's 60s s-maxage) so a full page reload can render immediately
+// from stale data while a fresh fetch revalidates in the background.
+const CACHE_KEY = 'gb_catalog_v1';
+const CACHE_TTL_MS = 60_000;
+
+function readStoredCache(): { products: CatalogProduct[]; ts: number } | null {
+  try {
+    const raw = sessionStorage.getItem(CACHE_KEY);
+    return raw ? (JSON.parse(raw) as { products: CatalogProduct[]; ts: number }) : null;
+  } catch {
+    return null;
+  }
+}
+
+function writeStoredCache(products: CatalogProduct[]) {
+  try {
+    sessionStorage.setItem(CACHE_KEY, JSON.stringify({ products, ts: Date.now() }));
+  } catch {
+    // sessionStorage unavailable (private browsing, quota) — in-memory cache still works
+  }
+}
+
+const stored = typeof window !== 'undefined' ? readStoredCache() : null;
+let cache: CatalogProduct[] | null = stored?.products ?? null;
+let cacheTimestamp = stored?.ts ?? 0;
 let inflight: Promise<CatalogProduct[]> | null = null;
 
 export async function fetchCatalog(): Promise<CatalogProduct[]> {
-  if (cache) return cache;
+  if (cache && Date.now() - cacheTimestamp < CACHE_TTL_MS) return cache;
   if (inflight) return inflight;
   inflight = fetch('/api/products')
     .then(async (res) => {
       if (!res.ok) throw new Error('Failed to load catalog');
       const data = (await res.json()) as { products: CatalogProduct[] };
       cache = data.products ?? [];
+      cacheTimestamp = Date.now();
+      writeStoredCache(cache);
       return cache;
     })
     .finally(() => {

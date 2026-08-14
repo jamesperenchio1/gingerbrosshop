@@ -98,7 +98,9 @@ export default function TrackOrderPage() {
         </div>
 
         <form onSubmit={handleTrack} className="space-y-4 mb-8">
+          <label htmlFor="track-email" className="sr-only">Email address</label>
           <input
+            id="track-email"
             type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
@@ -106,7 +108,9 @@ export default function TrackOrderPage() {
             required
             className="w-full bg-cream border border-soft-peach rounded-xl px-4 py-3 font-body text-deep-brown placeholder:text-earth/50 focus:outline-none focus:ring-2 focus:ring-rust/30"
           />
+          <label htmlFor="track-order-number" className="sr-only">Order number</label>
           <input
+            id="track-order-number"
             type="text"
             value={orderNum}
             onChange={(e) => setOrderNum(e.target.value)}
@@ -131,7 +135,7 @@ export default function TrackOrderPage() {
         </form>
 
         {error && (
-          <div className="bg-red-50 border border-red-100 rounded-xl p-4 text-center">
+          <div className="bg-rust/5 border border-rust/20 rounded-xl p-4 text-center">
             <p className="font-body text-rust text-sm">{error}</p>
           </div>
         )}
@@ -209,7 +213,7 @@ export default function TrackOrderPage() {
                 </button>
               )}
               {emailError && (
-                <p className="font-body text-[13px] text-red-500 mt-2 text-center">{emailError}</p>
+                <p className="font-body text-[13px] text-rust mt-2 text-center">{emailError}</p>
               )}
             </div>
 

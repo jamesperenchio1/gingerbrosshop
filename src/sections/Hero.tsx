@@ -116,26 +116,32 @@ export default function Hero() {
         {/* Right: product shot */}
         <div ref={imageRef} className="flex justify-center md:justify-end order-1 md:order-2">
           <div className="relative flex items-end justify-center md:justify-end gap-2 sm:gap-4 group">
-            <img
-              src="/images/hero-mug.png"
-              alt="Frosty mug of GingerBros Ginger Fizz"
-              width={542}
-              height={804}
-              loading="eager"
-              fetchPriority="high"
-              decoding="async"
-              className="w-[90px] xs:w-[110px] sm:w-[160px] md:w-[240px] block drop-shadow-[0_16px_32px_rgba(80,45,8,0.22)] rotate-[-6deg] sm:rotate-[-4deg] md:rotate-[-2deg] group-hover:rotate-0 transition-transform duration-500"
-            />
-            <img
-              src="/images/bottle-hero-transparent.png"
-              alt="GingerBros Ginger Fizz bottle"
-              width={420}
-              height={560}
-              loading="eager"
-              fetchPriority="high"
-              decoding="async"
-              className="w-[120px] xs:w-[140px] sm:w-[200px] md:w-[300px] block drop-shadow-[0_24px_48px_rgba(80,45,8,0.32)] rotate-[3deg] group-hover:rotate-0 transition-transform duration-500"
-            />
+            <picture>
+              <source srcSet="/images/hero-mug.webp" type="image/webp" />
+              <img
+                src="/images/hero-mug.png"
+                alt="Frosty mug of GingerBros Ginger Fizz"
+                width={480}
+                height={712}
+                loading="eager"
+                fetchPriority="high"
+                decoding="async"
+                className="w-[90px] xs:w-[110px] sm:w-[160px] md:w-[240px] block drop-shadow-[0_16px_32px_rgba(80,45,8,0.22)] rotate-[-6deg] sm:rotate-[-4deg] md:rotate-[-2deg] group-hover:rotate-0 transition-transform duration-500"
+              />
+            </picture>
+            <picture>
+              <source srcSet="/images/bottle-hero-transparent.webp" type="image/webp" />
+              <img
+                src="/images/bottle-hero-transparent.png"
+                alt="GingerBros Ginger Fizz bottle"
+                width={600}
+                height={804}
+                loading="eager"
+                fetchPriority="high"
+                decoding="async"
+                className="w-[120px] xs:w-[140px] sm:w-[200px] md:w-[300px] block drop-shadow-[0_24px_48px_rgba(80,45,8,0.32)] rotate-[3deg] group-hover:rotate-0 transition-transform duration-500"
+              />
+            </picture>
           </div>
         </div>
       </div>

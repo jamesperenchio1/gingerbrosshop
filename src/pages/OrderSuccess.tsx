@@ -241,7 +241,7 @@ export default function OrderSuccess() {
         )}
 
         {/* Order summary */}
-        <div className="bg-white border border-soft-peach rounded-2xl p-6 sm:p-8 mb-6 shadow-[0_8px_30px_rgba(61,36,16,0.06)]">
+        <div className="bg-white border border-soft-peach rounded-2xl p-6 sm:p-8 mb-6 shadow-panel">
           <div className="flex items-center justify-between mb-6 pb-5 border-b border-soft-peach/60">
             <div>
               <p className="font-body text-[12px] text-earth uppercase tracking-wider">Order #</p>

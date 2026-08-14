@@ -42,7 +42,7 @@ export default function Process() {
 
         <div ref={cardsRef} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
           {steps.map((step) => (
-            <div key={step.number} className="bg-cream rounded-[20px] p-5 sm:p-8">
+            <div key={step.number} className="bg-cream rounded-xxl p-5 sm:p-8">
               <span className="font-display font-bold text-deep-brown text-[4rem] leading-none block">
                 {step.number}
               </span>

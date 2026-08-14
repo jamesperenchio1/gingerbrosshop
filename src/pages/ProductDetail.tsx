@@ -73,7 +73,7 @@ function SpecIcon({ label, className = '' }: { label: string; className?: string
 
 function NutritionPanel({ nutrition }: { nutrition: { label: string; value: string }[] }) {
   return (
-    <div className="bg-cream/40 rounded-[20px] border border-soft-peach/60 p-6 md:p-8">
+    <div className="bg-cream/40 rounded-xxl border border-soft-peach/60 p-6 md:p-8">
       <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 mb-6">
         <div>
           <h3 className="font-display font-bold text-deep-brown text-2xl">Nutrition Facts</h3>
@@ -92,7 +92,7 @@ function NutritionPanel({ nutrition }: { nutrition: { label: string; value: stri
         </div>
       </div>
 
-      <div className="bg-white rounded-[16px] border border-soft-peach/60 overflow-hidden">
+      <div className="bg-white rounded-2xl border border-soft-peach/60 overflow-hidden">
         {nutrition.map((item, i) => {
           const isSub = item.label.startsWith('—');
           const isSubSub = item.label.startsWith('——');
@@ -127,7 +127,7 @@ function NutritionPanel({ nutrition }: { nutrition: { label: string; value: stri
 
 function SpecCard({ spec }: { spec: { label: string; value: string } }) {
   return (
-    <div className="group bg-cream/40 rounded-[16px] p-5 border border-soft-peach/60 flex gap-4 items-start hover:border-amber/40 transition-colors">
+    <div className="group bg-cream/40 rounded-2xl p-5 border border-soft-peach/60 flex gap-4 items-start hover:border-amber/40 transition-colors">
       <div className="w-10 h-10 rounded-full bg-white border border-soft-peach/60 flex items-center justify-center flex-shrink-0 text-rust group-hover:text-amber transition-colors">
         <SpecIcon label={spec.label} className="w-5 h-5" />
       </div>
@@ -195,10 +195,14 @@ function RelatedProductCard({ product }: { product: CatalogProduct }) {
   return (
     <div
       onClick={() => navigate(`/product/${product.id}`)}
-      className="bg-white border border-soft-peach/60 rounded-[20px] p-5 flex flex-col cursor-pointer hover:shadow-[0_12px_32px_rgba(61,36,16,0.12)] transition-shadow duration-300"
+      role="link"
+      tabIndex={0}
+      aria-label={product.name}
+      onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); navigate(`/product/${product.id}`); } }}
+      className="bg-white border border-soft-peach/60 rounded-xxl p-5 flex flex-col cursor-pointer hover:shadow-panel-hover transition-shadow duration-300 focus-visible:outline focus-visible:outline-2 focus-visible:outline-amber focus-visible:outline-offset-2"
     >
       <div className="flex items-center justify-center h-[160px] mb-4">
-        <img src={image} alt={product.name} className="max-h-full w-auto object-contain" />
+        <img src={image} alt={product.name} loading="lazy" decoding="async" className="max-h-full w-auto object-contain" />
       </div>
       <h4 className="font-display font-semibold text-deep-brown text-[15px] mb-1 leading-snug">{product.name}</h4>
       <p className="font-body text-earth text-[13px] leading-relaxed mb-4 flex-grow line-clamp-2">{shortDesc}</p>
@@ -361,7 +365,7 @@ export default function ProductDetail() {
       <div className="min-h-screen bg-warm-white">
         <div className="max-w-[1100px] mx-auto px-6 py-10 md:py-16 grid grid-cols-1 md:grid-cols-2 gap-10">
           <div>
-            <Skeleton className="w-full h-[480px] md:h-[600px] rounded-[20px] mb-4" />
+            <Skeleton className="w-full h-[480px] md:h-[600px] rounded-xxl mb-4" />
             <div className="flex gap-3">
               {Array.from({ length: 4 }).map((_, i) => <Skeleton key={i} className="w-20 h-20 rounded-xl" />)}
             </div>
@@ -465,7 +469,7 @@ export default function ProductDetail() {
               onMouseMove={handleImageMouseMove}
               onMouseEnter={() => { if (!(video && activeImage === images.length)) setIsZooming(true); }}
               onMouseLeave={() => setIsZooming(false)}
-              className="rounded-[20px] overflow-hidden mb-4 h-[480px] md:h-[600px] flex items-center justify-center select-none bg-cream/40"
+              className="rounded-xxl overflow-hidden mb-4 h-[480px] md:h-[600px] flex items-center justify-center select-none bg-cream/40"
               style={{ cursor: isZooming ? 'zoom-in' : 'default' }}
             >
               {video && activeImage === images.length ? (
@@ -479,6 +483,7 @@ export default function ProductDetail() {
                   <img
                     src={images[activeImage] ?? images[0]}
                     alt={product.name}
+                    decoding="async"
                     className="max-h-full max-w-full object-contain pointer-events-none mix-blend-multiply"
                     style={{
                       transform: isZooming ? 'scale(2.2)' : 'scale(1)',
@@ -493,7 +498,7 @@ export default function ProductDetail() {
             <div className="flex gap-3 overflow-x-auto pb-2">
               {images.map((img, i) => (
                 <button key={i} onClick={() => setActiveImage(i)} aria-label={`View ${product.name} photo ${i + 1}`} className={`flex-shrink-0 w-20 h-20 rounded-xl overflow-hidden border-2 transition-all ${activeImage === i ? 'border-amber' : 'border-transparent hover:border-soft-peach'}`}>
-                  <img src={img} alt={`${product.name} thumbnail ${i + 1}`} className="w-full h-full object-contain p-1" />
+                  <img src={img} alt={`${product.name} thumbnail ${i + 1}`} loading="lazy" decoding="async" className="w-full h-full object-contain p-1" />
                 </button>
               ))}
               {video && (
@@ -539,7 +544,7 @@ export default function ProductDetail() {
               {selectedPrice.recurring && (
                 <span className="font-body font-medium text-[15px] text-rust">{intervalLabel(selectedPrice.recurring)}</span>
               )}
-              <span className={`flex items-center gap-1.5 font-body font-medium text-[13px] ${stock === 'out_of_stock' ? 'text-earth/60' : stock === 'low_stock' ? 'text-amber' : 'text-accent-green'}`}>
+              <span className={`flex items-center gap-1.5 font-body font-medium text-[13px] ${stock === 'out_of_stock' ? 'text-earth/60' : stock === 'low_stock' ? 'text-amber-ink' : 'text-green-ink'}`}>
                 <span className={`w-2 h-2 rounded-full ${stock === 'out_of_stock' ? 'bg-earth/40' : stock === 'low_stock' ? 'bg-amber' : 'bg-accent-green'}`} />
                 {stock === 'out_of_stock' ? 'Out of Stock' : stock === 'low_stock' ? 'Low Stock' : 'In Stock'}
               </span>
@@ -654,10 +659,10 @@ export default function ProductDetail() {
             {/* ── Quantity + Add to Cart ── */}
             <div ref={atcRef} className="mb-8">
               <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
-                <div className="flex items-center gap-4 border-2 border-soft-peach rounded-full py-2.5 px-5">
-                  <button onClick={() => setQuantity(Math.max(1, quantity - 1))} className="text-earth hover:text-deep-brown transition-colors"><MinusIcon /></button>
+                <div className="flex items-center gap-2 border-2 border-soft-peach rounded-full py-1.5 px-3">
+                  <button onClick={() => setQuantity(Math.max(1, quantity - 1))} aria-label="Decrease quantity" className="text-earth hover:text-deep-brown transition-colors p-2"><MinusIcon /></button>
                   <span className="font-body font-medium text-earth min-w-[24px] text-center">{quantity}</span>
-                  <button onClick={() => setQuantity(Math.min(24, quantity + 1))} className="text-earth hover:text-deep-brown transition-colors"><PlusIcon /></button>
+                  <button onClick={() => setQuantity(Math.min(24, quantity + 1))} aria-label="Increase quantity" className="text-earth hover:text-deep-brown transition-colors p-2"><PlusIcon /></button>
                 </div>
                 <button
                   onClick={handleAdd}
@@ -676,7 +681,7 @@ export default function ProductDetail() {
 
               {/* Processing time notice (equipment only) */}
               {isEquipment && (
-                <p className="mt-4 font-body font-semibold text-[13px] text-red-600">
+                <p className="mt-4 font-body font-semibold text-[13px] text-rust">
                   ⏱ 5 days processing time
                 </p>
               )}
@@ -690,9 +695,12 @@ export default function ProductDetail() {
                   </label>
                   {isGift && (
                     <div className="mt-3 space-y-3">
-                      <input type="text" value={giftName} onChange={(e) => setGiftName(e.target.value)} placeholder="Recipient name" data-testid="gift-name" className="w-full bg-cream border border-soft-peach rounded-xl px-4 py-2.5 font-body text-[14px] text-deep-brown placeholder:text-earth/50 focus:outline-none focus:ring-2 focus:ring-rust/30" />
-                      <input type="email" value={giftEmail} onChange={(e) => setGiftEmail(e.target.value)} placeholder="Recipient email" data-testid="gift-email" className="w-full bg-cream border border-soft-peach rounded-xl px-4 py-2.5 font-body text-[14px] text-deep-brown placeholder:text-earth/50 focus:outline-none focus:ring-2 focus:ring-rust/30" />
-                      <textarea value={giftMessage} onChange={(e) => setGiftMessage(e.target.value)} placeholder="Gift message (optional)" rows={3} data-testid="gift-message" className="w-full bg-cream border border-soft-peach rounded-xl px-4 py-2.5 font-body text-[14px] text-deep-brown placeholder:text-earth/50 focus:outline-none focus:ring-2 focus:ring-rust/30 resize-none" />
+                      <label htmlFor="gift-recipient-name" className="sr-only">Recipient name</label>
+                      <input id="gift-recipient-name" type="text" value={giftName} onChange={(e) => setGiftName(e.target.value)} placeholder="Recipient name" data-testid="gift-name" className="w-full bg-cream border border-soft-peach rounded-xl px-4 py-2.5 font-body text-[14px] text-deep-brown placeholder:text-earth/50 focus:outline-none focus:ring-2 focus:ring-rust/30" />
+                      <label htmlFor="gift-recipient-email" className="sr-only">Recipient email</label>
+                      <input id="gift-recipient-email" type="email" value={giftEmail} onChange={(e) => setGiftEmail(e.target.value)} placeholder="Recipient email" data-testid="gift-email" className="w-full bg-cream border border-soft-peach rounded-xl px-4 py-2.5 font-body text-[14px] text-deep-brown placeholder:text-earth/50 focus:outline-none focus:ring-2 focus:ring-rust/30" />
+                      <label htmlFor="gift-message" className="sr-only">Gift message</label>
+                      <textarea id="gift-message" value={giftMessage} onChange={(e) => setGiftMessage(e.target.value)} placeholder="Gift message (optional)" rows={3} data-testid="gift-message" className="w-full bg-cream border border-soft-peach rounded-xl px-4 py-2.5 font-body text-[14px] text-deep-brown placeholder:text-earth/50 focus:outline-none focus:ring-2 focus:ring-rust/30 resize-none" />
                     </div>
                   )}
                 </div>
@@ -701,7 +709,7 @@ export default function ProductDetail() {
 
             {/* Delivery estimate */}
             {!isEquipment && (
-              <p className="font-body text-[13px] text-accent-green mb-6">
+              <p className="font-body text-[13px] text-green-ink mb-6">
                 🚚 {getDeliveryEstimateMessage()}
               </p>
             )}
@@ -759,7 +767,7 @@ export default function ProductDetail() {
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-[680px]">
                   {content.features!.map((feat) => (
-                    <div key={feat} className="flex items-start gap-3 bg-cream/60 rounded-[14px] px-4 py-3.5">
+                    <div key={feat} className="flex items-start gap-3 bg-cream/60 rounded-xl px-4 py-3.5">
                       <CheckIcon className="text-amber flex-shrink-0 mt-0.5" />
                       <span className="font-body text-[14px] text-deep-brown leading-snug">{feat}</span>
                     </div>
@@ -775,7 +783,7 @@ export default function ProductDetail() {
                   <h3 className="font-display font-semibold text-deep-brown text-[1.1rem] sticky top-28">Specifications</h3>
                 </div>
                 <div className="max-w-[680px]">
-                  <div className="rounded-[16px] overflow-hidden border border-soft-peach/60">
+                  <div className="rounded-2xl overflow-hidden border border-soft-peach/60">
                     {content.specs!.map((spec, i) => (
                       <div key={spec.label} className={`flex gap-4 px-5 py-3.5 ${i % 2 === 0 ? 'bg-white' : 'bg-cream/40'}`}>
                         <span className="font-body font-medium text-[13px] text-rust uppercase tracking-[0.06em] w-40 flex-shrink-0">{spec.label}</span>

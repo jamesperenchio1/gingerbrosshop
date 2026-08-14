@@ -239,19 +239,19 @@ export default function CartDrawer() {
                       </div>
                       <button
                         onClick={() => handleRemove(item)}
-                        className="text-earth hover:text-rust transition-colors flex-shrink-0"
-                        title="Remove item"
+                        className="text-earth hover:text-rust transition-colors flex-shrink-0 p-1.5 -m-1.5"
+                        aria-label={`Remove ${item.name} from cart`}
                       >
                         <TrashIcon />
                       </button>
                     </div>
 
                     <div className="flex items-center justify-between mt-2">
-                      <div className="flex items-center gap-2 border border-soft-peach rounded-full px-2 py-1">
+                      <div className="flex items-center gap-1 border border-soft-peach rounded-full px-1 py-1">
                         <button
                           onClick={() => decrementOrRemove(item.id)}
-                          className="text-earth hover:text-deep-brown transition-colors"
-                          title="Decrease quantity"
+                          className="text-earth hover:text-deep-brown transition-colors p-1.5"
+                          aria-label={`Decrease quantity of ${item.name}`}
                         >
                           <MinusIcon className="w-3 h-3" />
                         </button>
@@ -260,8 +260,8 @@ export default function CartDrawer() {
                         </span>
                         <button
                           onClick={() => updateQuantity(item.id, item.quantity + 1)}
-                          className="text-earth hover:text-deep-brown transition-colors"
-                          title="Increase quantity"
+                          className="text-earth hover:text-deep-brown transition-colors p-1.5"
+                          aria-label={`Increase quantity of ${item.name}`}
                         >
                           <PlusIcon className="w-3 h-3" />
                         </button>
@@ -286,7 +286,7 @@ export default function CartDrawer() {
             </div>
 
             {/* Delivery estimate */}
-            <p className="font-body text-[12px] text-accent-green">
+            <p className="font-body text-[12px] text-green-ink">
               🚚 {getDeliveryEstimateMessage()}
             </p>
 
@@ -306,7 +306,7 @@ export default function CartDrawer() {
             )}
             {subtotal >= FREE_SHIPPING_THRESHOLD && (
               <div className="bg-accent-green/10 rounded-xl px-4 py-3">
-                <p className="font-body text-[13px] text-accent-green font-medium">
+                <p className="font-body text-[13px] text-green-ink font-medium">
                   🎉 {t('freeShippingUnlocked')}
                 </p>
               </div>
@@ -327,7 +327,9 @@ export default function CartDrawer() {
               </div>
             ) : referralInput || referralCode ? (
               <div className="flex items-center gap-2">
+                <label htmlFor="cart-referral-code" className="sr-only">Referral code</label>
                 <input
+                  id="cart-referral-code"
                   value={referralCode}
                   onChange={(e) => handleReferralChange(e.target.value)}
                   placeholder="Referral code"
@@ -353,10 +355,11 @@ export default function CartDrawer() {
             {noteOpen ? (
               <div className="space-y-1.5">
                 <div className="flex items-center justify-between">
-                  <span className="font-body text-[13px] text-earth">Order note / gift message</span>
+                  <label htmlFor="cart-order-note" className="font-body text-[13px] text-earth">Order note / gift message</label>
                   <span className="font-body text-[11px] text-earth/50">{orderNote.length}/500</span>
                 </div>
                 <textarea
+                  id="cart-order-note"
                   value={orderNote}
                   onChange={(e) => handleNoteChange(e.target.value)}
                   placeholder="Any special instructions or a gift message…"

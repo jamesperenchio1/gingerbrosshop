@@ -191,7 +191,9 @@ export default function FAQPage() {
           <div className="max-w-[480px] mx-auto mb-8">
             <div className="relative">
               <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-earth/50" />
+              <label htmlFor="faq-search" className="sr-only">Search questions</label>
               <input
+                id="faq-search"
                 type="text"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
@@ -203,10 +205,12 @@ export default function FAQPage() {
 
           {/* Mobile category pills (horizontal scroll) */}
           <div className="lg:hidden mb-8">
-            <div className="flex gap-2 overflow-x-auto pb-2 -mx-6 px-6 scrollbar-hide">
+            <div role="tablist" className="flex gap-2 overflow-x-auto pb-2 -mx-6 px-6 scrollbar-hide">
               {(Object.keys(CATEGORY_LABELS) as Category[]).map((cat) => (
                 <button
                   key={cat}
+                  role="tab"
+                  aria-selected={activeCategory === cat}
                   onClick={() => setActiveCategory(cat)}
                   className={`flex items-center gap-2 whitespace-nowrap px-4 py-2 rounded-full font-body text-sm transition-colors ${
                     activeCategory === cat
@@ -251,7 +255,7 @@ export default function FAQPage() {
                 {filteredFaqs.map((faq) => (
                   <details
                     key={faq.q}
-                    className="group bg-cream rounded-[16px] p-6 cursor-pointer open:bg-cream/80 transition-colors"
+                    className="group bg-cream rounded-2xl p-6 cursor-pointer open:bg-cream/80 transition-colors"
                   >
                     <summary className="flex items-start gap-4 list-none">
                       <div className="flex-shrink-0 mt-0.5">{faq.icon}</div>

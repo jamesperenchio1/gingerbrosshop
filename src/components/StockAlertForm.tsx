@@ -34,7 +34,7 @@ export default function StockAlertForm({ productId, className = '' }: Props) {
 
   if (submitted) {
     return (
-      <p className={`text-sm text-accent-green font-medium ${className}`}>
+      <p className={`text-sm text-green-ink font-medium ${className}`}>
         ✓ We'll notify you when it's back!
       </p>
     );
@@ -42,13 +42,15 @@ export default function StockAlertForm({ productId, className = '' }: Props) {
 
   return (
     <form onSubmit={handleSubmit} className={`flex gap-2 ${className}`}>
+      <label htmlFor={`stock-alert-email-${productId}`} className="sr-only">Email address</label>
       <input
+        id={`stock-alert-email-${productId}`}
         type="email"
         required
         value={email}
         onChange={(e) => setEmail(e.target.value)}
         placeholder="your@email.com"
-        className="flex-1 min-w-0 px-3 py-2 text-sm border border-deep-brown/20 rounded-full bg-warm-white text-deep-brown placeholder:text-earth/40 focus:outline-none focus:border-deep-brown/50"
+        className="flex-1 min-w-0 px-3 py-2 text-sm border border-deep-brown/20 rounded-full bg-warm-white text-deep-brown placeholder:text-earth/40 focus:outline-none focus:ring-2 focus:ring-amber/50 focus:border-transparent"
       />
       <button
         type="submit"

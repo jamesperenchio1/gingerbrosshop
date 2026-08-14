@@ -148,7 +148,9 @@ export default function OrdersPage() {
         </div>
 
         <form onSubmit={handleLookup} className="flex gap-2 mb-8">
+          <label htmlFor="orders-email" className="sr-only">Email address</label>
           <input
+            id="orders-email"
             type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
@@ -171,7 +173,7 @@ export default function OrdersPage() {
         </form>
 
         {error && (
-          <div className="bg-red-50 border border-red-100 rounded-xl p-4 text-center mb-6">
+          <div className="bg-rust/5 border border-rust/20 rounded-xl p-4 text-center mb-6">
             <p className="font-body text-rust text-sm">{error}</p>
           </div>
         )}
