@@ -134,12 +134,12 @@ export default function Hero() {
               <img
                 src="/images/bottle-hero-transparent.png"
                 alt="GingerBros Ginger Fizz bottle"
-                width={600}
-                height={804}
+                width={195}
+                height={759}
                 loading="eager"
                 fetchPriority="high"
                 decoding="async"
-                className="w-[120px] xs:w-[140px] sm:w-[200px] md:w-[300px] block drop-shadow-[0_24px_48px_rgba(80,45,8,0.32)] rotate-[3deg] group-hover:rotate-0 transition-transform duration-500"
+                className="w-[70px] xs:w-[85px] sm:w-[110px] md:w-[150px] block drop-shadow-[0_24px_48px_rgba(80,45,8,0.32)] rotate-[3deg] group-hover:rotate-0 transition-transform duration-500"
               />
             </picture>
           </div>
