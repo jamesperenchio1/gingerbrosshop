@@ -169,6 +169,7 @@ export default function CartDrawer() {
     // suffix from older cart items persisted before the Stripe-driven catalog.
     const subIndex = item.id.indexOf('-sub-');
     const productId = item.productId ?? (subIndex > 0 ? item.id.slice(0, subIndex) : item.id);
+    closeCart();
     navigate(`/product/${productId}`);
   };
 

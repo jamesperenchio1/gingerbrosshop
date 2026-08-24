@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect, useLayoutEffect, useCallback, useMemo } from 'react';
-import { useParams, useSearchParams, useNavigate } from 'react-router';
+import { useParams, useSearchParams, useNavigate, Link } from 'react-router';
 import gsap from 'gsap';
 import { useCart } from '@/context/CartContext';
 import { toast } from 'sonner';
@@ -246,6 +246,10 @@ export default function ProductDetail() {
   const mainImageContainerRef = useRef<HTMLDivElement>(null);
   const [isZooming, setIsZooming] = useState(false);
   const [zoomPos, setZoomPos] = useState({ x: 50, y: 50 });
+  // Touch devices report synthetic mouseenter/mousemove on tap but never fire
+  // mouseleave (there's no cursor to leave), which permanently stuck the image
+  // zoomed in at 2.2x after a single tap. Hover-zoom is desktop-only behavior.
+  const supportsHoverZoom = typeof window !== 'undefined' && window.matchMedia('(hover: hover) and (pointer: fine)').matches;
   const [showStickyAtc, setShowStickyAtc] = useState(false);
   const atcRef = useRef<HTMLDivElement>(null);
 
@@ -466,8 +470,8 @@ export default function ProductDetail() {
           <div ref={heroRef} className="relative">
             <div
               ref={mainImageContainerRef}
-              onMouseMove={handleImageMouseMove}
-              onMouseEnter={() => { if (!(video && activeImage === images.length)) setIsZooming(true); }}
+              onMouseMove={supportsHoverZoom ? handleImageMouseMove : undefined}
+              onMouseEnter={() => { if (supportsHoverZoom && !(video && activeImage === images.length)) setIsZooming(true); }}
               onMouseLeave={() => setIsZooming(false)}
               className="rounded-xxl overflow-hidden mb-4 h-[480px] md:h-[600px] flex items-center justify-center select-none bg-cream/40"
               style={{ cursor: isZooming ? 'zoom-in' : 'default' }}
@@ -514,10 +518,10 @@ export default function ProductDetail() {
 
           {/* Product Info */}
           <div ref={infoRef}>
-            <a href="/#shop" className="flex w-fit items-center gap-2 font-body font-medium text-[13px] text-earth hover:text-deep-brown transition-colors mb-4">
+            <Link to="/#shop" className="flex w-fit items-center gap-2 font-body font-medium text-[13px] text-earth hover:text-deep-brown transition-colors mb-4">
               <ArrowLeftIcon />
               {isEquipment ? 'Back to Equipment' : 'Back to Shop'}
-            </a>
+            </Link>
 
             {/* Brand (equipment) or Badge (drinks) */}
             {isEquipment && (
