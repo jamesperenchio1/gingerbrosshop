@@ -6,6 +6,8 @@
  * description, Open Graph tags, canonical, and JSON-LD in the initial HTML.
  */
 
+import { BLOG_SEO_META } from './src/lib/blogSeoMeta';
+
 const SITE_URL = 'https://gingerbrosshop.com';
 
 interface RouteMeta {
@@ -223,180 +225,23 @@ function productRouteMeta(product: CatalogProduct, pathname: string): RouteMeta 
   };
 }
 
-interface BlogPostMeta {
-  title: string;
-  description: string;
-  date: string;
-  author: string;
-  image?: string;
-}
-
-/**
- * Lightweight mirror of the blog catalogue in src/pages/BlogPage.tsx, used so
- * crawlers and link-preview bots get correct per-article meta and a 200 status
- * on /blog/:slug deep links (instead of the generic SPA 404 fallback).
- */
-const BLOG_POSTS: Record<string, BlogPostMeta> = {
-  'art-of-the-ginger-bug': {
-    title: 'The Art of the Ginger Bug: How We Brew Living Fizz',
-    description:
-      'Step inside our Bangkok brewhouse for a look at the wild ferment that powers every bottle — from raw rhizome to bubbling, living soda.',
-    date: '2026-06-02',
-    author: 'James, Founder',
-    image: `${SITE_URL}/images/story-brewing.webp`,
-  },
-  'moscow-mule': {
-    title: 'The Perfect Moscow Mule with GingerBros',
-    description:
-      'Why our 7-day fermented ginger fizz makes the best Moscow Mule you have ever tasted — and the copper-mug ritual that goes with it.',
-    date: '2026-05-28',
-    author: 'The GingerBros Kitchen',
-    image: `${SITE_URL}/images/ginger-fizz-new.png`,
-  },
-  'dark-and-stormy': {
-    title: 'Dark ’n’ Stormy with a Thai Ginger Kick',
-    description: 'A rum-forward classic gets brighter with fresh, fiery Thai ginger and live-culture fizz.',
-    date: '2026-05-20',
-    author: 'The GingerBros Kitchen',
-  },
-  'ginger-margarita': {
-    title: 'Ginger Fizz Margarita',
-    description: 'Tequila, lime, and fiery ginger fizz come together in a refreshingly different margarita.',
-    date: '2026-05-12',
-    author: 'The GingerBros Kitchen',
-  },
-  'spicy-ginger-lemonade': {
-    title: 'Spicy Ginger Lemonade (Zero-Proof)',
-    description: 'A bright, alcohol-free refresher that still feels like a special occasion.',
-    date: '2026-05-05',
-    author: 'The GingerBros Kitchen',
-  },
-  'ginger-glazed-chicken': {
-    title: 'Ginger Fizz Glazed Chicken Wings',
-    description: 'Reduce GingerBros into a sticky, spicy glaze for oven or grill.',
-    date: '2026-04-26',
-    author: 'The GingerBros Kitchen',
-  },
-  'ginger-affogato-float': {
-    title: 'Ginger Fizz Affogato Float',
-    description: 'A grown-up dessert: cold ginger fizz poured over vanilla ice cream and a shot of espresso.',
-    date: '2026-04-18',
-    author: 'The GingerBros Kitchen',
-  },
-  'gut-health': {
-    title: 'Ginger Fizz & Gut Health: What You Should Know',
-    description: 'The science behind ginger, fermentation, and why your gut loves naturally fermented ginger fizz.',
-    date: '2026-06-08',
-    author: 'GingerBros Wellness',
-  },
-  'probiotics-prebiotics': {
-    title: 'Probiotics vs Prebiotics: A Simple Guide',
-    description: 'Learn the difference and how to pair naturally fermented ginger fizz with gut-friendly foods.',
-    date: '2026-05-30',
-    author: 'GingerBros Wellness',
-  },
-  'ginger-immunity': {
-    title: 'Ginger for Immunity: Fact or Fad?',
-    description: 'What research actually says about ginger, inflammation, and immune support.',
-    date: '2026-05-22',
-    author: 'GingerBros Wellness',
-  },
-  'low-sugar-drinking': {
-    title: 'Why We Keep the Sugar Lower',
-    description: 'Most of the sugar in our brew is eaten by the ginger bug during fermentation.',
-    date: '2026-05-14',
-    author: 'GingerBros Wellness',
-  },
-  'hydration-electrolytes': {
-    title: 'Ginger Fizz, Hydration, and Hot Days',
-    description: 'Can a fermented ginger drink actually help on sweaty afternoons?',
-    date: '2026-05-08',
-    author: 'GingerBros Wellness',
-  },
-
-  'storing-living-fizz': {
-    title: 'How to Store Living Fizz (and Open It Safely)',
-    description:
-      'Live cultures keep working in the bottle. Here is how to keep yours happy and avoid a fountain.',
-    date: '2026-04-22',
-    author: 'The GingerBros Kitchen',
-  },
-  'history-of-ginger-beer': {
-    title: 'A Short, Spicy History of Ginger Beer',
-    description: 'From 18th-century England to Thai street stalls, the global journey of fermented ginger.',
-    date: '2026-04-14',
-    author: 'GingerBros Stories',
-  },
-  'thai-ginger-vs-the-world': {
-    title: 'Thai Ginger vs the World: Why Origin Matters',
-    description: 'Not all ginger is created equal. Here is what makes the Thai rhizome special.',
-    date: '2026-04-06',
-    author: 'GingerBros Stories',
-  },
-  'flavor-pairing-guide': {
-    title: 'The GingerBros Flavor Pairing Guide',
-    description: 'What to eat, mix, and serve alongside ginger fizz for maximum deliciousness.',
-    date: '2026-03-28',
-    author: 'The GingerBros Kitchen',
-  },
-  'meet-the-brewers': {
-    title: 'Meet the Brewers Behind the Bottle',
-    description:
-      'The small Bangkok team that hand-balances every batch — and why they do it by taste, not by formula.',
-    date: '2026-03-20',
-    author: 'GingerBros Stories',
-    image: `${SITE_URL}/images/story-brewing.webp`,
-  },
-  'ginger-bug-at-home': {
-    title: 'Start Your Own Ginger Bug at Home',
-    description:
-      'A beginner-friendly walkthrough to culture your own wild ginger starter — the same idea behind our brew.',
-    date: '2026-03-12',
-    author: 'James, Founder',
-  },
-  'sustainability-bottle-to-soil': {
-    title: 'From Bottle to Soil: Our Sustainability Promise',
-    description: 'Recyclable glass, ginger pulp that becomes compost, and the climate cost we are still working on.',
-    date: '2026-03-04',
-    author: 'GingerBros Stories',
-  },
-  'ginger-fizz-bar-menu': {
-    title: 'Building a Ginger Fizz Cocktail Menu for Your Bar',
-    description:
-      'How bars and restaurants can build a focused, profitable ginger fizz menu — from signature serves to garnish stations and staff training.',
-    date: '2026-06-12',
-    author: 'The GingerBros Trade Team',
-  },
-  'batching-cocktails-for-service': {
-    title: 'Batching Ginger Fizz Cocktails for Busy Service',
-    description:
-      'Pre-batch the base, pour the fizz fresh. A practical guide to speed, consistency, and carbonation for high-volume bars.',
-    date: '2026-06-10',
-    author: 'The GingerBros Trade Team',
-  },
-  'zero-proof-restaurant-drinks': {
-    title: 'Zero-Proof Drinks That Restaurants Can Actually Sell',
-    description: 'Why the mocktail menu matters, how to price it, and three zero-proof builds that work on a restaurant floor.',
-    date: '2026-06-07',
-    author: 'The GingerBros Trade Team',
-  },
-};
+const BLOG_POSTS_BY_SLUG = new Map(BLOG_SEO_META.map((post) => [post.slug, post]));
 
 function blogPostMeta(slug: string): RouteMeta | null {
-  const post = BLOG_POSTS[slug];
+  const post = BLOG_POSTS_BY_SLUG.get(slug);
   if (!post) return null;
   const url = `${SITE_URL}/blog/${slug}`;
-  const image = post.image ?? FALLBACK_IMAGE;
+  const image = post.image ? `${SITE_URL}${post.image}` : FALLBACK_IMAGE;
   return {
     title: `${post.title} — GingerBros Brew Journal`,
-    description: post.description,
+    description: post.excerpt,
     image,
     type: 'article',
     jsonLd: {
       '@context': 'https://schema.org',
       '@type': 'BlogPosting',
       headline: post.title,
-      description: post.description,
+      description: post.excerpt,
       datePublished: post.date,
       image,
       url,
