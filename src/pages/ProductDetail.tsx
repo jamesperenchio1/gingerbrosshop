@@ -369,7 +369,7 @@ export default function ProductDetail() {
       <div className="min-h-screen bg-warm-white">
         <div className="max-w-[1100px] mx-auto px-6 py-10 md:py-16 grid grid-cols-1 md:grid-cols-2 gap-10">
           <div>
-            <Skeleton className="w-full h-[480px] md:h-[600px] rounded-xxl mb-4" />
+            <Skeleton className="w-full h-[320px] xs:h-[360px] sm:h-[440px] md:h-[600px] rounded-xxl mb-4" />
             <div className="flex gap-3">
               {Array.from({ length: 4 }).map((_, i) => <Skeleton key={i} className="w-20 h-20 rounded-xl" />)}
             </div>
@@ -463,6 +463,11 @@ export default function ProductDetail() {
 
       <div className="max-w-[1280px] mx-auto px-4 sm:px-6 pt-20 sm:pt-24 md:pt-28 pb-12 md:pb-16">
 
+        <Link to="/#shop" className="flex w-fit items-center gap-2 font-body font-medium text-[13px] text-earth hover:text-deep-brown transition-colors mb-4">
+          <ArrowLeftIcon />
+          {isEquipment ? 'Back to Equipment' : 'Back to Shop'}
+        </Link>
+
         {/* ── Hero: Gallery + Info ── */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-16">
 
@@ -473,7 +478,7 @@ export default function ProductDetail() {
               onMouseMove={supportsHoverZoom ? handleImageMouseMove : undefined}
               onMouseEnter={() => { if (supportsHoverZoom && !(video && activeImage === images.length)) setIsZooming(true); }}
               onMouseLeave={() => setIsZooming(false)}
-              className="rounded-xxl overflow-hidden mb-4 h-[480px] md:h-[600px] flex items-center justify-center select-none bg-cream/40"
+              className="rounded-xxl overflow-hidden mb-4 h-[320px] xs:h-[360px] sm:h-[440px] md:h-[600px] flex items-center justify-center select-none bg-cream/40"
               style={{ cursor: isZooming ? 'zoom-in' : 'default' }}
             >
               {video && activeImage === images.length ? (
@@ -518,11 +523,6 @@ export default function ProductDetail() {
 
           {/* Product Info */}
           <div ref={infoRef}>
-            <Link to="/#shop" className="flex w-fit items-center gap-2 font-body font-medium text-[13px] text-earth hover:text-deep-brown transition-colors mb-4">
-              <ArrowLeftIcon />
-              {isEquipment ? 'Back to Equipment' : 'Back to Shop'}
-            </Link>
-
             {/* Brand (equipment) or Badge (drinks) */}
             {isEquipment && (
               <span className="inline-flex items-center font-body font-semibold text-[11px] uppercase tracking-[0.1em] text-rust/70 mb-3">

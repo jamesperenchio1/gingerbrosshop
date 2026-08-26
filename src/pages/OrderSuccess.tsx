@@ -3,6 +3,7 @@ import { useSearchParams, Link } from 'react-router';
 import { CheckCircle, Package, Truck, Mail, FileText, Settings, Home, Gift } from 'lucide-react';
 import { useCart } from '@/context/CartContext';
 import { PENDING_SUBSCRIPTION_CHECKOUT_KEY, startCheckout } from '@/lib/checkout';
+import { formatCurrency as baht } from '@/lib/format';
 import type { CartItem } from '@/types/cart';
 import SEO from '@/components/SEO';
 import CopyButton from '@/components/CopyButton';
@@ -41,8 +42,6 @@ interface OrderDetails {
   recipientName: string | null;
   giftMessage: string | null;
 }
-
-const baht = (minor: number | null | undefined) => `฿${((minor ?? 0) / 100).toLocaleString()}`;
 
 /** Confirmed → Preparing → Shipped progress, based on whether tracking exists. */
 function OrderTimeline({ shipped }: { shipped: boolean }) {

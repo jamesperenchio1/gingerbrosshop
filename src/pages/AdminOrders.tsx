@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Package, Truck, Search, Eye, EyeOff } from 'lucide-react';
 import CopyButton from '@/components/CopyButton';
+import { formatCurrency, formatOrderDate } from '@/lib/format';
 
 interface Order {
   sessionId: string;
@@ -228,12 +229,7 @@ export default function AdminOrders() {
         <div className="space-y-4">
           {orders.map((order) => {
             const orderNum = order.sessionId.slice(-8).toUpperCase();
-            const total = (order.amountTotal / 100).toLocaleString();
-            const date = new Date(order.createdAt).toLocaleDateString('en-GB', {
-              day: 'numeric',
-              month: 'short',
-              year: 'numeric',
-            });
+            const date = formatOrderDate(order.createdAt);
             const isOpen = selectedOrder?.sessionId === order.sessionId;
 
             return (
@@ -266,7 +262,7 @@ export default function AdminOrders() {
                     )}
                   </div>
                   <div className="text-right">
-                    <p className="font-display font-semibold text-deep-brown">฿{total}</p>
+                    <p className="font-display font-semibold text-deep-brown">{formatCurrency(order.amountTotal)}</p>
                     <p className="font-body text-earth text-[12px]">{order.items.reduce((a, i) => a + i.quantity, 0)} items</p>
                   </div>
                 </div>

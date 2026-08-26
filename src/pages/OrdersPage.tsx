@@ -3,6 +3,7 @@ import { useNavigate, Link } from 'react-router';
 import { ArrowLeft, Search, Package, Truck, CheckCircle, ChevronDown, ChevronUp, Mail, RotateCcw, Clock } from 'lucide-react';
 import SEO from '@/components/SEO';
 import CopyButton from '@/components/CopyButton';
+import { formatCurrency, formatOrderDate } from '@/lib/format';
 
 interface OrderSummary {
   sessionId: string;
@@ -20,11 +21,7 @@ interface OrderSummary {
 
 function OrderCard({ order }: { order: OrderSummary }) {
   const [open, setOpen] = useState(false);
-  const date = new Date(order.createdAt).toLocaleDateString('en-GB', {
-    day: 'numeric',
-    month: 'short',
-    year: 'numeric',
-  });
+  const date = formatOrderDate(order.createdAt);
   const hasTracking = !!order.trackingNumber;
 
   return (
@@ -52,7 +49,7 @@ function OrderCard({ order }: { order: OrderSummary }) {
           </div>
         </div>
         <div className="flex items-center gap-3 flex-shrink-0">
-          <span className="font-display font-semibold text-deep-brown">฿{(order.amountTotal / 100).toLocaleString()}</span>
+          <span className="font-display font-semibold text-deep-brown">{formatCurrency(order.amountTotal)}</span>
           {open ? <ChevronUp className="w-4 h-4 text-earth" /> : <ChevronDown className="w-4 h-4 text-earth" />}
         </div>
       </button>
@@ -63,7 +60,7 @@ function OrderCard({ order }: { order: OrderSummary }) {
             {order.items.map((item, idx) => (
               <div key={idx} className="flex justify-between font-body text-[14px]">
                 <span className="text-earth">{item.description} × {item.quantity}</span>
-                <span className="text-deep-brown">฿{(item.amountTotal / 100).toLocaleString()}</span>
+                <span className="text-deep-brown">{formatCurrency(item.amountTotal)}</span>
               </div>
             ))}
           </div>

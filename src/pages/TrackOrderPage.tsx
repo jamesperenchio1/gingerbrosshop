@@ -4,6 +4,7 @@ import { ArrowLeft, Search, Package, Truck, CheckCircle, Mail } from 'lucide-rea
 import SEO from '@/components/SEO';
 import CopyButton from '@/components/CopyButton';
 import ReorderButton from '@/components/ReorderButton';
+import { formatCurrency } from '@/lib/format';
 
 interface OrderResult {
   sessionId: string;
@@ -153,7 +154,7 @@ export default function TrackOrderPage() {
               <div className="text-right">
                 <p className="font-body text-[13px] text-earth uppercase tracking-wider">Total</p>
                 <p className="font-display font-semibold text-deep-brown">
-                  ฿{(result.amountTotal / 100).toLocaleString()}
+                  {formatCurrency(result.amountTotal)}
                 </p>
               </div>
             </div>
@@ -162,7 +163,7 @@ export default function TrackOrderPage() {
               {result.items.map((item, idx) => (
                 <div key={idx} className="flex justify-between font-body text-[14px]">
                   <span className="text-earth">{item.description} × {item.quantity}</span>
-                  <span className="text-deep-brown">฿{(item.amountTotal / 100).toLocaleString()}</span>
+                  <span className="text-deep-brown">{formatCurrency(item.amountTotal)}</span>
                 </div>
               ))}
             </div>
