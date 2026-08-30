@@ -1,6 +1,6 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { getOrders } from '../orders.js';
-import { getResend, trackingInfoEmailHtml, MAIL_FROM } from '../email.js';
+import { getResend, trackingInfoEmailHtml, MAIL_FROM, SUPPORT_REPLY_TO } from '../email.js';
 import { rateLimit, getClientIp } from '../rateLimit.js';
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
@@ -46,6 +46,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     const result = await resend.emails.send({
       from: MAIL_FROM,
       to: email,
+      replyTo: SUPPORT_REPLY_TO,
       subject: `Your GingerBros order #${orderNum} status`,
       html,
     });

@@ -1,7 +1,7 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { getOrders, getOrderBySessionId, updateTracking, type Order } from '../orders.js';
 import { rateLimit, getClientIp } from '../rateLimit.js';
-import { getResend, MAIL_FROM, shippingNotificationHtml, boxReturnRewardHtml } from '../email.js';
+import { getResend, MAIL_FROM, SUPPORT_REPLY_TO, shippingNotificationHtml, boxReturnRewardHtml } from '../email.js';
 import { addCredit } from '../credits.js';
 import { getStripe } from '../stripe.js';
 
@@ -58,6 +58,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
           await resend.emails.send({
             from: MAIL_FROM,
             to: email,
+            replyTo: SUPPORT_REPLY_TO,
             subject: `Your ฿${Math.round(amount / 100)} box-return reward is ready ♻️`,
             html: boxReturnRewardHtml(Math.round(amount / 100)),
           });
@@ -103,6 +104,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
             await resend.emails.send({
               from: MAIL_FROM,
               to: email,
+              replyTo: SUPPORT_REPLY_TO,
               subject: `Your ฿${Math.round(amount / 100)} box-return reward is ready ♻️`,
               html: boxReturnRewardHtml(Math.round(amount / 100), promo.code),
             });
@@ -174,6 +176,7 @@ async function sendShippingNotification(order: Order): Promise<boolean> {
       await resend.emails.send({
         from: MAIL_FROM,
         to,
+        replyTo: SUPPORT_REPLY_TO,
         subject: `Your GingerBros order #${orderId} is on its way! 🚚`,
         html,
       });
