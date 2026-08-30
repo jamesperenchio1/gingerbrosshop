@@ -7,6 +7,7 @@ import {
   MAIL_FROM,
   SELLER_EMAIL,
   FROM_EMAIL,
+  SUPPORT_REPLY_TO,
   money,
   sellerNotificationHtml,
   customerInvoiceHtml,
@@ -173,6 +174,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         await resend.emails.send({
           from: MAIL_FROM,
           to: order.customerEmail,
+          replyTo: SUPPORT_REPLY_TO,
           subject: `Your GingerBros Order Confirmation #${session.id.slice(-8).toUpperCase()}`,
           html: customerInvoiceHtml(session, lineItems),
         });
@@ -187,6 +189,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         await resend.emails.send({
           from: MAIL_FROM,
           to: recipientEmail,
+          replyTo: SUPPORT_REPLY_TO,
           subject: `${session.customer_details?.name ?? 'Someone'} sent you a GingerBros gift! 🍺`,
           html: giftEmailHtml(session, lineItems, recipientName, giftMessage, session.customer_details?.name ?? 'A friend'),
         });

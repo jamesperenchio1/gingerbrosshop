@@ -14,6 +14,10 @@ export const FROM_EMAIL = process.env.FROM_EMAIL ?? 'orders@gingerbrosshop.com';
 export const FROM_EMAIL_NEWSLETTER = 'hello@gingerbrosshop.com';
 export const SELLER_EMAIL = process.env.SELLER_EMAIL;
 
+// gingerbrosshop.com can't receive mail yet (Resend inbound is off, no MX
+// records), so customer replies to order emails are routed here instead.
+export const SUPPORT_REPLY_TO = process.env.SUPPORT_REPLY_TO ?? 'gingerbros.brew@gmail.com';
+
 let resendClient: Resend | null | undefined;
 
 export function getResend(): Resend | null {
