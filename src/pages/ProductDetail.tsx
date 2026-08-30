@@ -253,6 +253,9 @@ export default function ProductDetail() {
   const [showStickyAtc, setShowStickyAtc] = useState(false);
   const atcRef = useRef<HTMLDivElement>(null);
 
+  const images = product?.images ?? [];
+  const video = content.video;
+
   const handleImageMouseMove = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
     const rect = mainImageContainerRef.current?.getBoundingClientRect();
     if (!rect) return;
@@ -260,7 +263,11 @@ export default function ProductDetail() {
       x: Math.max(0, Math.min(100, ((e.clientX - rect.left) / rect.width) * 100)),
       y: Math.max(0, Math.min(100, ((e.clientY - rect.top) / rect.height) * 100)),
     });
-  }, []);
+    // Only real mouse movement (not the page scrolling content under a
+    // stationary cursor, which browsers report as mouseenter/mouseover with
+    // no accompanying mousemove) should trigger zoom.
+    if (supportsHoverZoom && !(video && activeImage === images.length)) setIsZooming(true);
+  }, [supportsHoverZoom, video, activeImage, images.length]);
 
   const [prevId, setPrevId] = useState(id);
   if (id !== prevId) {
@@ -268,10 +275,9 @@ export default function ProductDetail() {
     setActiveImage(0);
     setQuantity(1);
     setSelectedPriceId(null);
+    setIsZooming(false);
+    setZoomPos({ x: 50, y: 50 });
   }
-
-  const images = product?.images ?? [];
-  const video = content.video;
 
   const oneTimeForProduct = product ? oneTimePrice(product) : undefined;
   const selectedPrice = (() => {
@@ -337,7 +343,7 @@ export default function ProductDetail() {
 
   useEffect(() => {
     window.scrollTo(0, 0);
-  }, [id]);
+  }, [id, loading]);
 
   // Show sticky mobile ATC when the main CTA scrolls out of view.
   useEffect(() => {
@@ -471,7 +477,6 @@ export default function ProductDetail() {
             <div
               ref={mainImageContainerRef}
               onMouseMove={supportsHoverZoom ? handleImageMouseMove : undefined}
-              onMouseEnter={() => { if (supportsHoverZoom && !(video && activeImage === images.length)) setIsZooming(true); }}
               onMouseLeave={() => setIsZooming(false)}
               className="rounded-xxl overflow-hidden mb-4 h-[480px] md:h-[600px] flex items-center justify-center select-none bg-cream/40"
               style={{ cursor: isZooming ? 'zoom-in' : 'default' }}
@@ -656,7 +661,7 @@ export default function ProductDetail() {
             {/* Short description (from Stripe) */}
             {product.description && (
               <p className="font-body text-earth leading-relaxed mb-8">
-                {product.description.replace(/7-day/gi, '5-day')}
+                {product.description.replace(/\d+-day\s+/gi, '')}
               </p>
             )}
 

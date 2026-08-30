@@ -63,16 +63,16 @@ const translations: Record<Locale, Record<string, string>> = {
     heroBadge: 'GingerBros · Naturally Brewed in Thailand',
     heroHeadline1: 'Fermented Ginger,',
     heroHeadline2: 'Your Way',
-    heroSub: 'A bold ginger kick with fresh lime and 3.5g of prebiotics. 5-day naturally fermented, low in sugar, and made with real ingredients.',
+    heroSub: 'A bold ginger kick with fresh lime and 3.5g of prebiotics. Naturally fermented, low in sugar, and made with real ingredients.',
     heroCtaShop: 'Shop the Brews',
     heroCtaStory: 'Our Story',
-    heroTrust1: '5-day ferment',
+    heroTrust1: 'Naturally fermented',
     heroTrust2: '<2g sugar',
     heroTrust3: 'Prebiotic fibre',
 
     // Process
     processLabel: 'THE PROCESS',
-    processSectionTitle: '5 Days to Perfection',
+    processSectionTitle: 'Naturally Fermented to Perfection',
     step01Days: 'Day 1-2',
     step01Title: 'Ginger & Sugar',
     step01Desc: 'Fresh ginger is grated and combined with raw sugar and filtered water. The ginger bug (our live culture starter) is added to begin the fermentation.',
@@ -100,8 +100,8 @@ const translations: Record<Locale, Record<string, string>> = {
     benefit4Desc: 'Ginger has been used for gut complaints for thousands of years across Asia. Ours is fresh, fermented, and actually strong enough to feel it working.',
     factStat1: '<2g',
     factLabel1: 'sugar per serve',
-    factStat2: '5 days',
-    factLabel2: 'naturally fermented',
+    factStat2: 'Naturally',
+    factLabel2: 'fermented ginger bug',
     factStat3: 'Prebiotic',
     factLabel3: 'acacia fibre',
     factStat4: '330ml',
@@ -173,7 +173,7 @@ const translations: Record<Locale, Record<string, string>> = {
     newsletterDoneSub: 'Check your inbox for your 10% off code. It\'s valid for 24 hours.',
 
     // Footer
-    footerBrandBlurb: 'Naturally brewed craft ginger fizz from Thailand. 5-day fermentation, real ginger, zero shortcuts.',
+    footerBrandBlurb: 'Naturally brewed craft ginger fizz from Thailand. Natural fermentation, real ginger, zero shortcuts.',
     footerCopyright: 'All rights reserved.',
   },
 
@@ -237,16 +237,16 @@ const translations: Record<Locale, Record<string, string>> = {
     heroBadge: 'GingerBros · หมักธรรมชาติในไทย',
     heroHeadline1: 'ขิงหมักธรรมชาติ,',
     heroHeadline2: 'ในแบบฉบับของคุณ',
-    heroSub: 'ขิงสดรสเข้มกับมะนาวสดและพรีไบโอติก 3.5 กรัม หมักธรรมชาติ 5 วัน น้ำตาลน้อย ทำจากวัตถุดิบจริง',
+    heroSub: 'ขิงสดรสเข้มกับมะนาวสดและพรีไบโอติก 3.5 กรัม หมักธรรมชาติ น้ำตาลน้อย ทำจากวัตถุดิบจริง',
     heroCtaShop: 'เลือกซื้อเครื่องดื่ม',
     heroCtaStory: 'เรื่องราวของเรา',
-    heroTrust1: 'หมัก 5 วัน',
+    heroTrust1: 'หมักธรรมชาติ',
     heroTrust2: 'น้ำตาล <2 กรัม',
     heroTrust3: 'ใยอาหารพรีไบโอติก',
 
     // Process
     processLabel: 'กระบวนการ',
-    processSectionTitle: '5 วัน สู่ความสมบูรณ์แบบ',
+    processSectionTitle: 'หมักธรรมชาติสู่ความสมบูรณ์แบบ',
     step01Days: 'วันที่ 1-2',
     step01Title: 'ขิงและน้ำตาล',
     step01Desc: 'ขูดขิงสดผสมกับน้ำตาลดิบและน้ำกรอง เติม Ginger Bug (หัวเชื้อจุลินทรีย์มีชีวิต) เพื่อเริ่มกระบวนการหมัก',
@@ -274,8 +274,8 @@ const translations: Record<Locale, Record<string, string>> = {
     benefit4Desc: 'ขิงถูกใช้รักษาอาการทางลำไส้มาหลายพันปีทั่วเอเชีย ของเราสด หมัก และแรงพอที่คุณจะรู้สึกได้จริงๆ',
     factStat1: '<2g',
     factLabel1: 'น้ำตาลต่อขวด',
-    factStat2: '5 วัน',
-    factLabel2: 'หมักธรรมชาติ',
+    factStat2: 'ธรรมชาติ',
+    factLabel2: 'หมักด้วยขิงบั๊ก',
     factStat3: 'พรีไบโอติก',
     factLabel3: 'ใยอาหารอะคาเซีย',
     factStat4: '330ml',
@@ -347,7 +347,7 @@ const translations: Record<Locale, Record<string, string>> = {
     newsletterDoneSub: 'ตรวจสอบกล่องขาเข้าของคุณสำหรับรหัสส่วนลด 10% ใช้ได้ภายใน 24 ชั่วโมง',
 
     // Footer
-    footerBrandBlurb: 'ขิงสปาร์กลิ้งหมักธรรมชาติจากประเทศไทย หมัก 5 วัน ขิงแท้ ไม่มีทางลัด',
+    footerBrandBlurb: 'ขิงสปาร์กลิ้งหมักธรรมชาติจากประเทศไทย ขิงแท้ ไม่มีทางลัด',
     footerCopyright: 'สงวนลิขสิทธิ์',
   },
 };

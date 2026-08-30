@@ -394,7 +394,7 @@ export const PRODUCT_CONTENT: Record<string, ProductContent> = {
   'ginger-fizz': {
     headline: 'Real fermented ginger fizz with a bright lime lift. Bold flavour, low sugar, made in Thailand.',
     longDescription:
-      'GingerBros Ginger Fizz is a 5-day naturally fermented craft soda made with fresh Thai ginger, real lime, and simple ingredients. Every bottle is brewed slow, bottled fresh, and delivered to your door. With prebiotic acacia fibre and less than 2g sugar per serving, it is a crisp ginger kick you can feel good about.',
+      'GingerBros Ginger Fizz is a naturally fermented craft soda made with fresh Thai ginger, real lime, and simple ingredients. Every bottle is brewed slow, bottled fresh, and delivered to your door. With prebiotic acacia fibre and less than 2g sugar per serving, it is a crisp ginger kick you can feel good about.',
     video: '/images/product-ginger-fizz.mp4',
     ingredients: ['Fresh Thai Ginger', 'Filtered Water', 'Erythritol', 'White Sugar (ferment starter)', 'Ginger Bug Culture', 'Acacia Fibre', 'Fresh Lime'],
     specs: [
@@ -404,7 +404,7 @@ export const PRODUCT_CONTENT: Record<string, ProductContent> = {
       { label: 'Storage', value: 'Keep refrigerated at 2–6°C; do not freeze' },
       { label: 'Serving Temp', value: 'Ice cold at 2–4°C; pour gently' },
       { label: 'Carbonation', value: 'Naturally effervescent from fermentation' },
-      { label: 'Fermentation', value: '5-day natural ginger-bug ferment' },
+      { label: 'Fermentation', value: 'Natural ginger-bug ferment' },
       { label: 'pH', value: '~3.6 (naturally acidic)' },
       { label: 'Origin', value: 'Brewed & bottled in Chiang Mai, Thailand' },
       { label: 'Dietary', value: 'Vegan, gluten-free, no artificial colours or preservatives' },
@@ -434,7 +434,7 @@ export const PRODUCT_CONTENT: Record<string, ProductContent> = {
     ],
     features: [
       'Low sugar — sweetened with erythritol',
-      '5-day natural fermentation for real ginger flavour',
+      'Natural fermentation for real ginger flavour',
       'Fresh Thai ginger and real lime',
       'Prebiotic acacia fibre',
       'Bold, complex, naturally effervescent flavour',
@@ -448,7 +448,7 @@ export const PRODUCT_CONTENT: Record<string, ProductContent> = {
   'ginger-fizz-6pack': {
     headline: 'Stock up and save. Six bottles of real fermented ginger fizz with prebiotic acacia fibre.',
     longDescription:
-      'GingerBros Ginger Fizz 6-Pack gives you six bottles of our signature 5-day naturally fermented craft soda. Every bottle is brewed with fresh Thai ginger, real lime, and simple ingredients — plus prebiotic acacia fibre and less than 2g sugar per serving. Brewed slow, bottled fresh, and delivered to your door.',
+      'GingerBros Ginger Fizz 6-Pack gives you six bottles of our signature naturally fermented craft soda. Every bottle is brewed with fresh Thai ginger, real lime, and simple ingredients — plus prebiotic acacia fibre and less than 2g sugar per serving. Brewed slow, bottled fresh, and delivered to your door.',
     ingredients: ['Fresh Thai Ginger', 'Filtered Water', 'Erythritol', 'White Sugar (ferment starter)', 'Ginger Bug Culture', 'Acacia Fibre', 'Fresh Lime'],
     specs: [
       { label: 'Volume', value: '6 × 330ml (1,980ml total)' },
@@ -457,7 +457,7 @@ export const PRODUCT_CONTENT: Record<string, ProductContent> = {
       { label: 'Storage', value: 'Keep refrigerated at 2–6°C; do not freeze' },
       { label: 'Serving Temp', value: 'Ice cold at 2–4°C; pour gently' },
       { label: 'Carbonation', value: 'Naturally effervescent from fermentation' },
-      { label: 'Fermentation', value: '5-day natural ginger-bug ferment' },
+      { label: 'Fermentation', value: 'Natural ginger-bug ferment' },
       { label: 'pH', value: '~3.6 (naturally acidic)' },
       { label: 'Origin', value: 'Brewed & bottled in Chiang Mai, Thailand' },
       { label: 'Dietary', value: 'Vegan, gluten-free, no artificial colours or preservatives' },
@@ -487,7 +487,7 @@ export const PRODUCT_CONTENT: Record<string, ProductContent> = {
     ],
     features: [
       'Bundle savings vs buying 6 singles',
-      '5-day natural fermentation for real ginger flavour',
+      'Natural fermentation for real ginger flavour',
       'Fresh Thai ginger and real lime',
       'Prebiotic acacia fibre',
       'Bold, complex, naturally effervescent flavour',

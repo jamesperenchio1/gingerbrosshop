@@ -190,7 +190,7 @@ export default function WholesalePage() {
     {
       icon: <BadgeCheck className="w-8 h-8 text-amber" />,
       title: 'Consistent Quality',
-      description: 'Every batch is naturally fermented for 5 days using fresh Thai ginger, real lime, and prebiotic acacia fibre.',
+      description: 'Every batch is naturally fermented using fresh Thai ginger, real lime, and prebiotic acacia fibre.',
     },
     {
       icon: <TrendingDown className="w-8 h-8 text-amber" />,
