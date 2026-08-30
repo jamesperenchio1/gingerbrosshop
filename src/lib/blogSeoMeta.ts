@@ -28,7 +28,7 @@ export const BLOG_SEO_META: BlogSeoMeta[] = [
   {
     slug: 'moscow-mule',
     title: 'The Perfect Moscow Mule with GingerBros',
-    excerpt: 'Why our 5-day fermented ginger fizz makes the best Moscow Mule you have ever tasted — and the copper-mug ritual that goes with it.',
+    excerpt: 'Why our naturally fermented ginger fizz makes the best Moscow Mule you have ever tasted — and the copper-mug ritual that goes with it.',
     date: '2026-05-28',
     author: 'The GingerBros Kitchen',
     image: '/images/ginger-fizz-new.png',

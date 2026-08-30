@@ -61,7 +61,7 @@ export default function FAQPage() {
     {
       icon: <FlaskConical className="w-6 h-6 text-amber" />,
       q: 'What are the ingredients?',
-      a: 'Fresh Thai ginger, filtered water, erythritol, white sugar (fermentation starter), ginger bug culture, acacia fibre (prebiotic), and fresh lime. No artificial flavours, no preservatives, no colourants. The sugar is mostly consumed during the 5-day fermentation process, which is why the final drink contains less than 2g of sugar per serve.',
+      a: 'Fresh Thai ginger, filtered water, erythritol, white sugar (fermentation starter), ginger bug culture, acacia fibre (prebiotic), and fresh lime. No artificial flavours, no preservatives, no colourants. The sugar is mostly consumed during the natural fermentation process, which is why the final drink contains less than 2g of sugar per serve.',
       category: 'product',
     },
     {

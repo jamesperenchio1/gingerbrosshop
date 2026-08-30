@@ -297,7 +297,7 @@ export function giftEmailHtml(
   return layout(
     `${heading('You\'ve received a gift. 🎁')}
     ${body(`Hi ${recipientName ?? 'there'},`)}
-    ${body(`<strong>${senderName}</strong> sent you a GingerBros gift — 5-day naturally fermented ginger fizz, brewed with patience in Bangkok.`)}
+    ${body(`<strong>${senderName}</strong> sent you a GingerBros gift — naturally fermented ginger fizz, brewed with patience in Bangkok.`)}
     ${message ? infoCard(`<p style="margin:0;font-style:italic;color:${BRAND.earth};">"${message}"</p>`) : ''}
     <p style="font-size:13px;color:${BRAND.rust};font-weight:700;margin:16px 0 4px;letter-spacing:0.04em;">ORDER #${orderId}</p>
     ${itemsTable(stripeRows(items))}
