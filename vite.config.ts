@@ -18,9 +18,18 @@ export default defineConfig({
   build: {
     rollupOptions: {
       output: {
-        manualChunks: {
-          vendor: ['react', 'react-dom', 'react-router'],
-          gsap: ['gsap'],
+        /**
+         * Function form, not the object form. The object form matches only the
+         * exact entry module, so `react-dom/client` and `gsap/ScrollTrigger`
+         * were never matched — react-dom ended up inside the app chunk, and
+         * every one-line app change busted 138 KB of vendor code in every
+         * returning visitor's cache.
+         */
+        manualChunks(id) {
+          if (!id.includes('node_modules')) return;
+          if (/[\\/]node_modules[\\/](react|react-dom|scheduler)[\\/]/.test(id)) return 'react';
+          if (id.includes('react-router')) return 'router';
+          return 'vendor';
         },
       },
     },

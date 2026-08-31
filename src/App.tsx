@@ -1,6 +1,5 @@
 import { Suspense, lazy, useEffect, useLayoutEffect } from 'react';
 import { Routes, Route, useLocation } from 'react-router';
-import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { Analytics } from '@vercel/analytics/react';
 import { SpeedInsights } from '@vercel/speed-insights/react';
 import { CartProvider, useCart } from '@/context/CartContext';
@@ -49,23 +48,14 @@ function ReferralCapture() {
 }
 
 /**
- * Reset scroll to the top on every route change (but preserve in-page #hash
- * navigation).
- *
- * The subtlety is `ScrollTrigger.refresh()`: it deliberately saves the current
- * scroll position and re-applies it afterwards so that layout recalcs don't
- * make the page jump. On a route change that's exactly wrong — it drags the
- * new page back to the *previous* page's offset a frame after we scrolled to
- * the top, which is what made opening a product land halfway down the page.
- * `clearScrollMemory('manual')` wipes that saved position (and pins
- * `history.scrollRestoration` to manual so the browser doesn't restore one
- * either) before we scroll.
- *
- * Note there is deliberately no `ScrollTrigger.getAll().kill()` here: every
- * section owns its triggers through a `gsap.context` that reverts on unmount,
- * and killing a trigger from the outside leaves its tween frozen mid-flight —
- * which is how sections ended up stuck at partial opacity after a back
+ * Reset scroll to the top on every route change, preserving in-page #hash
  * navigation.
+ *
+ * This used to fight ScrollTrigger, which re-applied a cached scroll position
+ * on refresh and dragged new routes back to the previous page's offset. With
+ * the animation library gone there is no cache to fight: paired with
+ * `history.scrollRestoration = 'manual'` in main.tsx, this is the only thing on
+ * the page that moves the scroll position.
  */
 function ScrollToTop() {
   const { pathname, hash } = useLocation();
@@ -80,11 +70,7 @@ function ScrollToTop() {
       }, 100);
       return () => clearTimeout(timer);
     }
-
-    ScrollTrigger.clearScrollMemory('manual');
     window.scrollTo(0, 0);
-    const raf = requestAnimationFrame(() => ScrollTrigger.refresh());
-    return () => cancelAnimationFrame(raf);
   }, [pathname, hash]);
   return null;
 }

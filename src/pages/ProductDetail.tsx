@@ -1,6 +1,5 @@
-import { useState, useRef, useEffect, useLayoutEffect, useCallback, useMemo } from 'react';
+import { useState, useRef, useEffect, useCallback, useMemo } from 'react';
 import { useParams, useSearchParams, Link } from 'react-router';
-import gsap from 'gsap';
 import { useCart } from '@/context/CartContext';
 import { toast } from 'sonner';
 import { PlusIcon, MinusIcon } from '@/components/Icons';
@@ -13,7 +12,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import ImageLightbox from '@/components/ImageLightbox';
 import StockAlertForm from '@/components/StockAlertForm';
 import { getProductContent } from '@/lib/productContent';
-import { prefersReducedMotion } from '@/lib/reveal';
+import { useReveal } from '@/lib/reveal';
 import {
   Leaf,
   ThermometerSnowflake,
@@ -248,6 +247,7 @@ export default function ProductDetail() {
   const [giftMessage, setGiftMessage] = useState('');
   const [selectedPriceId, setSelectedPriceId] = useState<string | null>(null);
 
+  const galleryScopeRef = useRef<HTMLDivElement>(null);
   const heroRef = useRef<HTMLDivElement>(null);
   const infoRef = useRef<HTMLDivElement>(null);
   const mainImageContainerRef = useRef<HTMLDivElement>(null);
@@ -344,18 +344,14 @@ export default function ProductDetail() {
     return () => observer.disconnect();
   }, [id]);
 
-  useLayoutEffect(() => {
-    if (!product || prefersReducedMotion()) return;
-    // fromTo + clearProps, never `from`: the end state is explicit and the
-    // inline styles are removed once played, so nothing can strand the gallery
-    // or the buy box at opacity 0.
-    const ctx = gsap.context(() => {
-      const enter = { opacity: 1, y: 0, duration: 0.7, ease: 'power3.out', clearProps: 'opacity,transform' };
-      gsap.fromTo(heroRef.current, { opacity: 0, y: 20 }, enter);
-      gsap.fromTo(infoRef.current, { opacity: 0, y: 20 }, { ...enter, delay: 0.15 });
-    });
-    return () => ctx.revert();
-  }, [id, product]);
+  useReveal(
+    galleryScopeRef,
+    (reveal) => {
+      reveal(heroRef.current, { y: 20, immediate: true });
+      reveal(infoRef.current, { y: 20, delay: 0.15, immediate: true });
+    },
+    [id, product?.id],
+  );
 
   if (loading && !product) {
     return (
@@ -457,7 +453,7 @@ export default function ProductDetail() {
       <div className="max-w-[1280px] mx-auto px-4 sm:px-6 pt-20 sm:pt-24 md:pt-28 pb-12 md:pb-16">
 
         {/* ── Hero: Gallery + Info ── */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-16">
+        <div ref={galleryScopeRef} className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-16">
 
           {/* Gallery */}
           <div ref={heroRef} className="relative">

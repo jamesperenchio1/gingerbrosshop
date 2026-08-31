@@ -1,10 +1,9 @@
-import { useLayoutEffect, useRef, useEffect } from 'react';
-import gsap from 'gsap';
+import { useRef, useEffect } from 'react';
 import NoiseCanvas from '@/components/NoiseCanvas';
 import BubbleCanvas from '@/components/BubbleCanvas';
 import { ChevronDownIcon } from '@/components/Icons';
 import { useI18n } from '@/context/I18nContext';
-import { prefersReducedMotion } from '@/lib/reveal';
+import { useReveal, prefersReducedMotion } from '@/lib/reveal';
 
 export default function Hero() {
   const { t } = useI18n();
@@ -19,45 +18,27 @@ export default function Hero() {
 
   const sectionRef = useRef<HTMLElement>(null);
 
-  useLayoutEffect(() => {
-    if (prefersReducedMotion()) return;
+  // Staged entrance. Delays are absolute seconds on a single timeline; they
+  // reproduce the previous GSAP timeline's relative offsets exactly.
+  useReveal(sectionRef, (reveal) => {
+    reveal(badgeRef.current, { y: -10, duration: 0.5, delay: 0.15, immediate: true });
+    reveal(headlineRef.current, { y: 30, duration: 0.8, delay: 0.45, immediate: true });
+    reveal(subRef.current, { y: 20, duration: 0.6, delay: 0.85, immediate: true });
+    reveal(ctaRef.current, { y: 15, duration: 0.5, delay: 1.15, immediate: true });
+    reveal(trustRef.current, { y: 10, duration: 0.5, delay: 1.35, immediate: true });
+    reveal(imageRef.current, { y: 30, scale: 0.94, duration: 0.9, delay: 0.95, immediate: true });
+    reveal(scrollRef.current, { y: 0, duration: 0.5, delay: 1.65, immediate: true });
+  });
 
-    // Scoped to a context so unmounting reverts every inline style GSAP wrote.
-    // (A bare `tl.kill()` leaves whatever opacity the tween had reached, which
-    // is how the hero could come back half-faded after a route change.)
-    const ctx = gsap.context(() => {
-      const tl = gsap.timeline({
-        defaults: { ease: 'power3.out' },
-        // Nothing here should be able to leave an element invisible.
-        onComplete: () => gsap.set(
-          [badgeRef.current, headlineRef.current, subRef.current, ctaRef.current, trustRef.current, scrollRef.current],
-          { clearProps: 'opacity,transform' },
-        ),
-      });
-      tl.from(badgeRef.current, { opacity: 0, y: -10, duration: 0.5, delay: 0.15 })
-        .from(headlineRef.current, { opacity: 0, y: 30, duration: 0.8 }, '-=0.2')
-        .from(subRef.current, { opacity: 0, y: 20, duration: 0.6 }, '-=0.4')
-        .from(ctaRef.current, { opacity: 0, y: 15, duration: 0.5 }, '-=0.3')
-        .from(trustRef.current, { opacity: 0, y: 10, duration: 0.5 }, '-=0.3')
-        .from(imageRef.current, { opacity: 0, y: 30, scale: 0.94, duration: 0.9 }, '-=0.9')
-        .from(scrollRef.current, { opacity: 0, duration: 0.5 }, '-=0.2');
-    }, sectionRef);
-
-    return () => ctx.revert();
-  }, []);
-
-  // Gentle looping float for the bottle + mug group.
+  // Gentle looping float for the bottle + mug group, once the entrance is done.
   useEffect(() => {
-    if (!imageRef.current || prefersReducedMotion()) return;
-    const tween = gsap.to(imageRef.current, {
-      y: -14,
-      duration: 2.4,
-      ease: 'sine.inOut',
-      yoyo: true,
-      repeat: -1,
-      delay: 4,
-    });
-    return () => { tween.revert(); };
+    const node = imageRef.current;
+    if (!node || prefersReducedMotion()) return;
+    const float = node.animate(
+      [{ transform: 'translateY(0)' }, { transform: 'translateY(-14px)' }],
+      { duration: 2400, delay: 4000, iterations: Infinity, direction: 'alternate', easing: 'ease-in-out' },
+    );
+    return () => float.cancel();
   }, []);
 
   const handleShopClick = () => {
