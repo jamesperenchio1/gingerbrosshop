@@ -1,7 +1,7 @@
-import { useRef, useEffect } from 'react';
-import gsap from 'gsap';
+import { useRef } from 'react';
 import { ShieldCheck, Sprout, BatteryCharging, HeartPulse, Flame, Droplets, Microscope, Sparkles } from 'lucide-react';
 import { useI18n } from '@/context/I18nContext';
+import { useReveal } from '@/lib/reveal';
 
 export default function Benefits() {
   const { t } = useI18n();
@@ -9,39 +9,15 @@ export default function Benefits() {
   const headerRef = useRef<HTMLDivElement>(null);
   const cardsRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
-    const ctx = gsap.context(() => {
-      gsap.from(headerRef.current, {
-        opacity: 0,
-        y: 30,
-        duration: 0.6,
-        ease: 'power3.out',
-        immediateRender: false,
-        scrollTrigger: {
-          trigger: sectionRef.current,
-          start: 'top 80%',
-        },
-      });
-
-      const cards = cardsRef.current?.children;
-      if (cards) {
-        gsap.from(Array.from(cards), {
-          opacity: 0,
-          y: 40,
-          duration: 0.7,
-          stagger: 0.12,
-          ease: 'power3.out',
-          immediateRender: false,
-          scrollTrigger: {
-            trigger: cardsRef.current,
-            start: 'top 80%',
-          },
-        });
-      }
-    }, sectionRef);
-
-    return () => ctx.revert();
-  }, []);
+  useReveal(sectionRef, (reveal) => {
+    reveal(headerRef.current, { y: 30, duration: 0.6, trigger: sectionRef.current, start: 'top 80%' });
+    reveal(cardsRef.current?.children, {
+      duration: 0.7,
+      stagger: 0.12,
+      trigger: cardsRef.current,
+      start: 'top 80%',
+    });
+  });
 
   const benefits = [
     { icon: ShieldCheck, title: t('benefit1Title'), description: t('benefit1Desc') },

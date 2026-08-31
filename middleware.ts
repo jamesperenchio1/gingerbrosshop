@@ -7,8 +7,7 @@
  */
 
 import { BLOG_SEO_META } from './src/lib/blogSeoMeta';
-
-const SITE_URL = 'https://gingerbrosshop.com';
+import { SITE_URL, FERMENT_DAYS } from './src/constants/site';
 
 interface RouteMeta {
   title: string;
@@ -25,7 +24,7 @@ const KNOWN_ROUTES: Record<string, RouteMeta> = {
   '/': {
     title: 'GingerBros — Naturally Brewed Craft Ginger Fizz from Thailand',
     description:
-      '7-day naturally fermented craft ginger fizz brewed in Thailand. Real ginger, fresh lime, prebiotic acacia fibre, low in sugar, delivered to your door nationwide.',
+      `${FERMENT_DAYS}-day naturally fermented craft ginger fizz brewed in Thailand. Real ginger, fresh lime, prebiotic acacia fibre, low in sugar, delivered to your door nationwide.`,
     image: FALLBACK_IMAGE,
     type: 'website',
     jsonLd: {
@@ -64,7 +63,7 @@ const KNOWN_ROUTES: Record<string, RouteMeta> = {
   '/product/ginger-fizz': {
     title: 'GingerBros Ginger Fizz',
     description:
-      '7-day naturally fermented craft ginger fizz brewed in Thailand. Real ginger, fresh lime, prebiotic acacia fibre, low in sugar, delivered to your door.',
+      `${FERMENT_DAYS}-day naturally fermented craft ginger fizz brewed in Thailand. Real ginger, fresh lime, prebiotic acacia fibre, low in sugar, delivered to your door.`,
     image: `${SITE_URL}/images/ginger-fizz-new.png`,
     type: 'product',
     jsonLd: {
@@ -72,7 +71,7 @@ const KNOWN_ROUTES: Record<string, RouteMeta> = {
       '@type': 'Product',
       name: 'GingerBros Ginger Fizz',
       description:
-        '7-day naturally fermented craft ginger fizz brewed in Thailand. Real ginger, fresh lime, prebiotic acacia fibre, low in sugar, delivered to your door.',
+        `${FERMENT_DAYS}-day naturally fermented craft ginger fizz brewed in Thailand. Real ginger, fresh lime, prebiotic acacia fibre, low in sugar, delivered to your door.`,
       image: [
         `${SITE_URL}/images/ginger-fizz-new.png`,
         `${SITE_URL}/images/story-brewing.webp`,

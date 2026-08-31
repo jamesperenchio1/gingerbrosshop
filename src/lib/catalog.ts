@@ -162,3 +162,25 @@ export function useCatalog(): UseCatalogResult {
 
   return { products, loading, error };
 }
+
+/**
+ * True when a product's prices encode size/type variants rather than
+ * subscription intervals. Stripe nicknames are formatted `"<size> · <type>"`.
+ */
+export function hasVariantPrices(product: CatalogProduct): boolean {
+  return (
+    product.prices.length > 1 &&
+    product.prices.every((p) => !p.recurring && p.nickname?.includes(' · '))
+  );
+}
+
+/**
+ * Unit label shown next to the price ("per bottle", "per 6-pack", …).
+ * Driven by the Stripe product's `unit_label` metadata key so new SKUs don't
+ * need a code change; falls back to a per-category default.
+ */
+export function unitLabel(product: CatalogProduct): string {
+  const fromMetadata = product.metadata.unit_label?.trim();
+  if (fromMetadata) return fromMetadata.startsWith('per ') ? fromMetadata : `per ${fromMetadata}`;
+  return product.category === 'brewing-equipment' ? 'per unit' : 'per bottle';
+}

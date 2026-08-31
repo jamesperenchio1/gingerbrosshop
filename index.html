@@ -40,29 +40,64 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link rel="preconnect" href="https://checkout.stripe.com" />
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet" />
+    <!-- Non-blocking webfonts: fetched at low priority as a print stylesheet,
+         then promoted to all media once loaded. Saves ~2 round trips of
+         render-blocking time on the critical path; the <noscript> copy keeps
+         it working without JS. -->
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap"
+      media="print"
+      onload="this.media='all'"
+    />
+    <noscript>
+      <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap" />
+    </noscript>
 
-    <!-- Google Analytics 4 -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-WYM1PC2CL0"></script>
+    <!--
+      Analytics: the queue APIs (`gtag`/`fbq`) are defined immediately so any
+      early events are buffered, but the vendor scripts are only injected after
+      `load`. Previously both third-party scripts competed with the app bundle
+      for bandwidth on the critical path.
+    -->
     <script>
-      window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
-      gtag('config', 'G-WYM1PC2CL0');
-    </script>
+      (function () {
+        var GA_ID = 'G-WYM1PC2CL0';
+        var FB_PIXEL_ID = '927558480333349';
 
-    <!-- Meta Pixel -->
-    <script>
-      !function(f,b,e,v,n,t,s)
-      {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
-      n.callMethod.apply(n,arguments):n.queue.push(arguments)};
-      if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
-      n.queue=[];t=b.createElement(e);t.async=!0;
-      t.src=v;s=b.getElementsByTagName(e)[0];
-      s.parentNode.insertBefore(t,s)}(window, document,'script',
-      'https://connect.facebook.net/en_US/fbevents.js');
-      fbq('init', '927558480333349');
-      fbq('track', 'PageView');
+        // GA4 — dataLayer buffers calls made before gtag.js arrives.
+        window.dataLayer = window.dataLayer || [];
+        window.gtag = function () { window.dataLayer.push(arguments); };
+        gtag('js', new Date());
+        gtag('config', GA_ID);
+
+        // Meta Pixel — same idea: fbq queues until fbevents.js loads.
+        !function (f, b, e, v, n) {
+          if (f.fbq) return;
+          n = f.fbq = function () {
+            n.callMethod ? n.callMethod.apply(n, arguments) : n.queue.push(arguments);
+          };
+          if (!f._fbq) f._fbq = n;
+          n.push = n; n.loaded = !0; n.version = '2.0'; n.queue = [];
+        }(window, document, 'script');
+        fbq('init', FB_PIXEL_ID);
+        fbq('track', 'PageView');
+
+        function inject(src) {
+          var s = document.createElement('script');
+          s.async = true;
+          s.src = src;
+          document.head.appendChild(s);
+        }
+
+        function loadVendors() {
+          inject('https://www.googletagmanager.com/gtag/js?id=' + GA_ID);
+          inject('https://connect.facebook.net/en_US/fbevents.js');
+        }
+
+        if (document.readyState === 'complete') loadVendors();
+        else window.addEventListener('load', loadVendors, { once: true });
+      })();
     </script>
   </head>
   <body>

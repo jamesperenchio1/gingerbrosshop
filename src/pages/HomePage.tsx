@@ -7,17 +7,15 @@ import Newsletter from '@/components/Newsletter';
 import LineWidget from '@/components/LineWidget';
 import Footer from '@/sections/Footer';
 import SEO from '@/components/SEO';
+import { SITE_URL, SITE_NAME, DEFAULT_OG_IMAGE, SOCIAL_LINKS } from '@/constants/site';
 
 const organizationSchema = {
   '@context': 'https://schema.org',
   '@type': 'Organization',
-  name: 'GingerBros',
-  url: 'https://gingerbrosshop.com',
-  logo: 'https://gingerbrosshop.com/images/ginger-fizz-new.png',
-  sameAs: [
-    'https://www.instagram.com/drinkgingerbros',
-    'https://www.tiktok.com/@gingerbrosbrew',
-  ],
+  name: SITE_NAME,
+  url: SITE_URL,
+  logo: DEFAULT_OG_IMAGE,
+  sameAs: SOCIAL_LINKS,
   contactPoint: {
     '@type': 'ContactPoint',
     contactType: 'customer support',
@@ -28,13 +26,13 @@ const organizationSchema = {
 const websiteSchema = {
   '@context': 'https://schema.org',
   '@type': 'WebSite',
-  name: 'GingerBros',
-  url: 'https://gingerbrosshop.com',
+  name: SITE_NAME,
+  url: SITE_URL,
   potentialAction: {
     '@type': 'SearchAction',
     target: {
       '@type': 'EntryPoint',
-      urlTemplate: 'https://gingerbrosshop.com/blog?q={search_term_string}',
+      urlTemplate: `${SITE_URL}/blog?q={search_term_string}`,
     },
     'query-input': 'required name=search_term_string',
   },
@@ -48,8 +46,8 @@ const productListSchema = {
     {
       '@type': 'ListItem',
       position: 1,
-      url: 'https://gingerbrosshop.com/product/ginger-fizz',
-      name: 'GingerBros Ginger Fizz',
+      url: `${SITE_URL}/product/ginger-fizz`,
+      name: `${SITE_NAME} Ginger Fizz`,
     },
   ],
 };

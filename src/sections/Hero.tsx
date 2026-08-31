@@ -4,6 +4,7 @@ import NoiseCanvas from '@/components/NoiseCanvas';
 import BubbleCanvas from '@/components/BubbleCanvas';
 import { ChevronDownIcon } from '@/components/Icons';
 import { useI18n } from '@/context/I18nContext';
+import { prefersReducedMotion } from '@/lib/reveal';
 
 export default function Hero() {
   const { t } = useI18n();
@@ -16,22 +17,38 @@ export default function Hero() {
   const imageRef = useRef<HTMLDivElement>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
 
-  useLayoutEffect(() => {
-    const tl = gsap.timeline({ defaults: { ease: 'power3.out' } });
-    tl.from(badgeRef.current, { opacity: 0, y: -10, duration: 0.5, delay: 0.15 })
-      .from(headlineRef.current, { opacity: 0, y: 30, duration: 0.8 }, '-=0.2')
-      .from(subRef.current, { opacity: 0, y: 20, duration: 0.6 }, '-=0.4')
-      .from(ctaRef.current, { opacity: 0, y: 15, duration: 0.5 }, '-=0.3')
-      .from(trustRef.current, { opacity: 0, y: 10, duration: 0.5 }, '-=0.3')
-      .from(imageRef.current, { opacity: 0, y: 30, scale: 0.94, duration: 0.9 }, '-=0.9')
-      .from(scrollRef.current, { opacity: 0, duration: 0.5 }, '-=0.2');
+  const sectionRef = useRef<HTMLElement>(null);
 
-    return () => { tl.kill(); };
+  useLayoutEffect(() => {
+    if (prefersReducedMotion()) return;
+
+    // Scoped to a context so unmounting reverts every inline style GSAP wrote.
+    // (A bare `tl.kill()` leaves whatever opacity the tween had reached, which
+    // is how the hero could come back half-faded after a route change.)
+    const ctx = gsap.context(() => {
+      const tl = gsap.timeline({
+        defaults: { ease: 'power3.out' },
+        // Nothing here should be able to leave an element invisible.
+        onComplete: () => gsap.set(
+          [badgeRef.current, headlineRef.current, subRef.current, ctaRef.current, trustRef.current, scrollRef.current],
+          { clearProps: 'opacity,transform' },
+        ),
+      });
+      tl.from(badgeRef.current, { opacity: 0, y: -10, duration: 0.5, delay: 0.15 })
+        .from(headlineRef.current, { opacity: 0, y: 30, duration: 0.8 }, '-=0.2')
+        .from(subRef.current, { opacity: 0, y: 20, duration: 0.6 }, '-=0.4')
+        .from(ctaRef.current, { opacity: 0, y: 15, duration: 0.5 }, '-=0.3')
+        .from(trustRef.current, { opacity: 0, y: 10, duration: 0.5 }, '-=0.3')
+        .from(imageRef.current, { opacity: 0, y: 30, scale: 0.94, duration: 0.9 }, '-=0.9')
+        .from(scrollRef.current, { opacity: 0, duration: 0.5 }, '-=0.2');
+    }, sectionRef);
+
+    return () => ctx.revert();
   }, []);
 
-  // Gentle looping float for the bottle + mug group
+  // Gentle looping float for the bottle + mug group.
   useEffect(() => {
-    if (!imageRef.current) return;
+    if (!imageRef.current || prefersReducedMotion()) return;
     const tween = gsap.to(imageRef.current, {
       y: -14,
       duration: 2.4,
@@ -40,7 +57,7 @@ export default function Hero() {
       repeat: -1,
       delay: 4,
     });
-    return () => { tween.kill(); };
+    return () => { tween.revert(); };
   }, []);
 
   const handleShopClick = () => {
@@ -56,6 +73,7 @@ export default function Hero() {
   return (
     <section
       id="hero"
+      ref={sectionRef}
       className="relative w-full min-h-[540px] sm:min-h-[600px] md:min-h-[700px] md:h-screen flex items-center overflow-hidden"
       style={{ background: 'linear-gradient(135deg, #E8C97A 0%, #D4A34B 40%, #C9963A 100%)' }}
     >

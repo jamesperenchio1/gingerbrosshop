@@ -1,23 +1,15 @@
-import { useRef, useEffect } from 'react';
-import gsap from 'gsap';
+import { useRef } from 'react';
 import { useI18n } from '@/context/I18nContext';
+import { useReveal } from '@/lib/reveal';
 
 export default function Story() {
   const { t } = useI18n();
   const sectionRef = useRef<HTMLElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
-    const ctx = gsap.context(() => {
-      gsap.from(contentRef.current, {
-        opacity: 0, duration: 0.5, ease: 'power2.out',
-        immediateRender: false,
-        scrollTrigger: { trigger: sectionRef.current, start: 'top 88%' },
-      });
-    }, sectionRef);
-
-    return () => ctx.revert();
-  }, []);
+  useReveal(sectionRef, (reveal) => {
+    reveal(contentRef.current, { y: 24, duration: 0.5, trigger: sectionRef.current, start: 'top 88%' });
+  });
 
   const handleProcessClick = () => {
     const el = document.querySelector('#process');
