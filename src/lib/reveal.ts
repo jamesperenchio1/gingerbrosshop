@@ -1,56 +1,54 @@
-import { useEffect, type DependencyList, type RefObject } from 'react';
-import gsap from 'gsap';
-import { ScrollTrigger } from 'gsap/ScrollTrigger';
-
-gsap.registerPlugin(ScrollTrigger);
+import { useLayoutEffect, type DependencyList, type RefObject } from 'react';
 
 /**
- * Shared scroll-reveal animation.
+ * Scroll-reveal animations, built on IntersectionObserver + the Web Animations
+ * API. No animation library — this replaced GSAP + ScrollTrigger, which cost
+ * ~45 KB gzipped and brought a global refresh/kill/scroll-memory machine that
+ * caused three separate production bugs.
  *
- * Three rules keep this from ever leaving content invisible — the failure mode
- * that plagued the hand-rolled `gsap.from({ opacity: 0 })` calls this replaces:
+ * The design goal is that "content stuck invisible" is *structurally*
+ * impossible, not merely unlikely:
  *
- *  1. `fromTo`, never `from`. A `from` tween treats the element's *current*
- *     style as the end state, so anything that interrupts or re-renders it can
- *     strand the element at opacity 0 with no recovery path.
- *  2. `once: true` + `clearProps`. As soon as the reveal has played, every
- *     inline style GSAP added is removed. A later `ScrollTrigger.refresh()` or
- *     `.kill()` then has nothing left to strand.
- *  3. `prefers-reduced-motion` short-circuits the whole thing: no tweens are
- *     created at all, so the content is simply visible.
+ *  - The animation's end state is the element's own authored state. Nothing is
+ *    ever committed to the element; there is no `fill: 'forwards'`.
+ *  - The inline `opacity: 0` is removed the moment the animation *starts*, with
+ *    `fill: 'backwards'` covering the stagger delay. So cancelling, unmounting,
+ *    or throwing part-way through leaves the element plainly visible.
+ *  - Anything already at or above the fold when the reveal is declared plays
+ *    immediately rather than waiting for a scroll event that may never come
+ *    (tab switch, back navigation, deep link).
+ *  - No IntersectionObserver, or `prefers-reduced-motion: reduce`, means
+ *    nothing is ever hidden in the first place.
  */
 
-/** Shared look-and-feel for every reveal on the site. */
 export const REVEAL = {
   y: 40,
   duration: 0.7,
-  ease: 'power3.out',
+  /** Roughly GSAP's power3.out. */
+  easing: 'cubic-bezier(0.16, 1, 0.3, 1)',
   start: 'top 85%',
 } as const;
 
 export type RevealTarget = Element | null | undefined | ArrayLike<Element>;
 
 export interface RevealOptions {
-  /** Element whose position drives the trigger. Defaults to the first target. */
+  /** Element whose position drives the reveal. Defaults to the first target. */
   trigger?: Element | null;
   y?: number;
   scale?: number;
+  /** Seconds. */
   duration?: number;
+  /** Seconds between successive targets. */
   stagger?: number;
+  /** Seconds before the first target starts. */
   delay?: number;
-  /** ScrollTrigger `start` string, e.g. `'top 80%'`. */
+  /** GSAP-style trigger point, e.g. `'top 80%'`. Mapped to a root margin. */
   start?: string;
-  /** Play immediately on mount instead of waiting for a scroll trigger. */
+  /** Play on mount instead of waiting for the element to scroll into view. */
   immediate?: boolean;
 }
 
 export type RevealFn = (target: RevealTarget, options?: RevealOptions) => void;
-
-function toElements(target: RevealTarget): Element[] {
-  if (!target) return [];
-  if (target instanceof Element) return [target];
-  return Array.from(target as ArrayLike<Element>).filter(Boolean);
-}
 
 export function prefersReducedMotion(): boolean {
   return (
@@ -59,9 +57,28 @@ export function prefersReducedMotion(): boolean {
   );
 }
 
+function toElements(target: RevealTarget): HTMLElement[] {
+  if (!target) return [];
+  const list = target instanceof Element ? [target] : Array.from(target as ArrayLike<Element>);
+  return list.filter((el): el is HTMLElement => el instanceof HTMLElement);
+}
+
+/** `'top 80%'` → the element must reach 80% of the viewport height. */
+function rootMarginFromStart(start: string): string {
+  const match = /(\d+(?:\.\d+)?)%/.exec(start);
+  const percent = match ? Number(match[1]) : 85;
+  return `0px 0px -${Math.max(0, 100 - percent)}% 0px`;
+}
+
+function clearInlineState(el: HTMLElement) {
+  el.style.removeProperty('opacity');
+  el.style.removeProperty('transform');
+  el.style.removeProperty('will-change');
+}
+
 /**
- * Declare a section's reveal animations. Everything is created inside a
- * `gsap.context` scoped to `scopeRef` and reverted on unmount.
+ * Declare a section's reveals. Runs in a layout effect so elements are hidden
+ * before first paint (no flash of un-animated content).
  *
  * ```ts
  * useReveal(sectionRef, (reveal) => {
@@ -75,52 +92,91 @@ export function useReveal(
   build: (reveal: RevealFn) => void,
   deps: DependencyList = [],
 ) {
-  useEffect(() => {
-    const scope = scopeRef.current;
-    if (!scope || prefersReducedMotion()) return;
+  useLayoutEffect(() => {
+    if (!scopeRef.current) return;
+    if (prefersReducedMotion() || typeof IntersectionObserver === 'undefined') return;
 
-    const ctx = gsap.context(() => {
-      const reveal: RevealFn = (target, options = {}) => {
-        const els = toElements(target);
-        if (els.length === 0) return;
+    const observers: IntersectionObserver[] = [];
+    const animations: Animation[] = [];
+    const pending = new Set<HTMLElement>();
 
-        // If the element is already inside (or above) the viewport when the
-        // reveal is declared — a tab switch, a back navigation, a deep link —
-        // there may never be a scroll event to trigger it. Play it now instead
-        // of leaving it at opacity 0 waiting for something that won't happen.
-        const triggerEl = (options.trigger ?? els[0]) as Element;
-        const playNow =
-          options.immediate === true ||
-          triggerEl.getBoundingClientRect().top < window.innerHeight;
+    const reveal: RevealFn = (target, options = {}) => {
+      const els = toElements(target);
+      if (els.length === 0) return;
 
-        gsap.fromTo(
-          els,
-          { opacity: 0, y: options.y ?? REVEAL.y, scale: options.scale ?? 1 },
-          {
-            opacity: 1,
-            y: 0,
-            scale: 1,
-            duration: options.duration ?? REVEAL.duration,
-            stagger: options.stagger ?? 0,
-            delay: options.delay ?? 0,
-            ease: REVEAL.ease,
-            clearProps: 'opacity,transform',
-            scrollTrigger: playNow
-              ? undefined
-              : {
-                  trigger: options.trigger ?? els[0],
-                  start: options.start ?? REVEAL.start,
-                  once: true,
-                },
-          },
-        );
+      const y = options.y ?? REVEAL.y;
+      const scale = options.scale ?? 1;
+      const duration = (options.duration ?? REVEAL.duration) * 1000;
+      const stagger = (options.stagger ?? 0) * 1000;
+      const baseDelay = (options.delay ?? 0) * 1000;
+      const from = `translateY(${y}px)${scale === 1 ? '' : ` scale(${scale})`}`;
+
+      for (const el of els) {
+        el.style.opacity = '0';
+        el.style.transform = from;
+        el.style.willChange = 'opacity, transform';
+        pending.add(el);
+      }
+
+      let played = false;
+      const play = () => {
+        if (played) return;
+        played = true;
+        els.forEach((el, i) => {
+          pending.delete(el);
+          // Drop the inline hide *before* animating: `fill: 'backwards'` holds
+          // the start frame through the delay, and the element's own styles
+          // take over the instant the animation ends or is cancelled.
+          clearInlineState(el);
+          animations.push(
+            el.animate(
+              [
+                { opacity: 0, transform: from },
+                { opacity: 1, transform: 'none' },
+              ],
+              {
+                duration,
+                delay: baseDelay + i * stagger,
+                easing: REVEAL.easing,
+                fill: 'backwards',
+              },
+            ),
+          );
+        });
       };
 
-      build(reveal);
-    }, scope);
+      const triggerEl = options.trigger ?? els[0];
+      // Already on screen, or scrolled past — there is no future intersection
+      // to wait for.
+      if (options.immediate || triggerEl.getBoundingClientRect().top < window.innerHeight) {
+        play();
+        return;
+      }
 
-    return () => ctx.revert();
-    // `build` is intentionally excluded — callers pass an inline closure.
+      const observer = new IntersectionObserver(
+        (entries) => {
+          if (entries.some((entry) => entry.isIntersecting)) {
+            play();
+            observer.disconnect();
+          }
+        },
+        { rootMargin: rootMarginFromStart(options.start ?? REVEAL.start) },
+      );
+      observer.observe(triggerEl);
+      observers.push(observer);
+    };
+
+    build(reveal);
+
+    return () => {
+      for (const observer of observers) observer.disconnect();
+      for (const animation of animations) animation.cancel();
+      // Anything that never got its turn goes back to visible rather than
+      // being left hidden for a remount to inherit.
+      for (const el of pending) clearInlineState(el);
+      pending.clear();
+    };
+    // `build` is an inline closure by design; callers control re-runs via deps.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, deps);
 }
