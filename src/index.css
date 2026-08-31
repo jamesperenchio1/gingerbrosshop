@@ -29,11 +29,27 @@
   body {
     @apply bg-background text-foreground;
     font-family: 'Inter', sans-serif;
-    overflow-x: hidden;
+    /* `clip` instead of `hidden`: overflow-x: hidden turns the body into a
+       scroll container, which silently breaks `position: sticky` descendants
+       and confuses scroll measurement. `clip` crops without that side effect. */
+    overflow-x: clip;
   }
 
   h1, h2, h3, h4, h5, h6 {
     font-family: 'Playfair Display', serif;
+  }
+
+  /* Respect the OS "reduce motion" setting for anything CSS-driven. GSAP
+     animations opt out separately via prefersReducedMotion() in lib/reveal. */
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
   }
 }
 

@@ -1,18 +1,19 @@
 import { useState, useRef, useEffect, useLayoutEffect, useCallback, useMemo } from 'react';
-import { useParams, useSearchParams, useNavigate, Link } from 'react-router';
+import { useParams, useSearchParams, Link } from 'react-router';
 import gsap from 'gsap';
 import { useCart } from '@/context/CartContext';
 import { toast } from 'sonner';
 import { PlusIcon, MinusIcon } from '@/components/Icons';
 import SEO from '@/components/SEO';
 import NotFound from '@/pages/NotFound';
-import { useCatalog, defaultPrice, intervalLabel, oneTimePrice, savingsPercent, stockStatus, type CatalogProduct } from '@/lib/catalog';
+import { useCatalog, defaultPrice, intervalLabel, oneTimePrice, savingsPercent, stockStatus, hasVariantPrices, type CatalogProduct } from '@/lib/catalog';
 import { getDeliveryEstimateMessage } from '@/constants/store';
 import { useRecentlyViewed, getRecentlyViewed } from '@/hooks/use-recently-viewed';
 import { Skeleton } from '@/components/ui/skeleton';
 import ImageLightbox from '@/components/ImageLightbox';
 import StockAlertForm from '@/components/StockAlertForm';
 import { getProductContent } from '@/lib/productContent';
+import { prefersReducedMotion } from '@/lib/reveal';
 import {
   Leaf,
   ThermometerSnowflake,
@@ -172,7 +173,6 @@ function RecentlyViewed({ currentProductId }: { currentProductId: string }) {
 /* ──────────────────────── Related Products ──────────────────────── */
 
 function RelatedProductCard({ product }: { product: CatalogProduct }) {
-  const navigate = useNavigate();
   const { addItem } = useCart();
   const [added, setAdded] = useState(false);
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -181,7 +181,7 @@ function RelatedProductCard({ product }: { product: CatalogProduct }) {
   const price = defaultPrice(product);
   const image = product.images[0] ?? '';
   const shortDesc = product.metadata.short_description ?? product.description ?? '';
-  const hasVariants = product.prices.length > 1 && product.prices.every((p) => !p.recurring && p.nickname?.includes(' · '));
+  const hasVariants = hasVariantPrices(product);
 
   const handleAdd = useCallback(() => {
     if (!price || hasVariants) return;
@@ -193,29 +193,36 @@ function RelatedProductCard({ product }: { product: CatalogProduct }) {
   }, [price, hasVariants, addItem, product, image]);
 
   return (
-    <div
-      onClick={() => navigate(`/product/${product.id}`)}
-      role="link"
-      tabIndex={0}
-      aria-label={product.name}
-      onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); navigate(`/product/${product.id}`); } }}
-      className="bg-white border border-soft-peach/60 rounded-xxl p-5 flex flex-col cursor-pointer hover:shadow-panel-hover transition-shadow duration-300 focus-visible:outline focus-visible:outline-2 focus-visible:outline-amber focus-visible:outline-offset-2"
-    >
+    <article className="relative bg-white border border-soft-peach/60 rounded-xxl p-5 flex flex-col hover:shadow-panel-hover transition-shadow duration-300 focus-within:outline focus-within:outline-2 focus-within:outline-amber focus-within:outline-offset-2">
       <div className="flex items-center justify-center h-[160px] mb-4">
         <img src={image} alt={product.name} loading="lazy" decoding="async" className="max-h-full w-auto object-contain" />
       </div>
-      <h4 className="font-display font-semibold text-deep-brown text-[15px] mb-1 leading-snug">{product.name}</h4>
+      <h4 className="font-display font-semibold text-deep-brown text-[15px] mb-1 leading-snug">
+        <Link to={`/product/${product.id}`} className="outline-none after:absolute after:inset-0 after:content-[''] after:rounded-xxl hover:text-rust transition-colors">
+          {product.name}
+        </Link>
+      </h4>
       <p className="font-body text-earth text-[13px] leading-relaxed mb-4 flex-grow line-clamp-2">{shortDesc}</p>
       <div className="flex items-center justify-between gap-3 mt-auto">
         <span className="font-display font-semibold text-deep-brown text-lg">฿{price?.unitAmount ?? '—'}</span>
-        <button
-          onClick={(e) => { e.stopPropagation(); if (hasVariants) navigate(`/product/${product.id}`); else handleAdd(); }}
-          className={`font-body font-medium text-[12px] uppercase tracking-[0.07em] px-4 py-2 rounded-full transition-all ${added ? 'bg-accent-green text-white' : 'bg-amber text-deep-brown hover:bg-warm-gold'}`}
-        >
-          {added ? 'Added!' : hasVariants ? 'Options →' : 'Add to Cart'}
-        </button>
+        {hasVariants ? (
+          <Link
+            to={`/product/${product.id}`}
+            className="relative z-10 font-body font-medium text-[12px] uppercase tracking-[0.07em] px-4 py-2 rounded-full bg-amber text-deep-brown hover:bg-warm-gold transition-all"
+          >
+            Options →
+          </Link>
+        ) : (
+          <button
+            onClick={handleAdd}
+            aria-label={`Add ${product.name} to cart`}
+            className={`relative z-10 font-body font-medium text-[12px] uppercase tracking-[0.07em] px-4 py-2 rounded-full transition-all ${added ? 'bg-accent-green text-white' : 'bg-amber text-deep-brown hover:bg-warm-gold'}`}
+          >
+            {added ? 'Added!' : 'Add to Cart'}
+          </button>
+        )}
       </div>
-    </div>
+    </article>
   );
 }
 
@@ -244,30 +251,11 @@ export default function ProductDetail() {
   const heroRef = useRef<HTMLDivElement>(null);
   const infoRef = useRef<HTMLDivElement>(null);
   const mainImageContainerRef = useRef<HTMLDivElement>(null);
-  const [isZooming, setIsZooming] = useState(false);
-  const [zoomPos, setZoomPos] = useState({ x: 50, y: 50 });
-  // Touch devices report synthetic mouseenter/mousemove on tap but never fire
-  // mouseleave (there's no cursor to leave), which permanently stuck the image
-  // zoomed in at 2.2x after a single tap. Hover-zoom is desktop-only behavior.
-  const supportsHoverZoom = typeof window !== 'undefined' && window.matchMedia('(hover: hover) and (pointer: fine)').matches;
   const [showStickyAtc, setShowStickyAtc] = useState(false);
   const atcRef = useRef<HTMLDivElement>(null);
 
   const images = product?.images ?? [];
   const video = content.video;
-
-  const handleImageMouseMove = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
-    const rect = mainImageContainerRef.current?.getBoundingClientRect();
-    if (!rect) return;
-    setZoomPos({
-      x: Math.max(0, Math.min(100, ((e.clientX - rect.left) / rect.width) * 100)),
-      y: Math.max(0, Math.min(100, ((e.clientY - rect.top) / rect.height) * 100)),
-    });
-    // Only real mouse movement (not the page scrolling content under a
-    // stationary cursor, which browsers report as mouseenter/mouseover with
-    // no accompanying mousemove) should trigger zoom.
-    if (supportsHoverZoom && !(video && activeImage === images.length)) setIsZooming(true);
-  }, [supportsHoverZoom, video, activeImage, images.length]);
 
   const [prevId, setPrevId] = useState(id);
   if (id !== prevId) {
@@ -275,8 +263,6 @@ export default function ProductDetail() {
     setActiveImage(0);
     setQuantity(1);
     setSelectedPriceId(null);
-    setIsZooming(false);
-    setZoomPos({ x: 50, y: 50 });
   }
 
   const oneTimeForProduct = product ? oneTimePrice(product) : undefined;
@@ -305,10 +291,7 @@ export default function ProductDetail() {
   // Track this product as recently viewed.
   useRecentlyViewed(product?.id);
 
-  const isVariantProduct =
-    !!product &&
-    product.prices.length > 1 &&
-    product.prices.every((p) => !p.recurring && p.nickname?.includes(' · '));
+  const isVariantProduct = !!product && hasVariantPrices(product);
 
   const variantSizes = isVariantProduct
     ? [...new Set(product!.prices.map((p) => p.nickname!.split(' · ')[0]))]
@@ -362,10 +345,14 @@ export default function ProductDetail() {
   }, [id]);
 
   useLayoutEffect(() => {
-    if (!product) return;
+    if (!product || prefersReducedMotion()) return;
+    // fromTo + clearProps, never `from`: the end state is explicit and the
+    // inline styles are removed once played, so nothing can strand the gallery
+    // or the buy box at opacity 0.
     const ctx = gsap.context(() => {
-      gsap.from(heroRef.current, { opacity: 0, y: 20, duration: 0.7, ease: 'power3.out' });
-      gsap.from(infoRef.current, { opacity: 0, y: 20, duration: 0.7, delay: 0.15, ease: 'power3.out' });
+      const enter = { opacity: 1, y: 0, duration: 0.7, ease: 'power3.out', clearProps: 'opacity,transform' };
+      gsap.fromTo(heroRef.current, { opacity: 0, y: 20 }, enter);
+      gsap.fromTo(infoRef.current, { opacity: 0, y: 20 }, { ...enter, delay: 0.15 });
     });
     return () => ctx.revert();
   }, [id, product]);
@@ -474,31 +461,31 @@ export default function ProductDetail() {
 
           {/* Gallery */}
           <div ref={heroRef} className="relative">
+            {/* The button must be `h-full`, not `max-h-full`: a percentage
+                max-height resolves against an *auto*-height parent as `none`,
+                so the image ignored it, rendered at its natural pixel size and
+                got cropped by the container's `overflow-hidden` — the "zoomed
+                in" bottle. Giving the button a definite height makes
+                `max-h-full` on the image resolve, and `object-contain` finally
+                does what it says. */}
             <div
               ref={mainImageContainerRef}
-              onMouseMove={supportsHoverZoom ? handleImageMouseMove : undefined}
-              onMouseLeave={() => setIsZooming(false)}
               className="rounded-xxl overflow-hidden mb-4 h-[480px] md:h-[600px] flex items-center justify-center select-none bg-cream/40"
-              style={{ cursor: isZooming ? 'zoom-in' : 'default' }}
             >
               {video && activeImage === images.length ? (
                 <video src={video} controls autoPlay muted loop playsInline className="max-h-full max-w-full object-contain" />
               ) : (
                 <button
                   onClick={() => setLightboxOpen(true)}
-                  className="max-h-full max-w-full flex items-center justify-center cursor-zoom-in"
+                  className="h-full w-full p-4 flex items-center justify-center cursor-zoom-in"
                   aria-label={`Open ${product.name} image gallery`}
                 >
                   <img
                     src={images[activeImage] ?? images[0]}
                     alt={product.name}
                     decoding="async"
-                    className="max-h-full max-w-full object-contain pointer-events-none mix-blend-multiply"
-                    style={{
-                      transform: isZooming ? 'scale(2.2)' : 'scale(1)',
-                      transformOrigin: `${zoomPos.x}% ${zoomPos.y}%`,
-                      transition: isZooming ? 'transform-origin 0ms' : 'transform 0.25s ease',
-                    }}
+                    fetchPriority="high"
+                    className="max-h-full max-w-full object-contain pointer-events-none"
                     draggable={false}
                   />
                 </button>

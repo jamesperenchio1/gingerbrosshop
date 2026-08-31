@@ -1,12 +1,23 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
-import { useNavigate } from 'react-router';
-import gsap from 'gsap';
+import { Link } from 'react-router';
 import { useCart } from '@/context/CartContext';
 import { toast } from 'sonner';
 import { PlusIcon, MinusIcon } from '@/components/Icons';
-import { useCatalog, defaultPrice, cheapestSubscription, maxSubscriptionSavings, intervalLabel, stockStatus, type CatalogProduct } from '@/lib/catalog';
+import {
+  useCatalog,
+  defaultPrice,
+  cheapestSubscription,
+  maxSubscriptionSavings,
+  intervalLabel,
+  stockStatus,
+  hasVariantPrices,
+  unitLabel,
+  type CatalogProduct,
+} from '@/lib/catalog';
 import { Skeleton } from '@/components/ui/skeleton';
 import StockAlertForm from '@/components/StockAlertForm';
+import { useReveal } from '@/lib/reveal';
+import { prefetchProductDetail } from '@/lib/prefetch';
 
 function ProductCardSkeleton() {
   return (
@@ -21,9 +32,15 @@ function ProductCardSkeleton() {
   );
 }
 
-
+/**
+ * Card layout note: the whole card is clickable via a "stretched link" — a real
+ * `<Link>` on the title whose `::after` covers the card. That keeps
+ * cmd/middle-click, right-click → open in new tab and crawlable `<a href>`
+ * working (a `div role="link"` + `navigate()` gives you none of those), and it
+ * removes the pile of `stopPropagation` calls the nested-button version needed.
+ * Anything interactive that sits on top just needs `relative z-10`.
+ */
 function ProductCard({ product }: { product: CatalogProduct }) {
-  const navigate = useNavigate();
   const { addItem } = useCart();
   const [quantity, setQuantity] = useState(1);
   const [added, setAdded] = useState(false);
@@ -40,13 +57,7 @@ function ProductCard({ product }: { product: CatalogProduct }) {
   const detailLink = `/product/${product.id}`;
   const shortDescription = product.metadata.short_description ?? product.description ?? '';
   const image = product.images[0] ?? '';
-  const isEquipment = product.category === 'brewing-equipment';
-  const isSixPack = product.id === 'ginger-fizz-6pack';
-  const unitLabel = isEquipment ? 'per unit' : isSixPack ? 'per 6-pack' : 'per bottle';
-
-  const hasVariants =
-    product.prices.length > 1 &&
-    product.prices.every((p) => !p.recurring && p.nickname?.includes(' · '));
+  const hasVariants = hasVariantPrices(product);
 
   const changeQuantity = useCallback((delta: number) => {
     setQuantity((prev) => Math.max(1, Math.min(24, prev + delta)));
@@ -73,70 +84,80 @@ function ProductCard({ product }: { product: CatalogProduct }) {
   }, [price, addItem, product, quantity, image]);
 
   return (
-    <div
-      onClick={() => navigate(detailLink)}
-      role="link"
-      tabIndex={0}
-      aria-label={product.name}
-      onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); navigate(detailLink); } }}
-      className="bg-white border border-soft-peach/60 shadow-card rounded-3xl p-5 sm:p-8 flex flex-col cursor-pointer hover:shadow-card-hover transition-shadow duration-300 focus-visible:outline focus-visible:outline-2 focus-visible:outline-amber focus-visible:outline-offset-2"
+    <article
+      onMouseEnter={prefetchProductDetail}
+      onFocus={prefetchProductDetail}
+      className="relative bg-white border border-soft-peach/60 shadow-card rounded-3xl p-5 sm:p-8 flex flex-col hover:shadow-card-hover transition-shadow duration-300 focus-within:outline focus-within:outline-2 focus-within:outline-amber focus-within:outline-offset-2"
     >
       <div className="flex items-center justify-center mb-6 h-[180px] sm:h-[200px] bg-cream/50 rounded-2xl p-4">
-        <img src={image} alt={product.name} loading="lazy" decoding="async" className="max-h-full max-w-full object-contain" />
+        <img
+          src={image}
+          alt={product.name}
+          loading="lazy"
+          decoding="async"
+          className="max-h-full max-w-full object-contain"
+        />
       </div>
-      <button onClick={() => navigate(detailLink)} className="text-left">
-        <h3 className="font-display font-semibold text-deep-brown text-[1.15rem] mb-2 hover:text-rust transition-colors">
+
+      <h3 className="font-display font-semibold text-deep-brown text-[1.15rem] mb-2">
+        <Link
+          to={detailLink}
+          className="outline-none after:absolute after:inset-0 after:content-[''] after:rounded-3xl hover:text-rust transition-colors"
+        >
           {product.name}
-        </h3>
-      </button>
+        </Link>
+      </h3>
+
       <p className="font-body text-earth text-[14px] leading-relaxed mb-4 flex-grow">
         {shortDescription}
       </p>
       <div className="flex items-baseline gap-2 mb-2">
         <span className="font-display font-semibold text-deep-brown text-2xl">฿{price?.unitAmount ?? '—'}</span>
-        <span className="font-body font-medium text-[13px] text-rust">{unitLabel}</span>
+        <span className="font-body font-medium text-[13px] text-rust">{unitLabel(product)}</span>
       </div>
+
       {subPrice && subSavings > 0 && (
-        <button
-          onClick={(e) => { e.stopPropagation(); navigate(`${detailLink}?plan=weekly`); }}
-          className="w-full flex items-center justify-between gap-3 mb-4 rounded-xl border-2 border-amber bg-amber/10 px-4 py-3 text-left hover:bg-amber/20 transition-colors group"
+        <Link
+          to={`${detailLink}?plan=weekly`}
+          className="relative z-10 w-full flex items-center justify-between gap-3 mb-4 rounded-xl border-2 border-amber bg-amber/10 px-4 py-3 text-left hover:bg-amber/20 transition-colors group"
         >
-          <div>
-            <p className="font-display font-bold text-deep-brown text-[14px] leading-tight">
+          <span className="block">
+            <span className="block font-display font-bold text-deep-brown text-[14px] leading-tight">
               Subscribe &amp; Save {subSavings}%
-            </p>
-            <p className="font-body text-[11px] text-earth/70 mt-0.5">
+            </span>
+            <span className="block font-body text-[11px] text-earth/70 mt-0.5">
               From ฿{subPrice.unitAmount}/{intervalLabel(subPrice.recurring).replace(/^per |^every /, '')} · cancel anytime
-            </p>
-          </div>
+            </span>
+          </span>
           <span className="flex-shrink-0 bg-deep-brown text-cream font-body font-semibold text-[11px] uppercase tracking-[0.05em] px-3 py-1.5 rounded-full group-hover:bg-rust transition-colors">
             See plan →
           </span>
-        </button>
+        </Link>
       )}
+
       {hasVariants ? (
-        <button
-          onClick={(e) => { e.stopPropagation(); navigate(detailLink); }}
-          className="w-full font-body font-medium text-sm uppercase tracking-[0.08em] py-3.5 rounded-full bg-amber text-deep-brown hover:bg-warm-gold active:scale-[0.98] transition-all duration-200"
+        <Link
+          to={detailLink}
+          className="relative z-10 w-full text-center font-body font-medium text-sm uppercase tracking-[0.08em] py-3.5 rounded-full bg-amber text-deep-brown hover:bg-warm-gold active:scale-[0.98] transition-all duration-200"
         >
           Choose Options →
-        </button>
+        </Link>
       ) : (
         <>
-          <div onClick={(e) => e.stopPropagation()} className="flex items-center justify-center gap-2 mb-4 border-2 border-soft-peach rounded-full py-1 px-2 self-start">
-            <button onClick={() => changeQuantity(-1)} className="text-earth hover:text-deep-brown transition-colors p-2" aria-label="Decrease quantity">
+          <div className="relative z-10 flex items-center justify-center gap-2 mb-4 border-2 border-soft-peach rounded-full py-1 px-2 self-start">
+            <button onClick={() => changeQuantity(-1)} className="text-earth hover:text-deep-brown transition-colors p-2" aria-label={`Decrease ${product.name} quantity`}>
               <MinusIcon />
             </button>
             <span className="font-body font-medium text-earth min-w-[20px] text-center">{quantity}</span>
-            <button onClick={() => changeQuantity(1)} className="text-earth hover:text-deep-brown transition-colors p-2" aria-label="Increase quantity">
+            <button onClick={() => changeQuantity(1)} className="text-earth hover:text-deep-brown transition-colors p-2" aria-label={`Increase ${product.name} quantity`}>
               <PlusIcon />
             </button>
           </div>
           <button
-            onClick={(e) => { e.stopPropagation(); handleAddToCart(); }}
+            onClick={handleAddToCart}
             data-testid="add-to-cart"
             disabled={!price || stock === 'out_of_stock'}
-            className={`w-full font-body font-medium text-sm uppercase tracking-[0.08em] py-3.5 rounded-full transition-all duration-200 ${
+            className={`relative z-10 w-full font-body font-medium text-sm uppercase tracking-[0.08em] py-3.5 rounded-full transition-all duration-200 ${
               added
                 ? 'bg-accent-green text-white'
                 : stock === 'out_of_stock'
@@ -154,6 +175,7 @@ function ProductCard({ product }: { product: CatalogProduct }) {
           </button>
         </>
       )}
+
       <div className="flex items-center gap-2 mt-3">
         <span className={`w-2 h-2 rounded-full ${stock === 'out_of_stock' ? 'bg-earth/40' : stock === 'low_stock' ? 'bg-amber' : 'bg-accent-green'}`} />
         <span className="font-body font-medium text-[13px] text-earth">
@@ -161,31 +183,44 @@ function ProductCard({ product }: { product: CatalogProduct }) {
         </span>
       </div>
       {stock === 'out_of_stock' && (
-        <StockAlertForm productId={product.stripeProductId} className="mt-3" />
+        <div className="relative z-10">
+          <StockAlertForm productId={product.stripeProductId} className="mt-3" />
+        </div>
       )}
-      <button
-        onClick={(e) => { e.stopPropagation(); navigate(detailLink); }}
-        className="mt-4 text-center font-body font-medium text-[13px] text-rust hover:text-deep-brown hover:underline transition-all"
-      >
+
+      <span aria-hidden="true" className="mt-4 text-center font-body font-medium text-[13px] text-rust">
         View Details →
-      </button>
-    </div>
+      </span>
+    </article>
   );
 }
 
 type ActiveCategory = 'drinks' | 'brewing-equipment';
 
+const SHOP_TAB_STORAGE_KEY = 'shopTab';
+
+function readStoredTab(): ActiveCategory {
+  try {
+    const stored = sessionStorage.getItem(SHOP_TAB_STORAGE_KEY);
+    return stored === 'brewing-equipment' ? 'brewing-equipment' : 'drinks';
+  } catch {
+    return 'drinks';
+  }
+}
+
 export default function Shop() {
-  const { products, loading } = useCatalog();
+  const { products, loading, error } = useCatalog();
   const sectionRef = useRef<HTMLElement>(null);
   const headerRef = useRef<HTMLDivElement>(null);
   const cardsRef = useRef<HTMLDivElement>(null);
-  const [activeCategory, setActiveCategory] = useState<ActiveCategory>(
-    () => (sessionStorage.getItem('shopTab') as ActiveCategory | null) ?? 'drinks',
-  );
+  const [activeCategory, setActiveCategory] = useState<ActiveCategory>(readStoredTab);
 
   const handleCategoryChange = useCallback((cat: ActiveCategory) => {
-    sessionStorage.setItem('shopTab', cat);
+    try {
+      sessionStorage.setItem(SHOP_TAB_STORAGE_KEY, cat);
+    } catch {
+      // sessionStorage unavailable (private browsing / quota) — non-fatal.
+    }
     setActiveCategory(cat);
   }, []);
 
@@ -198,44 +233,27 @@ export default function Shop() {
       ? products.filter((p) => p.category === 'brewing-equipment')
       : products.filter((p) => p.category === 'drinks' || p.category === null);
 
-  useEffect(() => {
-    const ctx = gsap.context(() => {
-      gsap.from(headerRef.current, {
-        opacity: 0, y: 40, duration: 0.7, ease: 'power3.out',
-        immediateRender: false,
-        scrollTrigger: { trigger: sectionRef.current, start: 'top 80%' },
+  // One reveal path for both first paint and tab switches. `useReveal` plays
+  // immediately when the target is already on screen, so switching tabs fades
+  // the new cards in without a second, competing animation.
+  useReveal(
+    sectionRef,
+    (reveal) => {
+      reveal(headerRef.current, { trigger: sectionRef.current, start: 'top 80%' });
+      reveal(cardsRef.current?.children, {
+        y: 50,
+        scale: 0.96,
+        duration: 0.8,
+        stagger: 0.12,
+        trigger: cardsRef.current,
+        start: 'top 80%',
       });
-    }, sectionRef);
-    return () => ctx.revert();
-  }, []);
+    },
+    [loading, activeCategory, visibleProducts.length],
+  );
 
-  useEffect(() => {
-    if (loading) return;
-    const cards = cardsRef.current?.children;
-    if (!cards || cards.length === 0) return;
-    const ctx = gsap.context(() => {
-      gsap.from(Array.from(cards), {
-        opacity: 0, y: 50, scale: 0.96, duration: 0.8, stagger: 0.15, ease: 'power3.out',
-        immediateRender: false,
-        scrollTrigger: { trigger: cardsRef.current, start: 'top 80%' },
-      });
-    }, sectionRef);
-    return () => ctx.revert();
-  }, [loading, products.length]);
-
-  useEffect(() => {
-    const cards = cardsRef.current?.children;
-    if (!cards || cards.length === 0) return;
-    gsap.fromTo(
-      Array.from(cards),
-      { opacity: 0, y: 20 },
-      { opacity: 1, y: 0, duration: 0.35, stagger: 0.08, ease: 'power2.out' },
-    );
-  }, [activeCategory]);
-
-  const totalCards = visibleProducts.length;
   const gridClass =
-    totalCards === 1
+    visibleProducts.length === 1
       ? 'grid grid-cols-1 md:grid-cols-3 gap-8 [&>*]:md:col-start-2'
       : 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8';
 
@@ -283,6 +301,20 @@ export default function Shop() {
         {loading ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {Array.from({ length: 3 }).map((_, i) => <ProductCardSkeleton key={i} />)}
+          </div>
+        ) : error ? (
+          /* Previously an API failure rendered "No products available right
+             now", which reads as "sold out" rather than "we broke". */
+          <div className="text-center py-12">
+            <p className="font-body text-earth mb-4">
+              We couldn&apos;t load the shop just now. This is on us, not on your connection.
+            </p>
+            <button
+              onClick={() => window.location.reload()}
+              className="font-body font-medium text-sm uppercase tracking-[0.08em] px-6 py-3 rounded-full bg-amber text-deep-brown hover:bg-warm-gold transition-colors"
+            >
+              Try again
+            </button>
           </div>
         ) : visibleProducts.length === 0 ? (
           <div className="text-center font-body text-earth py-12">No products available right now.</div>

@@ -1,6 +1,6 @@
-import { useRef, useEffect } from 'react';
-import gsap from 'gsap';
+import { useRef } from 'react';
 import { useI18n } from '@/context/I18nContext';
+import { useReveal } from '@/lib/reveal';
 
 export default function Process() {
   const { t } = useI18n();
@@ -16,17 +16,15 @@ export default function Process() {
     { number: '04', daysKey: 'step04Days', titleKey: 'step04Title', descKey: 'step04Desc' },
   ];
 
-  useEffect(() => {
-    const ctx = gsap.context(() => {
-      gsap.from([headerRef.current, cardsRef.current], {
-        opacity: 0, duration: 0.5, ease: 'power2.out',
-        immediateRender: false,
-        stagger: 0.1,
-        scrollTrigger: { trigger: sectionRef.current, start: 'top 88%' },
-      });
-    }, sectionRef);
-    return () => ctx.revert();
-  }, []);
+  useReveal(sectionRef, (reveal) => {
+    reveal([headerRef.current, cardsRef.current].filter(Boolean) as Element[], {
+      y: 24,
+      duration: 0.5,
+      stagger: 0.1,
+      trigger: sectionRef.current,
+      start: 'top 88%',
+    });
+  });
 
   return (
     <section id="process" ref={sectionRef} className="bg-amber py-[60px] md:py-[80px]">

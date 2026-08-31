@@ -1,4 +1,4 @@
-import { Suspense, lazy, useEffect } from 'react';
+import { Suspense, lazy, useEffect, useLayoutEffect } from 'react';
 import { Routes, Route, useLocation } from 'react-router';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { Analytics } from '@vercel/analytics/react';
@@ -50,28 +50,41 @@ function ReferralCapture() {
 
 /**
  * Reset scroll to the top on every route change (but preserve in-page #hash
- * navigation). Without this, navigating between pages keeps the previous scroll
- * position, which feels broken.
+ * navigation).
+ *
+ * The subtlety is `ScrollTrigger.refresh()`: it deliberately saves the current
+ * scroll position and re-applies it afterwards so that layout recalcs don't
+ * make the page jump. On a route change that's exactly wrong — it drags the
+ * new page back to the *previous* page's offset a frame after we scrolled to
+ * the top, which is what made opening a product land halfway down the page.
+ * `clearScrollMemory('manual')` wipes that saved position (and pins
+ * `history.scrollRestoration` to manual so the browser doesn't restore one
+ * either) before we scroll.
+ *
+ * Note there is deliberately no `ScrollTrigger.getAll().kill()` here: every
+ * section owns its triggers through a `gsap.context` that reverts on unmount,
+ * and killing a trigger from the outside leaves its tween frozen mid-flight —
+ * which is how sections ended up stuck at partial opacity after a back
+ * navigation.
  */
 function ScrollToTop() {
   const { pathname, hash } = useLocation();
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (hash) {
       const timer = setTimeout(() => {
-        const el = document.querySelector(hash);
-        if (el) el.scrollIntoView({ behavior: 'smooth' });
+        try {
+          document.querySelector(hash)?.scrollIntoView({ behavior: 'smooth' });
+        } catch {
+          // Malformed hash — nothing to scroll to.
+        }
       }, 100);
       return () => clearTimeout(timer);
     }
-    window.scrollTo({ top: 0, left: 0, behavior: 'instant' as ScrollBehavior });
-    // When coming back to the home page, kill stale ScrollTriggers first then
-    // refresh after a short delay so the DOM has settled and animations re-fire.
-    if (pathname === '/') {
-      ScrollTrigger.getAll().forEach((t) => t.kill());
-      const timer = setTimeout(() => ScrollTrigger.refresh(true), 50);
-      return () => clearTimeout(timer);
-    }
-    requestAnimationFrame(() => ScrollTrigger.refresh());
+
+    ScrollTrigger.clearScrollMemory('manual');
+    window.scrollTo(0, 0);
+    const raf = requestAnimationFrame(() => ScrollTrigger.refresh());
+    return () => cancelAnimationFrame(raf);
   }, [pathname, hash]);
   return null;
 }
