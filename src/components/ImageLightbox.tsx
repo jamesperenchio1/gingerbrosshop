@@ -1,5 +1,6 @@
 import { useEffect, useCallback } from 'react';
 import { X, ChevronLeft, ChevronRight } from 'lucide-react';
+import { optimizedImageUrl } from '@/lib/image';
 
 interface ImageLightboxProps {
   images: string[];
@@ -84,7 +85,7 @@ export default function ImageLightbox({
 
       {/* Image */}
       <img
-        src={images[activeIndex]}
+        src={optimizedImageUrl(images[activeIndex], 1600)}
         alt={`${productName} photo ${activeIndex + 1}`}
         className="max-h-[85vh] max-w-[90vw] object-contain select-none"
         onClick={(e) => e.stopPropagation()}

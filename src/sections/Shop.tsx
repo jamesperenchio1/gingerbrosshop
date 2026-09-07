@@ -18,6 +18,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import StockAlertForm from '@/components/StockAlertForm';
 import { useReveal } from '@/lib/reveal';
 import { prefetchProductDetail } from '@/lib/prefetch';
+import { optimizedImageUrl } from '@/lib/image';
 
 function ProductCardSkeleton() {
   return (
@@ -91,7 +92,7 @@ function ProductCard({ product }: { product: CatalogProduct }) {
     >
       <div className="flex items-center justify-center mb-6 h-[180px] sm:h-[200px] bg-cream/50 rounded-2xl p-4">
         <img
-          src={image}
+          src={optimizedImageUrl(image, 400)}
           alt={product.name}
           loading="lazy"
           decoding="async"
