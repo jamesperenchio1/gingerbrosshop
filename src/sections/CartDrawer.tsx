@@ -6,6 +6,7 @@ import { CloseIcon, TrashIcon, LockIcon, ShoppingBagIcon, PlusIcon, MinusIcon } 
 import { PENDING_SUBSCRIPTION_CHECKOUT_KEY, REFERRAL_CODE_STORAGE_KEY, startCheckout } from '@/lib/checkout';
 import { FREE_SHIPPING_THRESHOLD, CURRENCY_SYMBOL, getDeliveryEstimateMessage } from '@/constants/store';
 import { useI18n } from '@/context/I18nContext';
+import { optimizedImageUrl } from '@/lib/image';
 import type { CartItem } from '@/types/cart';
 
 export default function CartDrawer() {
@@ -221,7 +222,7 @@ export default function CartDrawer() {
                     onClick={() => handleViewProduct(item)}
                     className="w-14 h-14 rounded-xl overflow-hidden bg-cream flex-shrink-0 hover:opacity-80 transition-opacity"
                   >
-                    <img src={item.image} alt={item.name} className="w-full h-full object-contain" />
+                    <img src={optimizedImageUrl(item.image, 112)} alt={item.name} className="w-full h-full object-contain" />
                   </button>
 
                   <div className="flex-1 min-w-0">

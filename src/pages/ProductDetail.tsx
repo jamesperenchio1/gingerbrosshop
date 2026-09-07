@@ -13,6 +13,7 @@ import ImageLightbox from '@/components/ImageLightbox';
 import StockAlertForm from '@/components/StockAlertForm';
 import { getProductContent } from '@/lib/productContent';
 import { useReveal } from '@/lib/reveal';
+import { optimizedImageUrl } from '@/lib/image';
 import {
   Leaf,
   ThermometerSnowflake,
@@ -194,7 +195,7 @@ function RelatedProductCard({ product }: { product: CatalogProduct }) {
   return (
     <article className="relative bg-white border border-soft-peach/60 rounded-xxl p-5 flex flex-col hover:shadow-panel-hover transition-shadow duration-300 focus-within:outline focus-within:outline-2 focus-within:outline-amber focus-within:outline-offset-2">
       <div className="flex items-center justify-center h-[160px] mb-4">
-        <img src={image} alt={product.name} loading="lazy" decoding="async" className="max-h-full w-auto object-contain" />
+        <img src={optimizedImageUrl(image, 320)} alt={product.name} loading="lazy" decoding="async" className="max-h-full w-auto object-contain" />
       </div>
       <h4 className="font-display font-semibold text-deep-brown text-[15px] mb-1 leading-snug">
         <Link to={`/product/${product.id}`} className="outline-none after:absolute after:inset-0 after:content-[''] after:rounded-xxl hover:text-rust transition-colors">
@@ -477,7 +478,7 @@ export default function ProductDetail() {
                   aria-label={`Open ${product.name} image gallery`}
                 >
                   <img
-                    src={images[activeImage] ?? images[0]}
+                    src={optimizedImageUrl(images[activeImage] ?? images[0], 1000)}
                     alt={product.name}
                     decoding="async"
                     fetchPriority="high"
@@ -490,7 +491,7 @@ export default function ProductDetail() {
             <div className="flex gap-3 overflow-x-auto pb-2">
               {images.map((img, i) => (
                 <button key={i} onClick={() => setActiveImage(i)} aria-label={`View ${product.name} photo ${i + 1}`} className={`flex-shrink-0 w-20 h-20 rounded-xl overflow-hidden border-2 transition-all ${activeImage === i ? 'border-amber' : 'border-transparent hover:border-soft-peach'}`}>
-                  <img src={img} alt={`${product.name} thumbnail ${i + 1}`} loading="lazy" decoding="async" className="w-full h-full object-contain p-1" />
+                  <img src={optimizedImageUrl(img, 160)} alt={`${product.name} thumbnail ${i + 1}`} loading="lazy" decoding="async" className="w-full h-full object-contain p-1" />
                 </button>
               ))}
               {video && (
