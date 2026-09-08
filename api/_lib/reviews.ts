@@ -35,3 +35,11 @@ export async function addReview(productId: string, review: Review): Promise<void
     throw err;
   }
 }
+
+export async function deleteReview(productId: string, reviewId: string): Promise<boolean> {
+  const reviews = await getReviews(productId);
+  const next = reviews.filter((r) => r.id !== reviewId);
+  if (next.length === reviews.length) return false;
+  await redis.set(key(productId), next);
+  return true;
+}

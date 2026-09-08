@@ -1,7 +1,17 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { randomUUID } from 'crypto';
 import { rateLimit, getClientIp } from '../rateLimit.js';
-import { getReviews, addReview, type Review } from '../reviews.js';
+import { getReviews, addReview, deleteReview, type Review } from '../reviews.js';
+
+function isAdminAuthorized(req: VercelRequest): boolean {
+  const auth = req.headers.authorization;
+  const expected = process.env.ADMIN_SECRET;
+  if (!expected) {
+    console.error('ADMIN_SECRET is not configured');
+    return false;
+  }
+  return auth === `Bearer ${expected}`;
+}
 
 function summarize(reviews: Review[]) {
   const count = reviews.length;
@@ -88,6 +98,28 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     }
 
     res.status(200).json({ review });
+    return;
+  }
+
+  if (req.method === 'DELETE') {
+    if (!isAdminAuthorized(req)) {
+      res.status(401).json({ error: 'Unauthorized' });
+      return;
+    }
+
+    const productId = (req.query.productId as string | undefined)?.trim();
+    const reviewId = (req.query.reviewId as string | undefined)?.trim();
+    if (!productId || !reviewId) {
+      res.status(400).json({ error: 'productId and reviewId are required.' });
+      return;
+    }
+
+    const deleted = await deleteReview(productId, reviewId);
+    if (!deleted) {
+      res.status(404).json({ error: 'Review not found.' });
+      return;
+    }
+    res.status(200).json({ deleted: true });
     return;
   }
 
