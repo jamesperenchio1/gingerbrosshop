@@ -18,6 +18,7 @@ import stockAlert from './_lib/handlers/stock-alert.js';
 import shareCart from './_lib/handlers/share-cart.js';
 import ordersByEmail from './_lib/handlers/orders-by-email.js';
 import emailTracking from './_lib/handlers/email-tracking.js';
+import reviews from './_lib/handlers/reviews.js';
 
 type Handler = (req: VercelRequest, res: VercelResponse) => unknown | Promise<unknown>;
 
@@ -44,6 +45,7 @@ const routes: Record<string, Handler> = {
   'share-cart': shareCart,
   'orders-by-email': ordersByEmail,
   'email-tracking': emailTracking,
+  'reviews': reviews,
 };
 
 /**

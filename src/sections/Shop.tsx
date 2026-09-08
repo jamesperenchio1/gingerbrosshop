@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect, useCallback } from 'react';
+import { useState, useRef, useEffect, useCallback, useMemo } from 'react';
 import { Link } from 'react-router';
 import { useCart } from '@/context/CartContext';
 import { toast } from 'sonner';
@@ -16,6 +16,8 @@ import {
 } from '@/lib/catalog';
 import { Skeleton } from '@/components/ui/skeleton';
 import StockAlertForm from '@/components/StockAlertForm';
+import StarRating from '@/components/StarRating';
+import { useReviewSummaries, type ReviewSummary } from '@/lib/reviews';
 import { useReveal } from '@/lib/reveal';
 import { prefetchProductDetail } from '@/lib/prefetch';
 import { optimizedImageUrl } from '@/lib/image';
@@ -41,7 +43,7 @@ function ProductCardSkeleton() {
  * removes the pile of `stopPropagation` calls the nested-button version needed.
  * Anything interactive that sits on top just needs `relative z-10`.
  */
-function ProductCard({ product }: { product: CatalogProduct }) {
+function ProductCard({ product, reviewSummary }: { product: CatalogProduct; reviewSummary?: ReviewSummary }) {
   const { addItem } = useCart();
   const [quantity, setQuantity] = useState(1);
   const [added, setAdded] = useState(false);
@@ -108,6 +110,13 @@ function ProductCard({ product }: { product: CatalogProduct }) {
           {product.name}
         </Link>
       </h3>
+
+      {reviewSummary && reviewSummary.count > 0 && (
+        <div className="flex items-center gap-1.5 mb-2">
+          <StarRating value={Math.round(reviewSummary.average)} size={13} />
+          <span className="font-body text-[12px] text-earth/60">({reviewSummary.count})</span>
+        </div>
+      )}
 
       <p className="font-body text-earth text-[14px] leading-relaxed mb-4 flex-grow">
         {shortDescription}
@@ -211,6 +220,8 @@ function readStoredTab(): ActiveCategory {
 
 export default function Shop() {
   const { products, loading, error } = useCatalog();
+  const productIds = useMemo(() => products.map((p) => p.id), [products]);
+  const reviewSummaries = useReviewSummaries(productIds);
   const sectionRef = useRef<HTMLElement>(null);
   const headerRef = useRef<HTMLDivElement>(null);
   const cardsRef = useRef<HTMLDivElement>(null);
@@ -322,7 +333,11 @@ export default function Shop() {
         ) : (
           <div ref={cardsRef} className={gridClass}>
             {visibleProducts.map((product) => (
-              <ProductCard key={product.stripeProductId} product={product} />
+              <ProductCard
+                key={product.stripeProductId}
+                product={product}
+                reviewSummary={reviewSummaries[product.id]}
+              />
             ))}
           </div>
         )}
