@@ -11,6 +11,7 @@ import { useRecentlyViewed, getRecentlyViewed } from '@/hooks/use-recently-viewe
 import { Skeleton } from '@/components/ui/skeleton';
 import ImageLightbox from '@/components/ImageLightbox';
 import StockAlertForm from '@/components/StockAlertForm';
+import ProductReviews from '@/components/ProductReviews';
 import { getProductContent } from '@/lib/productContent';
 import { useReveal } from '@/lib/reveal';
 import { optimizedImageUrl } from '@/lib/image';
@@ -877,6 +878,8 @@ export default function ProductDetail() {
         )}
 
         <RecentlyViewed currentProductId={product.id} />
+
+        <ProductReviews key={product.id} productId={product.id} productName={product.name} />
 
         <ImageLightbox
           images={images}
