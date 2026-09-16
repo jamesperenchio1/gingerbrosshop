@@ -347,7 +347,7 @@ export default function CartDrawer() {
             ) : (
               <button
                 onClick={() => setReferralInput(true)}
-                className="font-body text-[13px] text-rust hover:text-deep-brown underline"
+                className="block w-fit font-body text-[13px] text-rust hover:text-deep-brown underline"
               >
                 Have a referral code?
               </button>
@@ -378,7 +378,7 @@ export default function CartDrawer() {
             ) : (
               <button
                 onClick={() => setNoteOpen(true)}
-                className="font-body text-[13px] text-rust hover:text-deep-brown underline"
+                className="block w-fit font-body text-[13px] text-rust hover:text-deep-brown underline"
               >
                 {orderNote ? `Note: "${orderNote.slice(0, 40)}${orderNote.length > 40 ? '…' : ''}"` : 'Add a note or gift message'}
               </button>

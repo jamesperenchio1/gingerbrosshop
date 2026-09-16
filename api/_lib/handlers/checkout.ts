@@ -173,6 +173,17 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     });
   }
 
+  // Premium white-glove option: a GingerBros team member delivers the order by
+  // hand. Flat ฿5,000 regardless of order size, available on every one-time order.
+  shippingOptions.push({
+    shipping_rate_data: {
+      type: 'fixed_amount',
+      fixed_amount: { amount: 500000, currency: 'thb' },
+      display_name: 'Personally hand delivered',
+      delivery_estimate: { minimum: { unit: 'business_day', value: 1 }, maximum: { unit: 'business_day', value: 1 } },
+    },
+  });
+
   // Auto-apply the returnable-box store credit when the shopper's email has a
   // balance. Capped to the product subtotal so none is wasted (coupons discount
   // line items, not shipping). Stripe forbids combining `discounts` with

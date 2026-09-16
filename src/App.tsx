@@ -134,6 +134,22 @@ function AppContent() {
   );
 }
 
+/**
+ * Toasts sit bottom-right by default, but the cart drawer owns the bottom of
+ * the screen while it is open (and is full-width on mobile), so a toast there
+ * lands on top of the checkout button and footer links. While the drawer is
+ * open, move toasts to the top centre, clear of the drawer header.
+ */
+function AppToaster() {
+  const { state } = useCart();
+  return (
+    <Toaster
+      position={state.isOpen ? 'top-center' : 'bottom-right'}
+      offset={state.isOpen ? { top: 84 } : undefined}
+    />
+  );
+}
+
 export default function App() {
   return (
     <I18nProvider>
@@ -143,7 +159,7 @@ export default function App() {
           <AppContent />
           <CartDrawer />
         </ErrorBoundary>
-        <Toaster position="bottom-right" />
+        <AppToaster />
         <BackToTop />
         <Analytics />
         <SpeedInsights />
