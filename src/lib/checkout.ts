@@ -17,9 +17,15 @@ export function getGiftInfo(items: CartItem[]) {
 
 export const REFERRAL_CODE_STORAGE_KEY = 'gbros-referral-code';
 
+/** Delivery method chosen in the cart. Only used for subscriptions — one-time
+ *  orders pick their shipping rate on Stripe's own checkout page. */
+export type DeliveryMethod = 'standard' | 'hand-delivered';
+
+export const DELIVERY_METHOD_STORAGE_KEY = 'gbros-delivery-method';
+
 export async function startCheckout(
   items: CartItem[],
-  options?: { email?: string; referralCode?: string; orderNote?: string },
+  options?: { email?: string; referralCode?: string; orderNote?: string; deliveryMethod?: DeliveryMethod },
 ): Promise<string> {
   const res = await fetch('/api/checkout', {
     method: 'POST',
@@ -30,6 +36,7 @@ export async function startCheckout(
       email: options?.email?.trim() || undefined,
       referralCode: options?.referralCode?.trim() || undefined,
       orderNote: options?.orderNote?.trim() || undefined,
+      deliveryMethod: options?.deliveryMethod,
     }),
   });
   const data = await res.json();

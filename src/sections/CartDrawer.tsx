@@ -3,7 +3,7 @@ import { useCart } from '@/context/CartContext';
 import { useNavigate } from 'react-router';
 import { toast } from 'sonner';
 import { CloseIcon, TrashIcon, LockIcon, ShoppingBagIcon, PlusIcon, MinusIcon } from '@/components/Icons';
-import { PENDING_SUBSCRIPTION_CHECKOUT_KEY, REFERRAL_CODE_STORAGE_KEY, startCheckout } from '@/lib/checkout';
+import { PENDING_SUBSCRIPTION_CHECKOUT_KEY, REFERRAL_CODE_STORAGE_KEY, DELIVERY_METHOD_STORAGE_KEY, startCheckout, type DeliveryMethod } from '@/lib/checkout';
 import { FREE_SHIPPING_THRESHOLD, CURRENCY_SYMBOL, getDeliveryEstimateMessage } from '@/constants/store';
 import { useI18n } from '@/context/I18nContext';
 import { optimizedImageUrl } from '@/lib/image';
@@ -26,7 +26,15 @@ export default function CartDrawer() {
   );
   const [noteOpen, setNoteOpen] = useState(false);
   const [isSharing, setIsSharing] = useState(false);
+  const [deliveryMethod, setDeliveryMethod] = useState<DeliveryMethod>(
+    () => (localStorage.getItem(DELIVERY_METHOD_STORAGE_KEY) === 'hand-delivered' ? 'hand-delivered' : 'standard'),
+  );
   const navigate = useNavigate();
+
+  const handleDeliveryMethodChange = (value: DeliveryMethod) => {
+    setDeliveryMethod(value);
+    localStorage.setItem(DELIVERY_METHOD_STORAGE_KEY, value);
+  };
 
   const handleNoteChange = (value: string) => {
     const next = value.slice(0, 500);
@@ -105,6 +113,7 @@ export default function CartDrawer() {
   }, [state.isOpen, closeCart]);
 
   const hasMixedCart = state.items.some(i => i.isSubscription) && state.items.some(i => !i.isSubscription);
+  const hasSubscription = state.items.some(i => i.isSubscription);
 
   // Pre-create the Stripe checkout session in the background as soon as the cart
   // contents change, so clicking "Checkout" redirects instantly instead of waiting
@@ -120,12 +129,12 @@ export default function CartDrawer() {
     const itemsToPrefetch = hasMixedCart
       ? state.items.filter(i => !i.isSubscription)
       : state.items;
-    startCheckout(itemsToPrefetch, { referralCode, orderNote }).then(url => {
+    startCheckout(itemsToPrefetch, { referralCode, orderNote, deliveryMethod }).then(url => {
       if (!cancelled) setPrefetchedUrl(url);
     }).catch(() => { /* retry on click */ });
     return () => { cancelled = true; };
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [cartKey, hasMixedCart, referralCode, orderNote]);
+  }, [cartKey, hasMixedCart, referralCode, orderNote, deliveryMethod]);
 
   const handleCheckout = async () => {
     if (state.items.length === 0) return;
@@ -145,10 +154,10 @@ export default function CartDrawer() {
         // the subscription leg automatically once that session completes.
         const oneTimeItems = state.items.filter((i) => !i.isSubscription);
         sessionStorage.setItem(PENDING_SUBSCRIPTION_CHECKOUT_KEY, '1');
-        window.location.href = prefetchedUrl ?? await startCheckout(oneTimeItems, { referralCode, orderNote });
+        window.location.href = prefetchedUrl ?? await startCheckout(oneTimeItems, { referralCode, orderNote, deliveryMethod });
         return;
       }
-      window.location.href = await startCheckout(state.items, { referralCode, orderNote });
+      window.location.href = await startCheckout(state.items, { referralCode, orderNote, deliveryMethod });
     } catch (err) {
       setCheckoutError(err instanceof Error ? err.message : 'Something went wrong. Please try again.');
       setIsCheckingOut(false);
@@ -312,6 +321,55 @@ export default function CartDrawer() {
                   🎉 {t('freeShippingUnlocked')}
                 </p>
               </div>
+            )}
+
+            {/* Delivery method — subscriptions only. Stripe Checkout has no
+                shipping options in subscription mode, so the choice is made here
+                and passed through as the recurring delivery line item. */}
+            {hasSubscription && (
+              <fieldset className="space-y-2">
+                <legend className="font-body font-semibold text-[12px] uppercase tracking-[0.08em] text-rust mb-2">
+                  Delivery method
+                </legend>
+                <label
+                  className={`flex items-start gap-3 rounded-xl border px-4 py-3 cursor-pointer transition-colors ${
+                    deliveryMethod === 'standard' ? 'border-rust bg-cream' : 'border-soft-peach hover:border-rust/40'
+                  }`}
+                >
+                  <input
+                    type="radio"
+                    name="delivery-method"
+                    value="standard"
+                    checked={deliveryMethod === 'standard'}
+                    onChange={() => handleDeliveryMethodChange('standard')}
+                    className="mt-0.5 accent-rust"
+                  />
+                  <span className="font-body text-[13px] text-deep-brown">
+                    Standard delivery
+                    <span className="block text-[12px] text-earth/70">฿60 per delivery</span>
+                  </span>
+                </label>
+                <label
+                  className={`flex items-start gap-3 rounded-xl border px-4 py-3 cursor-pointer transition-colors ${
+                    deliveryMethod === 'hand-delivered' ? 'border-rust bg-cream' : 'border-soft-peach hover:border-rust/40'
+                  }`}
+                >
+                  <input
+                    type="radio"
+                    name="delivery-method"
+                    value="hand-delivered"
+                    checked={deliveryMethod === 'hand-delivered'}
+                    onChange={() => handleDeliveryMethodChange('hand-delivered')}
+                    className="mt-0.5 accent-rust"
+                  />
+                  <span className="font-body text-[13px] text-deep-brown">
+                    Personally hand delivered
+                    <span className="block text-[12px] text-earth/70">
+                      ฿5,000 per delivery — a GingerBros team member brings it to you
+                    </span>
+                  </span>
+                </label>
+              </fieldset>
             )}
 
             {/* Referral code */}

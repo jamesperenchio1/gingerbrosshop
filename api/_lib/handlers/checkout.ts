@@ -42,6 +42,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   const customerEmail = (req.body?.email as string | undefined)?.trim().toLowerCase() || '';
   const orderNote = ((req.body?.orderNote as string | undefined) ?? '').trim().slice(0, 500);
   const giftInfo = req.body?.giftInfo as { isGift: boolean; recipientEmail?: string; recipientName?: string; message?: string } | undefined;
+  // Chosen in the cart drawer. Only meaningful for subscriptions, where Stripe
+  // Checkout has no shipping_options — one-time orders pick it on Stripe's page.
+  const deliveryMethod = (req.body?.deliveryMethod as string | undefined) ?? 'standard';
 
   const stripe = getStripe(secret);
 
@@ -96,8 +99,10 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   }
 
   // Stripe Checkout subscription mode doesn't support shipping_options, so we
-  // inject a flat delivery fee as a matching recurring line item instead.
-  // Price IDs are the live delivery-fee prices created on the Stripe account.
+  // inject the delivery fee as a matching recurring line item instead. The
+  // shopper picks the method in the cart drawer: the flat per-delivery fee by
+  // default, or the premium hand-delivered upgrade.
+  const HAND_DELIVERED_AMOUNT = 500000; // ฿5,000 in satang
   const DELIVERY_PRICE: Record<string, string> = {
     'week_1':  'price_1TlT9f4xTvnGlHCDrZQrZ4kI',
     'week_2':  'price_1TlT9h4xTvnGlHCDBXJjknzd',
@@ -105,11 +110,29 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   };
   const hasGingerFizzSub = recurringCount > 0 && items.some(i => i.productId === 'ginger-fizz' || i.productId === 'ginger-fizz-6pack');
   if (hasGingerFizzSub && subInterval) {
-    const key = `${subInterval.interval}_${subInterval.intervalCount}`;
-    const deliveryPriceId = DELIVERY_PRICE[key];
-    if (deliveryPriceId) {
-      lineItems.push({ price: deliveryPriceId, quantity: 1 });
+    if (deliveryMethod === 'hand-delivered') {
+      // Inline recurring price so no pre-created Stripe price is needed, and
+      // the cadence matches the subscription itself.
+      lineItems.push({
+        price_data: {
+          currency: 'thb',
+          unit_amount: HAND_DELIVERED_AMOUNT,
+          recurring: {
+            interval: subInterval.interval as 'day' | 'week' | 'month' | 'year',
+            interval_count: subInterval.intervalCount,
+          },
+          product_data: { name: 'Personally hand delivered' },
+        },
+        quantity: 1,
+      });
       recurringCount++; // delivery is recurring — keep hasOneTime accurate
+    } else {
+      const key = `${subInterval.interval}_${subInterval.intervalCount}`;
+      const deliveryPriceId = DELIVERY_PRICE[key];
+      if (deliveryPriceId) {
+        lineItems.push({ price: deliveryPriceId, quantity: 1 });
+        recurringCount++; // delivery is recurring — keep hasOneTime accurate
+      }
     }
   }
 
@@ -178,7 +201,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   shippingOptions.push({
     shipping_rate_data: {
       type: 'fixed_amount',
-      fixed_amount: { amount: 500000, currency: 'thb' },
+      fixed_amount: { amount: HAND_DELIVERED_AMOUNT, currency: 'thb' },
       display_name: 'Personally hand delivered',
       delivery_estimate: { minimum: { unit: 'business_day', value: 1 }, maximum: { unit: 'business_day', value: 1 } },
     },
