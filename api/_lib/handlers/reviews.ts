@@ -71,8 +71,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       res.status(400).json({ error: 'Rating must be between 1 and 5.' });
       return;
     }
-    if (!text || text.length < 10) {
-      res.status(400).json({ error: 'Please write a bit more detail.' });
+    if (!text) {
+      res.status(400).json({ error: 'Please write your review.' });
       return;
     }
     if (text.length > 1000) {

@@ -142,7 +142,6 @@ export default function ProductReviews({ productId, productName }: Props) {
               onChange={(e) => setFormText(e.target.value)}
               placeholder="What did you think?"
               required
-              minLength={10}
               maxLength={1000}
               rows={4}
               className="w-full bg-white border border-soft-peach rounded-xl px-4 py-2.5 font-body text-[14px] text-deep-brown placeholder:text-earth/50 focus:outline-none focus:ring-2 focus:ring-rust/30 resize-none"
