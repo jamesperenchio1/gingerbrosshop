@@ -42,9 +42,9 @@ We may require proof of damage (photos) before processing a refund or replacemen
       content: `We ship across Thailand via standard courier, with an optional cold-chain upgrade available at checkout. Standard shipping is ฿100 flat rate, free on orders over ฿500.
 
 Orders are dispatched Monday–Thursday. Estimated transit times are:
-• Bangkok & surrounding areas: 1–2 business days
+• Bangkok & surrounding areas: 2–4 business days
 • Major cities (Chiang Mai, Phuket, Korat): 2–4 business days
-• Other provinces: 3–5 business days
+• Other provinces: 2–4 business days
 
 Risk of loss and title for items pass to you upon delivery to the courier. We are not responsible for delays caused by the courier, incorrect addresses provided by you, or circumstances beyond our control (weather, holidays, etc.).`
     },

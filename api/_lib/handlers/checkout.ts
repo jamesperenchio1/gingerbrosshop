@@ -191,7 +191,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         type: 'fixed_amount',
         fixed_amount: { amount: coldChainAmount, currency: 'thb' },
         display_name: 'Cold-chain delivery',
-        delivery_estimate: { minimum: { unit: 'business_day', value: 1 }, maximum: { unit: 'business_day', value: 2 } },
+        delivery_estimate: { minimum: { unit: 'business_day', value: 2 }, maximum: { unit: 'business_day', value: 4 } },
       },
     });
   }
@@ -203,7 +203,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       type: 'fixed_amount',
       fixed_amount: { amount: HAND_DELIVERED_AMOUNT, currency: 'thb' },
       display_name: 'Personally hand delivered',
-      delivery_estimate: { minimum: { unit: 'business_day', value: 1 }, maximum: { unit: 'business_day', value: 1 } },
+      delivery_estimate: { minimum: { unit: 'business_day', value: 2 }, maximum: { unit: 'business_day', value: 4 } },
     },
   });
 

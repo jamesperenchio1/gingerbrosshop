@@ -87,10 +87,10 @@ export default function ShippingPage() {
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               {[
-                { region: 'Bangkok & Metro', time: '1–2 business days' },
-                { region: 'Pathum Thani / Rangsit', time: '1–2 business days' },
+                { region: 'Bangkok & Metro', time: '2–4 business days' },
+                { region: 'Pathum Thani / Rangsit', time: '2–4 business days' },
                 { region: 'Chiang Mai / Phuket / Korat', time: '2–4 business days' },
-                { region: 'Other provinces', time: '3–5 business days' },
+                { region: 'Other provinces', time: '2–4 business days' },
               ].map((row) => (
                 <div key={row.region} className="flex items-center justify-between bg-warm-white rounded-xl px-4 py-3">
                   <span className="font-body text-deep-brown text-[14px]">{row.region}</span>
@@ -99,7 +99,7 @@ export default function ShippingPage() {
               ))}
             </div>
             <p className="font-body text-[13px] text-earth/70 mt-4">
-              Transit times are estimates and may vary during holidays or peak periods. Remote areas may take an additional 1–2 days.
+              Transit times are estimates and may vary during holidays or peak periods, and remote areas may take longer.
             </p>
           </div>
 
