@@ -346,7 +346,7 @@ export default function CartDrawer() {
                   />
                   <span className="font-body text-[13px] text-deep-brown">
                     Standard delivery
-                    <span className="block text-[12px] text-earth/70">฿60 per delivery</span>
+                    <span className="block text-[12px] text-earth/70">฿100 per delivery</span>
                   </span>
                 </label>
                 <label
