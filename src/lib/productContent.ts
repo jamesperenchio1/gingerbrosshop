@@ -395,7 +395,6 @@ export const PRODUCT_CONTENT: Record<string, ProductContent> = {
     headline: 'Real fermented ginger fizz with a bright lime lift. Bold flavour, low sugar, made in Thailand.',
     longDescription:
       'GingerBros Ginger Fizz is a naturally fermented craft soda made with fresh Thai ginger, real lime, and simple ingredients. Every bottle is brewed slow, bottled fresh, and delivered to your door. With prebiotic acacia fibre and less than 2g sugar per serving, it is a crisp ginger kick you can feel good about.',
-    video: '/images/product-ginger-fizz.mp4',
     ingredients: ['Fresh Thai Ginger', 'Filtered Water', 'Erythritol', 'White Sugar (ferment starter)', 'Ginger Bug Culture', 'Acacia Fibre', 'Fresh Lime'],
     specs: [
       { label: 'Volume', value: '330ml per bottle' },
