@@ -16,6 +16,7 @@ import ProductReviews from '@/components/ProductReviews';
 import { getProductContent } from '@/lib/productContent';
 import { useReveal } from '@/lib/reveal';
 import { optimizedImageUrl } from '@/lib/image';
+import { trackPixelEvent } from '@/lib/metaPixel';
 import {
   Leaf,
   ThermometerSnowflake,
@@ -296,6 +297,18 @@ export default function ProductDetail() {
 
   // Track this product as recently viewed.
   useRecentlyViewed(product?.id);
+
+  useEffect(() => {
+    if (!product) return;
+    trackPixelEvent('ViewContent', {
+      content_ids: [product.id],
+      content_type: 'product',
+      content_name: product.name,
+      value: oneTimeForProduct?.unitAmount ?? defaultPrice(product)?.unitAmount ?? 0,
+      currency: 'THB',
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [product?.id]);
 
   const isVariantProduct = !!product && hasVariantPrices(product);
 

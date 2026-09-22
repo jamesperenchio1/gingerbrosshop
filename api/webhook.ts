@@ -15,6 +15,7 @@ import {
   backInStockHtml,
 } from './_lib/email.js';
 import { getStockAlertSubscribers, clearStockAlertSubscribers } from './_lib/stockAlerts.js';
+import { sendMetaPurchaseEvents } from './_lib/handlers/metaCapi.js';
 
 const stripeSecret = process.env.STRIPE_SECRET_KEY;
 const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
@@ -134,6 +135,22 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     };
 
     await saveOrder(order);
+
+    // Fire-and-forget: mirrors the client-side Purchase/Subscribe pixel events
+    // fired from OrderSuccess.tsx, deduplicated by event_id, for delivery that
+    // doesn't depend on the customer's browser (ad blockers, iOS ITP, closed tab).
+    sendMetaPurchaseEvents(
+      {
+        sessionId: order.sessionId,
+        amountTotal: order.amountTotal,
+        currency: order.currency,
+        mode: order.mode,
+        customerEmail: order.customerEmail,
+        customerPhone: order.customerPhone,
+        items: order.items.map((i) => ({ id: i.id, quantity: i.quantity })),
+      },
+      `https://gingerbrosshop.com/order/success?session_id=${order.sessionId}`,
+    ).catch((err) => console.error('Failed to send Meta CAPI events:', err));
 
     // Draw down any returnable-box store credit that was applied to this order.
     const creditApplied = Number(session.metadata?.creditApplied ?? 0);

@@ -3,6 +3,7 @@ import { useSearchParams, Link } from 'react-router';
 import { CheckCircle, Package, Truck, Mail, FileText, Settings, Home, Gift } from 'lucide-react';
 import { useCart } from '@/context/CartContext';
 import { PENDING_SUBSCRIPTION_CHECKOUT_KEY, startCheckout } from '@/lib/checkout';
+import { trackPixelEvent } from '@/lib/metaPixel';
 import type { CartItem } from '@/types/cart';
 import SEO from '@/components/SEO';
 import CopyButton from '@/components/CopyButton';
@@ -156,6 +157,20 @@ export default function OrderSuccess() {
       .then((data: OrderDetails) => {
         setOrder(data);
         setLoading(false);
+        const value = (data.amountTotal ?? 0) / 100;
+        const contentIds = data.items.map((item) => item.description);
+        trackPixelEvent(
+          'Purchase',
+          { content_ids: contentIds, content_type: 'product', value, currency: data.currency },
+          `${data.sessionId}-purchase`,
+        );
+        if (data.isSubscription) {
+          trackPixelEvent(
+            'Subscribe',
+            { content_ids: contentIds, content_type: 'product', value, currency: data.currency },
+            `${data.sessionId}-subscribe`,
+          );
+        }
       })
       .catch((err) => {
         setError(err instanceof Error ? err.message : 'Something went wrong');
