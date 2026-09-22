@@ -85,7 +85,7 @@ export default function ImageLightbox({
 
       {/* Image */}
       <img
-        src={optimizedImageUrl(images[activeIndex], 1600)}
+        src={optimizedImageUrl(images[activeIndex], 2000)}
         alt={`${productName} photo ${activeIndex + 1}`}
         className="max-h-[85vh] max-w-[90vw] object-contain select-none"
         onClick={(e) => e.stopPropagation()}
