@@ -182,5 +182,7 @@ export function hasVariantPrices(product: CatalogProduct): boolean {
 export function unitLabel(product: CatalogProduct): string {
   const fromMetadata = product.metadata.unit_label?.trim();
   if (fromMetadata) return fromMetadata.startsWith('per ') ? fromMetadata : `per ${fromMetadata}`;
-  return product.category === 'brewing-equipment' ? 'per unit' : 'per bottle';
+  if (product.category === 'brewing-equipment') return 'per unit';
+  if (/pack/i.test(product.id) || /pack/i.test(product.name)) return 'per pack';
+  return 'per bottle';
 }

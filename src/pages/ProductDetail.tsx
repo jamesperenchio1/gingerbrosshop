@@ -3,6 +3,7 @@ import { useParams, useSearchParams, Link } from 'react-router';
 import { useCart } from '@/context/CartContext';
 import { toast } from 'sonner';
 import { PlusIcon, MinusIcon } from '@/components/Icons';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 import SEO from '@/components/SEO';
 import NotFound from '@/pages/NotFound';
 import { useCatalog, defaultPrice, intervalLabel, oneTimePrice, savingsPercent, stockStatus, hasVariantPrices, type CatalogProduct } from '@/lib/catalog';
@@ -259,6 +260,9 @@ export default function ProductDetail() {
 
   const images = product?.images ?? [];
   const video = content.video;
+  const slideCount = images.length + (video ? 1 : 0);
+  const goToPrevSlide = () => setActiveImage((i) => (i === 0 ? slideCount - 1 : i - 1));
+  const goToNextSlide = () => setActiveImage((i) => (i === slideCount - 1 ? 0 : i + 1));
 
   const [prevId, setPrevId] = useState(id);
   if (id !== prevId) {
@@ -481,7 +485,7 @@ export default function ProductDetail() {
                 does what it says. */}
             <div
               ref={mainImageContainerRef}
-              className="rounded-xxl overflow-hidden mb-4 h-[480px] md:h-[600px] flex items-center justify-center select-none bg-cream/40"
+              className="relative rounded-xxl overflow-hidden mb-4 h-[480px] md:h-[600px] flex items-center justify-center select-none bg-cream/40"
             >
               {video && activeImage === images.length ? (
                 <video src={video} controls autoPlay muted loop playsInline className="max-h-full max-w-full object-contain" />
@@ -492,7 +496,7 @@ export default function ProductDetail() {
                   aria-label={`Open ${product.name} image gallery`}
                 >
                   <img
-                    src={optimizedImageUrl(images[activeImage] ?? images[0], 1000)}
+                    src={optimizedImageUrl(images[activeImage] ?? images[0], 1400)}
                     alt={product.name}
                     decoding="async"
                     fetchPriority="high"
@@ -500,6 +504,30 @@ export default function ProductDetail() {
                     draggable={false}
                   />
                 </button>
+              )}
+              {slideCount > 1 && (
+                <>
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      goToPrevSlide();
+                    }}
+                    aria-label="Previous photo"
+                    className="absolute left-2 top-1/2 -translate-y-1/2 z-10 w-10 h-10 rounded-full bg-white/80 text-deep-brown shadow-md hover:bg-white flex items-center justify-center transition-colors"
+                  >
+                    <ChevronLeft className="w-5 h-5" />
+                  </button>
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      goToNextSlide();
+                    }}
+                    aria-label="Next photo"
+                    className="absolute right-2 top-1/2 -translate-y-1/2 z-10 w-10 h-10 rounded-full bg-white/80 text-deep-brown shadow-md hover:bg-white flex items-center justify-center transition-colors"
+                  >
+                    <ChevronRight className="w-5 h-5" />
+                  </button>
+                </>
               )}
             </div>
             <div className="flex gap-3 overflow-x-auto pb-2">
