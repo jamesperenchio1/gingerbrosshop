@@ -57,10 +57,12 @@ async function sendCapiEvent(
   };
 
   try {
-    const res = await fetch(`https://graph.facebook.com/v21.0/${PIXEL_ID}/events?access_token=${capiAccessToken}`, {
+    // access_token goes in the body, not the query string, so it doesn't end up in
+    // request logs or proxy access logs.
+    const res = await fetch(`https://graph.facebook.com/v21.0/${PIXEL_ID}/events`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload),
+      body: JSON.stringify({ ...payload, access_token: capiAccessToken }),
     });
     if (!res.ok) {
       const body = await res.text().catch(() => '');
