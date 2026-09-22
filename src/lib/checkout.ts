@@ -1,4 +1,5 @@
 import type { CartItem } from '@/types/cart';
+import { trackPixelEvent } from '@/lib/metaPixel';
 
 // Set right before redirecting to the first (one-time) leg of a split checkout.
 // The success page reads it once to know it should pick up the subscription leg.
@@ -27,6 +28,14 @@ export async function startCheckout(
   items: CartItem[],
   options?: { email?: string; referralCode?: string; orderNote?: string; deliveryMethod?: DeliveryMethod },
 ): Promise<string> {
+  trackPixelEvent('InitiateCheckout', {
+    content_ids: items.map((i) => i.productId ?? i.id),
+    content_type: 'product',
+    num_items: items.reduce((sum, i) => sum + i.quantity, 0),
+    value: items.reduce((sum, i) => sum + i.price * i.quantity, 0),
+    currency: 'THB',
+  });
+
   const res = await fetch('/api/checkout', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },

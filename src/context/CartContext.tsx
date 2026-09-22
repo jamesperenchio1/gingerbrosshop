@@ -1,5 +1,6 @@
 import { createContext, useContext, useReducer, useCallback, useMemo, useEffect, type ReactNode } from 'react';
 import type { CartItem, CartState, CartAction } from '@/types/cart';
+import { trackPixelEvent } from '@/lib/metaPixel';
 
 
 const CART_EMAIL_KEY = 'gingerbros-cart-email';
@@ -133,6 +134,13 @@ export function CartProvider({ children }: { children: ReactNode }) {
 
   const addItem = useCallback((item: CartItem) => {
     dispatch({ type: 'ADD_ITEM', payload: item });
+    trackPixelEvent('AddToCart', {
+      content_ids: [item.productId ?? item.id],
+      content_type: 'product',
+      content_name: item.name,
+      value: item.price * item.quantity,
+      currency: 'THB',
+    });
   }, []);
 
   const removeItem = useCallback((id: string) => {
