@@ -193,17 +193,100 @@ export function withUtm(url: string, campaign: string): string {
 }
 
 /**
- * Sticker library: Google Noto Emoji Animation (CC BY 4.0,
- * https://googlefonts.github.io/noto-emoji-animation/), served by Google Fonts.
- * Stickers are stored as the Lottie URL (~30 KB, crisp at any size); the
- * picker shows the tiny static SVG. The searchable index lives in
- * /public/stickers/noto-animated.json.
+ * Sticker library. Four free, commercially-usable sources are bundled into one
+ * merged, searchable picker:
+ *   - Google Noto Emoji Animation — animated Lottie, CC BY 4.0 (needs a credit)
+ *   - Microsoft Fluent Emoji — static, MIT (notice only, no on-screen credit)
+ *   - Twemoji — static SVG, CC BY 4.0 (needs a credit)
+ *   - EmojiTwo — static SVG, CC BY 4.0 (needs a credit)
+ *
+ * Noto is stored as its Lottie URL (~30 KB, crisp at any size) and the picker
+ * shows the tiny static SVG. The other sources are small static SVGs/PNGs, so
+ * the picker and the page use the file itself. Searchable indexes live in
+ * /public/stickers/*.json and are produced by scripts/build-sticker-indexes.mjs.
  */
 export const NOTO_BASE = 'https://fonts.gstatic.com/s/e/notoemoji/latest/';
-export const STICKER_INDEX_URL = '/stickers/noto-animated.json';
+export const FLUENT_BASE = 'https://cdn.jsdelivr.net/gh/microsoft/fluentui-emoji@main/assets/';
+export const TWEMOJI_BASE = 'https://cdn.jsdelivr.net/gh/jdecked/twemoji@latest/assets/svg/';
+export const EMOJITWO_BASE = 'https://cdn.jsdelivr.net/gh/EmojiTwo/emojitwo@master/svg/';
+
+/** Fluent ships each emoji in three visual styles. */
+export const FLUENT_STYLES = {
+  '3d': { dir: '3D', suffix: '_3d.png', label: '3D' },
+  color: { dir: 'Color', suffix: '_color.svg', label: 'Color' },
+  flat: { dir: 'Flat', suffix: '_flat.svg', label: 'Flat' },
+} as const;
+export type FluentStyle = keyof typeof FLUENT_STYLES;
+
+export const STICKER_SOURCES = {
+  noto: {
+    label: 'Google Noto (animated)',
+    license: 'CC BY 4.0',
+    licenseUrl: 'https://creativecommons.org/licenses/by/4.0/',
+    home: 'https://googlefonts.github.io/noto-emoji-animation/',
+    indexUrl: '/stickers/noto-animated.json',
+    base: NOTO_BASE,
+    credit: 'Animated emoji by Google Noto, CC BY 4.0',
+  },
+  fluent: {
+    label: 'Microsoft Fluent',
+    license: 'MIT',
+    licenseUrl: 'https://github.com/microsoft/fluentui-emoji/blob/main/LICENSE',
+    home: 'https://github.com/microsoft/fluentui-emoji',
+    indexUrl: '/stickers/fluent.json',
+    base: FLUENT_BASE,
+    // MIT only asks for the licence text to ship with the code, so no on-screen line.
+    credit: null,
+  },
+  twemoji: {
+    label: 'Twemoji',
+    license: 'CC BY 4.0',
+    licenseUrl: 'https://github.com/jdecked/twemoji/blob/main/LICENSE-GRAPHICS',
+    home: 'https://github.com/jdecked/twemoji',
+    indexUrl: '/stickers/twemoji.json',
+    base: TWEMOJI_BASE,
+    credit: 'Emoji art by Twemoji, CC BY 4.0',
+  },
+  emojitwo: {
+    label: 'EmojiTwo',
+    license: 'CC BY 4.0',
+    licenseUrl: 'https://github.com/EmojiTwo/emojitwo',
+    home: 'https://github.com/EmojiTwo/emojitwo',
+    indexUrl: '/stickers/emojitwo.json',
+    base: EMOJITWO_BASE,
+    credit: 'Emoji art by EmojiTwo, CC BY 4.0',
+  },
+} as const;
+
+export type StickerSource = keyof typeof STICKER_SOURCES;
+
+/** Kept for backwards compatibility with the original Noto-only wiring. */
+export const STICKER_INDEX_URL = STICKER_SOURCES.noto.indexUrl;
 
 export function notoSticker(codepoint: string): string {
   return `${NOTO_BASE}${codepoint}/lottie.json`;
+}
+
+export function fluentSticker(name: string, snake: string, style: FluentStyle): string {
+  const s = FLUENT_STYLES[style];
+  return `${FLUENT_BASE}${encodeURIComponent(name)}/${s.dir}/${snake}${s.suffix}`;
+}
+
+export function twemojiSticker(codepoint: string): string {
+  return `${TWEMOJI_BASE}${codepoint}.svg`;
+}
+
+export function emojitwoSticker(codepoint: string): string {
+  return `${EMOJITWO_BASE}${codepoint}.svg`;
+}
+
+/** Which bundled source a sticker URL came from (null for uploads). */
+export function stickerSourceOf(url: string): StickerSource | null {
+  if (url.startsWith(NOTO_BASE)) return 'noto';
+  if (url.startsWith(FLUENT_BASE)) return 'fluent';
+  if (url.startsWith(TWEMOJI_BASE)) return 'twemoji';
+  if (url.startsWith(EMOJITWO_BASE)) return 'emojitwo';
+  return null;
 }
 
 export function isNotoSticker(url: string): boolean {
@@ -213,6 +296,41 @@ export function isNotoSticker(url: string): boolean {
 /** Static preview for a sticker URL (Noto → its SVG; anything else as-is). */
 export function stickerThumb(url: string): string {
   return isNotoSticker(url) ? url.replace(/lottie\.json$/, 'emoji.svg') : url;
+}
+
+/** Pull name/snake/style back out of a Fluent URL, so the editor can switch style. */
+export function parseFluentSticker(url: string): { name: string; snake: string; style: FluentStyle } | null {
+  if (!url.startsWith(FLUENT_BASE)) return null;
+  const parts = url.slice(FLUENT_BASE.length).split('/');
+  if (parts.length !== 3) return null;
+  const [rawName, dir, file] = parts;
+  const entry = (Object.entries(FLUENT_STYLES) as [FluentStyle, (typeof FLUENT_STYLES)[FluentStyle]][]).find(
+    ([, s]) => s.dir === dir,
+  );
+  if (!entry) return null;
+  const [style, s] = entry;
+  if (!file.endsWith(s.suffix)) return null;
+  let name = rawName;
+  try {
+    name = decodeURIComponent(rawName);
+  } catch {
+    /* keep raw */
+  }
+  return { name, snake: file.slice(0, -s.suffix.length), style };
+}
+
+/** The on-screen credit lines required by the sources actually used on the page. */
+export function stickerCredits(urls: string[]): { key: StickerSource; text: string; href: string }[] {
+  const seen = new Set<StickerSource>();
+  const out: { key: StickerSource; text: string; href: string }[] = [];
+  for (const url of urls) {
+    const source = stickerSourceOf(url);
+    if (!source || seen.has(source)) continue;
+    seen.add(source);
+    const src = STICKER_SOURCES[source];
+    if (src.credit) out.push({ key: source, text: src.credit, href: src.home });
+  }
+  return out;
 }
 
 /** The page as it was on linktr.ee/gingerbrosbrew (Sept 2026, with Shop moved first), used until the first save. */
