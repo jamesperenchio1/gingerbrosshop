@@ -50,7 +50,7 @@ export default function LinkPage() {
 
   const onSignup = async (email: string) => {
     try {
-      const res = await fetch('/api/links/signup', {
+      const res = await fetch('/api/links?action=signup', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email }),
