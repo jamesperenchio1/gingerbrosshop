@@ -35,11 +35,7 @@ const CATEGORY_ICONS: Record<Category, ReactNode> = {
   wholesale: <Store className="w-4 h-4" />,
 };
 
-export default function FAQPage() {
-  const [activeCategory, setActiveCategory] = useState<Category>('all');
-  const [searchQuery, setSearchQuery] = useState('');
-
-  const FAQS: FAQItem[] = [
+const FAQS: FAQItem[] = [
     {
       icon: <Truck className="w-6 h-6 text-amber" />,
       q: 'Where do you deliver?',
@@ -143,7 +139,11 @@ export default function FAQPage() {
       a: 'Once your order is dispatched, you will receive an email with a tracking link from our courier partner. You can also visit the My Orders page and enter your order email to see the latest status.',
       category: 'orders',
     },
-  ];
+];
+
+export default function FAQPage() {
+  const [activeCategory, setActiveCategory] = useState<Category>('all');
+  const [searchQuery, setSearchQuery] = useState('');
 
   const filteredFaqs = useMemo(() => {
     let items = activeCategory === 'all' ? FAQS : FAQS.filter((f) => f.category === activeCategory);

@@ -102,6 +102,9 @@ export const stickerSchema = z.object({
   outline: z.boolean().default(false),
 });
 
+/** Maximum stickers allowed on a page (enforced here and in the editor UI). */
+export const MAX_STICKERS = 30;
+
 export const socialSchema = z.object({
   type: z.enum(SOCIAL_TYPES),
   url: linkUrl,
@@ -136,7 +139,7 @@ export const linkPageConfigSchema = z.object({
   theme: themeSchema,
   socials: z.array(socialSchema).max(12).default([]),
   blocks: z.array(blockSchema).max(60).default([]),
-  stickers: z.array(stickerSchema).max(30).default([]),
+  stickers: z.array(stickerSchema).max(MAX_STICKERS).default([]),
   showSubscribeButton: z.boolean().default(true),
   showShareButton: z.boolean().default(true),
 });

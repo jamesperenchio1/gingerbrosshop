@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { Search, Trash2, Upload } from 'lucide-react';
 import {
   FLUENT_STYLES,
+  MAX_STICKERS,
   STICKER_SOURCES,
   emojitwoSticker,
   fluentSticker,
@@ -138,6 +139,10 @@ export default function StickersEditor({ config, onChange, selectedId, onSelect 
   }, [library, query]);
 
   const add = (imageUrl: string) => {
+    if (config.stickers.length >= MAX_STICKERS) {
+      setError(`You can add up to ${MAX_STICKERS} stickers.`);
+      return;
+    }
     const sticker: Sticker = { id: newId('st'), imageUrl, anchor: 'header', x: 0.8, y: 0.3, rotation: 0, scale: 1, zIndex: config.stickers.length, outline: true };
     onChange({ ...config, stickers: [...config.stickers, sticker] });
     onSelect(sticker.id);
@@ -162,6 +167,7 @@ export default function StickersEditor({ config, onChange, selectedId, onSelect 
 
   const anchors = ['header', 'socials', ...config.blocks.map((b) => b.id)];
   const fluent = selected ? parseFluentSticker(selected.imageUrl) : null;
+  const atCap = config.stickers.length >= MAX_STICKERS;
 
   return (
     <div className="space-y-4">
@@ -180,7 +186,7 @@ export default function StickersEditor({ config, onChange, selectedId, onSelect 
         <div className="grid grid-cols-5 sm:grid-cols-6 gap-2 mt-3 max-h-[320px] overflow-y-auto pr-1">
           <button
             type="button"
-            disabled={busy}
+            disabled={busy || atCap}
             onClick={() => input.current?.click()}
             className="aspect-square rounded-lg border-2 border-dashed border-soft-peach hover:border-earth flex flex-col items-center justify-center gap-1 font-body text-[11px] text-earth disabled:opacity-50"
           >
@@ -191,15 +197,19 @@ export default function StickersEditor({ config, onChange, selectedId, onSelect 
             <button
               key={s.url}
               type="button"
+              disabled={atCap}
               onClick={() => add(s.url)}
               title={`${s.name} · ${STICKER_SOURCES[s.source].label}`}
-              className="aspect-square rounded-lg bg-cream hover:bg-soft-peach p-1.5 transition-colors"
+              className="aspect-square rounded-lg bg-cream hover:bg-soft-peach p-1.5 transition-colors disabled:opacity-40 disabled:hover:bg-cream"
             >
               <img src={stickerThumb(s.url)} alt={s.name} loading="lazy" className="w-full h-full object-contain" />
             </button>
           ))}
         </div>
         {query && results.length === 0 && library.length > 0 && <p className="font-body text-[13px] text-earth mt-2">No stickers match “{query}”.</p>}
+        <p className="font-body text-[12px] text-earth mt-2">
+          {config.stickers.length}/{MAX_STICKERS} stickers on this page{atCap ? ' — remove one to add another.' : '.'}
+        </p>
         <p className="font-body text-[11px] text-earth/80 mt-2">
           Free for commercial use, from{' '}
           <a href="https://googlefonts.github.io/noto-emoji-animation/" target="_blank" rel="noopener noreferrer" className="underline">
