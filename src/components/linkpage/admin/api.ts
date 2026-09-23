@@ -1,5 +1,3 @@
-export const TOKEN_KEY = 'gingerbros-admin-token';
-
 export class AdminApiError extends Error {
   status: number;
   constructor(status: number, message: string) {
@@ -8,14 +6,12 @@ export class AdminApiError extends Error {
   }
 }
 
-/** Authenticated call to /api/links-admin. Throws AdminApiError with the server's message. */
-export async function adminApi<T>(token: string, init: { method?: string; query?: string; body?: unknown } = {}): Promise<T> {
+/** Call /api/links-admin with the admin session cookie. Throws AdminApiError with the server's message. */
+export async function adminApi<T>(init: { method?: string; query?: string; body?: unknown } = {}): Promise<T> {
   const res = await fetch(`/api/links-admin${init.query ? `?${init.query}` : ''}`, {
     method: init.method ?? 'GET',
-    headers: {
-      Authorization: `Bearer ${token}`,
-      ...(init.body !== undefined ? { 'Content-Type': 'application/json' } : {}),
-    },
+    credentials: 'same-origin',
+    headers: init.body !== undefined ? { 'Content-Type': 'application/json' } : {},
     body: init.body !== undefined ? JSON.stringify(init.body) : undefined,
   });
   const data = (await res.json().catch(() => ({}))) as T & { error?: string };
@@ -35,9 +31,9 @@ export async function compressImage(file: File, maxSize = 800): Promise<string> 
   return webp.startsWith('data:image/webp') ? webp : canvas.toDataURL('image/png');
 }
 
-export async function uploadImage(token: string, file: File, maxSize?: number): Promise<string> {
+export async function uploadImage(file: File, maxSize?: number): Promise<string> {
   const dataUrl = await compressImage(file, maxSize);
-  const { url } = await adminApi<{ url: string }>(token, { method: 'POST', body: { action: 'upload', dataUrl } });
+  const { url } = await adminApi<{ url: string }>({ method: 'POST', body: { action: 'upload', dataUrl } });
   return url;
 }
 

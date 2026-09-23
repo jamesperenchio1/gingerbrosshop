@@ -89,6 +89,7 @@ const ProductDetail = lazy(() => import('@/pages/ProductDetail'));
 const OrderSuccess = lazy(() => import('@/pages/OrderSuccess'));
 const AdminOrders = lazy(() => import('@/pages/AdminOrders'));
 const AdminLinks = lazy(() => import('@/pages/AdminLinks'));
+const AdminLoginPage = lazy(() => import('@/pages/AdminLogin'));
 const LinkPage = lazy(() => import('@/pages/LinkPage'));
 const FAQPage = lazy(() => import('@/pages/FAQPage'));
 const ShippingPage = lazy(() => import('@/pages/ShippingPage'));
@@ -168,13 +169,12 @@ export default function App() {
     );
   }
 
-  // The link-page editor has its own full-screen header; the shop nav would sit on top of it.
-  if (window.location.pathname.startsWith('/admin/links')) {
+  // Full-screen admin pages (own header); the shop nav would sit on top of them.
+  const path = window.location.pathname;
+  if (path.startsWith('/admin/links') || path.startsWith('/admin/login')) {
     return (
       <ErrorBoundary>
-        <Suspense fallback={<PageLoader />}>
-          <AdminLinks />
-        </Suspense>
+        <Suspense fallback={<PageLoader />}>{path.startsWith('/admin/login') ? <AdminLoginPage /> : <AdminLinks />}</Suspense>
       </ErrorBoundary>
     );
   }

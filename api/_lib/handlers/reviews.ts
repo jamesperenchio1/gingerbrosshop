@@ -2,16 +2,7 @@ import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { randomUUID } from 'crypto';
 import { rateLimit, getClientIp } from '../rateLimit.js';
 import { getReviews, addReview, deleteReview, type Review } from '../reviews.js';
-
-function isAdminAuthorized(req: VercelRequest): boolean {
-  const auth = req.headers.authorization;
-  const expected = process.env.ADMIN_SECRET;
-  if (!expected) {
-    console.error('ADMIN_SECRET is not configured');
-    return false;
-  }
-  return auth === `Bearer ${expected}`;
-}
+import { isAdminAuthorized } from '../adminAuth.js';
 
 function summarize(reviews: Review[]) {
   const count = reviews.length;
@@ -102,7 +93,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   }
 
   if (req.method === 'DELETE') {
-    if (!isAdminAuthorized(req)) {
+    if (!(await isAdminAuthorized(req))) {
       res.status(401).json({ error: 'Unauthorized' });
       return;
     }

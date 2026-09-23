@@ -17,7 +17,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return;
   }
 
-  if (!isAdminAuthorized(req)) {
+  if (!(await isAdminAuthorized(req))) {
     res.status(401).json({ error: 'Unauthorized' });
     return;
   }

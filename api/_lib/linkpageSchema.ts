@@ -190,7 +190,19 @@ export function withUtm(url: string, campaign: string): string {
   return parsed.toString();
 }
 
-/** The page as it was on linktr.ee/gingerbrosbrew (Sept 2026), used until the first save. */
+/**
+ * Sticker library: Microsoft Fluent Emoji 3D (MIT licence,
+ * https://github.com/microsoft/fluentui-emoji), served from jsDelivr at a pinned
+ * commit. The full searchable index lives in /public/stickers/fluent-3d.json.
+ */
+export const FLUENT_BASE = 'https://cdn.jsdelivr.net/gh/microsoft/fluentui-emoji@1ffb34c752ecf5d402f04cfb4b392c77f57c54bc/assets/';
+export const FLUENT_INDEX_URL = '/stickers/fluent-3d.json';
+
+function FLUENT(path: string): string {
+  return FLUENT_BASE + path;
+}
+
+/** The page as it was on linktr.ee/gingerbrosbrew (Sept 2026, with Shop moved first), used until the first save. */
 export const DEFAULT_LINKPAGE_CONFIG: LinkPageConfig = {
   version: 1,
   profile: {
@@ -218,17 +230,13 @@ export const DEFAULT_LINKPAGE_CONFIG: LinkPageConfig = {
   ],
   blocks: [
     {
-      id: 'ig-card', type: 'social-card', enabled: true, highlight: 'none',
-      network: 'instagram', title: 'GingerBros. Instagram', handle: 'drinkgingerbros',
-      url: 'https://www.instagram.com/drinkgingerbros', imageUrl: '/linkpage/avatar.png',
-    },
-    {
       id: 'shop', type: 'link', enabled: true, highlight: 'none', utm: true,
       title: 'Shop - GingerBros', url: 'https://gingerbrosshop.com', thumbnailUrl: '/linkpage/thumb-shop.png',
     },
     {
-      id: 'instagram', type: 'link', enabled: true, highlight: 'none', utm: true,
-      title: 'Instagram', url: 'https://www.instagram.com/drinkgingerbros/', thumbnailUrl: null,
+      id: 'ig-card', type: 'social-card', enabled: true, highlight: 'none',
+      network: 'instagram', title: 'GingerBros. Instagram', handle: 'drinkgingerbros',
+      url: 'https://www.instagram.com/drinkgingerbros', imageUrl: '/linkpage/avatar.png',
     },
     {
       id: 'line', type: 'link', enabled: true, highlight: 'none', utm: true,
@@ -258,23 +266,12 @@ export const DEFAULT_LINKPAGE_CONFIG: LinkPageConfig = {
     },
   ],
   stickers: [
-    { id: 'st-cat', imageUrl: '/stickers/cat.svg', anchor: 'header', x: 0.2, y: 0.22, rotation: 18.9, scale: 1.42, zIndex: 1 },
-    { id: 'st-cursor', imageUrl: '/stickers/pointer.svg', anchor: 'socials', x: 0.19, y: 1.4, rotation: 0, scale: 1, zIndex: 0 },
-    { id: 'st-shop', imageUrl: '/stickers/my-shop.svg', anchor: 'shop', x: 0.85, y: -0.06, rotation: 8.3, scale: 1.49, zIndex: 2 },
-    { id: 'st-apple', imageUrl: '/stickers/apple.svg', anchor: 'grab', x: 0.26, y: 0.42, rotation: -9.3, scale: 0.75, zIndex: 3 },
+    { id: 'st-cat', imageUrl: FLUENT('Cat%20face/3D/cat_face_3d.png'), anchor: 'header', x: 0.2, y: 0.22, rotation: 18.9, scale: 1.2, zIndex: 1 },
+    { id: 'st-click', imageUrl: FLUENT('Backhand%20index%20pointing%20up/Default/3D/backhand_index_pointing_up_3d_default.png'), anchor: 'socials', x: 0.19, y: 1.4, rotation: -20, scale: 0.9, zIndex: 0 },
+    { id: 'st-shop', imageUrl: FLUENT('Shopping%20bags/3D/shopping_bags_3d.png'), anchor: 'shop', x: 0.9, y: -0.06, rotation: 8.3, scale: 1.1, zIndex: 2 },
+    { id: 'st-apple', imageUrl: FLUENT('Red%20apple/3D/red_apple_3d.png'), anchor: 'grab', x: 0.26, y: 0.42, rotation: -9.3, scale: 0.7, zIndex: 3 },
   ],
   showSubscribeButton: true,
   showShareButton: true,
 };
 
-/** Built-in stickers offered in the CMS picker (all original artwork in /public/stickers). */
-export const STARTER_STICKERS = [
-  { name: 'Cat', url: '/stickers/cat.svg' },
-  { name: 'Pointer', url: '/stickers/pointer.svg' },
-  { name: 'My Shop!', url: '/stickers/my-shop.svg' },
-  { name: 'Apple', url: '/stickers/apple.svg' },
-  { name: 'Ginger', url: '/stickers/ginger.svg' },
-  { name: 'Bottle', url: '/stickers/bottle.svg' },
-  { name: 'New!', url: '/stickers/new.svg' },
-  { name: 'Sparkle', url: '/stickers/sparkle.svg' },
-] as const;

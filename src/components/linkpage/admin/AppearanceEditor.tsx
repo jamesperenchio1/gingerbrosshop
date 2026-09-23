@@ -2,7 +2,7 @@ import { Plus, Trash2 } from 'lucide-react';
 import { FONT_OPTIONS, SOCIAL_LABELS, SOCIAL_TYPES, type LinkPageConfig, type SocialType } from '@/lib/linkpage';
 import { ColorField, Field, ImageField, Segmented, TextField, Toggle, inputClass } from './fields';
 
-type Props = { config: LinkPageConfig; onChange: (c: LinkPageConfig) => void; token: string };
+type Props = { config: LinkPageConfig; onChange: (c: LinkPageConfig) => void };
 
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
@@ -13,7 +13,7 @@ function Section({ title, children }: { title: string; children: React.ReactNode
   );
 }
 
-export default function AppearanceEditor({ config, onChange, token }: Props) {
+export default function AppearanceEditor({ config, onChange }: Props) {
   const { profile, theme } = config;
   const setProfile = (p: Partial<LinkPageConfig['profile']>) => onChange({ ...config, profile: { ...profile, ...p } });
   const setTheme = (t: Partial<LinkPageConfig['theme']>) => onChange({ ...config, theme: { ...theme, ...t } });
@@ -22,7 +22,7 @@ export default function AppearanceEditor({ config, onChange, token }: Props) {
   return (
     <div className="space-y-4">
       <Section title="Profile">
-        <ImageField label="Profile photo" value={profile.avatarUrl} onChange={(avatarUrl) => setProfile({ avatarUrl })} token={token} maxSize={400} round />
+        <ImageField label="Profile photo" value={profile.avatarUrl} onChange={(avatarUrl) => setProfile({ avatarUrl })} maxSize={400} round />
         <TextField label="Name" value={profile.name} onChange={(name) => setProfile({ name })} />
         <TextField label="Bio" value={profile.bio} onChange={(bio) => setProfile({ bio })} multiline />
       </Section>
@@ -81,7 +81,7 @@ export default function AppearanceEditor({ config, onChange, token }: Props) {
           {theme.background.type === 'gradient' && <ColorField label="Bottom colour" value={theme.background.color2} onChange={(color2) => setBg({ color2 })} />}
         </div>
         {theme.background.type === 'image' && (
-          <ImageField label="Background image" value={theme.background.imageUrl} onChange={(imageUrl) => setBg({ imageUrl })} token={token} maxSize={1600} />
+          <ImageField label="Background image" value={theme.background.imageUrl} onChange={(imageUrl) => setBg({ imageUrl })} maxSize={1600} />
         )}
       </Section>
 

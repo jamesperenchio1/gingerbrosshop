@@ -21,6 +21,7 @@ import emailTracking from './_lib/handlers/email-tracking.js';
 import reviews from './_lib/handlers/reviews.js';
 import links from './_lib/handlers/links.js';
 import linksAdmin from './_lib/handlers/links-admin.js';
+import auth from './_lib/handlers/auth.js';
 
 type Handler = (req: VercelRequest, res: VercelResponse) => unknown | Promise<unknown>;
 
@@ -50,6 +51,7 @@ const routes: Record<string, Handler> = {
   'reviews': reviews,
   'links': links,
   'links-admin': linksAdmin,
+  'auth': auth,
   // /q/<slug> QR short links are rewritten here (see vercel.json)
   'q': links,
 };

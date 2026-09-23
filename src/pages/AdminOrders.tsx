@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
-import { Package, Truck, Search, Eye, EyeOff } from 'lucide-react';
+import { Package, Truck, Search } from 'lucide-react';
 import CopyButton from '@/components/CopyButton';
+import AdminGate from '@/components/AdminGate';
 
 interface Order {
   sessionId: string;
@@ -22,10 +23,11 @@ interface Order {
   giftMessage?: string | null;
 }
 
-const TOKEN_KEY = 'gingerbros-admin-token';
-
 export default function AdminOrders() {
-  const [token, setToken] = useState('');
+  return <AdminGate title="Orders admin">{({ logout }) => <OrdersDashboard onLogout={logout} />}</AdminGate>;
+}
+
+function OrdersDashboard({ onLogout }: { onLogout: () => void }) {
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -33,34 +35,15 @@ export default function AdminOrders() {
   const [trackingInput, setTrackingInput] = useState('');
   const [carrierInput, setCarrierInput] = useState('');
   const [saving, setSaving] = useState(false);
-  const [showToken, setShowToken] = useState(false);
 
   useEffect(() => {
-    try {
-      const stored = sessionStorage.getItem(TOKEN_KEY);
-      if (stored) setToken(stored);
-    } catch {
-      // ignore
-    }
-  }, []);
-
-  useEffect(() => {
-    if (!token) return;
-    try {
-      sessionStorage.setItem(TOKEN_KEY, token);
-    } catch {
-      // ignore
-    }
     loadOrders();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [token]);
+  }, []);
 
   const loadOrders = () => {
     setLoading(true);
     setError('');
-    fetch('/api/admin', {
-      headers: { Authorization: `Bearer ${token}` },
-    })
+    fetch('/api/admin', { credentials: 'same-origin' })
       .then(async (res) => {
         if (!res.ok) {
           const data = await res.json().catch(() => ({}));
@@ -84,10 +67,7 @@ export default function AdminOrders() {
     try {
       const res = await fetch('/api/admin', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           sessionId,
           trackingNumber: trackingInput.trim(),
@@ -118,7 +98,7 @@ export default function AdminOrders() {
     try {
       const res = await fetch('/api/admin', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ action: 'grant-credit', email }),
       });
       const data = await res.json().catch(() => ({}));
@@ -137,7 +117,7 @@ export default function AdminOrders() {
     try {
       const res = await fetch('/api/admin', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ action: 'grant-code', email: email || undefined }),
       });
       const data = await res.json().catch(() => ({}));
@@ -147,52 +127,6 @@ export default function AdminOrders() {
       alert(err instanceof Error ? err.message : 'Failed to generate code');
     }
   };
-
-  const handleLogout = () => {
-    setToken('');
-    setOrders([]);
-    try {
-      sessionStorage.removeItem(TOKEN_KEY);
-    } catch {
-      // ignore
-    }
-  };
-
-  if (!token || (orders.length === 0 && error)) {
-    return (
-      <div className="min-h-screen bg-warm-white flex items-center justify-center px-6">
-        <div className="w-full max-w-sm">
-          <div className="text-center mb-6">
-            <Package className="w-10 h-10 text-deep-brown mx-auto mb-3" />
-            <h1 className="font-display text-2xl text-deep-brown">Admin</h1>
-            <p className="font-body text-earth text-sm">Enter your admin secret to view orders.</p>
-          </div>
-          <div className="relative">
-            <input
-              type={showToken ? 'text' : 'password'}
-              value={token}
-              onChange={(e) => setToken(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter') {
-                  setToken(e.currentTarget.value);
-                }
-              }}
-              placeholder="Admin secret"
-              className="w-full bg-cream border border-soft-peach rounded-xl px-4 py-3 pr-12 font-body text-deep-brown placeholder:text-earth/50 focus:outline-none focus:ring-2 focus:ring-rust/30"
-            />
-            <button
-              onClick={() => setShowToken(!showToken)}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-earth hover:text-deep-brown"
-              type="button"
-            >
-              {showToken ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
-            </button>
-          </div>
-          {error && <p className="mt-3 font-body text-[13px] text-rust text-center">{error}</p>}
-        </div>
-      </div>
-    );
-  }
 
   return (
     <div className="min-h-screen bg-warm-white">
@@ -211,13 +145,15 @@ export default function AdminOrders() {
               Refresh
             </button>
             <button
-              onClick={handleLogout}
+              onClick={onLogout}
               className="font-body text-sm text-earth hover:text-deep-brown px-3 py-2"
             >
               Log out
             </button>
           </div>
         </div>
+
+        {error && <p className="mb-4 font-body text-[13px] text-rust">{error}</p>}
 
         {loading && orders.length === 0 && (
           <div className="flex justify-center py-12">

@@ -6,8 +6,8 @@ vi.mock('../../api/_lib/rateLimit.js', () => ({
 }));
 
 const { recordLinkEvent, recordQrScan } = vi.hoisted(() => ({
-  recordLinkEvent: vi.fn(async (_event: unknown) => {}),
-  recordQrScan: vi.fn(async (_slug: string) => {}),
+  recordLinkEvent: vi.fn<(event: unknown) => Promise<void>>(async () => {}),
+  recordQrScan: vi.fn<(slug: string) => Promise<void>>(async () => {}),
 }));
 vi.mock('../../api/_lib/linkpage.js', () => ({
   getLinkPageConfig: vi.fn(async () => (await import('../../api/_lib/linkpageSchema')).DEFAULT_LINKPAGE_CONFIG),
@@ -49,7 +49,7 @@ describe('/api/links handler', () => {
     const res = mockRes();
     await handler(mockReq('/api/links', {}), res as unknown as Res);
     expect(res.statusCode).toBe(200);
-    expect((res.body as { config: { blocks: unknown[] } }).config.blocks).toHaveLength(9);
+    expect((res.body as { config: { blocks: unknown[] } }).config.blocks).toHaveLength(8);
   });
 
   it('records a click beacon sent as text/plain via ?action=event', async () => {

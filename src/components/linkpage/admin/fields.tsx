@@ -122,14 +122,12 @@ export function ImageField({
   label,
   value,
   onChange,
-  token,
   maxSize,
   round,
 }: {
   label: string;
   value: string | null;
   onChange: (url: string | null) => void;
-  token: string;
   maxSize?: number;
   round?: boolean;
 }) {
@@ -142,7 +140,7 @@ export function ImageField({
     setBusy(true);
     setError('');
     try {
-      onChange(await uploadImage(token, file, maxSize));
+      onChange(await uploadImage(file, maxSize));
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Upload failed');
     } finally {
