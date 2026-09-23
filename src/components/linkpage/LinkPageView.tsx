@@ -9,8 +9,10 @@ import {
   type LinkPageConfig,
   type Sticker,
   SOCIAL_LABELS,
+  isNotoSticker,
 } from '@/lib/linkpage';
 import SocialIcon from './SocialIcon';
+import StickerMedia from './StickerMedia';
 
 const CORNER_PX = { square: 0, sm: 8, md: 16, pill: 9999 } as const;
 const THUMB_CORNER_PX = { square: 0, sm: 4, md: 10, pill: 9999 } as const;
@@ -181,7 +183,7 @@ export default function LinkPageView(props: LinkPageViewProps) {
         ))}
       </div>
 
-      <footer className="mt-auto pb-8 pt-2 flex justify-center">
+      <footer className="mt-auto pb-8 pt-2 flex flex-col items-center gap-3">
         <a
           href={withUtm(SHOP_URL, 'footer')}
           onClick={(e) => preview && e.preventDefault()}
@@ -189,6 +191,17 @@ export default function LinkPageView(props: LinkPageViewProps) {
         >
           gingerbrosshop.com
         </a>
+        {config.stickers.some((st) => isNotoSticker(st.imageUrl)) && (
+          <a
+            href="https://googlefonts.github.io/noto-emoji-animation/"
+            target="_blank"
+            rel="noopener noreferrer"
+            onClick={(e) => preview && e.preventDefault()}
+            className="text-[11px] opacity-50 hover:opacity-80"
+          >
+            Animated emoji by Google Noto, CC BY 4.0
+          </a>
+        )}
       </footer>
 
       {signupOpen && (
@@ -317,16 +330,15 @@ function StickerView({
   };
 
   return (
-    <img
-      src={sticker.imageUrl}
-      alt=""
-      draggable={false}
+    <div
       onPointerDown={onPointerDown}
-      className={`absolute select-none object-contain ${editable ? 'cursor-grab active:cursor-grabbing touch-none' : 'pointer-events-none'} ${
+      className={`absolute select-none ${editable ? 'cursor-grab active:cursor-grabbing touch-none' : 'pointer-events-none'} ${
         selected ? 'outline outline-2 outline-dashed outline-blue-500 outline-offset-2' : ''
       }`}
       style={style}
-    />
+    >
+      <StickerMedia url={sticker.imageUrl} size={size} outline={sticker.outline} />
+    </div>
   );
 }
 

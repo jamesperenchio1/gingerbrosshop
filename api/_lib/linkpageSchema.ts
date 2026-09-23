@@ -98,6 +98,8 @@ export const stickerSchema = z.object({
   rotation: z.number().min(-360).max(360).default(0),
   scale: z.number().min(0.2).max(4).default(1),
   zIndex: z.number().int().min(0).max(50).default(0),
+  /** White die-cut sticker border. */
+  outline: z.boolean().default(false),
 });
 
 export const socialSchema = z.object({
@@ -191,15 +193,26 @@ export function withUtm(url: string, campaign: string): string {
 }
 
 /**
- * Sticker library: Microsoft Fluent Emoji 3D (MIT licence,
- * https://github.com/microsoft/fluentui-emoji), served from jsDelivr at a pinned
- * commit. The full searchable index lives in /public/stickers/fluent-3d.json.
+ * Sticker library: Google Noto Emoji Animation (CC BY 4.0,
+ * https://googlefonts.github.io/noto-emoji-animation/), served by Google Fonts.
+ * Stickers are stored as the Lottie URL (~30 KB, crisp at any size); the
+ * picker shows the tiny static SVG. The searchable index lives in
+ * /public/stickers/noto-animated.json.
  */
-export const FLUENT_BASE = 'https://cdn.jsdelivr.net/gh/microsoft/fluentui-emoji@1ffb34c752ecf5d402f04cfb4b392c77f57c54bc/assets/';
-export const FLUENT_INDEX_URL = '/stickers/fluent-3d.json';
+export const NOTO_BASE = 'https://fonts.gstatic.com/s/e/notoemoji/latest/';
+export const STICKER_INDEX_URL = '/stickers/noto-animated.json';
 
-function FLUENT(path: string): string {
-  return FLUENT_BASE + path;
+export function notoSticker(codepoint: string): string {
+  return `${NOTO_BASE}${codepoint}/lottie.json`;
+}
+
+export function isNotoSticker(url: string): boolean {
+  return url.startsWith(NOTO_BASE);
+}
+
+/** Static preview for a sticker URL (Noto → its SVG; anything else as-is). */
+export function stickerThumb(url: string): string {
+  return isNotoSticker(url) ? url.replace(/lottie\.json$/, 'emoji.svg') : url;
 }
 
 /** The page as it was on linktr.ee/gingerbrosbrew (Sept 2026, with Shop moved first), used until the first save. */
@@ -266,10 +279,10 @@ export const DEFAULT_LINKPAGE_CONFIG: LinkPageConfig = {
     },
   ],
   stickers: [
-    { id: 'st-cat', imageUrl: FLUENT('Cat%20face/3D/cat_face_3d.png'), anchor: 'header', x: 0.2, y: 0.22, rotation: 18.9, scale: 1.2, zIndex: 1 },
-    { id: 'st-click', imageUrl: FLUENT('Backhand%20index%20pointing%20up/Default/3D/backhand_index_pointing_up_3d_default.png'), anchor: 'socials', x: 0.19, y: 1.4, rotation: -20, scale: 0.9, zIndex: 0 },
-    { id: 'st-shop', imageUrl: FLUENT('Shopping%20bags/3D/shopping_bags_3d.png'), anchor: 'shop', x: 0.9, y: -0.06, rotation: 8.3, scale: 1.1, zIndex: 2 },
-    { id: 'st-apple', imageUrl: FLUENT('Red%20apple/3D/red_apple_3d.png'), anchor: 'grab', x: 0.26, y: 0.42, rotation: -9.3, scale: 0.7, zIndex: 3 },
+    { id: 'st-cat', imageUrl: notoSticker('1f431'), anchor: 'header', x: 0.2, y: 0.22, rotation: 12, scale: 1.1, zIndex: 1, outline: true },
+    { id: 'st-click', imageUrl: notoSticker('1f446'), anchor: 'socials', x: 0.19, y: 1.4, rotation: -15, scale: 0.85, zIndex: 0, outline: true },
+    { id: 'st-shop', imageUrl: notoSticker('1f6d2'), anchor: 'shop', x: 0.9, y: -0.06, rotation: 8, scale: 1, zIndex: 2, outline: true },
+    { id: 'st-apple', imageUrl: notoSticker('1f34e'), anchor: 'grab', x: 0.26, y: 0.42, rotation: -9, scale: 0.7, zIndex: 3, outline: true },
   ],
   showSubscribeButton: true,
   showShareButton: true,

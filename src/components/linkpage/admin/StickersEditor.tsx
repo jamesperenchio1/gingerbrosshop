@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { Search, Trash2, Upload } from 'lucide-react';
-import { FLUENT_INDEX_URL, type LinkBlock, type LinkPageConfig, type Sticker } from '@/lib/linkpage';
-import { Field, inputClass } from './fields';
+import { STICKER_INDEX_URL, notoSticker, stickerThumb, type LinkBlock, type LinkPageConfig, type Sticker } from '@/lib/linkpage';
+import { Field, Toggle, inputClass } from './fields';
 import { newId, uploadImage } from './api';
 
 type Props = {
@@ -13,21 +13,18 @@ type Props = {
 
 interface LibraryItem {
   name: string;
+  keywords: string;
   url: string;
 }
 
 // Shown before you search: good fits for a drinks brand.
-const FEATURED = [
-  'Cat face', 'Backhand index pointing up', 'Shopping bags', 'Red apple', 'Sparkles', 'Fire', 'Star-struck',
-  'Party popper', 'Bottle with popping cork', 'Cup with straw', 'Lemon', 'Hot pepper', 'Red heart', 'Glowing star',
-  'Hundred points', 'Wrapped gift', 'Megaphone', 'Backhand index pointing right', 'Smiling face with heart-eyes', 'Rocket',
-];
+const FEATURED = ['1fada', '1f431', '1f446', '1f6d2', '1f34e', '1f379', '2728', '1f525', '1f929', '1f389', '1f37e', '1f34b', '2764_fe0f', '1f31f', '1f4af', '1f381', '1f4e3', '1f449', '1f60d', '1f680', '1f60b'];
 
 let libraryCache: Promise<LibraryItem[]> | null = null;
 function loadLibrary(): Promise<LibraryItem[]> {
-  libraryCache ??= fetch(FLUENT_INDEX_URL)
-    .then((r) => r.json() as Promise<{ base: string; items: { n: string; p: string }[] }>)
-    .then((d) => d.items.map((i) => ({ name: i.n, url: d.base + i.p })));
+  libraryCache ??= fetch(STICKER_INDEX_URL)
+    .then((r) => r.json() as Promise<{ items: { c: string; n: string; k: string }[] }>)
+    .then((d) => d.items.map((i) => ({ name: i.n, keywords: `${i.n} ${i.k}`.toLowerCase(), url: notoSticker(i.c) })));
   return libraryCache;
 }
 
@@ -56,14 +53,14 @@ export default function StickersEditor({ config, onChange, selectedId, onSelect 
   const results = useMemo(() => {
     const q = query.trim().toLowerCase();
     if (!q) {
-      const byName = new Map(library.map((i) => [i.name, i]));
-      return FEATURED.map((n) => byName.get(n)).filter((i): i is LibraryItem => !!i);
+      const byUrl = new Map(library.map((i) => [i.url, i]));
+      return FEATURED.map((c) => byUrl.get(notoSticker(c))).filter((i): i is LibraryItem => !!i);
     }
-    return library.filter((i) => i.name.toLowerCase().includes(q)).slice(0, 120);
+    return library.filter((i) => i.keywords.includes(q)).slice(0, 120);
   }, [library, query]);
 
   const add = (imageUrl: string) => {
-    const sticker: Sticker = { id: newId('st'), imageUrl, anchor: 'header', x: 0.8, y: 0.3, rotation: 0, scale: 1, zIndex: config.stickers.length };
+    const sticker: Sticker = { id: newId('st'), imageUrl, anchor: 'header', x: 0.8, y: 0.3, rotation: 0, scale: 1, zIndex: config.stickers.length, outline: true };
     onChange({ ...config, stickers: [...config.stickers, sticker] });
     onSelect(sticker.id);
   };
@@ -91,7 +88,7 @@ export default function StickersEditor({ config, onChange, selectedId, onSelect 
     <div className="space-y-4">
       <section className="bg-white rounded-xl border border-soft-peach p-4">
         <h3 className="font-display text-[18px] text-deep-brown">Add a sticker</h3>
-        <p className="font-body text-[13px] text-earth mt-1">Search 1,500+ free stickers, pick one, then drag it around in the preview.</p>
+        <p className="font-body text-[13px] text-earth mt-1">Search 880+ free animated stickers, pick one, then drag it around in the preview.</p>
         <div className="relative mt-3">
           <Search className="w-4 h-4 text-earth absolute left-3 top-1/2 -translate-y-1/2" />
           <input
@@ -113,17 +110,17 @@ export default function StickersEditor({ config, onChange, selectedId, onSelect 
           </button>
           {results.map((s) => (
             <button key={s.url} type="button" onClick={() => add(s.url)} title={s.name} className="aspect-square rounded-lg bg-cream hover:bg-soft-peach p-1.5 transition-colors">
-              <img src={s.url} alt={s.name} loading="lazy" className="w-full h-full object-contain" />
+              <img src={stickerThumb(s.url)} alt={s.name} loading="lazy" className="w-full h-full object-contain" />
             </button>
           ))}
         </div>
         {query && results.length === 0 && library.length > 0 && <p className="font-body text-[13px] text-earth mt-2">No stickers match “{query}”.</p>}
         <p className="font-body text-[11px] text-earth/80 mt-2">
-          Stickers from{' '}
-          <a href="https://github.com/microsoft/fluentui-emoji" target="_blank" rel="noopener noreferrer" className="underline">
-            Microsoft Fluent Emoji
+          Animated stickers from{' '}
+          <a href="https://googlefonts.github.io/noto-emoji-animation/" target="_blank" rel="noopener noreferrer" className="underline">
+            Google Noto Emoji
           </a>{' '}
-          (MIT licence, free for commercial use). You can also upload your own transparent PNGs.
+          (CC BY 4.0, free for commercial use; the page shows the credit automatically). You can also upload your own transparent PNGs.
         </p>
         {error && <p className="font-body text-[12px] text-rust mt-1">{error}</p>}
         <input ref={input} type="file" accept="image/png,image/webp,image/gif,image/jpeg" className="hidden" onChange={(e) => upload(e.target.files?.[0])} />
@@ -140,7 +137,7 @@ export default function StickersEditor({ config, onChange, selectedId, onSelect 
               onClick={() => onSelect(s.id)}
               className={`w-14 h-14 rounded-lg p-1.5 bg-cream border-2 ${s.id === selectedId ? 'border-deep-brown' : 'border-transparent'}`}
             >
-              <img src={s.imageUrl} alt="" className="w-full h-full object-contain" />
+              <img src={stickerThumb(s.imageUrl)} alt="" className="w-full h-full object-contain" />
             </button>
           ))}
         </div>
@@ -156,6 +153,7 @@ export default function StickersEditor({ config, onChange, selectedId, onSelect 
                 ))}
               </select>
             </Field>
+            <Toggle label="White sticker border" checked={selected.outline} onChange={(outline) => patch({ outline })} />
             <Field label={`Size · ${selected.scale.toFixed(2)}×`}>
               <input type="range" min={0.3} max={3} step={0.01} value={selected.scale} onChange={(e) => patch({ scale: Number(e.target.value) })} className="w-full accent-deep-brown" />
             </Field>
