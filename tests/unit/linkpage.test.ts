@@ -5,6 +5,14 @@ import {
   isBlockLive,
   publicView,
   withUtm,
+  notoSticker,
+  fluentSticker,
+  twemojiSticker,
+  emojitwoSticker,
+  stickerThumb,
+  stickerSourceOf,
+  parseFluentSticker,
+  stickerCredits,
   type LinkBlock,
 } from '../../api/_lib/linkpageSchema';
 
@@ -77,5 +85,57 @@ describe('scheduling', () => {
     expect(view.blocks.some((b) => b.id === 'shop')).toBe(false);
     expect(view.stickers.some((s) => s.anchor === 'shop')).toBe(false);
     expect(view.stickers.some((s) => s.anchor === 'header')).toBe(true);
+  });
+});
+
+describe('sticker sources', () => {
+  it('builds a URL per source', () => {
+    expect(notoSticker('1f431')).toBe('https://fonts.gstatic.com/s/e/notoemoji/latest/1f431/lottie.json');
+    expect(fluentSticker('Cat face', 'cat_face', '3d')).toBe(
+      'https://cdn.jsdelivr.net/gh/microsoft/fluentui-emoji@main/assets/Cat%20face/3D/cat_face_3d.png',
+    );
+    expect(fluentSticker('Cat face', 'cat_face', 'flat')).toBe(
+      'https://cdn.jsdelivr.net/gh/microsoft/fluentui-emoji@main/assets/Cat%20face/Flat/cat_face_flat.svg',
+    );
+    expect(twemojiSticker('1f431')).toBe('https://cdn.jsdelivr.net/gh/jdecked/twemoji@latest/assets/svg/1f431.svg');
+    expect(emojitwoSticker('1f431')).toBe('https://cdn.jsdelivr.net/gh/EmojiTwo/emojitwo@master/svg/1f431.svg');
+  });
+
+  it('identifies the source of a URL', () => {
+    expect(stickerSourceOf(notoSticker('1f431'))).toBe('noto');
+    expect(stickerSourceOf(fluentSticker('Cat face', 'cat_face', '3d'))).toBe('fluent');
+    expect(stickerSourceOf(twemojiSticker('1f431'))).toBe('twemoji');
+    expect(stickerSourceOf(emojitwoSticker('1f431'))).toBe('emojitwo');
+    expect(stickerSourceOf('https://example.com/x.png')).toBe(null);
+  });
+
+  it('maps a Noto sticker to its static SVG thumbnail', () => {
+    expect(stickerThumb(notoSticker('1f431'))).toBe('https://fonts.gstatic.com/s/e/notoemoji/latest/1f431/emoji.svg');
+    expect(stickerThumb(twemojiSticker('1f431'))).toBe(twemojiSticker('1f431'));
+    expect(stickerThumb(fluentSticker('Cat face', 'cat_face', '3d'))).toBe(fluentSticker('Cat face', 'cat_face', '3d'));
+  });
+
+  it('round-trips a Fluent URL back to its parts', () => {
+    const url = fluentSticker('Cat face', 'cat_face', 'color');
+    expect(parseFluentSticker(url)).toEqual({ name: 'Cat face', snake: 'cat_face', style: 'color' });
+    expect(parseFluentSticker(notoSticker('1f431'))).toBe(null);
+    expect(parseFluentSticker(twemojiSticker('1f431'))).toBe(null);
+  });
+
+  it('returns only the credits the licences require, deduped', () => {
+    const credits = stickerCredits([
+      notoSticker('1f431'),
+      notoSticker('1f446'),
+      twemojiSticker('1f431'),
+      fluentSticker('Cat face', 'cat_face', '3d'),
+      emojitwoSticker('1f431'),
+    ]);
+    expect(credits.map((c) => c.key)).toEqual(['noto', 'twemoji', 'emojitwo']);
+    expect(credits.every((c) => c.href.startsWith('https://'))).toBe(true);
+    expect(credits.some((c) => c.key === 'fluent')).toBe(false);
+  });
+
+  it('returns no credits when no attribution-required sticker is present', () => {
+    expect(stickerCredits([fluentSticker('Cat face', 'cat_face', '3d'), 'https://example.com/x.png'])).toEqual([]);
   });
 });

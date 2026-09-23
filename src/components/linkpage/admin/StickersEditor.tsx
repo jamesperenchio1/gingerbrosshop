@@ -1,6 +1,20 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { Search, Trash2, Upload } from 'lucide-react';
-import { STICKER_INDEX_URL, notoSticker, stickerThumb, type LinkBlock, type LinkPageConfig, type Sticker } from '@/lib/linkpage';
+import {
+  FLUENT_STYLES,
+  STICKER_SOURCES,
+  emojitwoSticker,
+  fluentSticker,
+  notoSticker,
+  parseFluentSticker,
+  stickerThumb,
+  twemojiSticker,
+  type FluentStyle,
+  type LinkBlock,
+  type LinkPageConfig,
+  type Sticker,
+  type StickerSource,
+} from '@/lib/linkpage';
 import { Field, Toggle, inputClass } from './fields';
 import { newId, uploadImage } from './api';
 
@@ -15,17 +29,74 @@ interface LibraryItem {
   name: string;
   keywords: string;
   url: string;
+  source: StickerSource;
+  codepoint: string;
+  style?: FluentStyle;
 }
 
-// Shown before you search: good fits for a drinks brand.
+// Shown before you search: good fits for a drinks brand (resolved by codepoint).
 const FEATURED = ['1fada', '1f431', '1f446', '1f6d2', '1f34e', '1f379', '2728', '1f525', '1f929', '1f389', '1f37e', '1f34b', '2764_fe0f', '1f31f', '1f4af', '1f381', '1f4e3', '1f449', '1f60d', '1f680', '1f60b'];
+
+const SOURCE_ORDER = Object.keys(STICKER_SOURCES) as StickerSource[];
+
+/** Load one source's index and turn its rows into picker items. */
+async function loadSource(source: StickerSource): Promise<LibraryItem[]> {
+  const src = STICKER_SOURCES[source];
+  const res = await fetch(src.indexUrl);
+  if (!res.ok) throw new Error(`Failed to load ${src.label}`);
+  const data = (await res.json()) as { items: Record<string, string>[] };
+  return data.items.map((i) => {
+    const name = i.n ?? '';
+    const item: LibraryItem = {
+      name,
+      keywords: `${name} ${i.k ?? ''}`.toLowerCase(),
+      url: '',
+      source,
+      codepoint: i.c ?? '',
+    };
+    if (source === 'noto') item.url = notoSticker(i.c);
+    else if (source === 'fluent') {
+      item.url = fluentSticker(i.name, i.snake, '3d');
+      item.style = '3d';
+    } else if (source === 'twemoji') item.url = twemojiSticker(i.c);
+    else item.url = emojitwoSticker(i.c);
+    return item;
+  });
+}
 
 let libraryCache: Promise<LibraryItem[]> | null = null;
 function loadLibrary(): Promise<LibraryItem[]> {
-  libraryCache ??= fetch(STICKER_INDEX_URL)
-    .then((r) => r.json() as Promise<{ items: { c: string; n: string; k: string }[] }>)
-    .then((d) => d.items.map((i) => ({ name: i.n, keywords: `${i.n} ${i.k}`.toLowerCase(), url: notoSticker(i.c) })));
+  libraryCache ??= Promise.allSettled(SOURCE_ORDER.map(loadSource)).then((settled) => {
+    // One source failing shouldn't take the whole picker down.
+    const items = settled.flatMap((r) => (r.status === 'fulfilled' ? r.value : []));
+    if (items.length === 0) throw new Error('Could not load the sticker library.');
+    return items;
+  });
   return libraryCache;
+}
+
+/** Round-robin across sources so one style doesn't fill the whole first screen. */
+function interleaveBySource(items: LibraryItem[]): LibraryItem[] {
+  const buckets = new Map<StickerSource, LibraryItem[]>();
+  for (const it of items) {
+    const b = buckets.get(it.source);
+    if (b) b.push(it);
+    else buckets.set(it.source, [it]);
+  }
+  const order = SOURCE_ORDER.filter((s) => buckets.has(s));
+  const out: LibraryItem[] = [];
+  for (let more = true; more; ) {
+    more = false;
+    for (const s of order) {
+      const b = buckets.get(s)!;
+      const next = b.shift();
+      if (next) {
+        out.push(next);
+        more = true;
+      }
+    }
+  }
+  return out;
 }
 
 function anchorLabel(id: string, blocks: LinkBlock[]): string {
@@ -53,10 +124,17 @@ export default function StickersEditor({ config, onChange, selectedId, onSelect 
   const results = useMemo(() => {
     const q = query.trim().toLowerCase();
     if (!q) {
-      const byUrl = new Map(library.map((i) => [i.url, i]));
-      return FEATURED.map((c) => byUrl.get(notoSticker(c))).filter((i): i is LibraryItem => !!i);
+      // One starter sticker per codepoint, preferring the animated Noto art.
+      const byCodepoint = new Map<string, LibraryItem>();
+      for (const item of library) {
+        const existing = byCodepoint.get(item.codepoint);
+        if (!existing || SOURCE_ORDER.indexOf(item.source) < SOURCE_ORDER.indexOf(existing.source)) {
+          byCodepoint.set(item.codepoint, item);
+        }
+      }
+      return FEATURED.map((c) => byCodepoint.get(c)).filter((i): i is LibraryItem => !!i);
     }
-    return library.filter((i) => i.keywords.includes(q)).slice(0, 120);
+    return interleaveBySource(library.filter((i) => i.keywords.includes(q))).slice(0, 120);
   }, [library, query]);
 
   const add = (imageUrl: string) => {
@@ -83,12 +161,13 @@ export default function StickersEditor({ config, onChange, selectedId, onSelect 
   };
 
   const anchors = ['header', 'socials', ...config.blocks.map((b) => b.id)];
+  const fluent = selected ? parseFluentSticker(selected.imageUrl) : null;
 
   return (
     <div className="space-y-4">
       <section className="bg-white rounded-xl border border-soft-peach p-4">
         <h3 className="font-display text-[18px] text-deep-brown">Add a sticker</h3>
-        <p className="font-body text-[13px] text-earth mt-1">Search 880+ free animated stickers, pick one, then drag it around in the preview.</p>
+        <p className="font-body text-[13px] text-earth mt-1">Search 4,600+ free stickers, pick one, then drag it around in the preview.</p>
         <div className="relative mt-3">
           <Search className="w-4 h-4 text-earth absolute left-3 top-1/2 -translate-y-1/2" />
           <input
@@ -109,18 +188,36 @@ export default function StickersEditor({ config, onChange, selectedId, onSelect 
             {busy ? '…' : 'Upload'}
           </button>
           {results.map((s) => (
-            <button key={s.url} type="button" onClick={() => add(s.url)} title={s.name} className="aspect-square rounded-lg bg-cream hover:bg-soft-peach p-1.5 transition-colors">
+            <button
+              key={s.url}
+              type="button"
+              onClick={() => add(s.url)}
+              title={`${s.name} · ${STICKER_SOURCES[s.source].label}`}
+              className="aspect-square rounded-lg bg-cream hover:bg-soft-peach p-1.5 transition-colors"
+            >
               <img src={stickerThumb(s.url)} alt={s.name} loading="lazy" className="w-full h-full object-contain" />
             </button>
           ))}
         </div>
         {query && results.length === 0 && library.length > 0 && <p className="font-body text-[13px] text-earth mt-2">No stickers match “{query}”.</p>}
         <p className="font-body text-[11px] text-earth/80 mt-2">
-          Animated stickers from{' '}
+          Free for commercial use, from{' '}
           <a href="https://googlefonts.github.io/noto-emoji-animation/" target="_blank" rel="noopener noreferrer" className="underline">
-            Google Noto Emoji
+            Google Noto
+          </a>
+          ,{' '}
+          <a href="https://github.com/microsoft/fluentui-emoji" target="_blank" rel="noopener noreferrer" className="underline">
+            Microsoft Fluent
+          </a>
+          ,{' '}
+          <a href="https://github.com/jdecked/twemoji" target="_blank" rel="noopener noreferrer" className="underline">
+            Twemoji
           </a>{' '}
-          (CC BY 4.0, free for commercial use; the page shows the credit automatically). You can also upload your own transparent PNGs.
+          and{' '}
+          <a href="https://github.com/EmojiTwo/emojitwo" target="_blank" rel="noopener noreferrer" className="underline">
+            EmojiTwo
+          </a>
+          . The page shows the credit automatically. You can also upload your own transparent PNGs.
         </p>
         {error && <p className="font-body text-[12px] text-rust mt-1">{error}</p>}
         <input ref={input} type="file" accept="image/png,image/webp,image/gif,image/jpeg" className="hidden" onChange={(e) => upload(e.target.files?.[0])} />
@@ -153,6 +250,24 @@ export default function StickersEditor({ config, onChange, selectedId, onSelect 
                 ))}
               </select>
             </Field>
+            {fluent && (
+              <Field label="Fluent style">
+                <div className="flex gap-2">
+                  {(Object.keys(FLUENT_STYLES) as FluentStyle[]).map((st) => (
+                    <button
+                      key={st}
+                      type="button"
+                      onClick={() => patch({ imageUrl: fluentSticker(fluent.name, fluent.snake, st) })}
+                      className={`px-3 py-1.5 rounded-lg font-body text-[13px] ${
+                        fluent.style === st ? 'bg-deep-brown text-white' : 'bg-cream text-deep-brown'
+                      }`}
+                    >
+                      {FLUENT_STYLES[st].label}
+                    </button>
+                  ))}
+                </div>
+              </Field>
+            )}
             <Toggle label="White sticker border" checked={selected.outline} onChange={(outline) => patch({ outline })} />
             <Field label={`Size · ${selected.scale.toFixed(2)}×`}>
               <input type="range" min={0.3} max={3} step={0.01} value={selected.scale} onChange={(e) => patch({ scale: Number(e.target.value) })} className="w-full accent-deep-brown" />

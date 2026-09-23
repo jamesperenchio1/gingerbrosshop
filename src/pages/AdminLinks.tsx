@@ -118,8 +118,14 @@ function LinkEditor({ email, onLogout }: { email: string; onLogout: () => void }
   }
 
   // Preview what visitors will see right now (hidden/scheduled-out links removed),
-  // except on the Links tab where it helps to see everything you're editing.
-  const previewConfig = tab === 'links' ? { ...draft, blocks: draft.blocks.filter((b) => b.enabled) } : publicView(draft);
+  // except while editing links/stickers, where it helps to see everything so you
+  // can find and drag stickers even if their block is currently hidden.
+  const previewConfig =
+    tab === 'stickers'
+      ? draft
+      : tab === 'links'
+        ? { ...draft, blocks: draft.blocks.filter((b) => b.enabled) }
+        : publicView(draft);
 
   const preview = (
     <div className="w-[375px] max-w-full h-[760px] max-h-[calc(100vh-120px)] rounded-[44px] border-[10px] border-deep-brown bg-deep-brown shadow-panel overflow-hidden">

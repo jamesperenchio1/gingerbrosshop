@@ -9,7 +9,7 @@ import {
   type LinkPageConfig,
   type Sticker,
   SOCIAL_LABELS,
-  isNotoSticker,
+  stickerCredits,
 } from '@/lib/linkpage';
 import SocialIcon from './SocialIcon';
 import StickerMedia from './StickerMedia';
@@ -191,17 +191,18 @@ export default function LinkPageView(props: LinkPageViewProps) {
         >
           gingerbrosshop.com
         </a>
-        {config.stickers.some((st) => isNotoSticker(st.imageUrl)) && (
+        {stickerCredits(config.stickers.map((st) => st.imageUrl)).map((c) => (
           <a
-            href="https://googlefonts.github.io/noto-emoji-animation/"
+            key={c.key}
+            href={c.href}
             target="_blank"
             rel="noopener noreferrer"
             onClick={(e) => preview && e.preventDefault()}
             className="text-[11px] opacity-50 hover:opacity-80"
           >
-            Animated emoji by Google Noto, CC BY 4.0
+            {c.text}
           </a>
-        )}
+        ))}
       </footer>
 
       {signupOpen && (
