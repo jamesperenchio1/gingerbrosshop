@@ -11,6 +11,7 @@ import { Toaster } from '@/components/ui/sonner';
 import ErrorBoundary from '@/components/ErrorBoundary';
 import BackToTop from '@/components/BackToTop';
 import { REFERRAL_CODE_STORAGE_KEY } from '@/lib/checkout';
+import { isLinkHost } from '@/lib/linkpage';
 
 /** Loads a shared cart from `?cart=<uuid>` and pre-fills CartContext, then removes the param. */
 function CartLinkLoader() {
@@ -87,6 +88,8 @@ function PageLoader() {
 const ProductDetail = lazy(() => import('@/pages/ProductDetail'));
 const OrderSuccess = lazy(() => import('@/pages/OrderSuccess'));
 const AdminOrders = lazy(() => import('@/pages/AdminOrders'));
+const AdminLinks = lazy(() => import('@/pages/AdminLinks'));
+const LinkPage = lazy(() => import('@/pages/LinkPage'));
 const FAQPage = lazy(() => import('@/pages/FAQPage'));
 const ShippingPage = lazy(() => import('@/pages/ShippingPage'));
 const ReturnsPage = lazy(() => import('@/pages/ReturnsPage'));
@@ -151,6 +154,31 @@ function AppToaster() {
 }
 
 export default function App() {
+  // link.gingerbrosshop.com is just the link-in-bio page: no shop nav, cart or
+  // routes, so the page stays light and loads fast from social apps. /links is
+  // the same page on the main domain, handy for previewing.
+  if (isLinkHost() || window.location.pathname.replace(/\/$/, '') === '/links') {
+    return (
+      <ErrorBoundary>
+        <Suspense fallback={null}>
+          <LinkPage />
+        </Suspense>
+        <Analytics />
+      </ErrorBoundary>
+    );
+  }
+
+  // The link-page editor has its own full-screen header; the shop nav would sit on top of it.
+  if (window.location.pathname.startsWith('/admin/links')) {
+    return (
+      <ErrorBoundary>
+        <Suspense fallback={<PageLoader />}>
+          <AdminLinks />
+        </Suspense>
+      </ErrorBoundary>
+    );
+  }
+
   return (
     <I18nProvider>
       <CartProvider>

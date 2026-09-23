@@ -130,6 +130,19 @@ const KNOWN_ROUTES: Record<string, RouteMeta> = {
     type: 'website',
     noindex: true,
   },
+  '/links': {
+    title: 'GingerBros — Links',
+    description: 'All new Ginger Fizz, with 3.5g of prebiotics! Shop, LINE, Grab, Shopee, Instagram, TikTok and Facebook.',
+    image: `${SITE_URL}/linkpage/avatar.png`,
+    type: 'website',
+  },
+  '/admin/links': {
+    title: 'Admin Links — GingerBros',
+    description: 'GingerBros link-in-bio editor.',
+    image: FALLBACK_IMAGE,
+    type: 'website',
+    noindex: true,
+  },
   '/admin/orders': {
     title: 'Admin Orders — GingerBros',
     description: 'GingerBros order management dashboard.',
@@ -344,12 +357,27 @@ function injectMeta(html: string, meta: RouteMeta, pathname: string): string {
 }
 
 export const config = {
-  matcher: ['/((?!api|assets|images|index.html|favicon|site.webmanifest|sitemap.xml|robots.txt).*)'],
+  // Skip API routes, the /q/ QR redirects, built assets, and anything that looks
+  // like a file (has an extension) — public/ files such as /analytics.js must be
+  // served as-is, not replaced with the SPA shell.
+  matcher: ['/((?!api/|q/|assets/|images/|.*\\.[a-zA-Z0-9]+$).*)'],
 };
 
 export default async function middleware(request: Request): Promise<Response> {
   const url = new URL(request.url);
   const pathname = url.pathname.replace(/\/$/, '') || '/';
+
+  // link.gingerbrosshop.com is the link-in-bio page. Its root serves the SPA
+  // (App renders LinkPage for this host); any other path belongs to the shop.
+  if (url.hostname.startsWith('link.')) {
+    const shopHost = url.hostname.slice('link.'.length);
+    if (pathname === '/admin' || pathname === '/admin/links') {
+      return Response.redirect(`https://${shopHost}/admin/links`, 302);
+    }
+    if (pathname !== '/') {
+      return Response.redirect(`https://${shopHost}${url.pathname}${url.search}`, 302);
+    }
+  }
 
   const htmlUrl = new URL('/index.html', request.url);
   const response = await fetch(htmlUrl);
@@ -402,6 +430,18 @@ export default async function middleware(request: Request): Promise<Response> {
         headers: { 'Content-Type': 'text/html; charset=utf-8' },
       });
     }
+  }
+
+  if (url.hostname.startsWith('link.')) {
+    html = injectMeta(html, KNOWN_ROUTES['/links'], '/links');
+    html = html.replace(
+      /<link rel="canonical" href="[^"]*" \/>/,
+      `<link rel="canonical" href="https://${url.hostname}/" />`,
+    );
+    return new Response(html, {
+      status: 200,
+      headers: { 'Content-Type': 'text/html; charset=utf-8' },
+    });
   }
 
   const meta = KNOWN_ROUTES[pathname] ?? {

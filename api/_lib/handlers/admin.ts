@@ -4,20 +4,11 @@ import { rateLimit, getClientIp } from '../rateLimit.js';
 import { getResend, MAIL_FROM, SUPPORT_REPLY_TO, shippingNotificationHtml, boxReturnRewardHtml } from '../email.js';
 import { addCredit } from '../credits.js';
 import { getStripe } from '../stripe.js';
+import { isAdminAuthorized } from '../adminAuth.js';
 
 // Default reward for returning the foam box + bottles: ฿50 in satang. A returned
 // box saves ~฿80, so ฿50 stays margin-positive while still delighting customers.
 const BOX_RETURN_CREDIT = 5000;
-
-function isAuthorized(req: VercelRequest): boolean {
-  const auth = req.headers.authorization;
-  const expected = process.env.ADMIN_SECRET;
-  if (!expected) {
-    console.error('ADMIN_SECRET is not configured');
-    return false;
-  }
-  return auth === `Bearer ${expected}`;
-}
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   const { allowed } = await rateLimit({ key: `admin:${getClientIp(req)}`, limit: 30, windowSeconds: 60 });
@@ -26,7 +17,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return;
   }
 
-  if (!isAuthorized(req)) {
+  if (!isAdminAuthorized(req)) {
     res.status(401).json({ error: 'Unauthorized' });
     return;
   }

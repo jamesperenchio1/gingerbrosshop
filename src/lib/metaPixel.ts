@@ -2,7 +2,7 @@
 // `eventId` lets a client-side event dedupe against the matching server-side
 // Conversions API event fired from api/webhook.ts for the same order.
 
-export type PixelEvent = 'ViewContent' | 'AddToCart' | 'InitiateCheckout' | 'Purchase' | 'Subscribe';
+export type PixelEvent = 'ViewContent' | 'AddToCart' | 'InitiateCheckout' | 'Purchase' | 'Subscribe' | 'Lead';
 
 declare global {
   interface Window {

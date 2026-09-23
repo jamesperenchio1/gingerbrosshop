@@ -13,6 +13,10 @@
   ],
   "rewrites": [
     {
+      "source": "/q/:slug",
+      "destination": "/api/links/qr/:slug"
+    },
+    {
       "source": "/((?!api/).*)",
       "destination": "/index.html"
     }

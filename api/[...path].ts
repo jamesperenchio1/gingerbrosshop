@@ -19,6 +19,8 @@ import shareCart from './_lib/handlers/share-cart.js';
 import ordersByEmail from './_lib/handlers/orders-by-email.js';
 import emailTracking from './_lib/handlers/email-tracking.js';
 import reviews from './_lib/handlers/reviews.js';
+import links from './_lib/handlers/links.js';
+import linksAdmin from './_lib/handlers/links-admin.js';
 
 type Handler = (req: VercelRequest, res: VercelResponse) => unknown | Promise<unknown>;
 
@@ -46,6 +48,10 @@ const routes: Record<string, Handler> = {
   'orders-by-email': ordersByEmail,
   'email-tracking': emailTracking,
   'reviews': reviews,
+  'links': links,
+  'links-admin': linksAdmin,
+  // /q/<slug> QR short links are rewritten here (see vercel.json)
+  'q': links,
 };
 
 /**
