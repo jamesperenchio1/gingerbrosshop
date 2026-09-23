@@ -15,11 +15,11 @@ export function isLinkHost(): boolean {
 export function sendLinkEvent(payload: Record<string, unknown>): void {
   const body = JSON.stringify(payload);
   try {
-    if (navigator.sendBeacon?.('/api/links/event', body)) return;
+    if (navigator.sendBeacon?.('/api/links?action=event', body)) return;
   } catch {
     // fall through to fetch
   }
-  fetch('/api/links/event', { method: 'POST', body, keepalive: true, headers: { 'Content-Type': 'text/plain' } }).catch(() => {});
+  fetch('/api/links?action=event', { method: 'POST', body, keepalive: true, headers: { 'Content-Type': 'text/plain' } }).catch(() => {});
 }
 
 const loadedFonts = new Set<string>();

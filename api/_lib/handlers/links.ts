@@ -7,14 +7,25 @@ import subscribe from './subscribe.js';
 const BOT_UA = /bot|crawl|spider|slurp|facebookexternalhit|whatsapp|telegram|preview|headless|lighthouse/i;
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-/** Path segments after /api/links, e.g. ['event'] or ['qr', 'bottle-label']. */
-function subPath(req: VercelRequest): string[] {
-  const pathname = (req.url ?? '').split('?')[0];
-  const segments = pathname.split('/').filter(Boolean);
-  // Vercel may hand us the pre-rewrite URL for /q/<slug>.
+/**
+ * Which sub-action this request is. Vercel only routes single-segment paths to
+ * api/[...path].ts, so sub-actions travel as query params:
+ *   /api/links                 → public config
+ *   /api/links?action=event    → analytics beacon
+ *   /api/links?action=signup   → email signup
+ *   /api/links?qr=<slug>       → QR redirect (public URL /q/<slug>, see vercel.json)
+ */
+function subAction(req: VercelRequest): [string | undefined, string | undefined] {
+  const q = (k: string) => {
+    const v = req.query[k];
+    return Array.isArray(v) ? v[0] : v;
+  };
+  const qr = q('qr');
+  if (qr !== undefined) return ['qr', qr];
+  // Vercel may hand us the pre-rewrite URL (/q/<slug>) instead of the query.
+  const segments = (req.url ?? '').split('?')[0].split('/').filter(Boolean);
   if (segments[0] === 'q') return ['qr', segments[1] ?? ''];
-  const i = segments.indexOf('links');
-  return i >= 0 ? segments.slice(i + 1) : [];
+  return [q('action'), undefined];
 }
 
 function header(req: VercelRequest, name: string): string {
@@ -55,7 +66,7 @@ function parseBody(req: VercelRequest): Record<string, unknown> {
 }
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
-  const [action, arg] = subPath(req);
+  const [action, arg] = subAction(req);
 
   // GET /api/links → the public page config
   if (!action) {
@@ -70,7 +81,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return;
   }
 
-  // GET /api/links/qr/<slug> → count the scan, redirect to the target (served at /q/<slug>)
+  // GET /api/links?qr=<slug> → count the scan, redirect to the target (served at /q/<slug>)
   if (action === 'qr') {
     const slug = String(arg ?? '').toLowerCase();
     const code = slug ? await getQrCode(slug) : null;
@@ -93,7 +104,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return;
   }
 
-  // POST /api/links/event → page view or link click (fire-and-forget beacon)
+  // POST /api/links?action=event → page view or link click (fire-and-forget beacon)
   if (action === 'event') {
     const ua = header(req, 'user-agent');
     const { allowed } = await rateLimit({ key: `links-event:${getClientIp(req)}`, limit: 120, windowSeconds: 60 });
@@ -122,7 +133,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return;
   }
 
-  // POST /api/links/signup → store for the admin export, then run the normal newsletter flow
+  // POST /api/links?action=signup → store for the admin export, then run the normal newsletter flow
   if (action === 'signup') {
     const email = (parseBody(req).email as string | undefined)?.toLowerCase().trim();
     if (!email || !EMAIL_RE.test(email) || email.length > 254) {
