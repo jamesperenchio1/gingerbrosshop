@@ -8,12 +8,10 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return;
   }
 
-  const secret = req.query.secret as string | undefined;
+  // Only Vercel Cron (Bearer CRON_SECRET) may trigger this.
   const auth = req.headers.authorization;
   const cronToken = process.env.CRON_SECRET;
-  const adminMatch = process.env.ADMIN_SECRET && secret === process.env.ADMIN_SECRET;
-  const cronMatch = cronToken && auth === `Bearer ${cronToken}`;
-  if (!adminMatch && !cronMatch) {
+  if (!cronToken || auth !== `Bearer ${cronToken}`) {
     res.status(401).json({ error: 'Unauthorized' });
     return;
   }

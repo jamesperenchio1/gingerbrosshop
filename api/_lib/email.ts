@@ -528,3 +528,18 @@ export function abandonedCartHtml(snapshot: CartSnapshot): string {
     'You left something brewing in your cart'
   );
 }
+
+// ---------------------------------------------------------------------------
+// Admin login
+// ---------------------------------------------------------------------------
+
+export function adminLoginHtml(link: string): string {
+  return layout(
+    `${heading('Log in to GingerBros admin')}
+    ${body('Tap the button to log in. The link works once and expires in 15 minutes.')}
+    <p style="margin:24px 0 0;text-align:center;">${button('Log in →', link)}</p>
+    ${divider()}
+    <p style="margin:0;font-size:13px;color:${BRAND.earth};">Didn't ask for this? Ignore this email — nobody can log in without the link.</p>`,
+    'Your GingerBros admin login link'
+  );
+}

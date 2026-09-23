@@ -31,7 +31,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     res.status(429).json({ error: 'Too many requests. Please try again in a minute.' });
     return;
   }
-  if (!isAdminAuthorized(req)) {
+  if (!(await isAdminAuthorized(req))) {
     res.status(401).json({ error: 'Unauthorized' });
     return;
   }

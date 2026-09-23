@@ -54,12 +54,10 @@ export default function BlocksEditor({
   blocks,
   onChange,
   products,
-  token,
 }: {
   blocks: LinkBlock[];
   onChange: (blocks: LinkBlock[]) => void;
   products: CatalogProduct[];
-  token: string;
 }) {
   const [openId, setOpenId] = useState<string | null>(null);
   const [adding, setAdding] = useState(false);
@@ -132,7 +130,7 @@ export default function BlocksEditor({
                 onChange([...blocks.slice(0, i + 1), copy, ...blocks.slice(i + 1)]);
               }}
               products={products}
-              token={token}
+             
             />
           ))}
         </SortableContext>
@@ -150,7 +148,6 @@ function SortableRow({
   onDelete,
   onDuplicate,
   products,
-  token,
 }: {
   block: LinkBlock;
   open: boolean;
@@ -159,7 +156,6 @@ function SortableRow({
   onDelete: () => void;
   onDuplicate: () => void;
   products: CatalogProduct[];
-  token: string;
 }) {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: block.id });
   const Icon = TYPE_META[block.type].icon;
@@ -195,7 +191,7 @@ function SortableRow({
 
       {open && (
         <div className="border-t border-soft-peach p-4 space-y-4">
-          <BlockFields block={block} onUpdate={onUpdate} products={products} token={token} />
+          <BlockFields block={block} onUpdate={onUpdate} products={products} />
 
           {block.type !== 'header' && (
             <Segmented
@@ -243,12 +239,10 @@ function BlockFields({
   block,
   onUpdate,
   products,
-  token,
 }: {
   block: LinkBlock;
   onUpdate: (patch: Partial<LinkBlock>) => void;
   products: CatalogProduct[];
-  token: string;
 }) {
   switch (block.type) {
     case 'link':
@@ -256,7 +250,7 @@ function BlockFields({
         <>
           <TextField label="Title" value={block.title} onChange={(title) => onUpdate({ title })} />
           <TextField label="URL" value={block.url} onChange={(url) => onUpdate({ url })} placeholder="https://" />
-          <ImageField label="Thumbnail" value={block.thumbnailUrl} onChange={(thumbnailUrl) => onUpdate({ thumbnailUrl })} token={token} maxSize={192} />
+          <ImageField label="Thumbnail" value={block.thumbnailUrl} onChange={(thumbnailUrl) => onUpdate({ thumbnailUrl })} maxSize={192} />
           <Toggle label="Add UTM tags (gingerbrosshop.com links only)" checked={block.utm} onChange={(utm) => onUpdate({ utm })} />
         </>
       );
@@ -302,7 +296,7 @@ function BlockFields({
           <TextField label="Title" value={block.title} onChange={(title) => onUpdate({ title })} />
           <TextField label="Handle" value={block.handle} onChange={(handle) => onUpdate({ handle: handle.replace(/^@/, '') })} placeholder="drinkgingerbros" />
           <TextField label="URL" value={block.url} onChange={(url) => onUpdate({ url })} />
-          <ImageField label="Image" value={block.imageUrl} onChange={(imageUrl) => onUpdate({ imageUrl })} token={token} maxSize={192} round />
+          <ImageField label="Image" value={block.imageUrl} onChange={(imageUrl) => onUpdate({ imageUrl })} maxSize={192} round />
         </>
       );
   }

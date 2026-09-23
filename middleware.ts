@@ -136,6 +136,13 @@ const KNOWN_ROUTES: Record<string, RouteMeta> = {
     image: `${SITE_URL}/linkpage/avatar.png`,
     type: 'website',
   },
+  '/admin/login': {
+    title: 'Admin Login — GingerBros',
+    description: 'GingerBros admin login.',
+    image: FALLBACK_IMAGE,
+    type: 'website',
+    noindex: true,
+  },
   '/admin/links': {
     title: 'Admin Links — GingerBros',
     description: 'GingerBros link-in-bio editor.',

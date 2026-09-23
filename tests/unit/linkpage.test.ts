@@ -17,12 +17,11 @@ describe('linkpage schema', () => {
     expect(linkPageConfigSchema.safeParse(DEFAULT_LINKPAGE_CONFIG).success).toBe(true);
   });
 
-  it('keeps every original Linktree destination in order', () => {
+  it('keeps the Linktree destinations (Shop first, no duplicate plain Instagram link)', () => {
     const urls = DEFAULT_LINKPAGE_CONFIG.blocks.map((b) => ('url' in b ? b.url : null));
     expect(urls).toEqual([
-      'https://www.instagram.com/drinkgingerbros',
       'https://gingerbrosshop.com',
-      'https://www.instagram.com/drinkgingerbros/',
+      'https://www.instagram.com/drinkgingerbros',
       'https://lin.ee/qRnVI6E',
       expect.stringContaining('https://grab.onelink.me/2695613898?'),
       'https://shopee.co.th/shop/433881332',

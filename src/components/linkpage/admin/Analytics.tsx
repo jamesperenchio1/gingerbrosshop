@@ -33,19 +33,19 @@ function blockName(id: string, blocks: LinkBlock[]): string {
   return b.type === 'signup' ? b.headline : b.type === 'product' ? b.title || b.productId : b.title;
 }
 
-export default function Analytics({ token, blocks }: { token: string; blocks: LinkBlock[] }) {
+export default function Analytics({ blocks }: { blocks: LinkBlock[] }) {
   const [days, setDays] = useState<(typeof RANGES)[number]>(30);
   const [data, setData] = useState<AnalyticsData | null>(null);
   const [error, setError] = useState('');
 
   useEffect(() => {
-    adminApi<AnalyticsData>(token, { query: `view=analytics&days=${days}` })
+    adminApi<AnalyticsData>({ query: `view=analytics&days=${days}` })
       .then((d) => {
         setData(d);
         setError('');
       })
       .catch((e: Error) => setError(e.message));
-  }, [token, days]);
+  }, [days]);
 
   const ctr = data && data.totals.views > 0 ? (data.totals.clicks / data.totals.views) * 100 : 0;
 

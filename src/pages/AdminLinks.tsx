@@ -1,12 +1,13 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
-import { Eye, EyeOff, Link2, ExternalLink, Download, RotateCcw, Smartphone } from 'lucide-react';
+import { useEffect, useMemo, useState } from 'react';
+import { Link2, ExternalLink, Download, RotateCcw, Smartphone } from 'lucide-react';
+import AdminGate from '@/components/AdminGate';
 import LinkPageView from '@/components/linkpage/LinkPageView';
 import BlocksEditor from '@/components/linkpage/admin/BlocksEditor';
 import AppearanceEditor from '@/components/linkpage/admin/AppearanceEditor';
 import StickersEditor from '@/components/linkpage/admin/StickersEditor';
 import QrCodes from '@/components/linkpage/admin/QrCodes';
 import Analytics from '@/components/linkpage/admin/Analytics';
-import { adminApi, AdminApiError, TOKEN_KEY } from '@/components/linkpage/admin/api';
+import { adminApi, AdminApiError } from '@/components/linkpage/admin/api';
 import { fetchCatalog, type CatalogProduct } from '@/lib/catalog';
 import { LINK_PAGE_URL, publicView, type LinkPageConfig } from '@/lib/linkpage';
 
@@ -27,17 +28,11 @@ interface HistoryEntry {
 }
 
 export default function AdminLinks() {
-  const [token, setToken] = useState(() => {
-    try {
-      return sessionStorage.getItem(TOKEN_KEY) ?? '';
-    } catch {
-      return '';
-    }
-  });
-  const [tokenInput, setTokenInput] = useState('');
-  const [showToken, setShowToken] = useState(false);
-  const [authError, setAuthError] = useState('');
+  return <AdminGate title="Link page editor">{({ email, logout }) => <LinkEditor email={email} onLogout={logout} />}</AdminGate>;
+}
 
+function LinkEditor({ email, onLogout }: { email: string; onLogout: () => void }) {
+  const [loadError, setLoadError] = useState('');
   const [saved, setSaved] = useState<LinkPageConfig | null>(null);
   const [draft, setDraft] = useState<LinkPageConfig | null>(null);
   const [history, setHistory] = useState<HistoryEntry[]>([]);
@@ -48,35 +43,19 @@ export default function AdminLinks() {
   const [selectedSticker, setSelectedSticker] = useState<string | null>(null);
   const [showPreview, setShowPreview] = useState(false);
 
-  const load = useCallback(
-    (t: string) => {
-      setAuthError('');
-      adminApi<{ config: LinkPageConfig; history: HistoryEntry[] }>(t, { query: 'view=config' })
-        .then((d) => {
-          setSaved(d.config);
-          setDraft(d.config);
-          setHistory(d.history);
-          try {
-            sessionStorage.setItem(TOKEN_KEY, t);
-          } catch {
-            // ignore
-          }
-        })
-        .catch((e: Error) => {
-          if (e instanceof AdminApiError && e.status === 401) {
-            setToken('');
-            setAuthError('Wrong admin secret.');
-          } else {
-            setAuthError(e.message);
-          }
-        });
-    },
-    [],
-  );
-
   useEffect(() => {
-    if (token) load(token);
-  }, [token, load]);
+    adminApi<{ config: LinkPageConfig; history: HistoryEntry[] }>({ query: 'view=config' })
+      .then((d) => {
+        setSaved(d.config);
+        setDraft(d.config);
+        setHistory(d.history);
+      })
+      .catch((e: Error) => {
+        // Session expired or revoked elsewhere: bounce back to the login screen.
+        if (e instanceof AdminApiError && e.status === 401) onLogout();
+        else setLoadError(e.message);
+      });
+  }, [onLogout]);
 
   useEffect(() => {
     fetchCatalog().then(setProducts).catch(() => {});
@@ -101,7 +80,7 @@ export default function AdminLinks() {
     if (!draft) return;
     setSaving(true);
     try {
-      const d = await adminApi<{ config: LinkPageConfig; history: HistoryEntry[] }>(token, { method: 'PUT', body: { config: draft } });
+      const d = await adminApi<{ config: LinkPageConfig; history: HistoryEntry[] }>({ method: 'PUT', body: { config: draft } });
       setSaved(d.config);
       setDraft(d.config);
       setHistory(d.history);
@@ -116,7 +95,7 @@ export default function AdminLinks() {
   const revert = async (index: number) => {
     if (!confirm('Restore this version? Your current page is kept in History.')) return;
     try {
-      const d = await adminApi<{ config: LinkPageConfig; history: HistoryEntry[] }>(token, { method: 'POST', body: { action: 'revert', index } });
+      const d = await adminApi<{ config: LinkPageConfig; history: HistoryEntry[] }>({ method: 'POST', body: { action: 'revert', index } });
       setSaved(d.config);
       setDraft(d.config);
       setHistory(d.history);
@@ -126,38 +105,14 @@ export default function AdminLinks() {
     }
   };
 
-  if (!token || !draft) {
+  if (!draft) {
     return (
-      <div className="min-h-screen bg-warm-white flex items-center justify-center px-6">
-        <form
-          className="w-full max-w-sm"
-          onSubmit={(e) => {
-            e.preventDefault();
-            setToken(tokenInput.trim());
-          }}
-        >
-          <div className="text-center mb-6">
-            <Link2 className="w-10 h-10 text-deep-brown mx-auto mb-3" />
-            <h1 className="font-display text-2xl text-deep-brown">Link page editor</h1>
-            <p className="font-body text-earth text-sm">{token && !authError ? 'Loading…' : 'Enter your admin secret.'}</p>
-          </div>
-          {(!token || authError) && (
-            <div className="relative">
-              <input
-                type={showToken ? 'text' : 'password'}
-                value={tokenInput}
-                onChange={(e) => setTokenInput(e.target.value)}
-                placeholder="Admin secret"
-                autoFocus
-                className="w-full bg-cream border border-soft-peach rounded-xl px-4 py-3 pr-12 font-body text-deep-brown placeholder:text-earth/50 focus:outline-none focus:ring-2 focus:ring-rust/30"
-              />
-              <button type="button" onClick={() => setShowToken(!showToken)} className="absolute right-3 top-1/2 -translate-y-1/2 text-earth hover:text-deep-brown">
-                {showToken ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
-              </button>
-            </div>
-          )}
-          {authError && <p className="mt-3 font-body text-[13px] text-rust text-center">{authError}</p>}
-        </form>
+      <div className="min-h-screen bg-warm-white flex items-center justify-center px-6 text-center">
+        {loadError ? (
+          <p className="font-body text-sm text-rust">{loadError}</p>
+        ) : (
+          <div className="w-8 h-8 border-2 border-deep-brown/20 border-t-deep-brown rounded-full animate-spin" />
+        )}
       </div>
     );
   }
@@ -202,6 +157,18 @@ export default function AdminLinks() {
             {LINK_PAGE_URL.replace('https://', '')} <ExternalLink className="w-3.5 h-3.5" />
           </a>
           <div className="ml-auto flex items-center gap-2">
+            <span className="hidden md:inline font-body text-[12px] text-earth" title="Signed in">
+              {email}
+            </span>
+            <button
+              type="button"
+              onClick={() => {
+                if (!dirty || confirm('You have unpublished changes. Log out anyway?')) onLogout();
+              }}
+              className="px-3 py-2 rounded-lg font-body text-[13px] text-earth hover:bg-cream"
+            >
+              Log out
+            </button>
             {dirty && (
               <button type="button" onClick={() => setDraft(saved)} className="px-3 py-2 rounded-lg font-body text-[13px] text-earth hover:bg-cream">
                 Discard
@@ -235,14 +202,14 @@ export default function AdminLinks() {
 
       <div className="max-w-6xl mx-auto px-4 sm:px-6 py-6 grid lg:grid-cols-[1fr_395px] gap-8 items-start">
         <main className="min-w-0">
-          {tab === 'links' && <BlocksEditor blocks={draft.blocks} onChange={(blocks) => setDraft({ ...draft, blocks })} products={products} token={token} />}
-          {tab === 'appearance' && <AppearanceEditor config={draft} onChange={setDraft} token={token} />}
+          {tab === 'links' && <BlocksEditor blocks={draft.blocks} onChange={(blocks) => setDraft({ ...draft, blocks })} products={products} />}
+          {tab === 'appearance' && <AppearanceEditor config={draft} onChange={setDraft} />}
           {tab === 'stickers' && (
-            <StickersEditor config={draft} onChange={setDraft} token={token} selectedId={selectedSticker} onSelect={setSelectedSticker} />
+            <StickersEditor config={draft} onChange={setDraft} selectedId={selectedSticker} onSelect={setSelectedSticker} />
           )}
-          {tab === 'qr' && <QrCodes token={token} blocks={draft.blocks} />}
-          {tab === 'analytics' && <Analytics token={token} blocks={draft.blocks} />}
-          {tab === 'signups' && <Signups token={token} />}
+          {tab === 'qr' && <QrCodes blocks={draft.blocks} />}
+          {tab === 'analytics' && <Analytics blocks={draft.blocks} />}
+          {tab === 'signups' && <Signups />}
           {tab === 'history' && <History history={history} onRevert={revert} />}
         </main>
 
@@ -279,15 +246,15 @@ export default function AdminLinks() {
   );
 }
 
-function Signups({ token }: { token: string }) {
+function Signups() {
   const [rows, setRows] = useState<{ email: string; signedUpAt: string }[] | null>(null);
   const [error, setError] = useState('');
 
   useEffect(() => {
-    adminApi<{ signups: { email: string; signedUpAt: string }[] }>(token, { query: 'view=signups' })
+    adminApi<{ signups: { email: string; signedUpAt: string }[] }>({ query: 'view=signups' })
       .then((d) => setRows(d.signups))
       .catch((e: Error) => setError(e.message));
-  }, [token]);
+  }, []);
 
   const exportCsv = () => {
     if (!rows) return;

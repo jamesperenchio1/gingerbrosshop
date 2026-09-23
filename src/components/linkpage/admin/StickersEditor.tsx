@@ -1,16 +1,35 @@
-import { useRef, useState } from 'react';
-import { Trash2, Upload } from 'lucide-react';
-import { STARTER_STICKERS, type LinkBlock, type LinkPageConfig, type Sticker } from '@/lib/linkpage';
+import { useEffect, useMemo, useRef, useState } from 'react';
+import { Search, Trash2, Upload } from 'lucide-react';
+import { FLUENT_INDEX_URL, type LinkBlock, type LinkPageConfig, type Sticker } from '@/lib/linkpage';
 import { Field, inputClass } from './fields';
 import { newId, uploadImage } from './api';
 
 type Props = {
   config: LinkPageConfig;
   onChange: (c: LinkPageConfig) => void;
-  token: string;
   selectedId: string | null;
   onSelect: (id: string | null) => void;
 };
+
+interface LibraryItem {
+  name: string;
+  url: string;
+}
+
+// Shown before you search: good fits for a drinks brand.
+const FEATURED = [
+  'Cat face', 'Backhand index pointing up', 'Shopping bags', 'Red apple', 'Sparkles', 'Fire', 'Star-struck',
+  'Party popper', 'Bottle with popping cork', 'Cup with straw', 'Lemon', 'Hot pepper', 'Red heart', 'Glowing star',
+  'Hundred points', 'Wrapped gift', 'Megaphone', 'Backhand index pointing right', 'Smiling face with heart-eyes', 'Rocket',
+];
+
+let libraryCache: Promise<LibraryItem[]> | null = null;
+function loadLibrary(): Promise<LibraryItem[]> {
+  libraryCache ??= fetch(FLUENT_INDEX_URL)
+    .then((r) => r.json() as Promise<{ base: string; items: { n: string; p: string }[] }>)
+    .then((d) => d.items.map((i) => ({ name: i.n, url: d.base + i.p })));
+  return libraryCache;
+}
 
 function anchorLabel(id: string, blocks: LinkBlock[]): string {
   if (id === 'header') return 'Profile header';
@@ -20,11 +39,28 @@ function anchorLabel(id: string, blocks: LinkBlock[]): string {
   return b.type === 'signup' ? b.headline : b.type === 'product' ? b.title || b.productId : b.title;
 }
 
-export default function StickersEditor({ config, onChange, token, selectedId, onSelect }: Props) {
+export default function StickersEditor({ config, onChange, selectedId, onSelect }: Props) {
   const input = useRef<HTMLInputElement>(null);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
   const selected = config.stickers.find((s) => s.id === selectedId) ?? null;
+  const [library, setLibrary] = useState<LibraryItem[]>([]);
+  const [query, setQuery] = useState('');
+
+  useEffect(() => {
+    loadLibrary()
+      .then(setLibrary)
+      .catch(() => setError('Could not load the sticker library.'));
+  }, []);
+
+  const results = useMemo(() => {
+    const q = query.trim().toLowerCase();
+    if (!q) {
+      const byName = new Map(library.map((i) => [i.name, i]));
+      return FEATURED.map((n) => byName.get(n)).filter((i): i is LibraryItem => !!i);
+    }
+    return library.filter((i) => i.name.toLowerCase().includes(q)).slice(0, 120);
+  }, [library, query]);
 
   const add = (imageUrl: string) => {
     const sticker: Sticker = { id: newId('st'), imageUrl, anchor: 'header', x: 0.8, y: 0.3, rotation: 0, scale: 1, zIndex: config.stickers.length };
@@ -40,7 +76,7 @@ export default function StickersEditor({ config, onChange, token, selectedId, on
     setBusy(true);
     setError('');
     try {
-      add(await uploadImage(token, file, 400));
+      add(await uploadImage(file, 400));
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Upload failed');
     } finally {
@@ -55,13 +91,17 @@ export default function StickersEditor({ config, onChange, token, selectedId, on
     <div className="space-y-4">
       <section className="bg-white rounded-xl border border-soft-peach p-4">
         <h3 className="font-display text-[18px] text-deep-brown">Add a sticker</h3>
-        <p className="font-body text-[13px] text-earth mt-1">Pick one, then drag it around in the preview.</p>
-        <div className="grid grid-cols-4 sm:grid-cols-5 gap-2 mt-3">
-          {STARTER_STICKERS.map((s) => (
-            <button key={s.url} type="button" onClick={() => add(s.url)} title={s.name} className="aspect-square rounded-lg bg-cream hover:bg-soft-peach p-2 transition-colors">
-              <img src={s.url} alt={s.name} className="w-full h-full object-contain" />
-            </button>
-          ))}
+        <p className="font-body text-[13px] text-earth mt-1">Search 1,500+ free stickers, pick one, then drag it around in the preview.</p>
+        <div className="relative mt-3">
+          <Search className="w-4 h-4 text-earth absolute left-3 top-1/2 -translate-y-1/2" />
+          <input
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            placeholder="Search: cat, lemon, fire, heart…"
+            className={`${inputClass} pl-9`}
+          />
+        </div>
+        <div className="grid grid-cols-5 sm:grid-cols-6 gap-2 mt-3 max-h-[320px] overflow-y-auto pr-1">
           <button
             type="button"
             disabled={busy}
@@ -71,8 +111,20 @@ export default function StickersEditor({ config, onChange, token, selectedId, on
             <Upload className="w-5 h-5" />
             {busy ? '…' : 'Upload'}
           </button>
+          {results.map((s) => (
+            <button key={s.url} type="button" onClick={() => add(s.url)} title={s.name} className="aspect-square rounded-lg bg-cream hover:bg-soft-peach p-1.5 transition-colors">
+              <img src={s.url} alt={s.name} loading="lazy" className="w-full h-full object-contain" />
+            </button>
+          ))}
         </div>
-        <p className="font-body text-[12px] text-earth/80 mt-2">Tip: transparent PNGs look best.</p>
+        {query && results.length === 0 && library.length > 0 && <p className="font-body text-[13px] text-earth mt-2">No stickers match “{query}”.</p>}
+        <p className="font-body text-[11px] text-earth/80 mt-2">
+          Stickers from{' '}
+          <a href="https://github.com/microsoft/fluentui-emoji" target="_blank" rel="noopener noreferrer" className="underline">
+            Microsoft Fluent Emoji
+          </a>{' '}
+          (MIT licence, free for commercial use). You can also upload your own transparent PNGs.
+        </p>
         {error && <p className="font-body text-[12px] text-rust mt-1">{error}</p>}
         <input ref={input} type="file" accept="image/png,image/webp,image/gif,image/jpeg" className="hidden" onChange={(e) => upload(e.target.files?.[0])} />
       </section>

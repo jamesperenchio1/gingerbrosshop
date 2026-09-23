@@ -78,7 +78,7 @@ function downloadBlob(blob: Blob, filename: string) {
   setTimeout(() => URL.revokeObjectURL(a.href), 1000);
 }
 
-export default function QrCodes({ token, blocks }: { token: string; blocks: LinkBlock[] }) {
+export default function QrCodes({ blocks }: { blocks: LinkBlock[] }) {
   const [codes, setCodes] = useState<QrCodeRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [draft, setDraft] = useState<Draft>(EMPTY);
@@ -97,11 +97,11 @@ export default function QrCodes({ token, blocks }: { token: string; blocks: Link
     draft.target === 'page' ? `${LINK_PAGE_URL}/?src=qr` : draft.target === 'custom' ? draft.customUrl : targets.find((t) => t.id === draft.target)?.url ?? '';
 
   useEffect(() => {
-    adminApi<{ codes: QrCodeRow[] }>(token, { query: 'view=qr' })
+    adminApi<{ codes: QrCodeRow[] }>({ query: 'view=qr' })
       .then((d) => setCodes(d.codes))
       .catch((e: Error) => setError(e.message))
       .finally(() => setLoading(false));
-  }, [token]);
+  }, []);
 
   useEffect(() => {
     const slug = draft.slug || 'your-code';
@@ -118,7 +118,7 @@ export default function QrCodes({ token, blocks }: { token: string; blocks: Link
     setError('');
     setSaving(true);
     try {
-      const d = await adminApi<{ codes: QrCodeRow[] }>(token, {
+      const d = await adminApi<{ codes: QrCodeRow[] }>({
         method: 'POST',
         body: { action: 'qr-save', slug: draft.slug, name: draft.name, targetUrl, fg: draft.fg, bg: draft.bg, overwrite: draft.editing },
       });
@@ -151,7 +151,7 @@ export default function QrCodes({ token, blocks }: { token: string; blocks: Link
   const remove = async (c: QrCodeRow) => {
     if (!confirm(`Delete "${c.name}"? Printed copies of this code will stop working.`)) return;
     try {
-      const d = await adminApi<{ codes: QrCodeRow[] }>(token, { method: 'POST', body: { action: 'qr-delete', slug: c.slug } });
+      const d = await adminApi<{ codes: QrCodeRow[] }>({ method: 'POST', body: { action: 'qr-delete', slug: c.slug } });
       setCodes(d.codes);
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Could not delete');
