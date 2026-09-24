@@ -75,7 +75,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
               resend.emails.send({
                 from: MAIL_FROM,
                 to: email,
-                subject: `${product.name} is back in stock! 🎉`,
+                subject: `${product.name} is back in stock!`,
                 html: backInStockHtml(product.name, productUrl),
               })
             )
@@ -172,7 +172,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         await resend.emails.send({
           from: `GingerBros Orders <${FROM_EMAIL}>`,
           to: SELLER_EMAIL,
-          subject: `New Order #${session.id.slice(-8).toUpperCase()} — ฿${money(session.amount_total)}`,
+          subject: `New Order #${session.id.slice(-8).toUpperCase()} · ฿${money(session.amount_total)}`,
           html: sellerNotificationHtml(session, lineItems, orderNote),
         });
       } catch (err) {
@@ -207,7 +207,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
           from: MAIL_FROM,
           to: recipientEmail,
           replyTo: SUPPORT_REPLY_TO,
-          subject: `${session.customer_details?.name ?? 'Someone'} sent you a GingerBros gift! 🍺`,
+          subject: `${session.customer_details?.name ?? 'Someone'} sent you a GingerBros gift!`,
           html: giftEmailHtml(session, lineItems, recipientName, giftMessage, session.customer_details?.name ?? 'A friend'),
         });
       } catch (err) {

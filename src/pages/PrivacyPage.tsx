@@ -17,7 +17,7 @@ export default function PrivacyPage() {
 
 • Name, email address, and phone number
 • Shipping and billing addresses
-• Payment information (processed securely through Stripe — we never see your full card details)
+• Payment information (processed securely through Stripe; we never see your full card details)
 • Order history and preferences
 • Any notes or messages you include with your order
 
@@ -75,11 +75,11 @@ While we take these precautions, no method of transmission over the internet is 
       title: 'Third-Party Services',
       content: `We use trusted third-party services to operate our business. These providers only receive the data necessary to perform their functions:
 
-• Stripe — payment processing
-• Resend — transactional and marketing emails
-• Vercel — website hosting and serverless functions
-• Upstash Redis — order data storage
-• Courier partners — shipping and delivery
+• Stripe: payment processing
+• Resend: transactional and marketing emails
+• Vercel: website hosting and serverless functions
+• Upstash Redis: order data storage
+• Courier partners: shipping and delivery
 
 Each of these providers maintains their own privacy policy and security standards. We do not authorise them to use your data for their own marketing purposes.`,
     },
@@ -93,7 +93,7 @@ Each of these providers maintains their own privacy policy and security standard
 • Maintain your session state during checkout
 • Analyse website traffic and usage patterns via basic analytics
 
-You can disable cookies in your browser settings, but this may affect your shopping experience — for example, your cart may not persist between pages.`,
+You can disable cookies in your browser settings, but this may affect your shopping experience. For example, your cart may not persist between pages.`,
     },
     {
       icon: <Mail className="w-6 h-6 text-amber" />,
@@ -164,7 +164,7 @@ For significant changes that materially affect your rights, we will notify you v
     <div className="min-h-screen bg-warm-white">
       <SEO
         title="Privacy Policy | GingerBros"
-        description="GingerBros privacy policy — how we collect, use, and protect your personal information when you shop at gingerbrosshop.com."
+        description="GingerBros privacy policy: how we collect, use, and protect your personal information when you shop at gingerbrosshop.com."
         path="/privacy"
       />
       <div className="sticky top-0 z-50 bg-warm-white/95 backdrop-blur-xl border-b border-soft-peach/50">

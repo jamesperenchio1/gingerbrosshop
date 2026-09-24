@@ -123,7 +123,7 @@ const translations: Record<Locale, Record<string, string>> = {
     acaciaFermentTitle: 'Slow Fermentation',
     acaciaFermentDesc: 'Unlike aggressive prebiotics that cause gas and bloating, acacia ferments slowly throughout the entire colon.',
     acaciaStudiedTitle: 'Clinically Studied',
-    acaciaStudiedDesc: 'Randomised trials show acacia fibre increases Bifidobacteria and Lactobacilli — the good guys — within 4 weeks.',
+    acaciaStudiedDesc: 'Randomised trials show acacia fibre increases Bifidobacteria and Lactobacilli, the good guys, within 4 weeks.',
     acaciaGentleTitle: 'Gentle on Everyone',
     acaciaGentleDesc: 'Low FODMAP certified. Works for sensitive stomachs, IBS sufferers, and people new to fibre supplements.',
 
@@ -132,7 +132,7 @@ const translations: Record<Locale, Record<string, string>> = {
     whyGingerTitle: 'The root that does the work.',
     whyGingerDesc: 'Ginger is not a trend. It is a root that has been used medicinally for over 2,500 years, backed by modern research for digestion, inflammation, and immune support. We use fresh Thai ginger fermented slowly so the active compounds stay intact.',
     gingerDigestiveTitle: 'Digestive Relief',
-    gingerDigestiveDesc: 'Gingerol and shogaol — the active compounds in ginger — stimulate gastric emptying and reduce bloating. Studies show ginger can speed stomach emptying by up to 50%',
+    gingerDigestiveDesc: 'Gingerol and shogaol, the active compounds in ginger, stimulate gastric emptying and reduce bloating. Studies show ginger can speed stomach emptying by up to 50%',
     gingerInflammationTitle: 'Anti-Inflammatory',
     gingerInflammationDesc: 'Ginger inhibits COX-2 and reduces pro-inflammatory cytokines. Clinical trials show it is as effective as ibuprofen for menstrual pain and osteoarthritis discomfort',
     gingerImmuneTitle: 'Immune Support',
@@ -147,7 +147,7 @@ const translations: Record<Locale, Record<string, string>> = {
     storyPara1: "GingerBros started with a simple question: why does everything sold as \"healthy\" taste like sh*t? We wanted something that was genuinely good for you, not because it had vitamins added just for the sake of having it, but because the process itself created something nourishing. That search led us to fizz that we know today.",
     storyPara2: "We source our acacia fibre specifically because it's one of the most well-studied prebiotic fibres in existence. Prebiotics and probiotics are NOT the same. Probiotics add new bacteria into your gut. Prebiotics on the other hand, feed the good bacteria already living in your gut, making them more resilient and function much better. When that ecosystem is well-fed, the effects ripple outward:",
     storyBullet1: 'Better digestion and less bloating',
-    storyBullet2: 'Stronger immunity — over 70% of immune cells live in the gut',
+    storyBullet2: 'Stronger immunity: over 70% of immune cells live in the gut',
     storyBullet3: 'Steadier energy without caffeine spikes or crashes',
     storyBullet4: 'Better mineral absorption',
     storyBullet5: 'Helps regulate blood sugar levels and promotes a feeling of fullness for weight management',
@@ -157,7 +157,7 @@ const translations: Record<Locale, Record<string, string>> = {
 
     // Newsletter
     newsletterTitle: 'First Access',
-    newsletterSub: 'New drops, restocks, and exclusive offers — before anyone else.',
+    newsletterSub: 'New drops, restocks, and exclusive offers, before anyone else.',
     newsletterVerifyHint: 'Verify your email. Get 10% off your first order.',
     newsletterEmailPlaceholder: 'Enter your email',
     newsletterSubscribeBtn: 'Subscribe',
@@ -321,7 +321,7 @@ const translations: Record<Locale, Record<string, string>> = {
     storyPara1: 'GingerBros เริ่มต้นจากคำถามง่ายๆ: ทำไมทุกอย่างที่ขายว่า "เพื่อสุขภาพ" ถึงไม่อร่อย? เราต้องการบางอย่างที่ดีต่อสุขภาพอย่างแท้จริง ไม่ใช่เพราะเติมวิตามินไว้โฆษณา แต่เพราะกระบวนการผลิตสร้างสิ่งที่มีคุณค่าจริงๆ การค้นหานั้นนำเราไปสู่ขิงสปาร์กลิ้งที่เรารู้จักในวันนี้',
     storyPara2: 'เราเลือกใยอาหารอะคาเซียโดยเฉพาะเพราะเป็นหนึ่งในแหล่งพรีไบโอติกที่ได้รับการศึกษาวิจัยมากที่สุด พรีไบโอติกและโปรไบโอติกต่างกัน โปรไบโอติกเพิ่มแบคทีเรียใหม่เข้าสู่ลำไส้ แต่พรีไบโอติกบำรุงแบคทีเรียที่ดีที่มีอยู่แล้วในลำไส้ ทำให้ทนทานและทำงานดีขึ้น เมื่อระบบนิเวศนั้นได้รับการบำรุง ผลดีจะแพร่กระจายออกไป:',
     storyBullet1: 'ระบบย่อยอาหารดีขึ้นและท้องอืดน้อยลง',
-    storyBullet2: 'ภูมิคุ้มกันแข็งแกร่งขึ้น — เซลล์ภูมิคุ้มกันกว่า 70% อยู่ในลำไส้',
+    storyBullet2: 'ภูมิคุ้มกันแข็งแกร่งขึ้น: เซลล์ภูมิคุ้มกันกว่า 70% อยู่ในลำไส้',
     storyBullet3: 'พลังงานสม่ำเสมอโดยไม่ต้องพึ่งคาเฟอีน',
     storyBullet4: 'การดูดซึมแร่ธาตุดีขึ้น',
     storyBullet5: 'ช่วยควบคุมระดับน้ำตาลในเลือดและส่งเสริมความอิ่มเพื่อการจัดการน้ำหนัก',
@@ -331,7 +331,7 @@ const translations: Record<Locale, Record<string, string>> = {
 
     // Newsletter
     newsletterTitle: 'สิทธิ์ก่อนใคร',
-    newsletterSub: 'เครื่องดื่มใหม่ การเติมสต็อก และโปรโมชั่นพิเศษ — รู้ก่อนคนอื่น',
+    newsletterSub: 'เครื่องดื่มใหม่ การเติมสต็อก และโปรโมชั่นพิเศษ, รู้ก่อนคนอื่น',
     newsletterVerifyHint: 'ยืนยันอีเมล รับส่วนลด 10% สำหรับการสั่งซื้อครั้งแรก',
     newsletterEmailPlaceholder: 'กรอกอีเมลของคุณ',
     newsletterSubscribeBtn: 'สมัครรับข้อมูล',

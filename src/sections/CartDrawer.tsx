@@ -298,7 +298,7 @@ export default function CartDrawer() {
 
             {/* Delivery estimate */}
             <p className="font-body text-[12px] text-green-ink">
-              🚚 {getDeliveryEstimateMessage()}
+ {getDeliveryEstimateMessage()}
             </p>
 
             {/* Free shipping progress */}
@@ -318,7 +318,7 @@ export default function CartDrawer() {
             {subtotal >= FREE_SHIPPING_THRESHOLD && (
               <div className="bg-accent-green/10 rounded-xl px-4 py-3">
                 <p className="font-body text-[13px] text-green-ink font-medium">
-                  🎉 {t('freeShippingUnlocked')}
+ {t('freeShippingUnlocked')}
                 </p>
               </div>
             )}
@@ -365,7 +365,7 @@ export default function CartDrawer() {
                   <span className="font-body text-[13px] text-deep-brown">
                     Personally hand delivered
                     <span className="block text-[12px] text-earth/70">
-                      ฿5,000 per delivery — a GingerBros team member brings it to you
+                      ฿5,000 per delivery, a GingerBros team member brings it to you
                     </span>
                   </span>
                 </label>
@@ -479,7 +479,7 @@ export default function CartDrawer() {
                 title="Copy a shareable link to this cart"
                 className="font-body text-[13px] text-earth/60 hover:text-rust transition-colors disabled:opacity-50"
               >
-                {isSharing ? '…' : '🔗 Share cart'}
+                {isSharing ? '…' : 'Share cart'}
               </button>
             </div>
           </div>

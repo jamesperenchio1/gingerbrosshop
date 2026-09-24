@@ -125,13 +125,13 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         },
         quantity: 1,
       });
-      recurringCount++; // delivery is recurring — keep hasOneTime accurate
+      recurringCount++; // delivery is recurring, keep hasOneTime accurate
     } else {
       const key = `${subInterval.interval}_${subInterval.intervalCount}`;
       const deliveryPriceId = DELIVERY_PRICE[key];
       if (deliveryPriceId) {
         lineItems.push({ price: deliveryPriceId, quantity: 1 });
-        recurringCount++; // delivery is recurring — keep hasOneTime accurate
+        recurringCount++; // delivery is recurring, keep hasOneTime accurate
       }
     }
   }

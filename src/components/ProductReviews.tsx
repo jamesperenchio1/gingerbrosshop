@@ -78,7 +78,7 @@ export default function ProductReviews({ productId, productName }: Props) {
               <StarRating value={0} size={22} />
             </div>
             <p className="font-body text-earth text-[14px]">
-              No reviews yet — be the first to share what you think of {productName}.
+              No reviews yet. Be the first to share what you think of {productName}.
             </p>
           </div>
         )}

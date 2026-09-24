@@ -220,7 +220,7 @@ export default function OrderSuccess() {
   return (
     <div className="min-h-screen bg-warm-white">
       <SEO
-        title="Thank You for Your Order — GingerBros"
+        title="Thank You for Your Order | GingerBros"
         description="Your GingerBros order has been confirmed. Check your email for the receipt and tracking updates."
         path="/order/success"
         noindex
@@ -233,7 +233,7 @@ export default function OrderSuccess() {
           </div>
           <h1 className="font-display text-3xl text-deep-brown mb-2">Thank You{order.customerName ? `, ${order.customerName.split(' ')[0]}` : ''}!</h1>
           <p className="font-body text-earth">
-            Your order is confirmed{order.customerEmail ? <> — a receipt is on its way to <span className="text-deep-brown font-medium">{order.customerEmail}</span></> : ''}.
+            Your order is confirmed{order.customerEmail ? <>. A receipt is on its way to <span className="text-deep-brown font-medium">{order.customerEmail}</span></> : ''}.
           </p>
         </div>
 
@@ -347,7 +347,7 @@ export default function OrderSuccess() {
             <p className="font-body text-cream/80 mb-1">
               {order.trackingCarrier ?? 'Carrier'}: <span className="font-semibold text-cream">{order.trackingNumber}</span>
             </p>
-            <p className="font-body text-cream/60 text-[13px] mb-4">Keep it refrigerated as soon as it arrives 🧊</p>
+            <p className="font-body text-cream/60 text-[13px] mb-4">Keep it refrigerated as soon as it arrives</p>
             <a
               href={`/track?email=${encodeURIComponent(order.customerEmail ?? '')}&order=${encodeURIComponent(orderNumber)}`}
               className="inline-block bg-cream text-deep-brown font-body font-medium px-6 py-2.5 rounded-full hover:bg-amber transition-colors text-sm"
@@ -362,7 +362,7 @@ export default function OrderSuccess() {
               <h3 className="font-display font-semibold text-deep-brown">What's Next?</h3>
             </div>
             <p className="font-body text-earth">
-              We're preparing your order with care. You'll get an email with tracking details the moment it ships — and remember, it's a living brew, so pop it in the fridge on arrival.
+              We're preparing your order with care. You'll get an email with tracking details the moment it ships. It's a living brew, so pop it in the fridge on arrival.
             </p>
             {order.customerEmail && (
               <a
@@ -380,7 +380,7 @@ export default function OrderSuccess() {
           <div className="bg-amber/10 border border-amber/30 rounded-2xl p-6 sm:p-8 mb-6">
             <h3 className="font-display font-semibold text-deep-brown mb-2">Your Subscription</h3>
             <p className="font-body text-earth text-[15px] leading-relaxed mb-4">
-              Your subscription is active. You can pause, skip a delivery, update your address, or cancel anytime from your customer portal — no lock-in, no hassle.
+              Your subscription is active. You can pause, skip a delivery, update your address, or cancel anytime from your customer portal. No lock-in, no hassle.
             </p>
             {order.customerEmail && (
               <a

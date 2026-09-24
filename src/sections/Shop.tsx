@@ -180,7 +180,7 @@ function ProductCard({ product, reviewSummary }: { product: CatalogProduct; revi
               : stock === 'out_of_stock'
               ? 'Out of Stock'
               : price
-              ? `Add to Cart — ฿${price.unitAmount}`
+              ? `Add to Cart · ฿${price.unitAmount}`
               : 'Unavailable'}
           </button>
         </>

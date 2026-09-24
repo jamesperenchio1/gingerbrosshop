@@ -195,7 +195,7 @@ export default function WholesalePage() {
     {
       icon: <TrendingDown className="w-8 h-8 text-amber" />,
       title: 'Volume Discounts',
-      description: 'Tiered pricing starting at just 1 case. Save more as your volume grows — no long-term contract required.',
+      description: 'Tiered pricing starting at just 1 case. Save more as your volume grows, no long-term contract required.',
     },
     {
       icon: <Package className="w-8 h-8 text-amber" />,
@@ -238,7 +238,7 @@ export default function WholesalePage() {
   const jsonLd = {
     '@context': 'https://schema.org',
     '@type': 'WebPage',
-    name: 'Wholesale — GingerBros',
+    name: 'Wholesale | GingerBros',
     description: 'Wholesale pricing for cafes, restaurants, bars, and retailers. Order GingerBros ginger fizz in Thailand.',
     url: 'https://gingerbrosshop.com/wholesale',
     mainEntity: {
@@ -251,7 +251,7 @@ export default function WholesalePage() {
   return (
     <div className="min-h-screen bg-warm-white">
       <SEO
-        title="Wholesale — GingerBros"
+        title="Wholesale | GingerBros"
         description="Wholesale pricing for cafes, restaurants, bars, and retailers. Order GingerBros craft ginger fizz in Thailand."
         path="/wholesale"
         jsonLd={jsonLd}

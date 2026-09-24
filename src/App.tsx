@@ -108,8 +108,8 @@ function AppContent() {
       {/* Kept outside Suspense: these are pure side-effect components (scroll
           reset, referral capture, shared-cart loading) with no visual output.
           If they lived inside the Suspense boundary below, navigating to a
-          not-yet-loaded lazy route would suspend the whole boundary — including
-          these — discarding the in-flight scroll-to-top effect until the lazy
+          not-yet-loaded lazy route would suspend the whole boundary, including
+          these, discarding the in-flight scroll-to-top effect until the lazy
           chunk resolves, so the new page could render mid-scroll (landing on
           the wrong section instead of the top). */}
       <ScrollToTop />
