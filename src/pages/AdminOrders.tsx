@@ -19,6 +19,7 @@ const TABS: AdminTab[] = [
   { id: 'invoices', label: 'Invoices' },
   { id: 'ops', label: 'Ops' },
   { id: 'activity', label: 'Activity' },
+  { id: 'links', label: 'Link page' },
 ];
 
 function initialTab(): string {
@@ -33,6 +34,12 @@ export default function AdminOrders() {
 function AdminConsole({ email, onLogout }: { email: string; onLogout: () => void }) {
   const [tab, setTab] = useState(initialTab);
 
+  // The link-page editor is its own full-screen page (it has a live preview pane).
+  const selectTab = (id: string) => {
+    if (id === 'links') window.location.href = '/admin/links';
+    else setTab(id);
+  };
+
   useEffect(() => {
     const url = new URL(window.location.href);
     if (tab === 'orders') url.searchParams.delete('tab');
@@ -41,7 +48,7 @@ function AdminConsole({ email, onLogout }: { email: string; onLogout: () => void
   }, [tab]);
 
   return (
-    <AdminShell title="GingerBros Admin" email={email} onLogout={onLogout} tabs={TABS} activeTab={tab} onTabChange={setTab}>
+    <AdminShell title="GingerBros Admin" email={email} onLogout={onLogout} tabs={TABS} activeTab={tab} onTabChange={selectTab}>
       {tab === 'orders' && <OrdersTab />}
       {tab === 'subscriptions' && <SubscriptionsTab />}
       {tab === 'customers' && <CustomersTab />}
