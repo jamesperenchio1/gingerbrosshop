@@ -35,7 +35,6 @@ const inquiry = { businessName: escapeMode ? 'Café <Nine>' : 'Café Nine', cont
 
 const files: Record<string, string> = {
   'seller-order': e.sellerNotificationHtml(session, items, note),
-  'customer-invoice': e.customerInvoiceHtml(session, items, { invoiceUrl: 'https://invoice.stripe.com/i/acct_example/live_example', portalUrl: 'https://billing.stripe.com/p/login/example' }),
   'gift': e.giftEmailHtml(session, items, 'Mali', giftMsg, evil),
   'shipped': e.shippingNotificationHtml(order),
   'tracking-status': e.trackingInfoEmailHtml(order),

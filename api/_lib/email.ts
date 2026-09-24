@@ -324,30 +324,6 @@ export function sellerNotificationHtml(session: SessionWithShipping, items: Stri
   );
 }
 
-export function customerInvoiceHtml(
-  session: SessionWithShipping,
-  items: Stripe.LineItem[],
-  links: { invoiceUrl?: string | null; portalUrl?: string | null } = {}
-): string {
-  const orderId = orderRef(session.id);
-  const total = money(session.amount_total);
-  const interval = session.mode === 'subscription' ? subscriptionInterval(items) : null;
-
-  return layout(
-    `${heading(`Thanks for your order, ${firstName(session.customer_details?.name)}`)}
-    ${body(`We've received order <strong>#${orderId}</strong> (฿${total}${interval ? ` every ${escapeHtml(interval)}` : ''}) and will email you a tracking number when it ships.`)}
-    ${body(`For the best experience, put it in the fridge as soon as it arrives.`)}
-    ${links.invoiceUrl ? button('View invoice', links.invoiceUrl) : ''}
-    ${
-      links.portalUrl
-        ? small(`Update your details${interval ? ', or pause, skip or cancel your subscription,' : ''} in your <a href="${escapeHtml(links.portalUrl)}" style="color:${BRAND.text};">customer portal</a>.`)
-        : ''
-    }`,
-    `Order #${orderId}, ฿${total}`,
-    `Order #${orderId} confirmation`
-  );
-}
-
 export function giftEmailHtml(
   session: SessionWithShipping,
   items: Stripe.LineItem[],
