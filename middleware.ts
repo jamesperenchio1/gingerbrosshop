@@ -22,7 +22,7 @@ const FALLBACK_IMAGE = `${SITE_URL}/images/ginger-fizz-new.png`;
 
 const KNOWN_ROUTES: Record<string, RouteMeta> = {
   '/': {
-    title: 'GingerBros — Naturally Brewed Craft Ginger Fizz from Thailand',
+    title: "GingerBros | Thailand's Best Ginger Fizz",
     description:
       `${FERMENT_DAYS}-day naturally fermented craft ginger fizz brewed in Thailand. Real ginger, fresh lime, prebiotic acacia fibre, low in sugar, delivered to your door nationwide.`,
     image: FALLBACK_IMAGE,
@@ -89,88 +89,88 @@ const KNOWN_ROUTES: Record<string, RouteMeta> = {
     },
   },
   '/blog': {
-    title: 'The Brew Blog — Ginger Fizz Recipes, Gut Health & Brewing Tips | GingerBros',
+    title: 'The Brew Blog, Ginger Fizz Recipes, Gut Health & Brewing Tips | GingerBros',
     description:
       'Explore GingerBros blog for ginger fizz recipes, probiotic gut health guides, and behind-the-scenes craft brewing stories from Thailand.',
     image: FALLBACK_IMAGE,
     type: 'website',
   },
   '/faq': {
-    title: 'Frequently Asked Questions — GingerBros',
+    title: 'Frequently Asked Questions | GingerBros',
     description:
       'Find answers about GingerBros delivery, subscriptions, storage, wholesale, and payments.',
     image: FALLBACK_IMAGE,
     type: 'website',
   },
   '/wholesale': {
-    title: 'Wholesale — GingerBros',
+    title: 'Wholesale | GingerBros',
     description:
       'Wholesale pricing for cafes, restaurants, bars, and retailers. Order GingerBros ginger fizz in Thailand.',
     image: FALLBACK_IMAGE,
     type: 'website',
   },
   '/shipping': {
-    title: 'Shipping Information — GingerBros',
+    title: 'Shipping Information | GingerBros',
     description:
       'Shipping rates and delivery information for GingerBros ginger fizz. Standard nationwide delivery across Thailand with optional cold-chain upgrade.',
     image: FALLBACK_IMAGE,
     type: 'website',
   },
   '/track': {
-    title: 'Track Your Order — GingerBros',
+    title: 'Track Your Order | GingerBros',
     description: 'Track your GingerBros order status with your email and order reference.',
     image: FALLBACK_IMAGE,
     type: 'website',
     noindex: true,
   },
   '/order/success': {
-    title: 'Thank You for Your Order — GingerBros',
+    title: 'Thank You for Your Order | GingerBros',
     description: 'Your GingerBros order has been received.',
     image: FALLBACK_IMAGE,
     type: 'website',
     noindex: true,
   },
   '/links': {
-    title: 'GingerBros — Links',
+    title: 'GingerBros | Links',
     description: 'All new Ginger Fizz, with 3.5g of prebiotics! Shop, LINE, Grab, Shopee, Instagram, TikTok and Facebook.',
     image: `${SITE_URL}/linkpage/avatar.png`,
     type: 'website',
   },
   '/admin/login': {
-    title: 'Admin Login — GingerBros',
+    title: 'Admin Login | GingerBros',
     description: 'GingerBros admin login.',
     image: FALLBACK_IMAGE,
     type: 'website',
     noindex: true,
   },
   '/admin/links': {
-    title: 'Admin Links — GingerBros',
+    title: 'Admin Links | GingerBros',
     description: 'GingerBros link-in-bio editor.',
     image: FALLBACK_IMAGE,
     type: 'website',
     noindex: true,
   },
   '/admin/orders': {
-    title: 'Admin Orders — GingerBros',
+    title: 'Admin Orders | GingerBros',
     description: 'GingerBros order management dashboard.',
     image: FALLBACK_IMAGE,
     type: 'website',
     noindex: true,
   },
   '/privacy': {
-    title: 'Privacy Policy — GingerBros',
+    title: 'Privacy Policy | GingerBros',
     description: 'GingerBros privacy policy and data practices.',
     image: FALLBACK_IMAGE,
     type: 'website',
   },
   '/terms': {
-    title: 'Terms of Service — GingerBros',
+    title: 'Terms of Service | GingerBros',
     description: 'GingerBros terms of service.',
     image: FALLBACK_IMAGE,
     type: 'website',
   },
   '/returns': {
-    title: 'Returns & Refunds — GingerBros',
+    title: 'Returns & Refunds | GingerBros',
     description: 'GingerBros returns, refunds, and replacement policy.',
     image: FALLBACK_IMAGE,
     type: 'website',
@@ -216,7 +216,7 @@ function productRouteMeta(product: CatalogProduct, pathname: string): RouteMeta 
   const price = product.prices.find((p) => !p.recurring) ?? product.prices[0];
 
   return {
-    title: `${product.name} — GingerBros`,
+    title: `${product.name} | GingerBros`,
     description,
     image,
     type: 'product',
@@ -252,7 +252,7 @@ function blogPostMeta(slug: string): RouteMeta | null {
   const url = `${SITE_URL}/blog/${slug}`;
   const image = post.image ? `${SITE_URL}${post.image}` : FALLBACK_IMAGE;
   return {
-    title: `${post.title} — GingerBros Brew Journal`,
+    title: `${post.title} | GingerBros Brew Journal`,
     description: post.excerpt,
     image,
     type: 'article',
@@ -406,7 +406,7 @@ export default async function middleware(request: Request): Promise<Response> {
 
     if (!meta) {
       const notFoundMeta: RouteMeta = {
-        title: 'Page Not Found — GingerBros',
+        title: 'Page Not Found | GingerBros',
         description: 'The page you are looking for could not be found.',
         image: FALLBACK_IMAGE,
         noindex: true,
@@ -452,7 +452,7 @@ export default async function middleware(request: Request): Promise<Response> {
   }
 
   const meta = KNOWN_ROUTES[pathname] ?? {
-    title: 'Page Not Found — GingerBros',
+    title: 'Page Not Found | GingerBros',
     description: 'The page you are looking for could not be found.',
     image: FALLBACK_IMAGE,
     noindex: true,

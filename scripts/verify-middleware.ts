@@ -3,19 +3,19 @@ import middleware from '../middleware.ts';
 const BASE = 'http://localhost:4174';
 
 const cases = [
-  { path: '/', expectStatus: 200, title: 'GingerBros — Naturally Brewed Craft Ginger Fizz' },
+  { path: '/', expectStatus: 200, title: 'GingerBros | Thailand' },
   { path: '/product/ginger-fizz', expectStatus: 200, title: 'GingerBros Ginger Fizz' },
-  { path: '/product/unknown-id', expectStatus: 404, title: 'Page Not Found — GingerBros' },
-  { path: '/faq', expectStatus: 200, title: 'Frequently Asked Questions — GingerBros' },
-  { path: '/shipping', expectStatus: 200, title: 'Shipping Information — GingerBros' },
-  { path: '/wholesale', expectStatus: 200, title: 'Wholesale — GingerBros' },
-  { path: '/blog', expectStatus: 200, title: 'The Brew Blog —' },
+  { path: '/product/unknown-id', expectStatus: 404, title: 'Page Not Found | GingerBros' },
+  { path: '/faq', expectStatus: 200, title: 'Frequently Asked Questions | GingerBros' },
+  { path: '/shipping', expectStatus: 200, title: 'Shipping Information | GingerBros' },
+  { path: '/wholesale', expectStatus: 200, title: 'Wholesale | GingerBros' },
+  { path: '/blog', expectStatus: 200, title: 'The Brew Blog,' },
   { path: '/blog/moscow-mule', expectStatus: 200, title: 'The Perfect Moscow Mule with GingerBros' },
   { path: '/blog/gut-health', expectStatus: 200, title: 'Ginger Fizz &amp; Gut Health' },
-  { path: '/blog/not-a-real-article', expectStatus: 404, title: 'Page Not Found — GingerBros' },
-  { path: '/track', expectStatus: 200, title: 'Track Your Order — GingerBros' },
-  { path: '/admin/orders', expectStatus: 200, title: 'Admin Orders — GingerBros' },
-  { path: '/this-does-not-exist', expectStatus: 404, title: 'Page Not Found — GingerBros' },
+  { path: '/blog/not-a-real-article', expectStatus: 404, title: 'Page Not Found | GingerBros' },
+  { path: '/track', expectStatus: 200, title: 'Track Your Order | GingerBros' },
+  { path: '/admin/orders', expectStatus: 200, title: 'Admin Orders | GingerBros' },
+  { path: '/this-does-not-exist', expectStatus: 404, title: 'Page Not Found | GingerBros' },
 ];
 
 async function run() {
