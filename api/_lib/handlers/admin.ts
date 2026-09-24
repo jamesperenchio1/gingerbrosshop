@@ -50,7 +50,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
             from: MAIL_FROM,
             to: email,
             replyTo: SUPPORT_REPLY_TO,
-            subject: `Your ฿${Math.round(amount / 100)} box-return reward is ready`,
+            subject: `฿${Math.round(amount / 100)} credit added for returning your box`,
             html: boxReturnRewardHtml(Math.round(amount / 100)),
           });
           emailed = true;
@@ -96,7 +96,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
               from: MAIL_FROM,
               to: email,
               replyTo: SUPPORT_REPLY_TO,
-              subject: `Your ฿${Math.round(amount / 100)} box-return reward is ready`,
+              subject: `฿${Math.round(amount / 100)} credit added for returning your box`,
               html: boxReturnRewardHtml(Math.round(amount / 100), promo.code),
             });
             emailed = true;
@@ -168,7 +168,7 @@ async function sendShippingNotification(order: Order): Promise<boolean> {
         from: MAIL_FROM,
         to,
         replyTo: SUPPORT_REPLY_TO,
-        subject: `Your GingerBros order #${orderId} is on its way!`,
+        subject: `Order #${orderId} has shipped${order.trackingNumber ? `, tracking ${order.trackingNumber}` : ''}`,
         html,
       });
       sent = true;

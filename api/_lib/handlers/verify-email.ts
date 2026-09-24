@@ -55,7 +55,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         duration: 'once',
       });
       const promo = await stripe.promotionCodes.create({
-        coupon: coupon.id,
+        promotion: { type: 'coupon', coupon: coupon.id },
         max_redemptions: 1,
         expires_at: Math.floor(Date.now() / 1000) + 86400, // 24h
       });
@@ -72,7 +72,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       await resend.emails.send({
         from: MAIL_FROM_NEWSLETTER,
         to: email,
-        subject: `Your 10% off code is here: ${promoCode}`,
+        subject: `Your 10% off code: ${promoCode}`,
         html: discountCodeHtml(promoCode),
         headers: UNSUBSCRIBE_HEADERS,
       });
@@ -81,5 +81,5 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     }
   }
 
-  res.status(200).json({ success: true, sent: !!promoCode });
+  res.status(200).json({ success: true, sent: !!promoCode, promoCode: promoCode || undefined });
 }

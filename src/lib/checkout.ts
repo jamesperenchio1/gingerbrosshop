@@ -1,3 +1,4 @@
+import { getStoredPromo } from '@/lib/promo';
 import type { CartItem } from '@/types/cart';
 import { trackPixelEvent } from '@/lib/metaPixel';
 
@@ -46,6 +47,7 @@ export async function startCheckout(
       referralCode: options?.referralCode?.trim() || undefined,
       orderNote: options?.orderNote?.trim() || undefined,
       deliveryMethod: options?.deliveryMethod,
+      promoCode: getStoredPromo() ?? undefined,
     }),
   });
   const data = await res.json();

@@ -5,6 +5,7 @@ import { SpeedInsights } from '@vercel/speed-insights/react';
 import { CartProvider, useCart } from '@/context/CartContext';
 import { I18nProvider } from '@/context/I18nContext';
 import Navigation from '@/sections/Navigation';
+import PromoNotice from '@/components/PromoNotice';
 import CartDrawer from '@/sections/CartDrawer';
 import HomePage from '@/pages/HomePage';
 import { Toaster } from '@/components/ui/sonner';
@@ -188,6 +189,7 @@ export default function App() {
           <CartDrawer />
         </ErrorBoundary>
         <AppToaster />
+        <PromoNotice />
         <BackToTop />
         <Analytics />
         <SpeedInsights />

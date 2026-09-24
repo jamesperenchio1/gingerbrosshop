@@ -40,6 +40,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   const paymentMethod = (req.body?.paymentMethod as string | undefined) ?? 'card';
   const referralCode = (req.body?.referralCode as string | undefined) ?? '';
   const customerEmail = (req.body?.email as string | undefined)?.trim().toLowerCase() || '';
+  const promoCodeInput = ((req.body?.promoCode as string | undefined) ?? '').trim().slice(0, 40);
   const orderNote = ((req.body?.orderNote as string | undefined) ?? '').trim().slice(0, 500);
   const giftInfo = req.body?.giftInfo as { isGift: boolean; recipientEmail?: string; recipientName?: string; message?: string } | undefined;
   // Chosen in the cart drawer. Only meaningful for subscriptions, where Stripe
@@ -225,6 +226,18 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       discounts = [{ coupon: coupon.id }];
       metadata.creditEmail = customerEmail;
       metadata.creditApplied = String(appliedMinor);
+    }
+  }
+
+  // Auto-apply a promo code carried over from the discount email. Only when no
+  // store credit is already applied (Stripe Checkout allows one or the other
+  // here); an invalid or expired code just falls back to the typed-code box.
+  if (!discounts && promoCodeInput) {
+    try {
+      const found = await stripe.promotionCodes.list({ code: promoCodeInput, active: true, limit: 1 });
+      if (found.data[0]) discounts = [{ promotion_code: found.data[0].id }];
+    } catch (err) {
+      console.error('Promo code lookup failed:', err);
     }
   }
 

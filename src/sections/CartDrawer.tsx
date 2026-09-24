@@ -8,8 +8,10 @@ import { FREE_SHIPPING_THRESHOLD, CURRENCY_SYMBOL, getDeliveryEstimateMessage } 
 import { useI18n } from '@/context/I18nContext';
 import { optimizedImageUrl } from '@/lib/image';
 import type { CartItem } from '@/types/cart';
+import { usePromo, promoDiscount } from '@/lib/promo';
 
 export default function CartDrawer() {
+  const promo = usePromo();
   const { state, closeCart, removeItem, addItem, updateQuantity, decrementOrRemove, subtotal } = useCart();
   const { t } = useI18n();
   const drawerRef = useRef<HTMLDivElement>(null);
@@ -295,6 +297,15 @@ export default function CartDrawer() {
               <span className="font-body text-earth text-[15px]">Subtotal</span>
               <span className="font-display font-semibold text-deep-brown text-lg">฿{subtotal}</span>
             </div>
+            {promo && promoDiscount(promo, subtotal) > 0 && (
+              <>
+                <div className="flex items-center justify-between font-body text-[14px] text-green-ink">
+                  <span>Code {promo.code}{promo.percentOff ? ` (${promo.percentOff}% off)` : ''}</span>
+                  <span>-฿{promoDiscount(promo, subtotal)}</span>
+                </div>
+                <p className="font-body text-[12px] text-earth">Applied automatically at checkout. Estimated total ฿{subtotal - promoDiscount(promo, subtotal)}, before shipping.</p>
+              </>
+            )}
 
             {/* Delivery estimate */}
             <p className="font-body text-[12px] text-green-ink">

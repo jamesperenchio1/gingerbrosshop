@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import { clearStoredPromo } from '@/lib/promo';
 import { useSearchParams, Link } from 'react-router';
 import { CheckCircle, Package, Truck, Mail, FileText, Settings, Home, Gift } from 'lucide-react';
 import { useCart } from '@/context/CartContext';
@@ -125,6 +126,7 @@ export default function OrderSuccess() {
       clearCart();
     }
     localStorage.removeItem('gingerbros-cart-note');
+    clearStoredPromo();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 

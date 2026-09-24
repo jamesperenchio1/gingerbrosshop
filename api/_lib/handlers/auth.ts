@@ -80,7 +80,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     const { error } = await resend.emails.send({
       from: MAIL_FROM,
       to: email,
-      subject: 'Your GingerBros admin login link',
+      subject: 'Log in to GingerBros admin',
       html: adminLoginHtml(link),
     });
     if (error) {

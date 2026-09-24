@@ -47,7 +47,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       from: MAIL_FROM,
       to: email,
       replyTo: SUPPORT_REPLY_TO,
-      subject: `Your GingerBros order #${orderNum} status`,
+      subject: `Tracking details for order #${orderNum}`,
       html,
     });
 

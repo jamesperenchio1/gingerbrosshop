@@ -38,39 +38,50 @@ export const UNSUBSCRIBE_HEADERS = {
 
 // ---------------------------------------------------------------------------
 // Brand
+//
+// Structure adapted from Postmark's open-source transactional templates
+// (MIT, https://github.com/ActiveCampaign/postmark-templates): single column,
+// left-aligned copy, thin rules, bulletproof buttons, dark-mode support.
 // ---------------------------------------------------------------------------
 
 const BRAND = {
   brown: '#3D2410',
-  earth: '#5C3D1E',
-  rust: '#8B5A2B',
+  text: '#4A3626',
+  muted: '#8A7561',
   amber: '#D4A34B',
-  warmGold: '#C9963A',
-  cream: '#F5E6C8',
-  warmWhite: '#FDF8F0',
-  green: '#6B8E4E',
-  line: '#EADFC8',
-  muted: '#A07850',
+  cream: '#F5EFE3',
+  panel: '#FAF5EA',
+  line: '#E6DCC8',
 };
 
 const LOGO_URL = 'https://gingerbrosshop.com/images/logo-email.png';
-const BOTTLE_URL = 'https://gingerbrosshop.com/images/ginger-fizz-new.png';
+const SITE_URL = 'https://gingerbrosshop.com';
+const FONT = `'Helvetica Neue',Helvetica,Arial,sans-serif`;
 
 // ---------------------------------------------------------------------------
 // Helpers
 // ---------------------------------------------------------------------------
 
 export function money(minor: number | null | undefined): string {
-  return ((minor ?? 0) / 100).toLocaleString();
+  return ((minor ?? 0) / 100).toLocaleString('en-US');
 }
 
-function escapeHtml(text: string): string {
-  return text
+function escapeHtml(text: string | null | undefined): string {
+  return String(text ?? '')
     .replace(/&/g, '&amp;')
     .replace(/</g, '&lt;')
     .replace(/>/g, '&gt;')
     .replace(/"/g, '&quot;')
     .replace(/'/g, '&#39;');
+}
+
+function firstName(name: string | null | undefined): string {
+  const n = name?.trim();
+  return n ? escapeHtml(n) : 'there';
+}
+
+function orderRef(sessionId: string): string {
+  return sessionId.slice(-8).toUpperCase();
 }
 
 function subscriptionInterval(items: Stripe.LineItem[]): string | null {
@@ -84,203 +95,257 @@ function subscriptionInterval(items: Stripe.LineItem[]): string | null {
   return null;
 }
 
-// ---------------------------------------------------------------------------
-// Layout — shared wrapper for every email
-// ---------------------------------------------------------------------------
-
-function layout(inner: string, preheader = ''): string {
-  // Preheader filler prevents Gmail from pulling in body text as preview
-  const preheaderFiller = '‌ '.repeat(60);
-  const preheaderHtml = preheader
-    ? `<div style="display:none;max-height:0;overflow:hidden;font-size:1px;line-height:1px;color:transparent;opacity:0;">${preheader} ${preheaderFiller}</div>`
-    : '';
-
-  return `<div style="background:${BRAND.cream};margin:0;padding:32px 12px 40px;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;color:${BRAND.brown};">
-  ${preheaderHtml}
-  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
-    <tr><td align="center">
-      <table role="presentation" width="560" cellpadding="0" cellspacing="0" border="0" style="max-width:560px;width:100%;">
-
-        <!-- HEADER -->
-        <tr>
-          <td style="background:${BRAND.brown};border-radius:20px 20px 0 0;padding:30px 32px 26px;text-align:center;">
-            <img src="${LOGO_URL}" width="54" height="54" alt="GingerBros" style="border-radius:13px;display:block;margin:0 auto 14px;border:0;" />
-            <div style="color:${BRAND.cream};font-size:21px;font-weight:800;letter-spacing:0.1em;text-transform:uppercase;line-height:1;">GingerBros</div>
-            <div style="color:${BRAND.amber};font-size:10px;letter-spacing:0.14em;text-transform:uppercase;margin-top:5px;font-weight:600;">Naturally Brewed · Bangkok, Thailand</div>
-          </td>
-        </tr>
-
-        <!-- BODY -->
-        <tr>
-          <td style="background:#ffffff;padding:36px 36px 32px;">
-            ${inner}
-          </td>
-        </tr>
-
-        <!-- FOOTER -->
-        <tr>
-          <td style="background:${BRAND.brown};border-radius:0 0 20px 20px;padding:22px 32px;text-align:center;">
-            <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
-              <tr>
-                <td align="center" style="padding-bottom:12px;">
-                  <a href="https://www.instagram.com/drinkgingerbros" style="color:${BRAND.amber};text-decoration:none;font-size:12px;font-weight:600;margin:0 6px;">Instagram</a>
-                  <span style="color:${BRAND.earth};font-size:12px;">&nbsp;·&nbsp;</span>
-                  <a href="https://www.tiktok.com/@gingerbrosbrew" style="color:${BRAND.amber};text-decoration:none;font-size:12px;font-weight:600;margin:0 6px;">TikTok</a>
-                  <span style="color:${BRAND.earth};font-size:12px;">&nbsp;·&nbsp;</span>
-                  <a href="https://gingerbrosshop.com" style="color:${BRAND.amber};text-decoration:none;font-size:12px;font-weight:600;margin:0 6px;">gingerbrosshop.com</a>
-                </td>
-              </tr>
-              <tr>
-                <td align="center" style="color:${BRAND.muted};font-size:11px;line-height:1.7;">
-                  Brewed and bottled in Thailand 🇹🇭<br>
-                  <a href="mailto:${FROM_EMAIL_NEWSLETTER}?subject=Unsubscribe&body=Please%20remove%20me%20from%20the%20GingerBros%20mailing%20list." style="color:${BRAND.muted};text-decoration:underline;font-size:11px;">Unsubscribe</a>
-                </td>
-              </tr>
-            </table>
-          </td>
-        </tr>
-
-      </table>
-    </td></tr>
-  </table>
-</div>`;
+function addressLine(shipping: SessionWithShipping['shipping_details']): string {
+  if (!shipping) return '';
+  const parts = Object.values(shipping.address ?? {}).filter(Boolean) as string[];
+  return `${escapeHtml(shipping.name)}<br>${parts.map(escapeHtml).join(', ')}`;
 }
 
 // ---------------------------------------------------------------------------
-// Shared components
+// Layout
+// ---------------------------------------------------------------------------
+
+interface LayoutOptions {
+  /** Marketing mail gets an unsubscribe link; transactional mail does not. */
+  marketing?: boolean;
+  /** Set for internal (seller/admin) mail so the footer skips customer copy. */
+  internal?: boolean;
+}
+
+function layout(inner: string, preheader: string, title: string, opts: LayoutOptions = {}): string {
+  const filler = '&#8204;&nbsp;'.repeat(60);
+  const footer = opts.internal
+    ? `GingerBros internal notification`
+    : opts.marketing
+      ? `You're getting this because you signed up at gingerbrosshop.com.<br><a href="mailto:${FROM_EMAIL_NEWSLETTER}?subject=Unsubscribe&amp;body=Please%20remove%20me%20from%20the%20GingerBros%20mailing%20list." style="color:${BRAND.muted};text-decoration:underline;">Unsubscribe</a>`
+      : `Questions about your order? Reply to this email.`;
+
+  return `<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="x-apple-disable-message-reformatting" />
+<meta name="color-scheme" content="light dark" />
+<meta name="supported-color-schemes" content="light dark" />
+<title>${escapeHtml(title)}</title>
+<style type="text/css">
+  body { margin:0; padding:0; width:100% !important; -webkit-text-size-adjust:none; }
+  a { color:${BRAND.brown}; }
+  @media only screen and (max-width:600px) {
+    .inner { width:100% !important; }
+    .cell { padding:28px 22px !important; }
+  }
+  @media (prefers-color-scheme: dark) {
+    body, .wrap { background-color:#1B120B !important; }
+    .inner, .cell { background-color:#2A1D13 !important; }
+    .head { background-color:#120C07 !important; }
+    p, h1, h2, td, span, strong, li { color:#F1E7D6 !important; }
+    .muted, .muted a { color:#A99783 !important; }
+    .panel { background-color:#35261A !important; border-color:#4A3626 !important; }
+    .rule { border-color:#4A3626 !important; }
+    .btn { background-color:#D4A34B !important; color:#2A1D13 !important; }
+  }
+</style>
+<!--[if mso]><style type="text/css">td,p,h1,a{font-family:Arial,sans-serif !important;}</style><![endif]-->
+</head>
+<body style="margin:0;padding:0;background:${BRAND.cream};font-family:${FONT};color:${BRAND.text};">
+<div style="display:none;visibility:hidden;mso-hide:all;max-height:0;max-width:0;overflow:hidden;font-size:1px;line-height:1px;color:${BRAND.cream};opacity:0;">${escapeHtml(preheader)} ${filler}</div>
+<table role="presentation" class="wrap" width="100%" cellpadding="0" cellspacing="0" border="0" style="background:${BRAND.cream};">
+  <tr><td align="center" style="padding:24px 12px 32px;">
+    <table role="presentation" class="inner" width="570" cellpadding="0" cellspacing="0" border="0" style="width:570px;max-width:570px;">
+      <tr>
+        <td class="head" style="background:${BRAND.brown};padding:16px 28px;">
+          <a href="${SITE_URL}" style="text-decoration:none;">
+            <img src="${LOGO_URL}" width="40" height="40" alt="" style="display:inline-block;vertical-align:middle;border:0;border-radius:50%;" />
+            <span style="display:inline-block;vertical-align:middle;margin-left:10px;color:${BRAND.cream};font-family:${FONT};font-size:17px;font-weight:700;letter-spacing:0.02em;">GingerBros</span>
+          </a>
+        </td>
+      </tr>
+      <tr>
+        <td class="cell" style="background:#ffffff;padding:40px 40px 36px;font-family:${FONT};">
+          ${inner}
+        </td>
+      </tr>
+      <tr>
+        <td class="muted" style="padding:20px 8px 0;text-align:center;font-family:${FONT};font-size:12px;line-height:1.7;color:${BRAND.muted};">
+          ${footer}<br>
+          GingerBros &middot; Bangkok, Thailand &middot; <a href="${SITE_URL}" style="color:${BRAND.muted};">gingerbrosshop.com</a>
+        </td>
+      </tr>
+    </table>
+  </td></tr>
+</table>
+</body>
+</html>`;
+}
+
+// ---------------------------------------------------------------------------
+// Components
 // ---------------------------------------------------------------------------
 
 function heading(text: string): string {
-  return `<h1 style="margin:0 0 14px;color:${BRAND.brown};font-size:24px;font-weight:800;line-height:1.25;">${text}</h1>`;
+  return `<h1 style="margin:0 0 16px;color:${BRAND.brown};font-family:${FONT};font-size:22px;font-weight:700;line-height:1.3;text-align:left;">${text}</h1>`;
 }
 
 function body(text: string, style = ''): string {
-  return `<p style="margin:0 0 16px;color:${BRAND.earth};font-size:15px;line-height:1.65;${style}">${text}</p>`;
+  return `<p style="margin:0 0 16px;color:${BRAND.text};font-family:${FONT};font-size:16px;line-height:1.6;${style}">${text}</p>`;
 }
 
+function small(text: string): string {
+  return `<p class="muted" style="margin:0;color:${BRAND.muted};font-family:${FONT};font-size:13px;line-height:1.6;">${text}</p>`;
+}
+
+/** Bulletproof button (padding lives on the anchor, works in Outlook). */
 function button(label: string, href: string): string {
-  return `<a href="${href}" style="display:inline-block;background:${BRAND.amber};color:${BRAND.brown};font-size:14px;font-weight:800;letter-spacing:0.05em;padding:14px 30px;border-radius:999px;text-decoration:none;border:0;">${label}</a>`;
+  return `<table role="presentation" cellpadding="0" cellspacing="0" border="0" style="margin:24px 0 8px;"><tr><td>
+    <a href="${escapeHtml(href)}" class="btn" target="_blank" style="display:inline-block;background:${BRAND.amber};color:${BRAND.brown};font-family:${FONT};font-size:15px;font-weight:700;text-decoration:none;border-radius:4px;border:solid ${BRAND.amber};border-width:12px 24px;">${label}</a>
+  </td></tr></table>`;
 }
 
-function divider(): string {
-  return `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin:24px 0;"><tr><td style="border-top:1px solid ${BRAND.line};"></td></tr></table>`;
+function rule(): string {
+  return `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin:28px 0 20px;"><tr><td class="rule" style="border-top:1px solid ${BRAND.line};font-size:0;line-height:0;">&nbsp;</td></tr></table>`;
 }
 
-function itemsTable(rows: string, totals = true): string {
-  const header = totals
-    ? `<tr style="background:${BRAND.warmWhite};"><th style="padding:10px 8px;text-align:left;color:${BRAND.earth};font-size:11px;text-transform:uppercase;letter-spacing:0.07em;font-weight:700;">Item</th><th style="padding:10px 8px;text-align:center;color:${BRAND.earth};font-size:11px;text-transform:uppercase;letter-spacing:0.07em;font-weight:700;">Qty</th><th style="padding:10px 8px;text-align:right;color:${BRAND.earth};font-size:11px;text-transform:uppercase;letter-spacing:0.07em;font-weight:700;">Total</th></tr>`
-    : `<tr style="background:${BRAND.warmWhite};"><th style="padding:10px 8px;text-align:left;color:${BRAND.earth};font-size:11px;text-transform:uppercase;letter-spacing:0.07em;font-weight:700;">Item</th><th style="padding:10px 8px;text-align:center;color:${BRAND.earth};font-size:11px;text-transform:uppercase;letter-spacing:0.07em;font-weight:700;">Qty</th></tr>`;
-  return `<table role="presentation" style="width:100%;border-collapse:collapse;margin:18px 0;font-size:14px;border-radius:10px;overflow:hidden;"><thead>${header}</thead><tbody>${rows}</tbody></table>`;
+function panel(inner: string): string {
+  return `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin:20px 0;"><tr><td class="panel" style="background:${BRAND.panel};border:1px solid ${BRAND.line};padding:16px 18px;font-family:${FONT};font-size:15px;line-height:1.6;color:${BRAND.text};">${inner}</td></tr></table>`;
 }
 
-function totalLine(total: string, suffix = ''): string {
-  return `<p style="text-align:right;font-size:18px;font-weight:800;color:${BRAND.brown};margin:8px 0 0;">Total: ฿${total}<span style="font-size:13px;font-weight:500;color:${BRAND.rust};">${suffix}</span></p>`;
+/** Label / value pairs, one per line. Values must already be escaped. */
+function details(pairs: Array<[string, string | null | undefined]>): string {
+  return pairs
+    .filter(([, v]) => v)
+    .map(([k, v]) => `<span class="muted" style="color:${BRAND.muted};">${k}</span>&nbsp; ${v}`)
+    .join('<br>');
 }
 
-function stripeRows(items: Stripe.LineItem[]): string {
-  return items
-    .map(
-      (li) =>
-        `<tr>
-          <td style="padding:11px 8px;border-bottom:1px solid ${BRAND.line};color:${BRAND.brown};font-size:14px;">${li.description}</td>
-          <td style="padding:11px 8px;border-bottom:1px solid ${BRAND.line};text-align:center;color:${BRAND.earth};font-size:14px;">${li.quantity}</td>
-          <td style="padding:11px 8px;border-bottom:1px solid ${BRAND.line};text-align:right;color:${BRAND.brown};font-size:14px;font-weight:600;">฿${money(li.amount_total)}</td>
-        </tr>`
-    )
+interface Row {
+  description: string;
+  quantity: number | null;
+  /** Pre-formatted price string; omit for quantity-only tables. */
+  amount?: string;
+  /** Optional thumbnail URL (absolute, or a site-relative path). */
+  image?: string;
+}
+
+function imageUrl(src: string | undefined): string {
+  if (!src) return `${SITE_URL}/images/ginger-fizz-new.png`;
+  return /^https?:\/\//i.test(src) ? src : `${SITE_URL}${src.startsWith('/') ? '' : '/'}${src}`;
+}
+
+function itemsTable(rows: Row[], total?: string): string {
+  const withAmount = rows.some((r) => r.amount !== undefined);
+  const th = (label: string, align: string) =>
+    `<th align="${align}" class="rule" style="padding:0 0 8px;border-bottom:1px solid ${BRAND.line};font-family:${FONT};font-size:12px;font-weight:400;color:${BRAND.muted};text-align:${align};">${label}</th>`;
+  const td = (v: string, align = 'left') =>
+    `<td align="${align}" class="rule" style="padding:11px 0;border-bottom:1px solid ${BRAND.line};font-family:${FONT};font-size:15px;color:${BRAND.text};text-align:${align};">${v}</td>`;
+
+  const body = rows
+    .map((r) => {
+      const desc = r.image
+        ? `<table role="presentation" cellpadding="0" cellspacing="0" border="0"><tr><td style="padding:0 12px 0 0;"><img src="${escapeHtml(imageUrl(r.image))}" width="56" height="56" alt="${escapeHtml(r.description)}" style="display:block;width:56px;height:56px;object-fit:cover;border-radius:6px;border:0;background:${BRAND.cream};" /></td><td style="font-family:${FONT};font-size:15px;color:${BRAND.text};">${escapeHtml(r.description)}</td></tr></table>`
+        : escapeHtml(r.description);
+      return `<tr>${td(desc)}${td(`<span style="white-space:nowrap;">× ${r.quantity ?? 1}</span>`, 'center')}${withAmount ? td(r.amount ?? '', 'right') : ''}</tr>`;
+    })
     .join('');
-}
+  const totalRow = total
+    ? `<tr><td colspan="2" style="padding:14px 0 0;font-family:${FONT};font-size:15px;font-weight:700;color:${BRAND.brown};">Total</td><td align="right" style="padding:14px 0 0;font-family:${FONT};font-size:15px;font-weight:700;color:${BRAND.brown};text-align:right;">${total}</td></tr>`
+    : '';
 
-function infoCard(inner: string): string {
-  return `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin:16px 0;"><tr><td style="background:${BRAND.warmWhite};border:1px solid ${BRAND.line};padding:16px 18px;border-radius:12px;">${inner}</td></tr></table>`;
-}
-
-// ---------------------------------------------------------------------------
-// Code / promo display box — big, dashed border, amber accent
-// ---------------------------------------------------------------------------
-
-function codeBox(title: string, code: string, subtitle: string): string {
-  return `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin:24px 0;">
-    <tr>
-      <td style="background:${BRAND.cream};border:2px dashed ${BRAND.amber};border-radius:18px;padding:28px 24px;text-align:center;">
-        <div style="font-size:10px;text-transform:uppercase;letter-spacing:0.18em;color:${BRAND.rust};font-weight:700;margin-bottom:14px;">${title}</div>
-        <div style="font-size:44px;font-weight:800;letter-spacing:0.22em;color:${BRAND.brown};font-family:'Courier New',Courier,monospace;line-height:1;">${code}</div>
-        <div style="font-size:11px;color:${BRAND.earth};margin-top:14px;letter-spacing:0.04em;">${subtitle}</div>
-      </td>
-    </tr>
+  return `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin:8px 0 4px;">
+    <tr>${th('Item', 'left')}${th('Qty', 'center')}${withAmount ? th('Amount', 'right') : ''}</tr>
+    ${body}${totalRow}
   </table>`;
 }
 
+function stripeRows(items: Stripe.LineItem[]): Row[] {
+  return items.map((li) => ({
+    description: li.description ?? '',
+    quantity: li.quantity,
+    amount: `฿${money(li.amount_total)}`,
+  }));
+}
+
+function plainRows(items: Array<{ description: string; quantity: number | null }>): Row[] {
+  return items.map((li) => ({ description: li.description, quantity: li.quantity }));
+}
+
+/** Large monospace code, used for OTPs and promo codes. */
+function codeBox(code: string, note: string): string {
+  return `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin:20px 0;"><tr>
+    <td class="panel" align="center" style="background:${BRAND.panel};border:1px solid ${BRAND.line};padding:24px 16px;">
+      <div style="font-family:'Courier New',Courier,monospace;font-size:34px;font-weight:700;letter-spacing:0.16em;color:${BRAND.brown};line-height:1.1;">${code}</div>
+      <div class="muted" style="font-family:${FONT};font-size:13px;color:${BRAND.muted};margin-top:10px;">${note}</div>
+    </td>
+  </tr></table>`;
+}
+
 // ---------------------------------------------------------------------------
-// Templates
+// Order emails
 // ---------------------------------------------------------------------------
 
 export function sellerNotificationHtml(session: SessionWithShipping, items: Stripe.LineItem[], orderNote?: string): string {
-  const orderId = session.id.slice(-8).toUpperCase();
+  const orderId = orderRef(session.id);
   const total = money(session.amount_total);
   const interval = session.mode === 'subscription' ? subscriptionInterval(items) : null;
-
-  const shipping = session.shipping_details;
-  const shippingHtml = shipping
-    ? `<p style="font-size:14px;color:${BRAND.earth};margin:16px 0 0;"><strong>Shipping to:</strong><br>${shipping.name}<br>${Object.values(shipping.address ?? {}).filter(Boolean).join(', ')}</p>`
-    : '';
-
-  const phone = session.customer_details?.phone;
-  const contactHtml = `<p style="font-size:14px;color:${BRAND.earth};margin:4px 0 0;"><strong>Customer:</strong> ${session.customer_details?.name ?? '—'} · ${session.customer_details?.email ?? '—'}${phone ? ` · ${phone}` : ''}</p>`;
+  const cd = session.customer_details;
 
   const isGift = session.metadata?.isGift === 'true';
-  const recipientName = session.metadata?.recipientName;
-  const recipientEmail = session.metadata?.recipientEmail;
   const giftMessage = session.metadata?.giftMessage;
   const giftHtml = isGift
-    ? infoCard(
-        `<p style="margin:0 0 4px;font-weight:700;color:${BRAND.brown};">This order is a gift</p>
-         <p style="margin:0;font-size:14px;color:${BRAND.earth};"><strong>Recipient:</strong> ${recipientName ?? '—'}</p>
-         <p style="margin:0;font-size:14px;color:${BRAND.earth};"><strong>Recipient email:</strong> ${recipientEmail ?? '—'}</p>
-         ${giftMessage ? `<p style="margin:8px 0 0;font-size:14px;font-style:italic;color:${BRAND.earth};">"${giftMessage}"</p>` : ''}`
+    ? panel(
+        `<strong>Gift order</strong><br>${details([
+          ['Recipient', escapeHtml(session.metadata?.recipientName)],
+          ['Recipient email', escapeHtml(session.metadata?.recipientEmail)],
+        ])}${giftMessage ? `<br><em>&ldquo;${escapeHtml(giftMessage)}&rdquo;</em>` : ''}`
       )
     : '';
-
-  const adminBase = process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'https://gingerbrosshop.com';
   const noteHtml = orderNote?.trim()
-    ? infoCard(`<p style="margin:0 0 4px;font-weight:700;color:${BRAND.brown};">Order note</p><p style="margin:0;white-space:pre-wrap;color:${BRAND.earth};">${escapeHtml(orderNote)}</p>`)
+    ? panel(`<strong>Order note</strong><br><span style="white-space:pre-wrap;">${escapeHtml(orderNote)}</span>`)
+    : '';
+  const shipHtml = session.shipping_details
+    ? `<p style="margin:16px 0 0;font-size:15px;line-height:1.6;color:${BRAND.text};"><strong>Ship to</strong><br>${addressLine(session.shipping_details)}</p>`
     : '';
 
+  const adminBase = process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : SITE_URL;
+
   return layout(
-    `${heading('New order received')}
-    ${body(`Order <strong>#${orderId}</strong> has been paid${interval ? `, <strong>Subscription (every ${interval})</strong>` : ''}.`)}
-    ${contactHtml}
-    ${itemsTable(stripeRows(items))}
-    ${totalLine(total, interval ? `/${interval}` : '')}
-    ${giftHtml}
-    ${noteHtml}
-    ${shippingHtml}
-    <p style="margin-top:24px;text-align:center;">${button('Add Tracking →', `${adminBase}/admin/orders`)}</p>`,
-    `New order #${orderId} · ฿${total}`
+    `${heading(`New order #${orderId}`)}
+    ${body(
+      `${escapeHtml(cd?.name ?? 'A customer')} paid ฿${total}${interval ? ` for a subscription billed every ${escapeHtml(interval)}` : ''}.`
+    )}
+    ${panel(details([['Email', escapeHtml(cd?.email)], ['Phone', escapeHtml(cd?.phone)]]))}
+    ${itemsTable(stripeRows(items), `฿${total}${interval ? ` / ${escapeHtml(interval)}` : ''}`)}
+    ${giftHtml}${noteHtml}${shipHtml}
+    ${button('Add tracking', `${adminBase}/admin/orders`)}`,
+    `฿${total} from ${cd?.name ?? 'a customer'}`,
+    `New order #${orderId}`,
+    { internal: true }
   );
 }
 
 export function customerInvoiceHtml(session: SessionWithShipping, items: Stripe.LineItem[]): string {
-  const orderId = session.id.slice(-8).toUpperCase();
+  const orderId = orderRef(session.id);
   const total = money(session.amount_total);
   const interval = session.mode === 'subscription' ? subscriptionInterval(items) : null;
 
-  const shipping = session.shipping_details;
-  const shippingHtml = shipping
-    ? `<p style="color:${BRAND.earth};font-size:14px;margin:16px 0 0;"><strong>Shipping to:</strong><br>${shipping.name}<br>${Object.values(shipping.address ?? {}).filter(Boolean).join(', ')}</p>`
-    : '';
-
   return layout(
-    `${heading('Order confirmed.')}
-    ${body(`Hi ${session.customer_details?.name ?? 'there'},`)}
-    ${body(`We have your order and will send tracking details as soon as it ships. Because it's a fresh, naturally fermented brew, please refrigerate it immediately on arrival.`)}
-    <p style="font-size:13px;color:${BRAND.rust};font-weight:700;margin:16px 0 4px;letter-spacing:0.04em;">ORDER #${orderId}</p>
-    ${itemsTable(stripeRows(items))}
-    ${totalLine(total, interval ? `/${interval}` : '')}
-    ${shippingHtml}
-    ${interval ? `${divider()}<p style="margin:0;font-size:13px;color:${BRAND.earth};">This is a subscription billed every ${interval}. You can pause, skip, or cancel anytime from your customer portal.</p>` : ''}
-    ${divider()}
-    <p style="margin:0;font-size:13px;color:${BRAND.earth};">Questions? Just reply to this email. We're happy to help.</p>`,
-    `Order #${orderId} confirmed · ฿${total}`
+    `${heading(`Thanks for your order, ${firstName(session.customer_details?.name)}`)}
+    ${body(`We've received order <strong>#${orderId}</strong> and will email you a tracking number when it ships.`)}
+    ${body(`For the best experience, put it in the fridge as soon as it arrives.`)}
+    ${itemsTable(stripeRows(items), `฿${total}${interval ? ` / ${escapeHtml(interval)}` : ''}`)}
+    ${
+      session.shipping_details
+        ? `<p style="margin:20px 0 0;font-size:15px;line-height:1.6;color:${BRAND.text};"><strong>Shipping to</strong><br>${addressLine(session.shipping_details)}</p>`
+        : ''
+    }
+    ${
+      interval
+        ? `${rule()}${small(`This is a subscription billed every ${escapeHtml(interval)}. You can pause, skip or cancel from your customer portal.`)}`
+        : ''
+    }`,
+    `Order #${orderId}, ฿${total}`,
+    `Order #${orderId} confirmation`
   );
 }
 
@@ -291,52 +356,61 @@ export function giftEmailHtml(
   message: string | null,
   senderName: string
 ): string {
-  const orderId = session.id.slice(-8).toUpperCase();
-  const total = money(session.amount_total);
+  const orderId = orderRef(session.id);
+  const sender = escapeHtml(senderName);
 
   return layout(
-    `${heading('You\'ve received a gift.')}
-    ${body(`Hi ${recipientName ?? 'there'},`)}
-    ${body(`<strong>${senderName}</strong> sent you a GingerBros gift: naturally fermented ginger fizz, brewed with patience in Bangkok.`)}
-    ${message ? infoCard(`<p style="margin:0;font-style:italic;color:${BRAND.earth};">"${message}"</p>`) : ''}
-    <p style="font-size:13px;color:${BRAND.rust};font-weight:700;margin:16px 0 4px;letter-spacing:0.04em;">ORDER #${orderId}</p>
-    ${itemsTable(stripeRows(items))}
-    ${totalLine(total)}
-    ${divider()}
-    <p style="margin:0;font-size:13px;color:${BRAND.earth};">You'll receive shipping updates once the order is dispatched.</p>`,
-    `${senderName} sent you a GingerBros gift`
+    `${heading(`${sender} sent you a gift`)}
+    ${body(`Hi ${firstName(recipientName)}, ${sender} ordered GingerBros ginger fizz for you. It ships to you directly and you'll get tracking details by email.`)}
+    ${message ? panel(`<em>&ldquo;${escapeHtml(message)}&rdquo;</em><br><span class="muted" style="color:${BRAND.muted};">${sender}</span>`) : ''}
+    ${itemsTable(plainRows(items.map((li) => ({ description: li.description ?? '', quantity: li.quantity }))))}
+    ${rule()}
+    ${small(`Order #${orderId}. For the best experience, put it in the fridge as soon as it arrives.`)}`,
+    `${senderName} ordered you GingerBros ginger fizz`,
+    `A gift from ${senderName}`
   );
 }
 
 export function shippingNotificationHtml(order: Order): string {
-  const orderId = order.sessionId.slice(-8).toUpperCase();
+  const orderId = orderRef(order.sessionId);
   const carrier = order.trackingCarrier?.trim();
-  const rows = order.items
-    .map(
-      (li) =>
-        `<tr>
-          <td style="padding:11px 8px;border-bottom:1px solid ${BRAND.line};color:${BRAND.brown};font-size:14px;">${li.description}</td>
-          <td style="padding:11px 8px;border-bottom:1px solid ${BRAND.line};text-align:center;color:${BRAND.earth};font-size:14px;">${li.quantity}</td>
-        </tr>`
-    )
-    .join('');
 
   return layout(
-    `${heading('Your order is on its way.')}
-    ${body(`Hi ${order.customerName ?? 'there'},`)}
-    ${body(`Good news: your GingerBros is en route. It's a fresh, naturally fermented brew, so please refrigerate it as soon as it arrives.`)}
-    ${infoCard(
-      `<p style="margin:0 0 6px;font-size:14px;color:${BRAND.earth};"><strong style="color:${BRAND.brown};">Order:</strong> #${orderId}</p>
-       <p style="margin:0 0 6px;font-size:14px;color:${BRAND.earth};"><strong style="color:${BRAND.brown};">Tracking:</strong> ${order.trackingNumber}</p>
-       ${carrier ? `<p style="margin:0;font-size:14px;color:${BRAND.earth};"><strong style="color:${BRAND.brown};">Carrier:</strong> ${carrier}</p>` : ''}`
-    )}
-    ${itemsTable(rows, false)}
-    <p style="margin-top:8px;text-align:center;">${button('Track My Order →', 'https://gingerbrosshop.com/track')}</p>
-    ${divider()}
-    <p style="margin:0;font-size:13px;color:${BRAND.earth};">Track anytime at gingerbrosshop.com/track with your email and order number <strong>${orderId}</strong>.</p>`,
-    `Your GingerBros order #${orderId} has shipped`
+    `${heading(`Order #${orderId} has shipped`)}
+    ${body(`Hi ${firstName(order.customerName)}, your order is on its way. Keep it refrigerated once it arrives.`)}
+    ${panel(details([['Tracking', escapeHtml(order.trackingNumber)], ['Carrier', escapeHtml(carrier)]]))}
+    ${itemsTable(plainRows(order.items))}
+    ${button('Track your order', `${SITE_URL}/track`)}
+    ${small(`On the tracking page, enter your email and order number ${orderId}.`)}`,
+    `Order #${orderId} is on its way`,
+    `Order #${orderId} has shipped`
   );
 }
+
+export function trackingInfoEmailHtml(order: Order): string {
+  const orderId = orderRef(order.sessionId);
+  const carrier = order.trackingCarrier?.trim();
+  const hasTracking = !!order.trackingNumber;
+
+  return layout(
+    `${heading(`Order #${orderId} status`)}
+    ${body(`Hi ${firstName(order.customerName)},`)}
+    ${
+      hasTracking
+        ? panel(details([['Tracking', escapeHtml(order.trackingNumber)], ['Carrier', escapeHtml(carrier)]]))
+        : body(`Your order is paid and being prepared. We'll email you again when it ships.`)
+    }
+    ${itemsTable(plainRows(order.items))}
+    ${button('Track your order', `${SITE_URL}/track`)}
+    ${small(`On the tracking page, enter your email and order number ${orderId}.`)}`,
+    `Order #${orderId} status`,
+    `Order #${orderId} status`
+  );
+}
+
+// ---------------------------------------------------------------------------
+// Wholesale
+// ---------------------------------------------------------------------------
 
 export interface WholesaleInquiry {
   businessName: string;
@@ -348,28 +422,31 @@ export interface WholesaleInquiry {
 
 export function wholesaleInquiryHtml(inquiry: WholesaleInquiry): string {
   const businessName = escapeHtml(inquiry.businessName);
-  const contactName = escapeHtml(inquiry.contactName);
-  const email = escapeHtml(inquiry.email);
-  const phone = inquiry.phone ? escapeHtml(inquiry.phone) : '';
-  const message = escapeHtml(inquiry.message);
 
   return layout(
-    `${heading('New wholesale inquiry')}
-    ${body(`<strong>Business:</strong> ${businessName}`)}
-    ${body(`<strong>Contact:</strong> ${contactName} · ${email}${phone ? ` · ${phone}` : ''}`)}
-    ${infoCard(`<p style="margin:0;white-space:pre-wrap;color:${BRAND.earth};">${message}</p>`)}
-    <p style="margin-top:24px;text-align:center;">${button('Reply →', `mailto:${inquiry.email}`)}</p>`,
-    `Wholesale inquiry from ${businessName}`
+    `${heading(`Wholesale inquiry from ${businessName}`)}
+    ${panel(
+      details([
+        ['Contact', escapeHtml(inquiry.contactName)],
+        ['Email', escapeHtml(inquiry.email)],
+        ['Phone', escapeHtml(inquiry.phone)],
+      ])
+    )}
+    ${panel(`<span style="white-space:pre-wrap;">${escapeHtml(inquiry.message)}</span>`)}
+    ${button('Reply', `mailto:${inquiry.email}`)}`,
+    `Wholesale inquiry from ${inquiry.businessName}`,
+    `Wholesale inquiry from ${inquiry.businessName}`,
+    { internal: true }
   );
 }
 
 export function wholesaleConfirmationHtml(inquiry: WholesaleInquiry): string {
   return layout(
-    `${heading('Got your inquiry.')}
-    ${body(`We've received your wholesale inquiry for <strong>${escapeHtml(inquiry.businessName)}</strong> and will come back with trade pricing and delivery options within 24 hours.`)}
-    ${divider()}
-    <p style="margin:0;font-size:13px;color:${BRAND.earth};">Questions in the meantime? Just reply to this email.</p>`,
-    'We got your wholesale inquiry'
+    `${heading('We received your wholesale inquiry')}
+    ${body(`Thanks, ${escapeHtml(inquiry.contactName)}. We'll reply about <strong>${escapeHtml(inquiry.businessName)}</strong> with trade pricing and delivery options within one business day.`)}
+    ${small('You can reply to this email if you want to add anything.')}`,
+    'We will reply within one business day',
+    'Wholesale inquiry received'
   );
 }
 
@@ -382,27 +459,17 @@ export function wholesaleConfirmationHtml(inquiry: WholesaleInquiry): string {
  * and unlock 10% off.
  */
 export function welcomeWithCodeHtml(code: string): string {
-  const display = `${code.slice(0, 3)}&nbsp;${code.slice(3)}`;
+  const display = `${escapeHtml(code.slice(0, 3))}&nbsp;${escapeHtml(code.slice(3))}`;
   return layout(
-    `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-bottom:28px;">
-      <tr>
-        <td>
-          <img src="${BOTTLE_URL}" width="488" alt="GingerBros Ginger Fizz" style="width:100%;max-width:488px;border-radius:14px;display:block;border:0;" />
-        </td>
-      </tr>
-    </table>
-
-    ${heading('You\'re in.')}
-    ${body('New drops, restocks, and offers, you\'ll hear about them before anyone else.')}
-    ${body('Enter this code back on the site to claim <strong>10% off your first order</strong>:')}
-
-    ${codeBox('Verification Code', display, 'Valid for 24 hours &nbsp;·&nbsp; One use only')}
-
-    <p style="margin:0 0 24px;text-align:center;">${button('Go claim your 10% off →', 'https://gingerbrosshop.com/#newsletter')}</p>
-
-    ${divider()}
-    <p style="margin:0;font-size:12px;color:${BRAND.muted};text-align:center;">Didn't sign up? You can safely ignore this email.</p>`,
-    'Your code is inside, 10% off waiting for you'
+    `${heading('Confirm your email for 10% off')}
+    ${body(`Thanks for signing up. Enter this code on the site to confirm your email and get 10% off your first order. We'll also send you restock and new-flavour announcements.`)}
+    ${codeBox(display, 'Valid for 24 hours, one use')}
+    ${button('Enter your code', `${SITE_URL}/#newsletter`)}
+    ${rule()}
+    ${small(`If you didn't sign up, ignore this email and nothing will happen.`)}`,
+    `Your code: ${code.slice(0, 3)} ${code.slice(3)}`,
+    'Confirm your email',
+    { marketing: true }
   );
 }
 
@@ -412,120 +479,80 @@ export function welcomeWithCodeHtml(code: string): string {
  */
 export function discountCodeHtml(promoCode: string): string {
   return layout(
-    `${heading('Here\'s your 10% off.')}
-    ${body('Thanks for verifying. Use this code at checkout on your first order:')}
-
-    ${codeBox('Your Promo Code', promoCode, '10% off your first order &nbsp;·&nbsp; Expires in 24 hours &nbsp;·&nbsp; One use only')}
-
-    <p style="margin:0 0 8px;color:${BRAND.earth};font-size:14px;">Enter it at checkout, it comes off your total automatically.</p>
-    ${body('And while you\'re here, the Ginger Fizz is the one to start with. Fresh, strong, and actually good for you.', `font-size:14px;`)}
-
-    <p style="margin:24px 0 0;text-align:center;">${button('Shop Now →', 'https://gingerbrosshop.com/#shop')}</p>`,
-    `Your 10% off code, ${promoCode}`
+    `${heading('Your 10% off code')}
+    ${body('Enter this code at checkout to take 10% off your first order.')}
+    ${codeBox(escapeHtml(promoCode), 'Expires in 24 hours, one use')}
+    ${button('Shop with code applied', `${SITE_URL}/?promo=${encodeURIComponent(promoCode)}#shop`)}
+    ${small('The code is applied for you at checkout. You can also type it in manually.')}`,
+    `Use ${promoCode} at checkout`,
+    'Your 10% off code',
+    { marketing: true }
   );
 }
 
 /**
- * Legacy plain welcome email (kept for non-verification fallback path).
+ * Plain welcome email (fallback path when email verification is disabled).
  */
 export function welcomeHtml(): string {
   return layout(
-    `${heading('You\'re in.')}
-    ${body('New drops, restocks, and offers, you\'ll hear about them before anyone else.')}
-    <p style="margin:24px 0 0;text-align:center;">${button('Shop the Brews →', 'https://gingerbrosshop.com/#shop')}</p>`,
-    'Welcome to GingerBros'
+    `${heading('You are on the list')}
+    ${body(`We'll email you when we restock or launch something new. Nothing else.`)}
+    ${button('Shop GingerBros', `${SITE_URL}/#shop`)}`,
+    'Thanks for subscribing',
+    'Welcome to GingerBros',
+    { marketing: true }
   );
 }
 
 // ---------------------------------------------------------------------------
-// Loyalty / reward emails
+// Loyalty / reminders
 // ---------------------------------------------------------------------------
 
 export function boxReturnRewardHtml(amountBaht: number, code?: string | null): string {
-  const redeemContent = code
-    ? codeBox('Your Reward Code', code, `฿${amountBaht} off your next order`)
-    : `<p style="margin:0;color:${BRAND.earth};font-size:14px;">It's already saved to your email. Check out with this address and your ฿${amountBaht} comes off automatically. No code needed.</p>`;
-
   return layout(
-    `${heading('Thanks for returning your box.')}
-    ${body(`You're helping us cut waste and keep every brew fresh, so here's <strong>฿${amountBaht} off your next order</strong> as a thank-you.`)}
-    ${code ? redeemContent : infoCard(redeemContent)}
-    <p style="margin-top:20px;text-align:center;">${button('Order Your Next Brew →', 'https://gingerbrosshop.com/#shop')}</p>
-    ${divider()}
-    <p style="margin:0;font-size:13px;color:${BRAND.earth};">Keep the foam boxes coming back and the rewards keep flowing.</p>`,
-    `Your ฿${amountBaht} box-return reward is ready`
+    `${heading(`฿${amountBaht} off your next order`)}
+    ${body(`Thanks for sending your box back. We've added ฿${amountBaht} of credit for you.`)}
+    ${
+      code
+        ? `${codeBox(escapeHtml(code), `฿${amountBaht} off, enter at checkout`)}`
+        : panel(`The credit is saved to this email address. Check out with the same email and it comes off automatically. No code needed.`)
+    }
+    ${button('Shop GingerBros', `${SITE_URL}/#shop`)}`,
+    `฿${amountBaht} credit for your next order`,
+    'Box return credit',
+    { marketing: true }
   );
 }
 
 export function backInStockHtml(productName: string, productUrl: string): string {
+  const name = escapeHtml(productName);
   return layout(
-    `${heading('Good news, it\'s back.')}
-    ${body(`<strong>${escapeHtml(productName)}</strong> is available again.`)}
-    ${body(`We can't hold it for you, so grab yours before it sells out again.`, `font-size:14px;`)}
-    <p style="margin-top:24px;text-align:center;">${button('Shop Now →', productUrl)}</p>`,
-    `${productName} is back in stock`
-  );
-}
-
-export function trackingInfoEmailHtml(order: Order): string {
-  const orderId = order.sessionId.slice(-8).toUpperCase();
-  const carrier = order.trackingCarrier?.trim();
-  const hasTracking = !!order.trackingNumber;
-
-  const rows = order.items
-    .map(
-      (li) =>
-        `<tr>
-          <td style="padding:11px 8px;border-bottom:1px solid ${BRAND.line};color:${BRAND.brown};font-size:14px;">${li.description}</td>
-          <td style="padding:11px 8px;border-bottom:1px solid ${BRAND.line};text-align:center;color:${BRAND.earth};font-size:14px;">${li.quantity}</td>
-        </tr>`
-    )
-    .join('');
-
-  const trackingInfo = hasTracking
-    ? infoCard(
-        `<p style="margin:0 0 6px;font-size:14px;color:${BRAND.earth};"><strong style="color:${BRAND.brown};">Order:</strong> #${orderId}</p>
-         <p style="margin:0 0 6px;font-size:14px;color:${BRAND.earth};"><strong style="color:${BRAND.brown};">Tracking:</strong> ${order.trackingNumber}</p>
-         ${carrier ? `<p style="margin:0;font-size:14px;color:${BRAND.earth};"><strong style="color:${BRAND.brown};">Carrier:</strong> ${carrier}</p>` : ''}`
-      )
-    : infoCard(
-        `<p style="margin:0;font-size:14px;color:${BRAND.earth};">Your order <strong>#${orderId}</strong> is confirmed and being prepared for shipment. You will receive another email with tracking details once it ships.</p>`
-      );
-
-  return layout(
-    `${heading('Your order status.')}
-    ${body(`Hi ${order.customerName ?? 'there'},`)}
-    ${body(`Here is the latest update on your GingerBros order:`)}
-    ${trackingInfo}
-    ${itemsTable(rows, false)}
-    <p style="margin-top:8px;text-align:center;">${button('Track My Order →', 'https://gingerbrosshop.com/track')}</p>
-    ${divider()}
-    <p style="margin:0;font-size:13px;color:${BRAND.earth};">Track anytime at gingerbrosshop.com/track with your email and order number <strong>${orderId}</strong>.</p>`,
-    `Your GingerBros order #${orderId} status`
+    `${heading(`${name} is back in stock`)}
+    ${body(`You asked us to tell you when it was available again. Stock is limited and we can't reserve it.`)}
+    ${button('View product', productUrl)}`,
+    `${productName} is available again`,
+    `${productName} is back in stock`,
+    { marketing: true }
   );
 }
 
 export function abandonedCartHtml(snapshot: CartSnapshot): string {
-  const rows = snapshot.items
-    .map(
-      (item) =>
-        `<tr>
-          <td style="padding:11px 8px;border-bottom:1px solid ${BRAND.line};color:${BRAND.brown};font-size:14px;">${item.name}</td>
-          <td style="padding:11px 8px;border-bottom:1px solid ${BRAND.line};text-align:center;color:${BRAND.earth};font-size:14px;">${item.quantity}</td>
-          <td style="padding:11px 8px;border-bottom:1px solid ${BRAND.line};text-align:right;color:${BRAND.brown};font-size:14px;font-weight:600;">฿${item.price * item.quantity}</td>
-        </tr>`
-    )
-    .join('');
+  const rows: Row[] = snapshot.items.map((item) => ({
+    description: item.name,
+    quantity: item.quantity,
+    amount: `฿${(item.price * item.quantity).toLocaleString('en-US')}`,
+    image: imageUrl(item.image),
+  }));
 
   return layout(
-    `${heading('You left something brewing.')}
-    ${body('These are still in your cart. Complete your order while they\'re in stock:')}
-    ${itemsTable(rows)}
-    ${totalLine(String(snapshot.subtotal))}
-    <p style="margin-top:16px;text-align:center;">${button('Complete My Order →', snapshot.url)}</p>
-    ${divider()}
-    <p style="margin:0;font-size:13px;color:${BRAND.earth};text-align:center;">Free shipping on orders over ฿500.</p>`,
-    'You left something brewing in your cart'
+    `${heading('Your cart is still saved')}
+    ${body(`You left these in your cart. Nothing has been charged.`)}
+    ${itemsTable(rows, `฿${snapshot.subtotal.toLocaleString('en-US')}`)}
+    ${button('Return to your cart', snapshot.url)}
+    ${small('Orders over ฿500 ship free.')}`,
+    `${snapshot.items.length} item${snapshot.items.length === 1 ? '' : 's'} waiting in your cart`,
+    'Your cart',
+    { marketing: true }
   );
 }
 
@@ -536,10 +563,12 @@ export function abandonedCartHtml(snapshot: CartSnapshot): string {
 export function adminLoginHtml(link: string): string {
   return layout(
     `${heading('Log in to GingerBros admin')}
-    ${body('Tap the button to log in. The link works once and expires in 15 minutes.')}
-    <p style="margin:24px 0 0;text-align:center;">${button('Log in →', link)}</p>
-    ${divider()}
-    <p style="margin:0;font-size:13px;color:${BRAND.earth};">Didn't ask for this? Ignore this email, nobody can log in without the link.</p>`,
-    'Your GingerBros admin login link'
+    ${body('Use the button below to log in. The link works once and expires in 15 minutes.')}
+    ${button('Log in', link)}
+    ${rule()}
+    ${small(`If you didn't request this, ignore it. The link is useless without access to this inbox.`)}`,
+    'Your one-time login link',
+    'GingerBros admin login',
+    { internal: true }
   );
 }

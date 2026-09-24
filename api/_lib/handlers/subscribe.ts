@@ -51,7 +51,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       await resend.emails.send({
         from: MAIL_FROM_NEWSLETTER,
         to: email,
-        subject: 'Your GingerBros code is inside',
+        subject: 'Confirm your email to get 10% off',
         html: welcomeWithCodeHtml(code),
         headers: UNSUBSCRIBE_HEADERS,
       });
@@ -62,7 +62,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       await resend.emails.send({
         from: MAIL_FROM_NEWSLETTER,
         to: email,
-        subject: 'Welcome to GingerBros',
+        subject: 'You are on the GingerBros list',
         html: welcomeHtml(),
         headers: UNSUBSCRIBE_HEADERS,
       });
