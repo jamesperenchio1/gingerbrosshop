@@ -5,7 +5,7 @@ export default function ShippingPage() {
   const jsonLd = {
     '@context': 'https://schema.org',
     '@type': 'WebPage',
-    name: 'Shipping Information — GingerBros',
+    name: 'Shipping Information | GingerBros',
     description: 'Nationwide shipping for GingerBros ginger fizz. Standard delivery across Thailand with an optional cold-chain upgrade.',
     url: 'https://gingerbrosshop.com/shipping',
   };
@@ -13,7 +13,7 @@ export default function ShippingPage() {
   return (
     <div className="min-h-screen bg-warm-white">
       <SEO
-        title="Shipping Information — GingerBros"
+        title="Shipping Information | GingerBros"
         description="Nationwide shipping for GingerBros ginger fizz. Standard delivery across Thailand with an optional cold-chain upgrade."
         path="/shipping"
         jsonLd={jsonLd}

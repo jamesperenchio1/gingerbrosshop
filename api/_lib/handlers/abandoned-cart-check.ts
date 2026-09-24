@@ -32,7 +32,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         await resend.emails.send({
           from: MAIL_FROM,
           to: cart.email,
-          subject: 'You left something brewing in your cart 🍺',
+          subject: 'You left something brewing in your cart',
           html: abandonedCartHtml(cart.snapshot),
         });
         await markCartRecovered(cart.email);

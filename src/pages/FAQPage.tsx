@@ -51,7 +51,7 @@ const FAQS: FAQItem[] = [
     {
       icon: <Thermometer className="w-6 h-6 text-amber" />,
       q: 'How should I store GingerBros ginger fizz?',
-      a: 'GingerBros ginger fizz is brewed fresh and naturally fermented — keep it refrigerated at 2–6°C at all times. It is best consumed within 30 days of bottling. Natural sediment is normal and safe; gently invert before opening.',
+      a: 'GingerBros ginger fizz is brewed fresh and naturally fermented, keep it refrigerated at 2–6°C at all times. It is best consumed within 30 days of bottling. Natural sediment is normal and safe; gently invert before opening.',
       category: 'product',
     },
     {
@@ -118,7 +118,7 @@ const FAQS: FAQItem[] = [
     {
       icon: <Package className="w-6 h-6 text-amber" />,
       q: 'What is the difference between single bottles and the 6-pack?',
-      a: 'The 6-pack gives you six 330ml bottles at a bundled price — better value than buying six singles. Perfect for households, offices, or anyone who drinks GingerBros regularly.',
+      a: 'The 6-pack gives you six 330ml bottles at a bundled price, better value than buying six singles. Works well for households, offices, or anyone who drinks GingerBros regularly.',
       category: 'product',
     },
     {
@@ -130,7 +130,7 @@ const FAQS: FAQItem[] = [
     {
       icon: <FlaskConical className="w-6 h-6 text-amber" />,
       q: 'Does ginger fizz contain alcohol?',
-      a: 'GingerBros is naturally fermented using a ginger bug culture. The fermentation process produces trace amounts of alcohol, typically well below 0.5% ABV — similar to kombucha or other naturally fermented drinks. It is non-intoxicating.',
+      a: 'GingerBros is naturally fermented using a ginger bug culture. The fermentation process produces trace amounts of alcohol, typically well below 0.5% ABV, similar to kombucha or other naturally fermented drinks. It is non-intoxicating.',
       category: 'product',
     },
     {
@@ -167,7 +167,7 @@ export default function FAQPage() {
   return (
     <div className="min-h-screen bg-warm-white">
       <SEO
-        title="Frequently Asked Questions — GingerBros"
+        title="Frequently Asked Questions | GingerBros"
         description="Find answers about GingerBros delivery, subscriptions, storage, wholesale, and payments."
         path="/faq"
         jsonLd={faqSchema}

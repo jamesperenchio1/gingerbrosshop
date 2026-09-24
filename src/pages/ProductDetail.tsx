@@ -461,7 +461,7 @@ export default function ProductDetail() {
   return (
     <div className="min-h-screen bg-warm-white">
       <SEO
-        title={`${product.name} — GingerBros`}
+        title={`${product.name} | GingerBros`}
         description={product.description ?? ''}
         path={`/product/${product.id}`}
         image={images[0] ?? ''}
@@ -479,7 +479,7 @@ export default function ProductDetail() {
             {/* The button must be `h-full`, not `max-h-full`: a percentage
                 max-height resolves against an *auto*-height parent as `none`,
                 so the image ignored it, rendered at its natural pixel size and
-                got cropped by the container's `overflow-hidden` — the "zoomed
+                got cropped by the container's `overflow-hidden`, the "zoomed
                 in" bottle. Giving the button a definite height makes
                 `max-h-full` on the image resolve, and `object-contain` finally
                 does what it says. */}
@@ -666,7 +666,7 @@ export default function ProductDetail() {
                       Subscribe &amp; Save{savingsPercent(selectedPrice, oneTimeForProduct) > 0 && ` · ${savingsPercent(selectedPrice, oneTimeForProduct)}% off every delivery`}
                     </p>
                     <ul className="font-body text-[12px] text-earth/80 space-y-1.5">
-                      <li className="flex items-start gap-2"><CheckIcon className="text-accent-green flex-shrink-0 mt-0.5" /> Delivered {intervalLabel(selectedPrice.recurring)} — never run out</li>
+                      <li className="flex items-start gap-2"><CheckIcon className="text-accent-green flex-shrink-0 mt-0.5" /> Delivered {intervalLabel(selectedPrice.recurring)}, never run out</li>
                       <li className="flex items-start gap-2"><CheckIcon className="text-accent-green flex-shrink-0 mt-0.5" /> A lower price than one-time, locked in</li>
                       <li className="flex items-start gap-2"><CheckIcon className="text-accent-green flex-shrink-0 mt-0.5" /> Pause, skip, or cancel anytime</li>
                     </ul>
@@ -710,7 +710,7 @@ export default function ProductDetail() {
                       : 'bg-amber text-deep-brown hover:bg-warm-gold'
                   }`}
                 >
-                  {added ? 'Added to Cart!' : stock === 'out_of_stock' ? 'Out of Stock' : `Add to Cart — ฿${lineTotal}`}
+                  {added ? 'Added to Cart!' : stock === 'out_of_stock' ? 'Out of Stock' : `Add to Cart · ฿${lineTotal}`}
                 </button>
               </div>
 
@@ -745,7 +745,7 @@ export default function ProductDetail() {
             {/* Delivery estimate */}
             {!isEquipment && (
               <p className="font-body text-[13px] text-green-ink mb-6">
-                🚚 {getDeliveryEstimateMessage()}
+ {getDeliveryEstimateMessage()}
               </p>
             )}
 
@@ -963,7 +963,7 @@ export default function ProductDetail() {
                     : 'bg-amber text-deep-brown hover:bg-warm-gold'
                 }`}
               >
-                {added ? 'Added!' : stock === 'out_of_stock' ? 'Out of Stock' : `Add — ฿${lineTotal}`}
+                {added ? 'Added!' : stock === 'out_of_stock' ? 'Out of Stock' : `Add · ฿${lineTotal}`}
               </button>
             </div>
           </div>

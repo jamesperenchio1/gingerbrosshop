@@ -79,7 +79,7 @@ function OrderCard({ order }: { order: OrderSummary }) {
             ) : (
               <div className="flex items-start gap-2">
                 <Clock className="w-4 h-4 text-earth flex-shrink-0 mt-0.5" />
-                <p className="font-body text-[13px] text-earth">Preparing for shipment — tracking will appear here once shipped.</p>
+                <p className="font-body text-[13px] text-earth">Preparing for shipment. Tracking will appear here once shipped.</p>
               </div>
             )}
 
@@ -125,7 +125,7 @@ export default function OrdersPage() {
   return (
     <div className="min-h-screen bg-warm-white">
       <SEO
-        title="My Orders — GingerBros"
+        title="My Orders | GingerBros"
         description="Look up your past GingerBros orders by email address."
         path="/orders"
         noindex

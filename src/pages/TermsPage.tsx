@@ -53,7 +53,7 @@ Risk of loss and title for items pass to you upon delivery to the courier. We ar
       title: 'Subscriptions',
       content: `Subscription billing recurs automatically at your chosen interval (weekly, every 2 weeks, or monthly). By subscribing, you authorise us to charge your payment method on each billing date until you cancel.
 
-You may pause, skip, or cancel your subscription at any time through your customer portal — no cancellation fees, no minimum commitment. Cancellations must be made before the next billing date to avoid being charged for that cycle.
+You may pause, skip, or cancel your subscription at any time through your customer portal, no cancellation fees, no minimum commitment. Cancellations must be made before the next billing date to avoid being charged for that cycle.
 
 Subscription pricing is locked at the rate you signed up for, subject to our right to adjust prices with reasonable notice.`
     },
@@ -67,7 +67,7 @@ GingerBros is produced in a dedicated facility that only handles our own ingredi
     {
       icon: <Copyright className="w-6 h-6 text-amber" />,
       title: 'Intellectual Property',
-      content: `All content on this website — including text, graphics, logos, images, product names, recipes, and design — is the property of GingerBros or its licensors and is protected by copyright, trademark, and other intellectual property laws. You may not reproduce, distribute, modify, or create derivative works from any content without our prior written consent.`
+      content: `All content on this website, including text, graphics, logos, images, product names, recipes, and design, is the property of GingerBros or its licensors and is protected by copyright, trademark, and other intellectual property laws. You may not reproduce, distribute, modify, or create derivative works from any content without our prior written consent.`
     },
     {
       icon: <Scale className="w-6 h-6 text-amber" />,
@@ -102,7 +102,7 @@ Our total liability to you for any claim arising from your purchase shall not ex
     <div className="min-h-screen bg-warm-white">
       <SEO
         title="Terms of Service | GingerBros"
-        description="GingerBros terms of service — your rights and obligations when purchasing craft ginger fizz from gingerbrosshop.com."
+        description="GingerBros terms of service, your rights and obligations when purchasing craft ginger fizz from gingerbrosshop.com."
         path="/terms"
       />
       <div className="sticky top-0 z-50 bg-warm-white/95 backdrop-blur-xl border-b border-soft-peach/50">

@@ -52,7 +52,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       from: MAIL_FROM,
       to: SELLER_EMAIL,
       replyTo: email,
-      subject: `Wholesale inquiry — ${businessName}`,
+      subject: `Wholesale inquiry, ${businessName}`,
       html: wholesaleInquiryHtml(inquiry),
     });
 
@@ -60,7 +60,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     await resend.emails.send({
       from: MAIL_FROM,
       to: email,
-      subject: 'We got your wholesale inquiry — GingerBros',
+      subject: 'We got your wholesale inquiry | GingerBros',
       html: wholesaleConfirmationHtml(inquiry),
     }).catch((err) => console.error('Wholesale confirmation email failed:', err));
 

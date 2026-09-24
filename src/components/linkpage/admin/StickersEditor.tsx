@@ -208,7 +208,7 @@ export default function StickersEditor({ config, onChange, selectedId, onSelect 
         </div>
         {query && results.length === 0 && library.length > 0 && <p className="font-body text-[13px] text-earth mt-2">No stickers match “{query}”.</p>}
         <p className="font-body text-[12px] text-earth mt-2">
-          {config.stickers.length}/{MAX_STICKERS} stickers on this page{atCap ? ' — remove one to add another.' : '.'}
+          {config.stickers.length}/{MAX_STICKERS} stickers on this page{atCap ? '. Remove one to add another.' : '.'}
         </p>
         <p className="font-body text-[11px] text-earth/80 mt-2">
           Free for commercial use, from{' '}

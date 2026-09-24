@@ -72,7 +72,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       await resend.emails.send({
         from: MAIL_FROM_NEWSLETTER,
         to: email,
-        subject: `Your 10% off code is here — ${promoCode} 🎉`,
+        subject: `Your 10% off code is here: ${promoCode}`,
         html: discountCodeHtml(promoCode),
         headers: UNSUBSCRIBE_HEADERS,
       });

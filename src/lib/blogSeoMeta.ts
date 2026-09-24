@@ -20,7 +20,7 @@ export const BLOG_SEO_META: BlogSeoMeta[] = [
   {
     slug: 'art-of-the-ginger-bug',
     title: 'The Art of the Ginger Bug: How We Brew Living Fizz',
-    excerpt: 'Step inside our Bangkok brewhouse for a look at the wild ferment that powers every bottle — from raw rhizome to bubbling, living soda.',
+    excerpt: 'Step inside our Bangkok brewhouse for a look at the wild ferment that powers every bottle, from raw rhizome to bubbling, living soda.',
     date: '2026-06-02',
     author: 'James, Founder',
     image: '/images/story-brewing.webp',
@@ -28,7 +28,7 @@ export const BLOG_SEO_META: BlogSeoMeta[] = [
   {
     slug: 'moscow-mule',
     title: 'The Perfect Moscow Mule with GingerBros',
-    excerpt: 'Why our naturally fermented ginger fizz makes the best Moscow Mule you have ever tasted — and the copper-mug ritual that goes with it.',
+    excerpt: 'Why our naturally fermented ginger fizz makes the best Moscow Mule you have ever tasted, and the copper-mug ritual that goes with it.',
     date: '2026-05-28',
     author: 'The GingerBros Kitchen',
     image: '/images/ginger-fizz-new.png',
@@ -124,7 +124,7 @@ export const BLOG_SEO_META: BlogSeoMeta[] = [
   {
     slug: 'history-of-ginger-beer',
     title: 'A Short, Spicy History of Ginger Beer',
-    excerpt: 'From 18th-century England to Thai street stalls, the global journey of fermented ginger.',
+    excerpt: 'From 18th-century England to Thai street stalls, how fermented ginger spread around the world.',
     date: '2026-04-14',
     author: 'GingerBros Stories',
     image: '/images/story-brewing.jpg',
@@ -148,7 +148,7 @@ export const BLOG_SEO_META: BlogSeoMeta[] = [
   {
     slug: 'meet-the-brewers',
     title: 'Meet the Brewers Behind the Bottle',
-    excerpt: 'The small Bangkok team that hand-balances every batch — and why they do it by taste, not by formula.',
+    excerpt: 'The small Bangkok team that hand-balances every batch, and why they do it by taste, not by formula.',
     date: '2026-03-20',
     author: 'GingerBros Stories',
     image: '/images/story-brewing.jpg',
@@ -156,7 +156,7 @@ export const BLOG_SEO_META: BlogSeoMeta[] = [
   {
     slug: 'ginger-bug-at-home',
     title: 'Start Your Own Ginger Bug at Home',
-    excerpt: 'A beginner-friendly walkthrough to culture your own wild ginger starter — the same idea behind our brew.',
+    excerpt: 'A beginner-friendly walkthrough to culture your own wild ginger starter, the same idea behind our brew.',
     date: '2026-03-12',
     author: 'James, Founder',
     image: '/images/product-ginger-fizz-3.png',
@@ -172,7 +172,7 @@ export const BLOG_SEO_META: BlogSeoMeta[] = [
   {
     slug: 'ginger-fizz-bar-menu',
     title: 'Building a Ginger Fizz Cocktail Menu for Your Bar',
-    excerpt: 'How bars and restaurants can build a focused, profitable ginger fizz menu — from signature serves to garnish stations and staff training.',
+    excerpt: 'How bars and restaurants can build a focused, profitable ginger fizz menu, from signature serves to garnish stations and staff training.',
     date: '2026-06-12',
     author: 'The GingerBros Trade Team',
     image: '/images/ginger-fizz-new.png',

@@ -104,8 +104,8 @@ function OrdersDashboard({ onLogout }: { onLogout: () => void }) {
       const data = await res.json().catch(() => ({}));
       if (!res.ok) throw new Error(data.error ?? 'Failed to grant credit');
       alert(
-        `Done — ${email} now has ฿${Math.round((data.balance ?? 0) / 100)} in credit.` +
-          (data.emailed ? '\nReward email sent. ✉️' : '\n(Email not sent — RESEND not configured.)')
+        `Done: ${email} now has ฿${Math.round((data.balance ?? 0) / 100)} in credit.` +
+          (data.emailed ? '\nReward email sent.' : '\n(Email not sent, RESEND not configured.)')
       );
     } catch (err) {
       alert(err instanceof Error ? err.message : 'Failed to grant credit');
@@ -122,7 +122,7 @@ function OrdersDashboard({ onLogout }: { onLogout: () => void }) {
       });
       const data = await res.json().catch(() => ({}));
       if (!res.ok) throw new Error(data.error ?? 'Failed to generate code');
-      alert(`Code: ${data.code}\n\nWorth ฿${Math.round((data.granted ?? 0) / 100)}, single use.` + (data.emailed ? '\nAlso emailed to the customer. ✉️' : ''));
+      alert(`Code: ${data.code}\n\nWorth ฿${Math.round((data.granted ?? 0) / 100)}, single use.` + (data.emailed ? '\nAlso emailed to the customer.' : ''));
     } catch (err) {
       alert(err instanceof Error ? err.message : 'Failed to generate code');
     }
@@ -190,7 +190,7 @@ function OrdersDashboard({ onLogout }: { onLogout: () => void }) {
                     {order.isGift && (
                       <div className="mt-2">
                         <span className="inline-flex items-center gap-1 font-body text-[11px] uppercase tracking-wider px-2 py-0.5 rounded-full bg-rust/10 text-rust">
-                          🎁 Gift
+                          Gift
                         </span>
                         <p className="font-body text-earth text-[12px] mt-1">
                           To: {order.recipientName ?? '—'} · {order.recipientEmail ?? '—'}
@@ -233,7 +233,7 @@ function OrdersDashboard({ onLogout }: { onLogout: () => void }) {
                       onClick={() => grantBoxCredit(order.customerEmail)}
                       className="text-accent-green font-body text-[13px] hover:underline"
                     >
-                      ♻️ Mark box returned (+฿50, emails customer)
+                      Mark box returned (+฿50, emails customer)
                     </button>
                     <button
                       onClick={() => grantBoxCode(order.customerEmail)}

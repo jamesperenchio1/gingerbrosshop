@@ -40,7 +40,7 @@ export default function ReferralCard({ email }: { email: string }) {
         <h3 className="font-display font-semibold text-deep-brown">Give ฿5, Get ฿5</h3>
       </div>
       <p className="font-body text-earth mb-4">
-        Share your code with a friend — they get ฿5 store credit on their first order, and
+        Share your code with a friend and they get ฿5 store credit on their first order, and
         you get ฿5 too, automatically applied at your next checkout.
         {info.creditBaht > 0 && (
           <>

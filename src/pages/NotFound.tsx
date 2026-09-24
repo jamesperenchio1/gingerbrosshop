@@ -7,7 +7,7 @@ export default function NotFound() {
   return (
     <div className="min-h-screen bg-warm-white flex items-center justify-center px-6">
       <SEO
-        title="Page Not Found — GingerBros"
+        title="Page Not Found | GingerBros"
         description="Sorry, we couldn't find the page you were looking for. Browse our craft ginger fizz collection or return to the homepage."
         path=""
         noindex

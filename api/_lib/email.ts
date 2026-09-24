@@ -233,7 +233,7 @@ export function sellerNotificationHtml(session: SessionWithShipping, items: Stri
   const giftMessage = session.metadata?.giftMessage;
   const giftHtml = isGift
     ? infoCard(
-        `<p style="margin:0 0 4px;font-weight:700;color:${BRAND.brown};">🎁 This order is a gift</p>
+        `<p style="margin:0 0 4px;font-weight:700;color:${BRAND.brown};">This order is a gift</p>
          <p style="margin:0;font-size:14px;color:${BRAND.earth};"><strong>Recipient:</strong> ${recipientName ?? '—'}</p>
          <p style="margin:0;font-size:14px;color:${BRAND.earth};"><strong>Recipient email:</strong> ${recipientEmail ?? '—'}</p>
          ${giftMessage ? `<p style="margin:8px 0 0;font-size:14px;font-style:italic;color:${BRAND.earth};">"${giftMessage}"</p>` : ''}`
@@ -242,12 +242,12 @@ export function sellerNotificationHtml(session: SessionWithShipping, items: Stri
 
   const adminBase = process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'https://gingerbrosshop.com';
   const noteHtml = orderNote?.trim()
-    ? infoCard(`<p style="margin:0 0 4px;font-weight:700;color:${BRAND.brown};">📝 Order note</p><p style="margin:0;white-space:pre-wrap;color:${BRAND.earth};">${escapeHtml(orderNote)}</p>`)
+    ? infoCard(`<p style="margin:0 0 4px;font-weight:700;color:${BRAND.brown};">Order note</p><p style="margin:0;white-space:pre-wrap;color:${BRAND.earth};">${escapeHtml(orderNote)}</p>`)
     : '';
 
   return layout(
-    `${heading('New order received 🍺')}
-    ${body(`Order <strong>#${orderId}</strong> has been paid${interval ? ` — <strong>Subscription (every ${interval})</strong>` : ''}.`)}
+    `${heading('New order received')}
+    ${body(`Order <strong>#${orderId}</strong> has been paid${interval ? `, <strong>Subscription (every ${interval})</strong>` : ''}.`)}
     ${contactHtml}
     ${itemsTable(stripeRows(items))}
     ${totalLine(total, interval ? `/${interval}` : '')}
@@ -255,7 +255,7 @@ export function sellerNotificationHtml(session: SessionWithShipping, items: Stri
     ${noteHtml}
     ${shippingHtml}
     <p style="margin-top:24px;text-align:center;">${button('Add Tracking →', `${adminBase}/admin/orders`)}</p>`,
-    `New order #${orderId} — ฿${total}`
+    `New order #${orderId} · ฿${total}`
   );
 }
 
@@ -270,7 +270,7 @@ export function customerInvoiceHtml(session: SessionWithShipping, items: Stripe.
     : '';
 
   return layout(
-    `${heading('Order confirmed. 🍺')}
+    `${heading('Order confirmed.')}
     ${body(`Hi ${session.customer_details?.name ?? 'there'},`)}
     ${body(`We have your order and will send tracking details as soon as it ships. Because it's a fresh, naturally fermented brew, please refrigerate it immediately on arrival.`)}
     <p style="font-size:13px;color:${BRAND.rust};font-weight:700;margin:16px 0 4px;letter-spacing:0.04em;">ORDER #${orderId}</p>
@@ -279,8 +279,8 @@ export function customerInvoiceHtml(session: SessionWithShipping, items: Stripe.
     ${shippingHtml}
     ${interval ? `${divider()}<p style="margin:0;font-size:13px;color:${BRAND.earth};">This is a subscription billed every ${interval}. You can pause, skip, or cancel anytime from your customer portal.</p>` : ''}
     ${divider()}
-    <p style="margin:0;font-size:13px;color:${BRAND.earth};">Questions? Just reply to this email — we're happy to help.</p>`,
-    `Order #${orderId} confirmed — ฿${total}`
+    <p style="margin:0;font-size:13px;color:${BRAND.earth};">Questions? Just reply to this email. We're happy to help.</p>`,
+    `Order #${orderId} confirmed · ฿${total}`
   );
 }
 
@@ -295,9 +295,9 @@ export function giftEmailHtml(
   const total = money(session.amount_total);
 
   return layout(
-    `${heading('You\'ve received a gift. 🎁')}
+    `${heading('You\'ve received a gift.')}
     ${body(`Hi ${recipientName ?? 'there'},`)}
-    ${body(`<strong>${senderName}</strong> sent you a GingerBros gift — naturally fermented ginger fizz, brewed with patience in Bangkok.`)}
+    ${body(`<strong>${senderName}</strong> sent you a GingerBros gift: naturally fermented ginger fizz, brewed with patience in Bangkok.`)}
     ${message ? infoCard(`<p style="margin:0;font-style:italic;color:${BRAND.earth};">"${message}"</p>`) : ''}
     <p style="font-size:13px;color:${BRAND.rust};font-weight:700;margin:16px 0 4px;letter-spacing:0.04em;">ORDER #${orderId}</p>
     ${itemsTable(stripeRows(items))}
@@ -322,9 +322,9 @@ export function shippingNotificationHtml(order: Order): string {
     .join('');
 
   return layout(
-    `${heading('Your order is on its way. 🚚')}
+    `${heading('Your order is on its way.')}
     ${body(`Hi ${order.customerName ?? 'there'},`)}
-    ${body(`Good news — your GingerBros is en route. It's a fresh, naturally fermented brew, so please refrigerate it as soon as it arrives.`)}
+    ${body(`Good news: your GingerBros is en route. It's a fresh, naturally fermented brew, so please refrigerate it as soon as it arrives.`)}
     ${infoCard(
       `<p style="margin:0 0 6px;font-size:14px;color:${BRAND.earth};"><strong style="color:${BRAND.brown};">Order:</strong> #${orderId}</p>
        <p style="margin:0 0 6px;font-size:14px;color:${BRAND.earth};"><strong style="color:${BRAND.brown};">Tracking:</strong> ${order.trackingNumber}</p>
@@ -354,7 +354,7 @@ export function wholesaleInquiryHtml(inquiry: WholesaleInquiry): string {
   const message = escapeHtml(inquiry.message);
 
   return layout(
-    `${heading('New wholesale inquiry 🏪')}
+    `${heading('New wholesale inquiry')}
     ${body(`<strong>Business:</strong> ${businessName}`)}
     ${body(`<strong>Contact:</strong> ${contactName} · ${email}${phone ? ` · ${phone}` : ''}`)}
     ${infoCard(`<p style="margin:0;white-space:pre-wrap;color:${BRAND.earth};">${message}</p>`)}
@@ -365,7 +365,7 @@ export function wholesaleInquiryHtml(inquiry: WholesaleInquiry): string {
 
 export function wholesaleConfirmationHtml(inquiry: WholesaleInquiry): string {
   return layout(
-    `${heading('Got your inquiry. 🍺')}
+    `${heading('Got your inquiry.')}
     ${body(`We've received your wholesale inquiry for <strong>${escapeHtml(inquiry.businessName)}</strong> and will come back with trade pricing and delivery options within 24 hours.`)}
     ${divider()}
     <p style="margin:0;font-size:13px;color:${BRAND.earth};">Questions in the meantime? Just reply to this email.</p>`,
@@ -392,8 +392,8 @@ export function welcomeWithCodeHtml(code: string): string {
       </tr>
     </table>
 
-    ${heading('You\'re in. 🫚')}
-    ${body('New drops, restocks, and offers — you\'ll hear about them before anyone else.')}
+    ${heading('You\'re in.')}
+    ${body('New drops, restocks, and offers, you\'ll hear about them before anyone else.')}
     ${body('Enter this code back on the site to claim <strong>10% off your first order</strong>:')}
 
     ${codeBox('Verification Code', display, 'Valid for 24 hours &nbsp;·&nbsp; One use only')}
@@ -402,7 +402,7 @@ export function welcomeWithCodeHtml(code: string): string {
 
     ${divider()}
     <p style="margin:0;font-size:12px;color:${BRAND.muted};text-align:center;">Didn't sign up? You can safely ignore this email.</p>`,
-    'Your code is inside — 10% off waiting for you'
+    'Your code is inside, 10% off waiting for you'
   );
 }
 
@@ -412,16 +412,16 @@ export function welcomeWithCodeHtml(code: string): string {
  */
 export function discountCodeHtml(promoCode: string): string {
   return layout(
-    `${heading('Here\'s your 10% off. 🎉')}
+    `${heading('Here\'s your 10% off.')}
     ${body('Thanks for verifying. Use this code at checkout on your first order:')}
 
     ${codeBox('Your Promo Code', promoCode, '10% off your first order &nbsp;·&nbsp; Expires in 24 hours &nbsp;·&nbsp; One use only')}
 
-    <p style="margin:0 0 8px;color:${BRAND.earth};font-size:14px;">Enter it at checkout — it comes off your total automatically.</p>
+    <p style="margin:0 0 8px;color:${BRAND.earth};font-size:14px;">Enter it at checkout, it comes off your total automatically.</p>
     ${body('And while you\'re here, the Ginger Fizz is the one to start with. Fresh, strong, and actually good for you.', `font-size:14px;`)}
 
     <p style="margin:24px 0 0;text-align:center;">${button('Shop Now →', 'https://gingerbrosshop.com/#shop')}</p>`,
-    `Your 10% off code — ${promoCode}`
+    `Your 10% off code, ${promoCode}`
   );
 }
 
@@ -430,8 +430,8 @@ export function discountCodeHtml(promoCode: string): string {
  */
 export function welcomeHtml(): string {
   return layout(
-    `${heading('You\'re in. 🫚')}
-    ${body('New drops, restocks, and offers — you\'ll hear about them before anyone else.')}
+    `${heading('You\'re in.')}
+    ${body('New drops, restocks, and offers, you\'ll hear about them before anyone else.')}
     <p style="margin:24px 0 0;text-align:center;">${button('Shop the Brews →', 'https://gingerbrosshop.com/#shop')}</p>`,
     'Welcome to GingerBros'
   );
@@ -444,11 +444,11 @@ export function welcomeHtml(): string {
 export function boxReturnRewardHtml(amountBaht: number, code?: string | null): string {
   const redeemContent = code
     ? codeBox('Your Reward Code', code, `฿${amountBaht} off your next order`)
-    : `<p style="margin:0;color:${BRAND.earth};font-size:14px;">It's already saved to your email — check out with this address and your ฿${amountBaht} comes off automatically. No code needed. ✨</p>`;
+    : `<p style="margin:0;color:${BRAND.earth};font-size:14px;">It's already saved to your email. Check out with this address and your ฿${amountBaht} comes off automatically. No code needed.</p>`;
 
   return layout(
-    `${heading('Thanks for returning your box. ♻️')}
-    ${body(`You're helping us cut waste and keep every brew fresh — so here's <strong>฿${amountBaht} off your next order</strong> as a thank-you.`)}
+    `${heading('Thanks for returning your box.')}
+    ${body(`You're helping us cut waste and keep every brew fresh, so here's <strong>฿${amountBaht} off your next order</strong> as a thank-you.`)}
     ${code ? redeemContent : infoCard(redeemContent)}
     <p style="margin-top:20px;text-align:center;">${button('Order Your Next Brew →', 'https://gingerbrosshop.com/#shop')}</p>
     ${divider()}
@@ -459,7 +459,7 @@ export function boxReturnRewardHtml(amountBaht: number, code?: string | null): s
 
 export function backInStockHtml(productName: string, productUrl: string): string {
   return layout(
-    `${heading('Good news — it\'s back. 🎉')}
+    `${heading('Good news, it\'s back.')}
     ${body(`<strong>${escapeHtml(productName)}</strong> is available again.`)}
     ${body(`We can't hold it for you, so grab yours before it sells out again.`, `font-size:14px;`)}
     <p style="margin-top:24px;text-align:center;">${button('Shop Now →', productUrl)}</p>`,
@@ -493,7 +493,7 @@ export function trackingInfoEmailHtml(order: Order): string {
       );
 
   return layout(
-    `${heading('Your order status. 🍺')}
+    `${heading('Your order status.')}
     ${body(`Hi ${order.customerName ?? 'there'},`)}
     ${body(`Here is the latest update on your GingerBros order:`)}
     ${trackingInfo}
@@ -518,7 +518,7 @@ export function abandonedCartHtml(snapshot: CartSnapshot): string {
     .join('');
 
   return layout(
-    `${heading('You left something brewing. 🛒')}
+    `${heading('You left something brewing.')}
     ${body('These are still in your cart. Complete your order while they\'re in stock:')}
     ${itemsTable(rows)}
     ${totalLine(String(snapshot.subtotal))}
@@ -539,7 +539,7 @@ export function adminLoginHtml(link: string): string {
     ${body('Tap the button to log in. The link works once and expires in 15 minutes.')}
     <p style="margin:24px 0 0;text-align:center;">${button('Log in →', link)}</p>
     ${divider()}
-    <p style="margin:0;font-size:13px;color:${BRAND.earth};">Didn't ask for this? Ignore this email — nobody can log in without the link.</p>`,
+    <p style="margin:0;font-size:13px;color:${BRAND.earth};">Didn't ask for this? Ignore this email, nobody can log in without the link.</p>`,
     'Your GingerBros admin login link'
   );
 }
