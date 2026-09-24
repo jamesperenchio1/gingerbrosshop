@@ -324,24 +324,23 @@ export function sellerNotificationHtml(session: SessionWithShipping, items: Stri
   );
 }
 
-export function customerInvoiceHtml(session: SessionWithShipping, items: Stripe.LineItem[]): string {
+export function customerInvoiceHtml(
+  session: SessionWithShipping,
+  items: Stripe.LineItem[],
+  links: { invoiceUrl?: string | null; portalUrl?: string | null } = {}
+): string {
   const orderId = orderRef(session.id);
   const total = money(session.amount_total);
   const interval = session.mode === 'subscription' ? subscriptionInterval(items) : null;
 
   return layout(
     `${heading(`Thanks for your order, ${firstName(session.customer_details?.name)}`)}
-    ${body(`We've received order <strong>#${orderId}</strong> and will email you a tracking number when it ships.`)}
+    ${body(`We've received order <strong>#${orderId}</strong> (฿${total}${interval ? ` every ${escapeHtml(interval)}` : ''}) and will email you a tracking number when it ships.`)}
     ${body(`For the best experience, put it in the fridge as soon as it arrives.`)}
-    ${itemsTable(stripeRows(items), `฿${total}${interval ? ` / ${escapeHtml(interval)}` : ''}`)}
+    ${links.invoiceUrl ? button('View invoice', links.invoiceUrl) : ''}
     ${
-      session.shipping_details
-        ? `<p style="margin:20px 0 0;font-size:15px;line-height:1.6;color:${BRAND.text};"><strong>Shipping to</strong><br>${addressLine(session.shipping_details)}</p>`
-        : ''
-    }
-    ${
-      interval
-        ? `${rule()}${small(`This is a subscription billed every ${escapeHtml(interval)}. You can pause, skip or cancel from your customer portal.`)}`
+      links.portalUrl
+        ? small(`Update your details${interval ? ', or pause, skip or cancel your subscription,' : ''} in your <a href="${escapeHtml(links.portalUrl)}" style="color:${BRAND.text};">customer portal</a>.`)
         : ''
     }`,
     `Order #${orderId}, ฿${total}`,

@@ -185,15 +185,32 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       console.warn('[SELLER NOTIFICATION] RESEND_API_KEY or SELLER_EMAIL not configured — skipping email for', order.sessionId);
     }
 
-    // Send customer invoice/receipt
+    // Send customer confirmation. The itemised invoice is Stripe's hosted one
+    // (created at checkout via invoice_creation); the portal link opens
+    // Stripe's customer portal login.
     if (resend && order.customerEmail) {
+      let invoiceUrl: string | null = null;
+      let portalUrl: string | null = null;
+      try {
+        const invoiceId = typeof session.invoice === 'string' ? session.invoice : session.invoice?.id;
+        if (invoiceId) invoiceUrl = (await stripe.invoices.retrieve(invoiceId)).hosted_invoice_url ?? null;
+      } catch (err) {
+        console.error('Failed to fetch Stripe invoice:', err);
+      }
+      try {
+        const configs = await stripe.billingPortal.configurations.list({ is_default: true, limit: 1 });
+        const login = configs.data[0]?.login_page;
+        portalUrl = login?.enabled ? login.url : null;
+      } catch (err) {
+        console.error('Failed to fetch portal config:', err);
+      }
       try {
         await resend.emails.send({
           from: MAIL_FROM,
           to: order.customerEmail,
           replyTo: SUPPORT_REPLY_TO,
           subject: `Order #${session.id.slice(-8).toUpperCase()} confirmed, ฿${money(session.amount_total)}`,
-          html: customerInvoiceHtml(session, lineItems),
+          html: customerInvoiceHtml(session, lineItems, { invoiceUrl, portalUrl }),
         });
       } catch (err) {
         console.error('Failed to send customer email:', err);

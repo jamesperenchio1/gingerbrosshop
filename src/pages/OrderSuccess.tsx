@@ -386,7 +386,7 @@ export default function OrderSuccess() {
             </p>
             {order.customerEmail && (
               <a
-                href={`/api/portal?email=${encodeURIComponent(order.customerEmail)}`}
+                href={`/api/portal?session_id=${encodeURIComponent(order.sessionId)}`}
                 className="inline-flex items-center gap-2 font-body font-medium text-rust hover:text-deep-brown transition-colors"
               >
                 Manage subscription <span aria-hidden="true">→</span>
@@ -409,7 +409,7 @@ export default function OrderSuccess() {
           )}
           {order.customerEmail && (
             <a
-              href={`/api/portal?email=${encodeURIComponent(order.customerEmail)}`}
+              href={`/api/portal?session_id=${encodeURIComponent(order.sessionId)}`}
               className={`flex items-center justify-center gap-2 bg-white border border-soft-peach rounded-full py-3 font-body font-medium text-[14px] text-deep-brown hover:border-amber transition-colors ${
                 receiptUrl ? '' : 'sm:col-span-2'
               }`}
