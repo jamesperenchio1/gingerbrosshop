@@ -693,13 +693,52 @@ function CreateProductPanel({ onClose, onCreated }: { onClose: () => void; onCre
   const [name, setName] = useState('');
   const [appId, setAppId] = useState('');
   const [category, setCategory] = useState('drinks');
+  const [shortDescription, setShortDescription] = useState('');
+  const [badge, setBadge] = useState('');
+  const [badgeColor, setBadgeColor] = useState('');
+  const [brand, setBrand] = useState('');
+  const [sku, setSku] = useState('');
+  const [stockStatus, setStockStatus] = useState('');
   const [description, setDescription] = useState('');
+  const [hidden, setHidden] = useState(false);
+  const [images, setImages] = useState<string[]>([]);
+  const [uploading, setUploading] = useState(false);
+  const [price, setPrice] = useState('');
+  const [recurring, setRecurring] = useState(false);
+  const [interval, setIntervalUnit] = useState<'day' | 'week' | 'month' | 'year'>('week');
+  const [intervalCount, setIntervalCount] = useState('1');
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
+  const fileRef = useRef<HTMLInputElement>(null);
+
+  async function onPickImage(file: File | undefined) {
+    if (!file) return;
+    setUploading(true);
+    setError('');
+    try {
+      const dataUrl = await compressImage(file);
+      const { url } = await adminApi<{ url: string }>({
+        resource: 'products',
+        method: 'POST',
+        body: { action: 'upload', dataUrl },
+      });
+      setImages((prev) => [...prev, url]);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Could not upload image');
+    } finally {
+      setUploading(false);
+      if (fileRef.current) fileRef.current.value = '';
+    }
+  }
 
   async function submit() {
     if (!name.trim()) {
       setError('Enter a product name.');
+      return;
+    }
+    const priceAmount = price.trim() ? Math.round(Number(price) * 100) : 0;
+    if (price.trim() && (!Number.isFinite(priceAmount) || priceAmount <= 0)) {
+      setError('Enter a valid price in THB, or leave it blank.');
       return;
     }
     setBusy(true);
@@ -708,16 +747,43 @@ function CreateProductPanel({ onClose, onCreated }: { onClose: () => void; onCre
       const metadata: Record<string, string> = {};
       if (appId.trim()) metadata.app_id = appId.trim();
       if (category.trim()) metadata.category = category.trim();
-      await adminApi({
+      if (shortDescription.trim()) metadata.short_description = shortDescription.trim();
+      if (badge.trim()) metadata.badge = badge.trim();
+      if (badgeColor.trim()) metadata.badge_color = badgeColor.trim();
+      if (brand.trim()) metadata.brand = brand.trim();
+      if (sku.trim()) metadata.sku = sku.trim();
+      if (stockStatus.trim()) metadata.stock_status = stockStatus.trim();
+      if (hidden) metadata.hidden = 'true';
+
+      const { product } = await adminApi<{ product: AdminProduct }>({
         resource: 'products',
         method: 'POST',
         body: {
           action: 'create',
           name: name.trim(),
           description: description.trim() || null,
+          images,
+          active: true,
           metadata,
         },
       });
+
+      if (priceAmount > 0) {
+        await adminApi({
+          resource: 'products',
+          method: 'POST',
+          body: {
+            action: 'create-price',
+            productId: product.id,
+            unitAmount: priceAmount,
+            currency: 'thb',
+            recurring: recurring
+              ? { interval, intervalCount: Math.max(1, Number(intervalCount) || 1) }
+              : null,
+          },
+        });
+      }
+
       onCreated();
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Could not create product');
@@ -726,46 +792,200 @@ function CreateProductPanel({ onClose, onCreated }: { onClose: () => void; onCre
     }
   }
 
+  const inputClass =
+    'mt-1 w-full bg-white border border-soft-peach rounded-lg px-3 py-2 font-body text-deep-brown text-sm focus:outline-none focus:ring-2 focus:ring-rust/30';
+  const labelClass = 'block mb-3';
+  const spanClass = 'font-body text-[13px] text-earth';
+
   return (
     <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/40 px-4">
-      <div className="w-full max-w-md bg-warm-white rounded-2xl p-6 shadow-xl">
-        <h3 className="font-display text-lg text-deep-brown mb-4">New product</h3>
+      <div className="w-full max-w-lg max-h-[90vh] overflow-y-auto bg-warm-white rounded-2xl p-6 shadow-xl">
+        <h3 className="font-display text-lg text-deep-brown mb-1">New product</h3>
+        <p className="font-body text-[12px] text-earth/70 mb-4">
+          Creates a Stripe product. Everything except the name is optional — you can add more later.
+        </p>
         {error && <p className="mb-3 font-body text-[13px] text-rust">{error}</p>}
-        <label className="block mb-3">
-          <span className="font-body text-[13px] text-earth">Name</span>
+
+        <label className={labelClass}>
+          <span className={spanClass}>Name</span>
+          <input value={name} onChange={(e) => setName(e.target.value)} className={inputClass} />
+        </label>
+
+        <div className="grid grid-cols-2 gap-3">
+          <label className={labelClass}>
+            <span className={spanClass}>App ID</span>
+            <input
+              value={appId}
+              onChange={(e) => setAppId(e.target.value)}
+              placeholder="ginger-fizz"
+              className={inputClass}
+            />
+          </label>
+          <label className={labelClass}>
+            <span className={spanClass}>Category</span>
+            <select
+              value={category}
+              onChange={(e) => setCategory(e.target.value)}
+              className={inputClass}
+            >
+              <option value="drinks">drinks</option>
+              <option value="brewing-equipment">brewing-equipment</option>
+            </select>
+          </label>
+        </div>
+
+        <label className={labelClass}>
+          <span className={spanClass}>Short description</span>
           <input
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            className="mt-1 w-full bg-white border border-soft-peach rounded-lg px-3 py-2 font-body text-deep-brown text-sm focus:outline-none focus:ring-2 focus:ring-rust/30"
+            value={shortDescription}
+            onChange={(e) => setShortDescription(e.target.value)}
+            placeholder="Shown under the product name in the shop"
+            className={inputClass}
           />
         </label>
-        <label className="block mb-3">
-          <span className="font-body text-[13px] text-earth">App ID</span>
-          <input
-            value={appId}
-            onChange={(e) => setAppId(e.target.value)}
-            placeholder="ginger-fizz"
-            className="mt-1 w-full bg-white border border-soft-peach rounded-lg px-3 py-2 font-body text-deep-brown text-sm focus:outline-none focus:ring-2 focus:ring-rust/30"
-          />
+
+        <div className="grid grid-cols-2 gap-3">
+          <label className={labelClass}>
+            <span className={spanClass}>Badge</span>
+            <input
+              value={badge}
+              onChange={(e) => setBadge(e.target.value)}
+              placeholder="New"
+              className={inputClass}
+            />
+          </label>
+          <label className={labelClass}>
+            <span className={spanClass}>Badge colour</span>
+            <input
+              value={badgeColor}
+              onChange={(e) => setBadgeColor(e.target.value)}
+              placeholder="bg-accent-green"
+              className={inputClass}
+            />
+          </label>
+        </div>
+
+        <div className="grid grid-cols-2 gap-3">
+          <label className={labelClass}>
+            <span className={spanClass}>Brand</span>
+            <input value={brand} onChange={(e) => setBrand(e.target.value)} className={inputClass} />
+          </label>
+          <label className={labelClass}>
+            <span className={spanClass}>SKU</span>
+            <input value={sku} onChange={(e) => setSku(e.target.value)} className={inputClass} />
+          </label>
+        </div>
+
+        <label className={labelClass}>
+          <span className={spanClass}>Stock status</span>
+          <select
+            value={stockStatus}
+            onChange={(e) => setStockStatus(e.target.value)}
+            className={inputClass}
+          >
+            <option value="">Not set</option>
+            <option value="in_stock">in_stock</option>
+            <option value="out_of_stock">out_of_stock</option>
+          </select>
         </label>
-        <label className="block mb-3">
-          <span className="font-body text-[13px] text-earth">Category</span>
-          <input
-            value={category}
-            onChange={(e) => setCategory(e.target.value)}
-            className="mt-1 w-full bg-white border border-soft-peach rounded-lg px-3 py-2 font-body text-deep-brown text-sm focus:outline-none focus:ring-2 focus:ring-rust/30"
-          />
-        </label>
-        <label className="block mb-3">
-          <span className="font-body text-[13px] text-earth">Description</span>
+
+        <label className={labelClass}>
+          <span className={spanClass}>Description</span>
           <textarea
             value={description}
             onChange={(e) => setDescription(e.target.value)}
-            rows={2}
-            className="mt-1 w-full bg-white border border-soft-peach rounded-lg px-3 py-2 font-body text-deep-brown text-sm focus:outline-none focus:ring-2 focus:ring-rust/30 resize-y"
+            rows={3}
+            className={`${inputClass} resize-y`}
           />
         </label>
-        <div className="flex justify-end gap-2 mt-4">
+
+        <div className="mb-3">
+          <span className={spanClass}>Images</span>
+          <div className="mt-1 flex flex-wrap gap-2">
+            {images.map((src) => (
+              <div key={src} className="relative w-16 h-16 rounded-lg overflow-hidden border border-soft-peach group">
+                <img src={src} alt="" className="w-full h-full object-cover" />
+                <button
+                  type="button"
+                  onClick={() => setImages((prev) => prev.filter((s) => s !== src))}
+                  className="absolute inset-0 hidden group-hover:flex items-center justify-center bg-black/40 text-cream"
+                >
+                  <Trash2 className="w-4 h-4" />
+                </button>
+              </div>
+            ))}
+            <button
+              type="button"
+              onClick={() => fileRef.current?.click()}
+              disabled={uploading}
+              className="w-16 h-16 rounded-lg border border-dashed border-soft-peach flex items-center justify-center text-earth hover:text-deep-brown disabled:opacity-50"
+            >
+              <ImagePlus className="w-5 h-5" />
+            </button>
+          </div>
+          <input
+            ref={fileRef}
+            type="file"
+            accept="image/png,image/jpeg,image/webp,image/gif"
+            className="hidden"
+            onChange={(e) => onPickImage(e.target.files?.[0])}
+          />
+          {uploading && <p className="mt-1 font-body text-[12px] text-earth">Uploading…</p>}
+        </div>
+
+        <div className="border-t border-soft-peach/60 pt-3 mt-1 mb-3">
+          <p className="font-body text-[13px] text-earth mb-2">First price (optional)</p>
+          <div className="grid grid-cols-2 gap-3">
+            <label className={labelClass}>
+              <span className={spanClass}>Amount (THB)</span>
+              <input
+                value={price}
+                onChange={(e) => setPrice(e.target.value)}
+                placeholder="e.g. 140"
+                inputMode="decimal"
+                className={inputClass}
+              />
+            </label>
+            {recurring && (
+              <label className={labelClass}>
+                <span className={spanClass}>Every</span>
+                <div className="mt-1 flex gap-2">
+                  <input
+                    value={intervalCount}
+                    onChange={(e) => setIntervalCount(e.target.value)}
+                    inputMode="numeric"
+                    className="w-16 bg-white border border-soft-peach rounded-lg px-3 py-2 font-body text-deep-brown text-sm focus:outline-none focus:ring-2 focus:ring-rust/30"
+                  />
+                  <select
+                    value={interval}
+                    onChange={(e) => setIntervalUnit(e.target.value as typeof interval)}
+                    className="flex-1 bg-white border border-soft-peach rounded-lg px-3 py-2 font-body text-deep-brown text-sm focus:outline-none focus:ring-2 focus:ring-rust/30"
+                  >
+                    <option value="day">day</option>
+                    <option value="week">week</option>
+                    <option value="month">month</option>
+                    <option value="year">year</option>
+                  </select>
+                </div>
+              </label>
+            )}
+          </div>
+          <label className="flex items-center gap-2 font-body text-[13px] text-earth">
+            <input
+              type="checkbox"
+              checked={recurring}
+              onChange={(e) => setRecurring(e.target.checked)}
+            />
+            Recurring (subscription)
+          </label>
+        </div>
+
+        <label className="flex items-center gap-2 mb-4 font-body text-[13px] text-earth">
+          <input type="checkbox" checked={hidden} onChange={(e) => setHidden(e.target.checked)} />
+          Hide from the shop catalog
+        </label>
+
+        <div className="flex justify-end gap-2">
           <button
             onClick={onClose}
             className="font-body text-sm px-4 py-2 rounded-lg text-earth hover:text-deep-brown"
@@ -774,7 +994,7 @@ function CreateProductPanel({ onClose, onCreated }: { onClose: () => void; onCre
           </button>
           <button
             onClick={submit}
-            disabled={busy}
+            disabled={busy || uploading}
             className="font-body text-sm px-4 py-2 rounded-lg bg-rust text-cream hover:bg-deep-brown disabled:opacity-50"
           >
             {busy ? 'Creating…' : 'Create product'}

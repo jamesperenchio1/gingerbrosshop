@@ -328,6 +328,12 @@ function CustomerDetailPanel({
 
             <section className="bg-cream rounded-2xl p-4 space-y-3">
               <h3 className="font-display text-deep-brown">Store credit</h3>
+              <Row label="Balance" value={baht(detail.storeCredit)} />
+              <p className="font-body text-[12px] text-earth/80">
+                Store credit is money you owe this customer — usually from a returned box or a goodwill
+                gesture. It is saved against their email and automatically applied as a one-time discount
+                at their next checkout, so they pay that much less. It is used up once redeemed.
+              </p>
               <div className="flex flex-wrap gap-2">
                 <button
                   onClick={() => setCreditDialog(true)}
@@ -338,7 +344,8 @@ function CustomerDetailPanel({
                 </button>
               </div>
               <p className="font-body text-earth/60 text-[11px]">
-                Enter a positive amount to add credit, or a negative amount to deduct. Logged with a reason.
+                Enter a positive amount to add credit (e.g. 50 adds ฿50), or a negative amount to deduct.
+                Every change is logged with a reason.
               </p>
             </section>
 

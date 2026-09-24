@@ -14,6 +14,8 @@ export interface AdminCoupon {
   redeemBy: string | null;
   createdAt: string;
   metadata: Record<string, string>;
+  /** How many promotion codes point at this coupon. A coupon with none is not redeemable. */
+  promotionCodeCount: number;
 }
 
 export interface AdminPromotionCode {
@@ -28,7 +30,7 @@ export interface AdminPromotionCode {
   createdAt: string;
 }
 
-function toAdminCoupon(c: Stripe.Coupon): AdminCoupon {
+function toAdminCoupon(c: Stripe.Coupon, promotionCodeCount = 0): AdminCoupon {
   return {
     id: c.id,
     name: c.name ?? null,
@@ -43,7 +45,24 @@ function toAdminCoupon(c: Stripe.Coupon): AdminCoupon {
     redeemBy: c.redeem_by ? new Date(c.redeem_by * 1000).toISOString() : null,
     createdAt: new Date(c.created * 1000).toISOString(),
     metadata: (c.metadata ?? {}) as Record<string, string>,
+    promotionCodeCount,
   };
+}
+
+/** Best-effort map of coupon id -> number of promotion codes pointing at it. */
+async function promotionCodeCounts(stripe: Stripe): Promise<Map<string, number>> {
+  const counts = new Map<string, number>();
+  try {
+    const promos = await stripe.promotionCodes.list({ limit: 100, expand: ['data.coupon'] });
+    for (const p of promos.data) {
+      const coupon = p.coupon as unknown as string | { id: string } | null | undefined;
+      const cid = typeof coupon === 'string' ? coupon : coupon?.id;
+      if (cid) counts.set(cid, (counts.get(cid) ?? 0) + 1);
+    }
+  } catch {
+    // counts are best-effort; ignore failures
+  }
+  return counts;
 }
 
 function toAdminPromotionCode(p: Stripe.PromotionCode): AdminPromotionCode {
@@ -67,15 +86,24 @@ export async function listCoupons(
 ): Promise<{ coupons: AdminCoupon[]; hasMore: boolean; nextCursor: string | null }> {
   const limit = Math.min(Math.max(opts.limit ?? 25, 1), 100);
   const res = await stripe.coupons.list({ limit, starting_after: opts.startingAfter });
+  const counts = await promotionCodeCounts(stripe);
   return {
-    coupons: res.data.map(toAdminCoupon),
+    coupons: res.data.map((c) => toAdminCoupon(c, counts.get(c.id) ?? 0)),
     hasMore: res.has_more,
     nextCursor: res.data.length ? res.data[res.data.length - 1].id : null,
   };
 }
 
 export async function getCoupon(stripe: Stripe, id: string): Promise<AdminCoupon> {
-  return toAdminCoupon(await stripe.coupons.retrieve(id));
+  const coupon = await stripe.coupons.retrieve(id);
+  let count = 0;
+  try {
+    const promos = await stripe.promotionCodes.list({ coupon: id, limit: 100 });
+    count = promos.data.length;
+  } catch {
+    // best-effort
+  }
+  return toAdminCoupon(coupon, count);
 }
 
 export interface CouponInput {

@@ -2,7 +2,7 @@ import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { getOrders, getOrderBySessionId, updateTracking, updateOrder, type Order } from '../orders.js';
 import { rateLimit, getClientIp } from '../rateLimit.js';
 import { getResend, MAIL_FROM, SUPPORT_REPLY_TO, shippingNotificationHtml, boxReturnRewardHtml } from '../email.js';
-import { addCredit } from '../credits.js';
+import { addCredit, consumeCredit } from '../credits.js';
 import { getStripe } from '../stripe.js';
 import { isAdminAuthorized, getAdminEmail } from '../adminAuth.js';
 import { logAdminAction, getAdminActions } from '../adminLog.js';
@@ -173,6 +173,7 @@ async function handleOrders(req: VercelRequest, res: VercelResponse, adminEmail:
       startingAfter: (req.query.cursor as string) || undefined,
       status: (req.query.status as string) || undefined,
       email: (req.query.email as string) || undefined,
+      abandoned: req.query.abandoned === 'true',
     });
     res.status(200).json(result);
     return;
@@ -594,8 +595,8 @@ async function handleCustomers(req: VercelRequest, res: VercelResponse, adminEma
       return;
     }
     const amount = Number(body.amount);
-    if (!Number.isFinite(amount) || amount <= 0) {
-      res.status(400).json({ error: 'A positive amount (in satang) is required.' });
+    if (!Number.isFinite(amount) || amount === 0) {
+      res.status(400).json({ error: 'A non-zero amount (in satang) is required.' });
       return;
     }
     requireConfirm(body, email);
@@ -605,7 +606,8 @@ async function handleCustomers(req: VercelRequest, res: VercelResponse, adminEma
       return;
     }
     const rounded = Math.round(amount);
-    const balance = await addCredit(email, rounded);
+    const balance =
+      rounded < 0 ? await consumeCredit(email, Math.abs(rounded)) : await addCredit(email, rounded);
     await logAdminAction({
       email: adminEmail,
       resource: 'customers',

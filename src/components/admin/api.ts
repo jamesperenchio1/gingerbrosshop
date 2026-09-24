@@ -299,6 +299,7 @@ export interface AdminCoupon {
   valid: boolean;
   redeemBy: string | null;
   createdAt: string;
+  promotionCodeCount: number;
   metadata: Record<string, string>;
 }
 

@@ -4,10 +4,11 @@ import { adminApi, baht, type MergedOrder, type OrderListResponse } from './api'
 import OrderDetailPanel from './OrderDetailPanel';
 
 const STATUS_OPTIONS = [
-  { value: '', label: 'All statuses' },
-  { value: 'complete', label: 'Complete' },
-  { value: 'open', label: 'Open' },
+  { value: 'complete', label: 'Completed orders' },
+  { value: 'abandoned', label: 'Abandoned checkouts' },
+  { value: 'open', label: 'Open (in progress)' },
   { value: 'expired', label: 'Expired' },
+  { value: '', label: 'All statuses' },
 ];
 
 export default function OrdersTab() {
@@ -17,7 +18,7 @@ export default function OrdersTab() {
   const [cursor, setCursor] = useState<string | null>(null);
   const [hasMore, setHasMore] = useState(false);
   const [emailFilter, setEmailFilter] = useState('');
-  const [statusFilter, setStatusFilter] = useState('');
+  const [statusFilter, setStatusFilter] = useState('complete');
   const [selectedId, setSelectedId] = useState<string | null>(null);
 
   const load = useCallback(
@@ -25,13 +26,15 @@ export default function OrdersTab() {
       setLoading(true);
       setError('');
       try {
+        const abandoned = statusFilter === 'abandoned';
         const data = await adminApi<OrderListResponse>({
           resource: 'orders',
           action: 'list',
           query: {
             limit: 25,
             email: emailFilter.trim() || undefined,
-            status: statusFilter || undefined,
+            status: abandoned ? undefined : statusFilter || undefined,
+            abandoned: abandoned ? 'true' : undefined,
             cursor: opts.reset ? undefined : opts.cursor ?? undefined,
           },
         });
@@ -89,6 +92,11 @@ export default function OrdersTab() {
         </button>
       </form>
 
+      <p className="font-body text-[12px] text-earth/70 mb-4">
+        Completed orders are paid checkouts. Abandoned checkouts are carts that were never paid (open or expired)
+        and usually have no customer or items.
+      </p>
+
       {error && <p className="mb-4 font-body text-[13px] text-rust">{error}</p>}
 
       {loading && orders.length === 0 && (
@@ -120,6 +128,11 @@ export default function OrdersTab() {
               <div className="min-w-0">
                 <div className="flex items-center gap-2">
                   <span className="font-display font-semibold text-deep-brown">#{order.orderNumber}</span>
+                  {order.status !== 'complete' && (
+                    <span className="text-[10px] uppercase tracking-wider px-2 py-0.5 rounded-full bg-earth/15 text-earth">
+                      Abandoned
+                    </span>
+                  )}
                   {order.mode === 'subscription' && (
                     <span className="text-[10px] uppercase tracking-wider px-2 py-0.5 rounded-full bg-rust/10 text-rust">
                       Sub

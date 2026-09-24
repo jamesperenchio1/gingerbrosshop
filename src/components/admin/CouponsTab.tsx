@@ -76,6 +76,15 @@ export default function CouponsTab() {
         </button>
       </div>
 
+      <div className="mb-4 bg-cream border border-soft-peach/60 rounded-2xl p-4">
+        <p className="font-body text-[12px] text-earth/80">
+          A <strong className="text-deep-brown">coupon</strong> is the discount itself (e.g. 30% off).
+          Customers can only enter a <strong className="text-deep-brown">promotion code</strong> at
+          checkout, so a coupon with no promotion code attached can&apos;t be redeemed. Open a coupon and
+          add a code to make it usable.
+        </p>
+      </div>
+
       {error && <p className="mb-4 font-body text-[13px] text-rust">{error}</p>}
 
       {!loading && coupons.length === 0 && !error && (
@@ -101,6 +110,15 @@ export default function CouponsTab() {
                   {!coupon.valid && (
                     <span className="text-[11px] font-body px-2 py-0.5 rounded-full bg-earth/15 text-earth">
                       Expired
+                    </span>
+                  )}
+                  {coupon.promotionCodeCount === 0 ? (
+                    <span className="text-[11px] font-body px-2 py-0.5 rounded-full bg-rust/10 text-rust">
+                      No code
+                    </span>
+                  ) : (
+                    <span className="text-[11px] font-body px-2 py-0.5 rounded-full bg-accent-green/15 text-accent-green">
+                      {coupon.promotionCodeCount} code{coupon.promotionCodeCount === 1 ? '' : 's'}
                     </span>
                   )}
                 </div>
@@ -239,6 +257,7 @@ function CouponDetailPanel({
               <Row label="Discount" value={couponValue(coupon)} />
               <Row label="Duration" value={durationLabel(coupon)} />
               <Row label="Redeemed" value={`${coupon.timesRedeemed}${coupon.maxRedemptions ? ` / ${coupon.maxRedemptions}` : ''}`} />
+              <Row label="Promotion codes" value={String(coupon.promotionCodeCount)} />
               <Row label="Valid" value={coupon.valid ? 'Yes' : 'No'} />
               {coupon.redeemBy && (
                 <Row label="Redeem by" value={new Date(coupon.redeemBy).toLocaleDateString()} />

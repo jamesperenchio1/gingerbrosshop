@@ -119,7 +119,7 @@ function mergeSession(session: Stripe.Checkout.Session, local?: Order): MergedOr
 
 export async function listOrders(
   stripe: Stripe,
-  opts: { limit?: number; startingAfter?: string; status?: string; email?: string } = {}
+  opts: { limit?: number; startingAfter?: string; status?: string; email?: string; abandoned?: boolean } = {}
 ): Promise<{ orders: MergedOrder[]; hasMore: boolean; nextCursor: string | null }> {
   const local = await getOrders();
   const byId = new Map(local.map((o) => [o.sessionId, o]));
@@ -128,10 +128,16 @@ export async function listOrders(
   const params: Stripe.Checkout.SessionListParams = { limit };
   if (opts.startingAfter) params.starting_after = opts.startingAfter;
 
+  // Default to completed orders only. Abandoned checkouts (open/expired, almost
+  // always unpaid with no customer) otherwise flood the list. Callers can pass an
+  // explicit `status`, or `abandoned: true` to list only the abandoned ones.
+  const effectiveStatus = opts.status || (opts.abandoned ? undefined : 'complete');
+  if (effectiveStatus) params.status = effectiveStatus as 'complete' | 'expired' | 'open';
+
   const sessions = await stripe.checkout.sessions.list(params);
 
   let rows = sessions.data;
-  if (opts.status) rows = rows.filter((s) => s.status === opts.status);
+  if (opts.abandoned) rows = rows.filter((s) => s.status !== 'complete');
   if (opts.email) {
     const needle = opts.email.trim().toLowerCase();
     rows = rows.filter((s) =>
