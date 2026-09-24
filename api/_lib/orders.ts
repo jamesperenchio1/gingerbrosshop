@@ -78,3 +78,17 @@ export async function updateTracking(
   await writeOrders(orders);
   return orders[idx];
 }
+
+/**
+ * Merge a partial patch into an existing order (never changes the sessionId).
+ * Used by admin actions such as adding a note or marking an order cancelled /
+ * refunded. Returns the updated order, or null if it isn't in the local store.
+ */
+export async function updateOrder(sessionId: string, patch: Partial<Order>): Promise<Order | null> {
+  const orders = await readOrders();
+  const idx = orders.findIndex((o) => o.sessionId === sessionId);
+  if (idx === -1) return null;
+  orders[idx] = { ...orders[idx], ...patch, sessionId };
+  await writeOrders(orders);
+  return orders[idx];
+}

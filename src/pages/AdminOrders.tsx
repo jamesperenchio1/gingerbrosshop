@@ -1,286 +1,55 @@
-import { useState, useEffect } from 'react';
-import { Package, Truck, Search } from 'lucide-react';
-import CopyButton from '@/components/CopyButton';
+import { useEffect, useState } from 'react';
 import AdminGate from '@/components/AdminGate';
+import AdminShell, { type AdminTab } from '@/components/admin/AdminShell';
+import OrdersTab from '@/components/admin/OrdersTab';
+import SubscriptionsTab from '@/components/admin/SubscriptionsTab';
+import CustomersTab from '@/components/admin/CustomersTab';
+import ProductsTab from '@/components/admin/ProductsTab';
+import CouponsTab from '@/components/admin/CouponsTab';
+import InvoicesTab from '@/components/admin/InvoicesTab';
+import OpsTab from '@/components/admin/OpsTab';
+import ActivityTab from '@/components/admin/ActivityTab';
 
-interface Order {
-  sessionId: string;
-  paymentIntentId: string | null;
-  customerEmail: string | null;
-  customerName: string | null;
-  customerPhone: string | null;
-  shippingAddress: Record<string, string> | null;
-  items: Array<{ id: string; description: string; quantity: number; amountTotal: number }>;
-  amountTotal: number;
-  currency: string;
-  status: string;
-  createdAt: string;
-  trackingNumber: string | null;
-  trackingCarrier: string | null;
-  isGift?: boolean;
-  recipientEmail?: string | null;
-  recipientName?: string | null;
-  giftMessage?: string | null;
+const TABS: AdminTab[] = [
+  { id: 'orders', label: 'Orders' },
+  { id: 'subscriptions', label: 'Subscriptions' },
+  { id: 'customers', label: 'Customers' },
+  { id: 'products', label: 'Products' },
+  { id: 'coupons', label: 'Coupons' },
+  { id: 'invoices', label: 'Invoices' },
+  { id: 'ops', label: 'Ops' },
+  { id: 'activity', label: 'Activity' },
+];
+
+function initialTab(): string {
+  const tab = new URLSearchParams(window.location.search).get('tab');
+  return tab && TABS.some((t) => t.id === tab) ? tab : 'orders';
 }
 
 export default function AdminOrders() {
-  return <AdminGate title="Orders admin">{({ logout }) => <OrdersDashboard onLogout={logout} />}</AdminGate>;
+  return <AdminGate title="Admin login">{({ email, logout }) => <AdminConsole email={email} onLogout={logout} />}</AdminGate>;
 }
 
-function OrdersDashboard({ onLogout }: { onLogout: () => void }) {
-  const [orders, setOrders] = useState<Order[]>([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
-  const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
-  const [trackingInput, setTrackingInput] = useState('');
-  const [carrierInput, setCarrierInput] = useState('');
-  const [saving, setSaving] = useState(false);
+function AdminConsole({ email, onLogout }: { email: string; onLogout: () => void }) {
+  const [tab, setTab] = useState(initialTab);
 
   useEffect(() => {
-    loadOrders();
-  }, []);
-
-  const loadOrders = () => {
-    setLoading(true);
-    setError('');
-    fetch('/api/admin', { credentials: 'same-origin' })
-      .then(async (res) => {
-        if (!res.ok) {
-          const data = await res.json().catch(() => ({}));
-          throw new Error(data.error ?? 'Failed to load orders');
-        }
-        return res.json();
-      })
-      .then((data: { orders: Order[] }) => {
-        setOrders(data.orders);
-        setLoading(false);
-      })
-      .catch((err) => {
-        setError(err instanceof Error ? err.message : 'Something went wrong');
-        setLoading(false);
-      });
-  };
-
-  const saveTracking = async (sessionId: string) => {
-    if (!trackingInput.trim()) return;
-    setSaving(true);
-    try {
-      const res = await fetch('/api/admin', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          sessionId,
-          trackingNumber: trackingInput.trim(),
-          trackingCarrier: carrierInput.trim() || undefined,
-        }),
-      });
-      if (!res.ok) {
-        const data = await res.json().catch(() => ({}));
-        throw new Error(data.error ?? 'Failed to save');
-      }
-      setSelectedOrder(null);
-      setTrackingInput('');
-      setCarrierInput('');
-      loadOrders();
-    } catch (err) {
-      alert(err instanceof Error ? err.message : 'Failed to save tracking');
-    } finally {
-      setSaving(false);
-    }
-  };
-
-  const grantBoxCredit = async (email: string | null) => {
-    if (!email) {
-      alert('This order has no customer email. Use "No email? Generate code" instead.');
-      return;
-    }
-    if (!confirm(`Give ${email} a ฿50 box-return credit and email it to them now? It applies automatically at their next checkout.`)) return;
-    try {
-      const res = await fetch('/api/admin', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ action: 'grant-credit', email }),
-      });
-      const data = await res.json().catch(() => ({}));
-      if (!res.ok) throw new Error(data.error ?? 'Failed to grant credit');
-      alert(
-        `Done: ${email} now has ฿${Math.round((data.balance ?? 0) / 100)} in credit.` +
-          (data.emailed ? '\nReward email sent.' : '\n(Email not sent, RESEND not configured.)')
-      );
-    } catch (err) {
-      alert(err instanceof Error ? err.message : 'Failed to grant credit');
-    }
-  };
-
-  const grantBoxCode = async (email: string | null) => {
-    if (!confirm('Generate a one-time ฿50 box-return code to hand this customer?')) return;
-    try {
-      const res = await fetch('/api/admin', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ action: 'grant-code', email: email || undefined }),
-      });
-      const data = await res.json().catch(() => ({}));
-      if (!res.ok) throw new Error(data.error ?? 'Failed to generate code');
-      alert(`Code: ${data.code}\n\nWorth ฿${Math.round((data.granted ?? 0) / 100)}, single use.` + (data.emailed ? '\nAlso emailed to the customer.' : ''));
-    } catch (err) {
-      alert(err instanceof Error ? err.message : 'Failed to generate code');
-    }
-  };
+    const url = new URL(window.location.href);
+    if (tab === 'orders') url.searchParams.delete('tab');
+    else url.searchParams.set('tab', tab);
+    window.history.replaceState(null, '', url.toString());
+  }, [tab]);
 
   return (
-    <div className="min-h-screen bg-warm-white">
-      <div className="max-w-3xl mx-auto px-6 py-8">
-        <div className="flex items-center justify-between mb-8">
-          <div>
-            <h1 className="font-display text-2xl text-deep-brown">Orders</h1>
-            <p className="font-body text-earth text-sm">{orders.length} order{orders.length !== 1 ? 's' : ''}</p>
-          </div>
-          <div className="flex items-center gap-2">
-            <button
-              onClick={loadOrders}
-              className="flex items-center gap-2 bg-deep-brown text-cream font-body text-sm px-4 py-2 rounded-full hover:bg-rust transition-colors"
-            >
-              <Search className="w-4 h-4" />
-              Refresh
-            </button>
-            <button
-              onClick={onLogout}
-              className="font-body text-sm text-earth hover:text-deep-brown px-3 py-2"
-            >
-              Log out
-            </button>
-          </div>
-        </div>
-
-        {error && <p className="mb-4 font-body text-[13px] text-rust">{error}</p>}
-
-        {loading && orders.length === 0 && (
-          <div className="flex justify-center py-12">
-            <div className="w-8 h-8 border-2 border-deep-brown/20 border-t-deep-brown rounded-full animate-spin" />
-          </div>
-        )}
-
-        <div className="space-y-4">
-          {orders.map((order) => {
-            const orderNum = order.sessionId.slice(-8).toUpperCase();
-            const total = (order.amountTotal / 100).toLocaleString();
-            const date = new Date(order.createdAt).toLocaleDateString('en-GB', {
-              day: 'numeric',
-              month: 'short',
-              year: 'numeric',
-            });
-            const isOpen = selectedOrder?.sessionId === order.sessionId;
-
-            return (
-              <div key={order.sessionId} className="bg-cream rounded-2xl p-5 sm:p-6">
-                <div className="flex items-start justify-between gap-4">
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-3 mb-1">
-                      <span className="font-display font-semibold text-deep-brown">#{orderNum}</span>
-                      <CopyButton value={orderNum} />
-                      <span className="inline-block font-body text-[11px] uppercase tracking-wider px-2 py-0.5 rounded-full bg-green-100 text-green-700">
-                        Paid
-                      </span>
-                    </div>
-                    <p className="font-body text-earth text-[13px]">
-                      {order.customerName ?? 'Guest'} · {order.customerEmail ?? 'No email'}
-                    </p>
-                    <p className="font-body text-earth/60 text-[12px] mt-0.5">{date}</p>
-                    {order.isGift && (
-                      <div className="mt-2">
-                        <span className="inline-flex items-center gap-1 font-body text-[11px] uppercase tracking-wider px-2 py-0.5 rounded-full bg-rust/10 text-rust">
-                          Gift
-                        </span>
-                        <p className="font-body text-earth text-[12px] mt-1">
-                          To: {order.recipientName ?? '—'} · {order.recipientEmail ?? '—'}
-                        </p>
-                        {order.giftMessage && (
-                          <p className="font-body text-earth/70 text-[12px] italic mt-0.5">“{order.giftMessage}”</p>
-                        )}
-                      </div>
-                    )}
-                  </div>
-                  <div className="text-right">
-                    <p className="font-display font-semibold text-deep-brown">฿{total}</p>
-                    <p className="font-body text-earth text-[12px]">{order.items.reduce((a, i) => a + i.quantity, 0)} items</p>
-                  </div>
-                </div>
-
-                <div className="mt-4 pt-4 border-t border-soft-peach/50">
-                  {order.trackingNumber ? (
-                    <div className="flex items-center gap-2 text-green-700">
-                      <Truck className="w-4 h-4" />
-                      <span className="font-body text-[14px]">
-                        {order.trackingCarrier ?? 'Tracking'}: <strong>{order.trackingNumber}</strong>
-                      </span>
-                    </div>
-                  ) : (
-                    <button
-                      onClick={() => {
-                        setSelectedOrder(isOpen ? null : order);
-                        setTrackingInput('');
-                        setCarrierInput('');
-                      }}
-                      className="text-rust font-body text-[14px] hover:underline"
-                    >
-                      {isOpen ? 'Cancel' : '+ Add tracking number'}
-                    </button>
-                  )}
-
-                  <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-1">
-                    <button
-                      onClick={() => grantBoxCredit(order.customerEmail)}
-                      className="text-accent-green font-body text-[13px] hover:underline"
-                    >
-                      Mark box returned (+฿50, emails customer)
-                    </button>
-                    <button
-                      onClick={() => grantBoxCode(order.customerEmail)}
-                      className="text-earth/70 font-body text-[12px] hover:underline"
-                    >
-                      No email? Generate code
-                    </button>
-                  </div>
-
-                  {isOpen && (
-                    <div className="mt-3 flex flex-col sm:flex-row gap-2">
-                      <input
-                        type="text"
-                        value={trackingInput}
-                        onChange={(e) => setTrackingInput(e.target.value)}
-                        placeholder="Tracking number"
-                        className="flex-1 bg-white border border-soft-peach rounded-lg px-3 py-2 font-body text-deep-brown text-[14px] focus:outline-none focus:ring-2 focus:ring-rust/30"
-                      />
-                      <input
-                        type="text"
-                        value={carrierInput}
-                        onChange={(e) => setCarrierInput(e.target.value)}
-                        placeholder="Carrier (e.g. Kerry, Flash)"
-                        className="sm:w-40 bg-white border border-soft-peach rounded-lg px-3 py-2 font-body text-deep-brown text-[14px] focus:outline-none focus:ring-2 focus:ring-rust/30"
-                      />
-                      <button
-                        onClick={() => saveTracking(order.sessionId)}
-                        disabled={saving || !trackingInput.trim()}
-                        className="bg-deep-brown text-cream font-body text-sm px-4 py-2 rounded-lg hover:bg-rust transition-colors disabled:opacity-60"
-                      >
-                        {saving ? 'Saving…' : 'Save'}
-                      </button>
-                    </div>
-                  )}
-                </div>
-              </div>
-            );
-          })}
-        </div>
-
-        {orders.length === 0 && !loading && (
-          <div className="text-center py-16">
-            <Package className="w-10 h-10 text-earth/30 mx-auto mb-3" />
-            <p className="font-body text-earth">No orders yet.</p>
-          </div>
-        )}
-      </div>
-    </div>
+    <AdminShell title="GingerBros Admin" email={email} onLogout={onLogout} tabs={TABS} activeTab={tab} onTabChange={setTab}>
+      {tab === 'orders' && <OrdersTab />}
+      {tab === 'subscriptions' && <SubscriptionsTab />}
+      {tab === 'customers' && <CustomersTab />}
+      {tab === 'products' && <ProductsTab />}
+      {tab === 'coupons' && <CouponsTab />}
+      {tab === 'invoices' && <InvoicesTab />}
+      {tab === 'ops' && <OpsTab />}
+      {tab === 'activity' && <ActivityTab />}
+    </AdminShell>
   );
 }

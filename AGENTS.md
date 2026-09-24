@@ -111,6 +111,44 @@ STRIPE_WEBHOOK_SECRET=whsec_...
 RESEND_API_KEY=re_...
 ```
 
+## Admin Console
+
+The admin console lives at **`/admin/orders`** and is a full-screen app shell (no storefront nav) rendered for every `/admin/*` path via `src/App.tsx`. It is gated by `AdminGate` (passwordless email login, `ADMIN_EMAILS` env, 30-day `gb_admin` cookie).
+
+- **Entry**: `src/pages/AdminOrders.tsx` → `AdminShell` + 8 tabs. Tab state is driven by the `?tab=` query param (validated against the tab list; `orders` clears it).
+- **Tabs**: `orders`, `subscriptions`, `customers`, `products`, `coupons`, `invoices`, `ops`, `activity`.
+- **Frontend**: `src/components/admin/` — `api.ts` (typed client), `AdminShell.tsx`, `ConfirmActionDialog.tsx`, and one `*Tab.tsx` per tab (`OrdersTab`, `SubscriptionsTab`, `CustomersTab`, `ProductsTab`, `CouponsTab`, `InvoicesTab`, `OpsTab`, `ActivityTab`) plus `OrderDetailPanel.tsx`.
+- **Backend**: `api/_lib/admin/` modules (`orders`, `subscriptions`, `customers`, `products`, `coupons`, `invoices`, `ops`) dispatched from `api/_lib/handlers/admin.ts`.
+
+### Admin API (`/api/admin`)
+
+All calls go through `adminApi<T>({ method, resource, action, query, body })`. The handler dispatches on the `resource` query/body param; `action` selects the operation. Non-mutating = `GET`; mutating = `POST`.
+
+| Resource | Read (`GET`) | Mutate (`POST`) |
+|----------|--------------|-----------------|
+| `orders` | `list`, `get` | `refund`, `cancel`, `note`, `tracking` |
+| `subscriptions` | `list`, `get`, `payment-methods`, `prices` | `cancel`, `pause`, `resume`, `update-items`, `create-checkout`, `create-direct` |
+| `customers` | `list`, `get` | `update`, `credit` |
+| `products` | `list`, `get` | `upload`, `create`, `update`, `archive`, `create-price`, `update-price` |
+| `coupons` | `list`, `get`, `promotion-codes` | `create`, `update`, `delete`, `create-promotion-code`, `update-promotion-code` |
+| `invoices` | `list`, `get` | `send`, `void` |
+| `ops` | `section=disputes\|payouts\|events` → `list`/`get`/`balance` | `section=disputes` → `evidence`; `section=payouts` → `create`/`cancel` |
+| `activity` | `list` (audit log) | — |
+
+Legacy (no `resource`) endpoints are still supported for the storefront: `GET /api/admin` → `{ orders }`; `POST /api/admin` with `{ action: 'grant-credit' | 'grant-code' }` or a tracking update.
+
+### Safety rules (strict — do not weaken)
+
+- **Every mutation** requires `confirm` — the caller must echo a phrase exactly (case-insensitive). For orders the phrase is the order number; for payouts it is `PAYOUT`; for most other objects it is the object id.
+- **Money/irreversible actions** additionally require a `reason` of at least 3 characters (and an explicit `amount` where relevant).
+- **Every mutation is audit-logged** via `logAdminAction` into Redis key `admin_actions` (capped at 500, newest first), readable in the `activity` tab.
+- **Stripe is LIVE** — refunds, cancellations, payouts and evidence submissions move real money. Never trigger them in tests; verify via `npm run test:unit` (mocked Stripe) and read-only paths.
+- Product image uploads use `api/_lib/upload.ts` (`uploadDataUrl`) and require `BLOB_READ_WRITE_TOKEN`.
+
+### Tests
+
+`tests/unit/admin-api.test.ts` covers the dispatcher: auth gate (401), unknown resource (501), activity reads, resource dispatch, and that confirm/reason requirements block mutations (400) while valid mutations reach Stripe and write to the audit log.
+
 ## Full Reference
 
 For complete documentation (all routes, API endpoints, email templates, equipment products), see `GINGERBROS_DEV_REFERENCE.md`.

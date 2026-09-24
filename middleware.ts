@@ -378,12 +378,20 @@ export default async function middleware(request: Request): Promise<Response> {
   // (App renders LinkPage for this host); any other path belongs to the shop.
   if (url.hostname.startsWith('link.')) {
     const shopHost = url.hostname.slice('link.'.length);
-    if (pathname === '/admin' || pathname === '/admin/links') {
+    if (pathname === '/admin/links') {
       return Response.redirect(`https://${shopHost}/admin/links`, 302);
+    }
+    if (pathname === '/admin') {
+      return Response.redirect(`https://${shopHost}/admin/orders`, 302);
     }
     if (pathname !== '/') {
       return Response.redirect(`https://${shopHost}${url.pathname}${url.search}`, 302);
     }
+  }
+
+  // Canonicalise the admin entry point to the orders console.
+  if (pathname === '/admin') {
+    return Response.redirect(new URL('/admin/orders', request.url).toString(), 302);
   }
 
   const htmlUrl = new URL('/index.html', request.url);

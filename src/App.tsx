@@ -121,7 +121,6 @@ function AppContent() {
           <Route path="/" element={<HomePage />} />
           <Route path="/product/:id" element={<ProductDetail />} />
           <Route path="/order/success" element={<OrderSuccess />} />
-          <Route path="/admin/orders" element={<AdminOrders />} />
           <Route path="/faq" element={<FAQPage />} />
           <Route path="/shipping" element={<ShippingPage />} />
           <Route path="/returns" element={<ReturnsPage />} />
@@ -170,12 +169,20 @@ export default function App() {
     );
   }
 
-  // Full-screen admin pages (own header); the shop nav would sit on top of them.
+  // Full-screen admin console: every /admin/* route renders on its own, without
+  // the shop nav, cart or any storefront chrome.
   const path = window.location.pathname;
-  if (path.startsWith('/admin/links') || path.startsWith('/admin/login')) {
+  if (path === '/admin' || path.startsWith('/admin/')) {
+    const page = path.startsWith('/admin/login') ? (
+      <AdminLoginPage />
+    ) : path.startsWith('/admin/links') ? (
+      <AdminLinks />
+    ) : (
+      <AdminOrders />
+    );
     return (
       <ErrorBoundary>
-        <Suspense fallback={<PageLoader />}>{path.startsWith('/admin/login') ? <AdminLoginPage /> : <AdminLinks />}</Suspense>
+        <Suspense fallback={<PageLoader />}>{page}</Suspense>
       </ErrorBoundary>
     );
   }
