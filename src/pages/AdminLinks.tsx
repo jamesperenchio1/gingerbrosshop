@@ -152,6 +152,9 @@ function LinkEditor({ email, onLogout }: { email: string; onLogout: () => void }
       {/* Top bar */}
       <header className="sticky top-0 z-30 bg-warm-white/95 backdrop-blur border-b border-soft-peach">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 h-16 flex items-center gap-3">
+          <a href="/admin/orders" className="hidden sm:inline font-body text-[13px] text-earth hover:text-deep-brown">
+            ← Admin
+          </a>
           <Link2 className="w-5 h-5 text-deep-brown" />
           <h1 className="font-display text-[20px] text-deep-brown">Link page</h1>
           <a
