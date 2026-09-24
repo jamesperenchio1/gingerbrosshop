@@ -998,7 +998,7 @@ This approach cuts pour time to under ten seconds per drink and keeps every serv
 Batch the base, not the fizz:
 
 • **Batch**, spirit, citrus juice, simple syrup, bitters, tinctures, saline.
-• **Do not batch** | GingerBros, fresh garnishes, ice.
+• **Do not batch:** GingerBros, fresh garnishes, ice.
 
 Citrus juice can be batched the morning of service and kept cold. For longer stability, use a measured acid solution or high-quality pre-squeezed juice kept at 2°C.
 
