@@ -345,7 +345,7 @@ export const DEFAULT_LINKPAGE_CONFIG: LinkPageConfig = {
     avatarUrl: '/linkpage/avatar.png',
   },
   seo: {
-    title: 'GingerBros, Links',
+    title: 'GingerBros | Links',
     description: 'All new Ginger Fizz, with 3.5g of prebiotics! Shop, LINE, Grab, Shopee, Instagram, TikTok and Facebook.',
   },
   theme: {
