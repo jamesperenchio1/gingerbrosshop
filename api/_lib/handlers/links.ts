@@ -53,6 +53,11 @@ function referrerSource(ref: unknown): string {
   return hit ?? host.slice(0, 40);
 }
 
+/** Explicit `?src=` tag on the link (e.g. bio links, QR codes) — trusted over document.referrer. */
+function sourceLabel(src: string): string {
+  return src.toLowerCase().replace(/[^a-z0-9_-]/g, '').slice(0, 24);
+}
+
 function parseBody(req: VercelRequest): Record<string, unknown> {
   // sendBeacon posts text/plain, which Vercel leaves as a string.
   if (typeof req.body === 'string') {
@@ -116,12 +121,14 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     try {
       if (body.type === 'view') {
         const country = header(req, 'x-vercel-ip-country').slice(0, 2).toUpperCase() || 'XX';
+        const src = typeof body.src === 'string' ? sourceLabel(body.src) : '';
         await recordLinkEvent({
           type: 'view',
           country: /^[A-Z]{2}$/.test(country) ? country : 'XX',
           device: deviceType(ua),
-          // QR scans are counted by the /q redirect; here they only label the traffic source.
-          referrer: body.src === 'qr' ? 'qr' : referrerSource(body.referrer),
+          // An explicit ?src= tag (QR codes, bio links, ...) beats document.referrer, which
+          // in-app browsers like Instagram's often blank out or rewrite.
+          referrer: src || referrerSource(body.referrer),
         });
       } else if (body.type === 'click' && typeof body.blockId === 'string' && /^[\w-]{1,64}$/.test(body.blockId)) {
         await recordLinkEvent({ type: 'click', blockId: body.blockId });
