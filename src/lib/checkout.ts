@@ -1,6 +1,7 @@
 import { getStoredPromo } from '@/lib/promo';
 import type { CartItem } from '@/types/cart';
 import { trackPixelEvent } from '@/lib/metaPixel';
+import { getStoredSource } from '@/lib/source';
 
 // Set right before redirecting to the first (one-time) leg of a split checkout.
 // The success page reads it once to know it should pick up the subscription leg.
@@ -48,6 +49,7 @@ export async function startCheckout(
       orderNote: options?.orderNote?.trim() || undefined,
       deliveryMethod: options?.deliveryMethod,
       promoCode: getStoredPromo() ?? undefined,
+      source: getStoredSource(),
     }),
   });
   const data = await res.json();

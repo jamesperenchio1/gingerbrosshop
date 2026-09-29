@@ -31,6 +31,7 @@ export interface MergedOrder {
   paymentIntentId: string | null;
   subscriptionId: string | null;
   hasLocalRecord: boolean;
+  source: string | null;
 }
 
 export interface OrderRefundSummary {
@@ -114,6 +115,7 @@ function mergeSession(session: Stripe.Checkout.Session, local?: Order): MergedOr
     paymentIntentId: idOf(session.payment_intent),
     subscriptionId: idOf(session.subscription),
     hasLocalRecord: Boolean(local),
+    source: session.metadata?.source || local?.source || null,
   };
 }
 

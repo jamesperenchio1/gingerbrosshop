@@ -151,6 +151,7 @@ export default function OrderDetailPanel({
             <section className="bg-cream rounded-2xl p-4 space-y-2">
               <Row label="Status" value={`${detail.status} · ${detail.paymentStatus}`} />
               <Row label="Mode" value={detail.mode} />
+              {detail.source && <Row label="Source" value={detail.source} />}
               <Row label="Total" value={baht(detail.amountTotal)} />
               {detail.refundedAmount > 0 && <Row label="Refunded" value={baht(detail.refundedAmount)} />}
               <Row label="Created" value={new Date(detail.createdAt).toLocaleString('en-GB')} />
