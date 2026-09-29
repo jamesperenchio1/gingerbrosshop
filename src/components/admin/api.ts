@@ -65,6 +65,7 @@ export interface MergedOrder {
   paymentIntentId: string | null;
   subscriptionId: string | null;
   hasLocalRecord: boolean;
+  source: string | null;
 }
 
 export interface OrderDetail extends MergedOrder {

@@ -127,6 +127,24 @@ const hasGingerFizzSub = recurringCount > 0 && items.some(i => i.productId === '
 
 ---
 
+## Order Source Attribution
+
+Every order can record where the customer came from (Meta ad, Instagram bio, TikTok, ...).
+
+**Links:** use one normal product link and add a tag, e.g.
+`https://gingerbrosshop.com/product/ginger-fizz?src=meta` or `.../product/ginger-fizz-6pack?src=instagram`.
+The tag can be any word (letters, numbers, `-`, `_`, max 24 chars, lowercased), e.g. `?src=meta-summer-ad`.
+`?utm_source=` is accepted too. Ad click IDs are recognised without any tag: `fbclid` -> `meta`, `ttclid` -> `tiktok`, `gclid` -> `google`.
+
+**Flow:**
+1. `src/main.tsx` calls `captureSourceFromUrl()` (`src/lib/source.ts`) on page load and stores `{source, at}` in localStorage (`gbros-source`) for 30 days. The most recent tagged visit wins; an untagged return visit keeps the earlier source.
+2. `startCheckout()` (`src/lib/checkout.ts`) sends it as `source` to `/api/checkout`.
+3. `api/_lib/handlers/checkout.ts` sanitises it and puts it in the Stripe Checkout Session `metadata.source`.
+4. `api/webhook.ts` copies it to the order in Redis (`order.source`).
+5. Admin (`/admin/orders`) shows a badge on the orders list and a "Source" row in the order detail (`api/_lib/admin/orders.ts` reads `session.metadata.source`, falling back to the Redis record).
+
+Orders placed before this feature have no source. This is separate from the link-in-bio page analytics (`api/_lib/handlers/links.ts`), which also reads `?src=` but only for views of that page.
+
 ## Product Images
 
 | Image | Path | Used By |

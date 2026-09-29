@@ -41,6 +41,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   const referralCode = (req.body?.referralCode as string | undefined) ?? '';
   const customerEmail = (req.body?.email as string | undefined)?.trim().toLowerCase() || '';
   const promoCodeInput = ((req.body?.promoCode as string | undefined) ?? '').trim().slice(0, 40);
+  const source = ((req.body?.source as string | undefined) ?? '').toLowerCase().replace(/[^a-z0-9_-]/g, '').slice(0, 24);
   const orderNote = ((req.body?.orderNote as string | undefined) ?? '').trim().slice(0, 500);
   const giftInfo = req.body?.giftInfo as { isGift: boolean; recipientEmail?: string; recipientName?: string; message?: string } | undefined;
   // Chosen in the cart drawer. Only meaningful for subscriptions, where Stripe
@@ -161,6 +162,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     referralCode: referralCode || '',
     orderNote: orderNote || '',
   };
+  if (source) metadata.source = source;
   if (giftInfo?.isGift) {
     metadata.isGift = 'true';
     metadata.recipientEmail = giftInfo.recipientEmail ?? '';

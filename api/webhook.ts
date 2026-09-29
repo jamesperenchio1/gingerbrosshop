@@ -103,6 +103,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     const giftMessage = session.metadata?.giftMessage ?? null;
     const referralCode = session.metadata?.referralCode ?? '';
     const orderNote = session.metadata?.orderNote ?? '';
+    const source = session.metadata?.source ?? '';
 
     const order = {
       sessionId: session.id,
@@ -128,6 +129,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       giftMessage,
       referralCode,
       orderNote: orderNote || null,
+      source: source || null,
       createdAt: new Date().toISOString(),
       trackingNumber: null,
       trackingCarrier: null,

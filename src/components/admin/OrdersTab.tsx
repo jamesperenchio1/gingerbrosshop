@@ -143,6 +143,11 @@ export default function OrdersTab() {
                       Shipped
                     </span>
                   )}
+                  {order.source && (
+                    <span className="text-[10px] uppercase tracking-wider px-2 py-0.5 rounded-full bg-deep-brown/10 text-deep-brown">
+                      {order.source}
+                    </span>
+                  )}
                   {order.isGift && (
                     <span className="text-[10px] uppercase tracking-wider px-2 py-0.5 rounded-full bg-rust/10 text-rust">
                       Gift

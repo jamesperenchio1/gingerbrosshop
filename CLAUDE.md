@@ -45,6 +45,10 @@ When a customer tracks an order:
 
 The "Email me this tracking info" button on `/track` POSTs to `/api/email-tracking` which sends a branded email via Resend.
 
+## Order Source Tracking
+
+Tag a product link with `?src=<where>` (e.g. `/product/ginger-fizz-6pack?src=meta`). The tag is remembered for 30 days, saved on the order at checkout (Stripe `metadata.source` + Redis `order.source`), and shown in `/admin/orders`. Meta `fbclid`, TikTok `ttclid` and Google `gclid` clicks are labelled automatically. Details in `GINGERBROS_DEV_REFERENCE.md` ("Order Source Attribution").
+
 ## Image Assets
 
 | Image | Path |
