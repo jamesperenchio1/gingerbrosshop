@@ -1,61 +1,40 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 
-import checkout from './_lib/handlers/checkout.js';
-import products from './_lib/handlers/products.js';
-import admin from './_lib/handlers/admin.js';
-import trackOrder from './_lib/handlers/track-order.js';
-import orderDetails from './_lib/handlers/order-details.js';
-import portal from './_lib/handlers/portal.js';
-import referral from './_lib/handlers/referral.js';
-import saveCart from './_lib/handlers/save-cart.js';
-import subscribe from './_lib/handlers/subscribe.js';
-import verifyEmail from './_lib/handlers/verify-email.js';
-import shippingRate from './_lib/handlers/shipping-rate.js';
-import abandonedCartCheck from './_lib/handlers/abandoned-cart-check.js';
-import credit from './_lib/handlers/credit.js';
-import wholesale from './_lib/handlers/wholesale.js';
-import stockAlert from './_lib/handlers/stock-alert.js';
-import shareCart from './_lib/handlers/share-cart.js';
-import ordersByEmail from './_lib/handlers/orders-by-email.js';
-import emailTracking from './_lib/handlers/email-tracking.js';
-import reviews from './_lib/handlers/reviews.js';
-import links from './_lib/handlers/links.js';
-import linksAdmin from './_lib/handlers/links-admin.js';
-import promo from './_lib/handlers/promo.js';
-import auth from './_lib/handlers/auth.js';
-
 type Handler = (req: VercelRequest, res: VercelResponse) => unknown | Promise<unknown>;
+// Handlers are loaded on demand so a cold start only pays for the code (and
+// SDKs: Resend, Blob, ...) of the endpoint actually being hit.
+type Loader = () => Promise<{ default: Handler }>;
 
 // One serverless function fans out to every JSON endpoint, keyed by the first
 // path segment after /api. URLs are unchanged (e.g. /api/checkout still works),
 // so nothing on the frontend changes. The Stripe webhook stays its own function
 // because it needs the raw request body for signature verification.
-const routes: Record<string, Handler> = {
-  'checkout': checkout,
-  'products': products,
-  'admin': admin,
-  'track-order': trackOrder,
-  'order-details': orderDetails,
-  'portal': portal,
-  'referral': referral,
-  'save-cart': saveCart,
-  'subscribe': subscribe,
-  'verify-email': verifyEmail,
-  'shipping-rate': shippingRate,
-  'abandoned-cart-check': abandonedCartCheck,
-  'credit': credit,
-  'wholesale': wholesale,
-  'stock-alert': stockAlert,
-  'share-cart': shareCart,
-  'orders-by-email': ordersByEmail,
-  'email-tracking': emailTracking,
-  'reviews': reviews,
-  'links': links,
-  'links-admin': linksAdmin,
-  'auth': auth,
-  'promo': promo,
+const routes: Record<string, Loader> = {
+  'checkout': () => import('./_lib/handlers/checkout.js'),
+  'products': () => import('./_lib/handlers/products.js'),
+  'admin': () => import('./_lib/handlers/admin.js'),
+  'track-order': () => import('./_lib/handlers/track-order.js'),
+  'order-details': () => import('./_lib/handlers/order-details.js'),
+  'portal': () => import('./_lib/handlers/portal.js'),
+  'referral': () => import('./_lib/handlers/referral.js'),
+  'save-cart': () => import('./_lib/handlers/save-cart.js'),
+  'subscribe': () => import('./_lib/handlers/subscribe.js'),
+  'verify-email': () => import('./_lib/handlers/verify-email.js'),
+  'shipping-rate': () => import('./_lib/handlers/shipping-rate.js'),
+  'abandoned-cart-check': () => import('./_lib/handlers/abandoned-cart-check.js'),
+  'credit': () => import('./_lib/handlers/credit.js'),
+  'wholesale': () => import('./_lib/handlers/wholesale.js'),
+  'stock-alert': () => import('./_lib/handlers/stock-alert.js'),
+  'share-cart': () => import('./_lib/handlers/share-cart.js'),
+  'orders-by-email': () => import('./_lib/handlers/orders-by-email.js'),
+  'email-tracking': () => import('./_lib/handlers/email-tracking.js'),
+  'reviews': () => import('./_lib/handlers/reviews.js'),
+  'links': () => import('./_lib/handlers/links.js'),
+  'links-admin': () => import('./_lib/handlers/links-admin.js'),
+  'auth': () => import('./_lib/handlers/auth.js'),
+  'promo': () => import('./_lib/handlers/promo.js'),
   // /q/<slug> QR short links are rewritten here (see vercel.json)
-  'q': links,
+  'q': () => import('./_lib/handlers/links.js'),
 };
 
 /**
@@ -78,11 +57,12 @@ function resolveRoute(req: VercelRequest): string {
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   const route = resolveRoute(req);
 
-  const fn = routes[route];
-  if (!fn) {
+  const load = Object.prototype.hasOwnProperty.call(routes, route) ? routes[route] : undefined;
+  if (!load) {
     res.status(404).json({ error: `Not found: /api/${route}` });
     return;
   }
 
+  const { default: fn } = await load();
   return fn(req, res);
 }

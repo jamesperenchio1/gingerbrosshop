@@ -6,7 +6,7 @@
 //
 // Safety: if anything about a route fails, that route is skipped and keeps
 // serving the ordinary SPA shell (vercel.json rewrite), i.e. today's behaviour.
-import { readFile, writeFile, mkdir } from 'node:fs/promises';
+import { readFile, writeFile, mkdir, readdir } from 'node:fs/promises';
 import path from 'node:path';
 import { pathToFileURL } from 'node:url';
 
@@ -40,6 +40,32 @@ function stripShellSeo(html) {
     .replace(/<link\s+rel="canonical"[^>]*>/gi, '');
 }
 
+// Route -> lazy page chunk, so the browser fetches it alongside the entry
+// bundle instead of discovering it only after the entry has run.
+const CHUNK_FOR = [
+  [/^\/product\//, 'ProductDetail'], [/^\/blog/, 'BlogPage'], [/^\/faq/, 'FAQPage'],
+  [/^\/shipping/, 'ShippingPage'], [/^\/returns/, 'ReturnsPage'], [/^\/privacy/, 'PrivacyPage'],
+  [/^\/terms/, 'TermsPage'], [/^\/wholesale/, 'WholesalePage'], [/^\/track/, 'TrackOrderPage'],
+];
+
+// Preload the above-the-fold image(s) so they download in parallel with the JS.
+function resourceHints(route, html, assets) {
+  const tags = [];
+  const chunk = CHUNK_FOR.find(([re]) => re.test(route))?.[1];
+  const file = chunk && assets.find((f) => f.startsWith(`${chunk}-`) && f.endsWith('.js'));
+  if (file) tags.push(`<link rel="modulepreload" crossorigin href="/assets/${file}">`);
+  if (route === '/') {
+    for (const src of ['/images/hero-mug.webp', '/images/bottle-hero-transparent.webp']) {
+      tags.push(`<link rel="preload" as="image" type="image/webp" href="${src}" fetchpriority="high">`);
+    }
+  } else {
+    const img = html.match(/<img\b[^>]*fetchpriority="high"[^>]*>/i)?.[0];
+    const src = img?.match(/\ssrc="([^"]+)"/)?.[1];
+    if (src) tags.push(`<link rel="preload" as="image" href="${src}" fetchpriority="high">`);
+  }
+  return tags.join('\n');
+}
+
 const escapeJson = (obj) => JSON.stringify(obj).replace(/</g, '\\u003c');
 
 async function main() {
@@ -49,6 +75,7 @@ async function main() {
   // prerendered (see the rewrite in vercel.json and middleware.ts).
   await writeFile(path.join(dist, 'shell.html'), template);
   const catalog = await fetchCatalog();
+  const assets = await readdir(path.join(dist, 'assets'));
 
   const routes = [...STATIC_ROUTES, ...BLOG_SLUGS.map((s) => `/blog/${s}`)];
   if (catalog) routes.push(...catalog.map((p) => `/product/${p.id}`));
@@ -60,7 +87,7 @@ async function main() {
       const { html, head } = await render(route, catalog);
       if (!html || html.length < 500) throw new Error('empty render');
       let page = stripShellSeo(template)
-        .replace('</head>', `${head}\n</head>`)
+        .replace('</head>', `${head}\n${resourceHints(route, html, assets)}\n</head>`)
         .replace('<div id="root"></div>', `${catalogTag}<div id="root" data-prerendered="${route}">${html}</div>`);
       const out = route === '/' ? path.join(dist, 'index.html') : path.join(dist, route, 'index.html');
       await mkdir(path.dirname(out), { recursive: true });

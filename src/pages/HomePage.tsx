@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import Hero from '@/sections/Hero';
 import Shop from '@/sections/Shop';
 import Story from '@/sections/Story';
@@ -7,6 +8,7 @@ import Newsletter from '@/components/Newsletter';
 import LineWidget from '@/components/LineWidget';
 import Footer from '@/sections/Footer';
 import SEO from '@/components/SEO';
+import { prefetchProductDetailWhenIdle } from '@/lib/prefetch';
 import { SITE_URL, SITE_NAME, DEFAULT_OG_IMAGE, SOCIAL_LINKS } from '@/constants/site';
 
 const organizationSchema = {
@@ -53,6 +55,7 @@ const productListSchema = {
 };
 
 export default function HomePage() {
+  useEffect(() => prefetchProductDetailWhenIdle(), []);
   return (
     <div className="min-h-screen bg-warm-white">
       <SEO
