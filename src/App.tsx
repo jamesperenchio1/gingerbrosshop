@@ -158,7 +158,8 @@ export default function App() {
   // link.gingerbrosshop.com is just the link-in-bio page: no shop nav, cart or
   // routes, so the page stays light and loads fast from social apps. /links is
   // the same page on the main domain, handy for previewing.
-  if (isLinkHost() || window.location.pathname.replace(/\/$/, '') === '/links') {
+  const isServer = typeof window === 'undefined';
+  if (!isServer && (isLinkHost() || window.location.pathname.replace(/\/$/, '') === '/links')) {
     return (
       <ErrorBoundary>
         <Suspense fallback={null}>
@@ -171,7 +172,7 @@ export default function App() {
 
   // Full-screen admin console: every /admin/* route renders on its own, without
   // the shop nav, cart or any storefront chrome.
-  const path = window.location.pathname;
+  const path = isServer ? '/' : window.location.pathname;
   if (path === '/admin' || path.startsWith('/admin/')) {
     const page = path.startsWith('/admin/login') ? (
       <AdminLoginPage />

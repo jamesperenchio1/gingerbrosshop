@@ -1,4 +1,4 @@
-import { createRoot } from 'react-dom/client'
+import { createRoot, hydrateRoot } from 'react-dom/client'
 import { BrowserRouter } from 'react-router'
 import { HelmetProvider } from 'react-helmet-async'
 import './index.css'
@@ -18,10 +18,20 @@ capturePromoFromUrl()
 // Remember which ad/link brought the visitor so the order can be attributed.
 captureSourceFromUrl()
 
-createRoot(document.getElementById('root')!).render(
+const app = (
   <HelmetProvider>
     <BrowserRouter>
       <App />
     </BrowserRouter>
-  </HelmetProvider>,
+  </HelmetProvider>
 )
+
+const root = document.getElementById('root')!
+const normalise = (p: string) => p.replace(/\/$/, '') || '/'
+if (root.getAttribute('data-prerendered') === normalise(location.pathname)) {
+  // Prerendered at build time: attach to the existing HTML instead of
+  // rebuilding it. Anything that can't be prerendered still gets client-rendered.
+  hydrateRoot(root, app)
+} else {
+  createRoot(root).render(app)
+}

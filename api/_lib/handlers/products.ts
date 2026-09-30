@@ -53,11 +53,12 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   try {
     // Pull every active price and its (expanded) product in one pass — this is
     // the source of truth, so anything added in Stripe shows up automatically.
-    const prices = await stripe.prices.list({
-      active: true,
-      limit: 100,
-      expand: ['data.product'],
-    });
+    // autoPagingToArray follows `has_more`, so the catalog no longer silently
+    // truncates at 100 prices.
+    const allPrices = await stripe.prices
+      .list({ active: true, limit: 100, expand: ['data.product'] })
+      .autoPagingToArray({ limit: 1000 });
+    const prices = { data: allPrices };
 
     const productMap = new Map<string, CatalogProduct>();
 
@@ -117,8 +118,10 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       }),
     }));
 
-    // Cache at the edge: fast, but new Stripe changes appear within a minute.
-    res.setHeader('Cache-Control', 's-maxage=60, stale-while-revalidate=300');
+    // Cache at the edge (5 min fresh, then served stale while it revalidates in
+    // the background) so shoppers almost never wait on Stripe. Browsers keep it
+    // for 30s. Stripe edits show up within minutes.
+    res.setHeader('Cache-Control', 'public, max-age=30, s-maxage=300, stale-while-revalidate=86400');
     res.status(200).json({ products });
   } catch (err) {
     const message = err instanceof Error ? err.message : 'Stripe error';

@@ -49,6 +49,15 @@ The "Email me this tracking info" button on `/track` POSTs to `/api/email-tracki
 
 Tag a product link with `?src=<where>` (e.g. `/product/ginger-fizz-6pack?src=meta`). The tag is remembered for 30 days, saved on the order at checkout (Stripe `metadata.source` + Redis `order.source`), and shown in `/admin/orders`. Meta `fbclid`, TikTok `ttclid` and Google `gclid` clicks are labelled automatically. Details in `GINGERBROS_DEV_REFERENCE.md` ("Order Source Attribution").
 
+## Prerendering (SSG) — how pages load fast
+
+`npm run build` = client build → SSR build of `src/entry-server.tsx` → `scripts/prerender.mjs`, which renders `/`, `/product/*`, `/blog/*` and the static pages to `dist/<route>/index.html` (catalog fetched from the live `/api/products` at build time). The client hydrates (`src/main.tsx`); if a route isn't prerendered, or prerendering fails, the untouched SPA shell (`dist/shell.html`, via the `vercel.json` rewrite and `middleware.ts`) is served and nothing breaks.
+
+Rules for keeping pages hydration-safe (first client render must equal the server HTML):
+- Never read `localStorage`/`sessionStorage`/`Date`/`window` during render. Start from a default and restore in an effect (see `CartContext`, `I18nContext`, `Shop`, `ProductDetail` delivery estimate).
+- Run `node scripts/check-hydration.mjs <base-url>` against a static server of `dist/` to catch React hydration errors on every prerendered route.
+- After changing products in Stripe the prerendered pages refresh on the next deploy. Set `VERCEL_DEPLOY_HOOK_URL` and subscribe the Stripe webhook to `product.*`/`price.*` events to rebuild automatically (debounced 2 min); the client also revalidates the catalog on load.
+
 ## Image Assets
 
 | Image | Path |

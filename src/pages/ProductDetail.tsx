@@ -8,6 +8,8 @@ import SEO from '@/components/SEO';
 import NotFound from '@/pages/NotFound';
 import { useCatalog, defaultPrice, intervalLabel, oneTimePrice, savingsPercent, stockStatus, hasVariantPrices, type CatalogProduct } from '@/lib/catalog';
 import { getDeliveryEstimateMessage } from '@/constants/store';
+import { startCheckout, trackInitiateCheckout } from '@/lib/checkout';
+import type { CartItem } from '@/types/cart';
 import { useRecentlyViewed, getRecentlyViewed } from '@/hooks/use-recently-viewed';
 import { Skeleton } from '@/components/ui/skeleton';
 import ImageLightbox from '@/components/ImageLightbox';
@@ -235,6 +237,13 @@ export default function ProductDetail() {
   const { id } = useParams<{ id: string }>();
   const [searchParams] = useSearchParams();
   const { addItem } = useCart();
+  // Depends on the visitor's clock, so it can't be part of the prerendered HTML.
+  const [deliveryEstimate, setDeliveryEstimate] = useState('');
+  useEffect(() => setDeliveryEstimate(getDeliveryEstimateMessage()), []);
+  // "Buy now" skips the cart: the Stripe session is created as soon as the
+  // shopper shows intent (hover / touch / focus) so the click itself redirects.
+  const [buyingNow, setBuyingNow] = useState(false);
+  const buyNowSession = useRef<{ key: string; promise: Promise<string> } | null>(null);
   const { products, loading } = useCatalog();
 
   const product = products.find((p) => p.id === id);
@@ -400,9 +409,7 @@ export default function ProductDetail() {
   const stock = stockStatus(product);
   const lineTotal = (selectedPrice.unitAmount ?? 0) * quantity;
 
-  const handleAdd = () => {
-    if (stock === 'out_of_stock') return;
-    addItem({
+  const buildCartItem = (): CartItem => ({
       id: selectedPrice.priceId,
       priceId: selectedPrice.priceId,
       productId: product.id,
@@ -421,10 +428,45 @@ export default function ProductDetail() {
       recipientEmail: isGift ? giftEmail : undefined,
       recipientName: isGift ? giftName : undefined,
       giftMessage: isGift ? giftMessage : undefined,
-    });
+  });
+
+  const handleAdd = () => {
+    if (stock === 'out_of_stock') return;
+    addItem(buildCartItem());
     setAdded(true);
     toast.success(`${product.name} added to cart`);
     setTimeout(() => setAdded(false), 800);
+  };
+
+  const buyNowKey = `${selectedPrice.priceId}:${quantity}:${isGift ? `${giftName}|${giftEmail}|${giftMessage}` : ''}`;
+
+  /** Start creating the checkout session early; safe to call repeatedly. */
+  const prefetchBuyNow = () => {
+    if (stock === 'out_of_stock' || buyNowSession.current?.key === buyNowKey) return;
+    const promise = startCheckout([buildCartItem()], { prefetch: true });
+    promise.catch(() => { if (buyNowSession.current?.promise === promise) buyNowSession.current = null; });
+    buyNowSession.current = { key: buyNowKey, promise };
+  };
+
+  const handleBuyNow = async () => {
+    if (stock === 'out_of_stock' || buyingNow) return;
+    setBuyingNow(true);
+    try {
+      const item = buildCartItem();
+      trackInitiateCheckout([item]);
+      const pending = buyNowSession.current?.key === buyNowKey ? buyNowSession.current.promise : null;
+      let url: string;
+      try {
+        url = pending ? await pending : await startCheckout([item], { prefetch: true });
+      } catch {
+        // The early attempt failed (e.g. rate limited): try once more for real.
+        url = await startCheckout([item], { prefetch: true });
+      }
+      window.location.href = url;
+    } catch (err) {
+      setBuyingNow(false);
+      toast.error(err instanceof Error ? err.message : 'Could not start checkout. Please try again.');
+    }
   };
 
   const hasNutrition = (content.nutrition?.length ?? 0) > 0;
@@ -713,6 +755,19 @@ export default function ProductDetail() {
                   {added ? 'Added to Cart!' : stock === 'out_of_stock' ? 'Out of Stock' : `Add to Cart · ฿${lineTotal}`}
                 </button>
               </div>
+              {stock !== 'out_of_stock' && (
+                <button
+                  onClick={handleBuyNow}
+                  onPointerEnter={prefetchBuyNow}
+                  onTouchStart={prefetchBuyNow}
+                  onFocus={prefetchBuyNow}
+                  disabled={buyingNow}
+                  data-testid="buy-now"
+                  className="mt-3 w-full sm:w-auto font-body font-medium text-sm uppercase tracking-[0.08em] px-10 py-3.5 rounded-full bg-deep-brown text-cream hover:bg-rust transition-colors duration-200 active:scale-[0.98] disabled:opacity-70"
+                >
+                  {buyingNow ? 'Taking you to checkout…' : 'Buy now'}
+                </button>
+              )}
 
               {/* Processing time notice (equipment only) */}
               {isEquipment && (
@@ -744,8 +799,8 @@ export default function ProductDetail() {
 
             {/* Delivery estimate */}
             {!isEquipment && (
-              <p className="font-body text-[13px] text-green-ink mb-6">
- {getDeliveryEstimateMessage()}
+              <p className="font-body text-[13px] text-green-ink mb-6 min-h-[1.25rem]">
+                {deliveryEstimate}
               </p>
             )}
 

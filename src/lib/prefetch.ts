@@ -14,3 +14,16 @@ export function prefetchProductDetail() {
   productDetailRequested = true;
   void import('@/pages/ProductDetail');
 }
+
+/**
+ * Warm the product chunk once the browser is idle (skipped on Save-Data / 2G-3G
+ * connections, where the bytes matter more than the head start). Called from the
+ * homepage, where a product click is by far the most likely next step.
+ */
+export function prefetchProductDetailWhenIdle() {
+  const conn = (navigator as Navigator & { connection?: { saveData?: boolean; effectiveType?: string } }).connection;
+  if (conn?.saveData || /(^|-)(2g|3g)$/.test(conn?.effectiveType ?? '')) return;
+  const ric = window.requestIdleCallback as typeof window.requestIdleCallback | undefined;
+  if (ric) ric(() => prefetchProductDetail(), { timeout: 4000 });
+  else window.setTimeout(prefetchProductDetail, 2500);
+}

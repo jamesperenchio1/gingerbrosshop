@@ -46,9 +46,30 @@ function writeStoredCache(products: CatalogProduct[]) {
   }
 }
 
-const stored = typeof window !== 'undefined' ? readStoredCache() : null;
-let cache: CatalogProduct[] | null = stored?.products ?? null;
-let cacheTimestamp = stored?.ts ?? 0;
+// A prerendered page carries the catalog it was built with in an inert JSON
+// <script>. Seeding from it (rather than sessionStorage) keeps the first client
+// render identical to the server HTML; it is stamped as already-stale so the
+// live catalog is still fetched in the background.
+function readInlineCatalog(): CatalogProduct[] | null {
+  if (typeof document === 'undefined') return null;
+  try {
+    const raw = document.getElementById('__catalog__')?.textContent;
+    return raw ? (JSON.parse(raw) as CatalogProduct[]) : null;
+  } catch {
+    return null;
+  }
+}
+
+const inline = readInlineCatalog();
+const stored = inline || typeof window === 'undefined' ? null : readStoredCache();
+let cache: CatalogProduct[] | null = inline ?? stored?.products ?? null;
+let cacheTimestamp = inline ? 0 : stored?.ts ?? 0;
+/** Build-time / server render: seed the catalog so pages render with data. */
+export function seedCatalog(products: CatalogProduct[] | null): void {
+  cache = products;
+  cacheTimestamp = Date.now();
+}
+
 let inflight: Promise<CatalogProduct[]> | null = null;
 
 export async function fetchCatalog(): Promise<CatalogProduct[]> {

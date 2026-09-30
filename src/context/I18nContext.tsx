@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useCallback, type ReactNode } from 'react';
+import { useEffect, createContext, useContext, useState, useCallback, type ReactNode } from 'react';
 
 export type Locale = 'en' | 'th';
 
@@ -362,13 +362,17 @@ interface I18nContextType {
 const I18nContext = createContext<I18nContextType | null>(null);
 
 export function I18nProvider({ children }: { children: ReactNode }) {
-  const [locale, setLocaleState] = useState<Locale>(() => {
+  // Always start in English so the first client render matches the prerendered
+  // HTML; a saved preference is applied right after hydration.
+  const [locale, setLocaleState] = useState<Locale>('en');
+
+  useEffect(() => {
     try {
-      return (localStorage.getItem('gingerbros-locale') as Locale) || 'en';
-    } catch {
-      return 'en';
-    }
-  });
+      const saved = localStorage.getItem('gingerbros-locale') as Locale | null;
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- restoring a saved preference after hydration
+      if (saved && saved !== 'en') setLocaleState(saved);
+    } catch { /* ignore */ }
+  }, []);
 
   const setLocale = useCallback((l: Locale) => {
     setLocaleState(l);

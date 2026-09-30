@@ -14,10 +14,9 @@ export async function rateLimit(opts: RateLimitOptions): Promise<{ allowed: bool
   const redisKey = `ratelimit:${opts.key}:${windowStart}`;
 
   try {
-    const current = await redis.incr(redisKey);
-    if (current === 1) {
-      await redis.expire(redisKey, opts.windowSeconds);
-    }
+    // One round trip: the key is per-window, so refreshing its TTL on every hit
+    // is harmless and saves a second request on the first hit of each window.
+    const [current] = await redis.pipeline().incr(redisKey).expire(redisKey, opts.windowSeconds).exec<[number, number]>();
     const allowed = current <= opts.limit;
     const remaining = Math.max(0, opts.limit - current);
     return { allowed, remaining, reset: windowStart + opts.windowSeconds };

@@ -1258,6 +1258,9 @@ function PostCard({ post }: { post: Post }) {
   );
 }
 
+/** Slugs of every post, used by the build to prerender /blog/:slug. */
+export const BLOG_SLUGS: string[] = POSTS.map((p) => p.slug);
+
 export default function BlogPage() {
   const navigate = useNavigate();
   const { slug } = useParams<{ slug?: string }>();

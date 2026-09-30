@@ -26,10 +26,7 @@ export type DeliveryMethod = 'standard' | 'hand-delivered';
 
 export const DELIVERY_METHOD_STORAGE_KEY = 'gbros-delivery-method';
 
-export async function startCheckout(
-  items: CartItem[],
-  options?: { email?: string; referralCode?: string; orderNote?: string; deliveryMethod?: DeliveryMethod },
-): Promise<string> {
+export function trackInitiateCheckout(items: CartItem[]): void {
   trackPixelEvent('InitiateCheckout', {
     content_ids: items.map((i) => i.productId ?? i.id),
     content_type: 'product',
@@ -37,6 +34,20 @@ export async function startCheckout(
     value: items.reduce((sum, i) => sum + i.price * i.quantity, 0),
     currency: 'THB',
   });
+}
+
+export async function startCheckout(
+  items: CartItem[],
+  options?: {
+    email?: string;
+    referralCode?: string;
+    orderNote?: string;
+    deliveryMethod?: DeliveryMethod;
+    /** Background session pre-creation: the shopper hasn't clicked checkout yet, so don't report InitiateCheckout. */
+    prefetch?: boolean;
+  },
+): Promise<string> {
+  if (!options?.prefetch) trackInitiateCheckout(items);
 
   const res = await fetch('/api/checkout', {
     method: 'POST',

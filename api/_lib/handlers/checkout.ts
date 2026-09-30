@@ -50,6 +50,16 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
   const stripe = getStripe(secret);
 
+  // The promo lookup doesn't depend on the cart, so when no store credit can
+  // apply (no email) start it now and let it overlap the price lookups below.
+  const promoLookup =
+    promoCodeInput && !customerEmail
+      ? stripe.promotionCodes.list({ code: promoCodeInput, active: true, limit: 1 }).catch((err) => {
+          console.error('Promo code lookup failed:', err);
+          return null;
+        })
+      : null;
+
   // Resolve and validate every price directly against Stripe — Stripe is the
   // source of truth, so there is no per-product env var or hardcoded map.
   const priceIdToQuantity = new Map<string, number>();
@@ -236,8 +246,10 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   // here); an invalid or expired code just falls back to the typed-code box.
   if (!discounts && promoCodeInput) {
     try {
-      const found = await stripe.promotionCodes.list({ code: promoCodeInput, active: true, limit: 1 });
-      if (found.data[0]) discounts = [{ promotion_code: found.data[0].id }];
+      const found = promoLookup
+        ? await promoLookup
+        : await stripe.promotionCodes.list({ code: promoCodeInput, active: true, limit: 1 });
+      if (found?.data[0]) discounts = [{ promotion_code: found.data[0].id }];
     } catch (err) {
       console.error('Promo code lookup failed:', err);
     }

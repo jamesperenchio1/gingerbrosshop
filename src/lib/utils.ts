@@ -16,3 +16,22 @@ export function shouldReduceMotion(): boolean {
   return window.matchMedia?.("(prefers-reduced-motion: reduce)").matches ?? false
 }
 
+
+/**
+ * True on devices/connections where decorative, continuously-animating layers
+ * (WebGL shader, canvas particles) cost more than they're worth: Save-Data on,
+ * a 2G/3G connection, or a low-memory / low-core device. Safe on the server.
+ */
+export function isLowPowerDevice(): boolean {
+  if (typeof navigator === "undefined") return false
+  const nav = navigator as Navigator & {
+    deviceMemory?: number
+    connection?: { saveData?: boolean; effectiveType?: string }
+  }
+  const conn = nav.connection
+  if (conn?.saveData) return true
+  if (conn?.effectiveType && /(^|-)(2g|3g)$/.test(conn.effectiveType)) return true
+  if (nav.deviceMemory !== undefined && nav.deviceMemory <= 2) return true
+  if (nav.hardwareConcurrency !== undefined && nav.hardwareConcurrency <= 2) return true
+  return false
+}

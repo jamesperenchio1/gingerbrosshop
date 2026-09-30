@@ -1,5 +1,5 @@
 import { useRef, useEffect, useState } from 'react';
-import { shouldReduceMotion } from '@/lib/utils';
+import { shouldReduceMotion, isLowPowerDevice } from '@/lib/utils';
 
 const vertSrc = `
 attribute vec2 a_pos;
@@ -106,7 +106,7 @@ export default function NoiseCanvas() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   // Decide once on mount. When disabled we render nothing so the Hero's CSS
   // gradient shows through instead of a continuously-animating WebGL shader.
-  const [enabled] = useState(() => !shouldReduceMotion());
+  const [enabled] = useState(() => !shouldReduceMotion() && !isLowPowerDevice());
 
   useEffect(() => {
     if (!enabled) return;

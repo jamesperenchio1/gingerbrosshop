@@ -60,11 +60,12 @@ export function promoDiscount(promo: PromoInfo | null, subtotal: number): number
 
 /** The shopper's stored promo, checked against Stripe. Null when none or invalid. */
 export function usePromo(): PromoInfo | null {
-  const [code, setCode] = useState<string | null>(getStoredPromo);
+  const [code, setCode] = useState<string | null>(null);
   const [info, setInfo] = useState<PromoInfo | null>(null);
 
   useEffect(() => {
     const sync = () => setCode(getStoredPromo());
+    sync();
     window.addEventListener(CHANGE_EVENT, sync);
     window.addEventListener('storage', sync);
     return () => {

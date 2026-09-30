@@ -4,8 +4,33 @@
     {
       "name": "dev",
       "runtimeExecutable": "npm",
-      "runtimeArgs": ["run", "dev"],
+      "runtimeArgs": [
+        "run",
+        "dev"
+      ],
       "port": 3000
+    },
+    {
+      "name": "preview",
+      "runtimeExecutable": "npx",
+      "runtimeArgs": [
+        "vite",
+        "preview",
+        "--port",
+        "4173",
+        "--strictPort"
+      ],
+      "port": 4173
+    },
+    {
+      "name": "vercel-like",
+      "runtimeExecutable": "node",
+      "runtimeArgs": [
+        "/private/tmp/claude-501/-Users-jamesperenchio-Desktop-AI-Coding-Projects-gingerbrosshop-vite--claude-worktrees-site-perf-checkout-19364c/292e8765-4ceb-4d4b-afb1-d1729f275e32/scratchpad/serve.mjs",
+        "dist",
+        "4174"
+      ],
+      "port": 4174
     }
   ]
 }

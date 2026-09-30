@@ -1,5 +1,6 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import Stripe from 'stripe';
+import { Redis } from '@upstash/redis';
 import { getStripe, type SessionWithShipping } from './_lib/stripe.js';
 import { saveOrder } from './_lib/orders.js';
 import {
@@ -56,6 +57,18 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     console.error('Webhook error:', message);
     res.status(400).json({ error: message });
     return;
+  }
+
+  // Product pages are prerendered from the catalog at build time, so a catalog
+  // change should refresh them. Optional: does nothing unless a Vercel Deploy
+  // Hook URL is configured. Debounced so a burst of edits triggers one rebuild.
+  if (/^(product|price)\.(created|updated|deleted)$/.test(event.type) && process.env.VERCEL_DEPLOY_HOOK_URL) {
+    try {
+      const first = await Redis.fromEnv().set('rebuild-debounce', '1', { nx: true, ex: 120 });
+      if (first) await fetch(process.env.VERCEL_DEPLOY_HOOK_URL, { method: 'POST', signal: AbortSignal.timeout(5000) });
+    } catch (err) {
+      console.error('Rebuild trigger failed:', err);
+    }
   }
 
   // When a product's stock_status metadata changes to a non-out-of-stock value,
