@@ -1,5 +1,5 @@
 import { useRef, useEffect } from 'react';
-import { shouldReduceMotion } from '@/lib/utils';
+import { shouldReduceMotion, isLowPowerDevice } from '@/lib/utils';
 
 interface Bubble {
   x: number;
@@ -22,7 +22,7 @@ export default function BubbleCanvas() {
 
     // Skip entirely on reduced-motion / low-power devices — this is the main
     // source of scroll stutter on weak hardware.
-    if (shouldReduceMotion()) return;
+    if (shouldReduceMotion() || isLowPowerDevice()) return;
 
     let running = true;
     let needsResize = true;

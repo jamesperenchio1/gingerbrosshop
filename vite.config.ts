@@ -4,9 +4,11 @@ import { defineConfig } from "vite"
 import { inspectAttr } from 'kimi-plugin-inspect-react'
 
 // https://vite.dev/config/
-export default defineConfig({
+export default defineConfig(({ command }) => ({
   base: '/',
-  plugins: [inspectAttr(), react()],
+  // Dev-only: the inspector tags every JSX element with data attributes, which
+  // only bloats the production bundle.
+  plugins: [...(command === 'serve' ? [inspectAttr()] : []), react()],
   server: {
     port: 3000,
   },
@@ -34,4 +36,4 @@ export default defineConfig({
       },
     },
   },
-});
+}));

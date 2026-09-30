@@ -1,4 +1,4 @@
-import { useRef, useEffect } from 'react';
+import { useRef, useEffect, useState } from 'react';
 import NoiseCanvas from '@/components/NoiseCanvas';
 import BubbleCanvas from '@/components/BubbleCanvas';
 import { ChevronDownIcon } from '@/components/Icons';
@@ -17,6 +17,18 @@ export default function Hero() {
   const scrollRef = useRef<HTMLDivElement>(null);
 
   const sectionRef = useRef<HTMLElement>(null);
+
+  // The WebGL shader + particle canvases are purely decorative: mount them once
+  // the browser is idle so they never compete with first paint / LCP.
+  const [showDecor, setShowDecor] = useState(false);
+  useEffect(() => {
+    if ('requestIdleCallback' in window) {
+      const id = window.requestIdleCallback(() => setShowDecor(true), { timeout: 1500 });
+      return () => window.cancelIdleCallback(id);
+    }
+    const id = window.setTimeout(() => setShowDecor(true), 300);
+    return () => window.clearTimeout(id);
+  }, []);
 
   // Staged entrance. Delays are absolute seconds on a single timeline; they
   // reproduce the previous GSAP timeline's relative offsets exactly.
@@ -58,8 +70,8 @@ export default function Hero() {
       className="relative w-full min-h-[540px] sm:min-h-[600px] md:min-h-[700px] md:h-screen flex items-center overflow-hidden"
       style={{ background: 'linear-gradient(135deg, #E8C97A 0%, #D4A34B 40%, #C9963A 100%)' }}
     >
-      <NoiseCanvas />
-      <BubbleCanvas />
+      {showDecor && <NoiseCanvas />}
+      {showDecor && <BubbleCanvas />}
 
       <div className="relative z-10 w-full max-w-[1120px] mx-auto px-6 grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-8 items-center pt-16 sm:pt-20 pb-36 md:py-0">
         {/* Left: copy */}
