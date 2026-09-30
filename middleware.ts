@@ -397,8 +397,11 @@ export default async function middleware(request: Request): Promise<Response> {
   // Pages prerendered at build time (scripts/prerender.mjs) already carry their
   // own head tags and content, so serve them as-is. Anything else (unknown
   // routes, the link-in-bio host) falls through to the SPA shell below.
+  // Forward the visitor's cookies so these internal fetches also work on
+  // deployments behind Vercel's preview protection.
+  const internal = { headers: { cookie: request.headers.get('cookie') ?? '' } };
   if (!url.hostname.startsWith('link.')) {
-    const prerendered = await fetch(new URL(pathname === '/' ? '/index.html' : `${pathname}/index.html`, request.url));
+    const prerendered = await fetch(new URL(pathname === '/' ? '/index.html' : `${pathname}/index.html`, request.url), internal);
     if (prerendered.ok) {
       const body = await prerendered.text();
       if (body.includes('data-prerendered=')) {
@@ -412,7 +415,7 @@ export default async function middleware(request: Request): Promise<Response> {
 
   // Untouched SPA shell (index.html itself is the prerendered homepage).
   const htmlUrl = new URL('/shell.html', request.url);
-  const response = await fetch(htmlUrl);
+  const response = await fetch(htmlUrl, internal);
   if (!response.ok) {
     return fetch(request);
   }
