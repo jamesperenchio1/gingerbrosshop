@@ -3,12 +3,17 @@ import { useCart } from '@/context/CartContext';
 import { useNavigate } from 'react-router';
 import { toast } from 'sonner';
 import { CloseIcon, TrashIcon, LockIcon, ShoppingBagIcon, PlusIcon, MinusIcon } from '@/components/Icons';
-import { PENDING_SUBSCRIPTION_CHECKOUT_KEY, REFERRAL_CODE_STORAGE_KEY, DELIVERY_METHOD_STORAGE_KEY, startCheckout, type DeliveryMethod } from '@/lib/checkout';
+import { PENDING_SUBSCRIPTION_CHECKOUT_KEY, REFERRAL_CODE_STORAGE_KEY, DELIVERY_METHOD_STORAGE_KEY, startCheckout, trackInitiateCheckout, type DeliveryMethod } from '@/lib/checkout';
 import { FREE_SHIPPING_THRESHOLD, CURRENCY_SYMBOL, getDeliveryEstimateMessage } from '@/constants/store';
 import { useI18n } from '@/context/I18nContext';
 import { optimizedImageUrl } from '@/lib/image';
 import type { CartItem } from '@/types/cart';
 import { usePromo, promoDiscount } from '@/lib/promo';
+
+/** localStorage read that is safe during server rendering. */
+function readLocal(key: string): string | null {
+  return typeof localStorage === 'undefined' ? null : localStorage.getItem(key);
+}
 
 export default function CartDrawer() {
   const promo = usePromo();
@@ -18,18 +23,18 @@ export default function CartDrawer() {
   const [mounted, setMounted] = useState(state.isOpen);
   const [isCheckingOut, setIsCheckingOut] = useState(false);
   const [checkoutError, setCheckoutError] = useState('');
-  const [prefetchedUrl, setPrefetchedUrl] = useState<string | null>(null);
+  const [prefetched, setPrefetched] = useState<{ url: string; key: string } | null>(null);
   const [referralInput, setReferralInput] = useState(false);
   const [referralCode, setReferralCode] = useState(
-    () => localStorage.getItem(REFERRAL_CODE_STORAGE_KEY) ?? '',
+    () => readLocal(REFERRAL_CODE_STORAGE_KEY) ?? '',
   );
   const [orderNote, setOrderNote] = useState(
-    () => localStorage.getItem('gingerbros-cart-note') ?? '',
+    () => readLocal('gingerbros-cart-note') ?? '',
   );
   const [noteOpen, setNoteOpen] = useState(false);
   const [isSharing, setIsSharing] = useState(false);
   const [deliveryMethod, setDeliveryMethod] = useState<DeliveryMethod>(
-    () => (localStorage.getItem(DELIVERY_METHOD_STORAGE_KEY) === 'hand-delivered' ? 'hand-delivered' : 'standard'),
+    () => (readLocal(DELIVERY_METHOD_STORAGE_KEY) === 'hand-delivered' ? 'hand-delivered' : 'standard'),
   );
   const navigate = useNavigate();
 
@@ -117,32 +122,35 @@ export default function CartDrawer() {
   const hasMixedCart = state.items.some(i => i.isSubscription) && state.items.some(i => !i.isSubscription);
   const hasSubscription = state.items.some(i => i.isSubscription);
 
-  // Pre-create the Stripe checkout session in the background as soon as the cart
-  // contents change, so clicking "Checkout" redirects instantly instead of waiting
-  // for the API. Mixed carts pre-fetch the one-time leg, which is the first step.
+  // Pre-create the Stripe checkout session in the background while the drawer is
+  // open, so clicking "Checkout" redirects instantly instead of waiting for the
+  // API. Debounced so typing a referral code or note doesn't create a session per
+  // keystroke, and only used on click if it was built from exactly what's on
+  // screen now. Mixed carts pre-fetch the one-time leg, which is the first step.
   const cartKey = state.items.map(i => `${i.id}:${i.quantity}`).join('|');
+  const checkoutKey = `${cartKey}|${referralCode}|${orderNote}|${deliveryMethod}`;
   useEffect(() => {
-    if (state.items.length === 0) {
-      setPrefetchedUrl(null);
-      return;
-    }
-    setPrefetchedUrl(null);
+    if (!state.isOpen || state.items.length === 0) return;
     let cancelled = false;
     const itemsToPrefetch = hasMixedCart
       ? state.items.filter(i => !i.isSubscription)
       : state.items;
-    startCheckout(itemsToPrefetch, { referralCode, orderNote, deliveryMethod }).then(url => {
-      if (!cancelled) setPrefetchedUrl(url);
-    }).catch(() => { /* retry on click */ });
-    return () => { cancelled = true; };
+    const timer = window.setTimeout(() => {
+      startCheckout(itemsToPrefetch, { referralCode, orderNote, deliveryMethod, prefetch: true })
+        .then(url => { if (!cancelled) setPrefetched({ url, key: checkoutKey }); })
+        .catch(() => { /* retry on click */ });
+    }, 700);
+    return () => { cancelled = true; window.clearTimeout(timer); };
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [cartKey, hasMixedCart, referralCode, orderNote, deliveryMethod]);
+  }, [state.isOpen, checkoutKey, hasMixedCart]);
+  const prefetchedUrl = prefetched && prefetched.key === checkoutKey ? prefetched.url : null;
 
   const handleCheckout = async () => {
     if (state.items.length === 0) return;
 
     // If the checkout URL was already prepared in the background, navigate instantly.
     if (!hasMixedCart && prefetchedUrl) {
+      trackInitiateCheckout(state.items);
       window.location.href = prefetchedUrl;
       return;
     }
@@ -156,6 +164,7 @@ export default function CartDrawer() {
         // the subscription leg automatically once that session completes.
         const oneTimeItems = state.items.filter((i) => !i.isSubscription);
         sessionStorage.setItem(PENDING_SUBSCRIPTION_CHECKOUT_KEY, '1');
+        if (prefetchedUrl) trackInitiateCheckout(oneTimeItems);
         window.location.href = prefetchedUrl ?? await startCheckout(oneTimeItems, { referralCode, orderNote, deliveryMethod });
         return;
       }

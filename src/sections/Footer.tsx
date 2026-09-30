@@ -130,7 +130,7 @@ export default function Footer() {
 
         {/* Bottom Bar */}
         <div className="border-t border-cream/10 pt-8 flex flex-col md:flex-row items-center justify-between gap-4">
-          <p className="font-body text-[13px] text-cream/50 text-center md:text-left">
+          <p className="font-body text-[13px] text-cream/50 text-center md:text-left" suppressHydrationWarning>
             © {CURRENT_YEAR} GingerBros. All rights reserved.
           </p>
           <div className="flex items-center gap-6">

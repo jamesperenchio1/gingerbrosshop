@@ -225,7 +225,13 @@ export default function Shop() {
   const sectionRef = useRef<HTMLElement>(null);
   const headerRef = useRef<HTMLDivElement>(null);
   const cardsRef = useRef<HTMLDivElement>(null);
-  const [activeCategory, setActiveCategory] = useState<ActiveCategory>(readStoredTab);
+  const [activeCategory, setActiveCategory] = useState<ActiveCategory>('drinks');
+  // Restore the remembered tab after hydration so the first render matches the prerendered HTML.
+  useEffect(() => {
+    const stored = readStoredTab();
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- restoring the saved tab after hydration
+    if (stored !== 'drinks') setActiveCategory(stored);
+  }, []);
 
   const handleCategoryChange = useCallback((cat: ActiveCategory) => {
     try {

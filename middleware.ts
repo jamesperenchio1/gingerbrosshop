@@ -394,7 +394,24 @@ export default async function middleware(request: Request): Promise<Response> {
     return Response.redirect(new URL('/admin/orders', request.url).toString(), 302);
   }
 
-  const htmlUrl = new URL('/index.html', request.url);
+  // Pages prerendered at build time (scripts/prerender.mjs) already carry their
+  // own head tags and content, so serve them as-is. Anything else (unknown
+  // routes, the link-in-bio host) falls through to the SPA shell below.
+  if (!url.hostname.startsWith('link.')) {
+    const prerendered = await fetch(new URL(pathname === '/' ? '/index.html' : `${pathname}/index.html`, request.url));
+    if (prerendered.ok) {
+      const body = await prerendered.text();
+      if (body.includes('data-prerendered=')) {
+        return new Response(body, {
+          status: 200,
+          headers: { 'Content-Type': 'text/html; charset=utf-8', 'Cache-Control': 'public, max-age=0, must-revalidate' },
+        });
+      }
+    }
+  }
+
+  // Untouched SPA shell (index.html itself is the prerendered homepage).
+  const htmlUrl = new URL('/shell.html', request.url);
   const response = await fetch(htmlUrl);
   if (!response.ok) {
     return fetch(request);

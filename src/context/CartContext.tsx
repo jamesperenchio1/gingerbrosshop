@@ -1,4 +1,4 @@
-import { createContext, useContext, useReducer, useCallback, useMemo, useEffect, type ReactNode } from 'react';
+import { createContext, useContext, useReducer, useCallback, useMemo, useEffect, useRef, type ReactNode } from 'react';
 import type { CartItem, CartState, CartAction } from '@/types/cart';
 import { trackPixelEvent } from '@/lib/metaPixel';
 
@@ -98,6 +98,9 @@ export function cartReducer(state: CartState, action: CartAction): CartState {
       return { ...state, isOpen: false };
     case 'CLEAR_CART':
       return { ...state, items: [] };
+    case 'HYDRATE':
+      // Restored from localStorage after mount. Keep anything already added.
+      return state.items.length > 0 ? state : { ...action.payload, isOpen: state.isOpen };
     default:
       return state;
   }
@@ -121,9 +124,20 @@ interface CartContextType {
 const CartContext = createContext<CartContextType | null>(null);
 
 export function CartProvider({ children }: { children: ReactNode }) {
-  const [state, dispatch] = useReducer(cartReducer, initialState, loadState);
+  // Start empty so the first client render matches the prerendered HTML, then
+  // restore the saved cart right after hydration.
+  const [state, dispatch] = useReducer(cartReducer, initialState);
+  const restored = useRef(false);
 
   useEffect(() => {
+    const saved = loadState();
+    if (saved.items.length > 0) dispatch({ type: 'HYDRATE', payload: saved });
+    restored.current = true;
+  }, []);
+
+  useEffect(() => {
+    // Don't overwrite the saved cart with the empty pre-restore state.
+    if (!restored.current) return;
     const toStore = { items: state.items, isOpen: false };
     localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(toStore));
     const email = typeof window !== 'undefined' ? localStorage.getItem(CART_EMAIL_KEY) : null;
