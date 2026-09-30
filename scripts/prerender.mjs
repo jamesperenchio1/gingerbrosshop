@@ -6,7 +6,7 @@
 //
 // Safety: if anything about a route fails, that route is skipped and keeps
 // serving the ordinary SPA shell (vercel.json rewrite), i.e. today's behaviour.
-import { readFile, writeFile, mkdir, readdir } from 'node:fs/promises';
+import { readFile, writeFile, mkdir } from 'node:fs/promises';
 import path from 'node:path';
 import { pathToFileURL } from 'node:url';
 
@@ -49,11 +49,26 @@ const CHUNK_FOR = [
 ];
 
 // Preload the above-the-fold image(s) so they download in parallel with the JS.
-function resourceHints(route, html, assets) {
+function resourceHints(route, html, manifest) {
   const tags = [];
   const chunk = CHUNK_FOR.find(([re]) => re.test(route))?.[1];
-  const file = chunk && assets.find((f) => f.startsWith(`${chunk}-`) && f.endsWith('.js'));
-  if (file) tags.push(`<link rel="modulepreload" crossorigin href="/assets/${file}">`);
+  const entryKey = chunk && Object.keys(manifest).find((k) => k.endsWith(`/pages/${chunk}.tsx`));
+  if (entryKey) {
+    // The route chunk plus everything it statically imports (minus what the
+    // shell already preloads), so the whole tree downloads in parallel.
+    const shell = new Set(Object.values(manifest).filter((m) => m.isEntry).flatMap((m) => [m.file, ...(m.imports ?? []).map((k) => manifest[k].file)]));
+    const seen = new Set();
+    const walk = (k) => {
+      if (seen.has(k)) return;
+      seen.add(k);
+      (manifest[k].imports ?? []).forEach(walk);
+    };
+    walk(entryKey);
+    for (const k of seen) {
+      const file = manifest[k].file;
+      if (!shell.has(file)) tags.push(`<link rel="modulepreload" crossorigin href="/${file}">`);
+    }
+  }
   if (route === '/') {
     for (const src of ['/images/hero-mug.webp', '/images/bottle-hero-transparent.webp']) {
       tags.push(`<link rel="preload" as="image" type="image/webp" href="${src}" fetchpriority="high">`);
@@ -75,7 +90,7 @@ async function main() {
   // prerendered (see the rewrite in vercel.json and middleware.ts).
   await writeFile(path.join(dist, 'shell.html'), template);
   const catalog = await fetchCatalog();
-  const assets = await readdir(path.join(dist, 'assets'));
+  const manifest = JSON.parse(await readFile(path.join(dist, '.vite', 'manifest.json'), 'utf8'));
 
   const routes = [...STATIC_ROUTES, ...BLOG_SLUGS.map((s) => `/blog/${s}`)];
   if (catalog) routes.push(...catalog.map((p) => `/product/${p.id}`));
@@ -87,7 +102,7 @@ async function main() {
       const { html, head } = await render(route, catalog);
       if (!html || html.length < 500) throw new Error('empty render');
       let page = stripShellSeo(template)
-        .replace('</head>', `${head}\n${resourceHints(route, html, assets)}\n</head>`)
+        .replace('</head>', `${head}\n${resourceHints(route, html, manifest)}\n</head>`)
         .replace('<div id="root"></div>', `${catalogTag}<div id="root" data-prerendered="${route}">${html}</div>`);
       const out = route === '/' ? path.join(dist, 'index.html') : path.join(dist, route, 'index.html');
       await mkdir(path.dirname(out), { recursive: true });
