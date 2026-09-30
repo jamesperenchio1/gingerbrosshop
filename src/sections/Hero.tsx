@@ -22,8 +22,9 @@ export default function Hero() {
   // the browser is idle so they never compete with first paint / LCP.
   const [showDecor, setShowDecor] = useState(false);
   useEffect(() => {
-    if ('requestIdleCallback' in window) {
-      const id = window.requestIdleCallback(() => setShowDecor(true), { timeout: 1500 });
+    const ric = window.requestIdleCallback as typeof window.requestIdleCallback | undefined;
+    if (ric) {
+      const id = ric(() => setShowDecor(true), { timeout: 1500 });
       return () => window.cancelIdleCallback(id);
     }
     const id = window.setTimeout(() => setShowDecor(true), 300);
