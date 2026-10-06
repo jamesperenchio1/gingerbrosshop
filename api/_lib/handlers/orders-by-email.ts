@@ -26,7 +26,11 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   const orders = all
     .filter((o) => (o.customerEmail ?? '').toLowerCase() === email)
     .map((o) => ({
-      sessionId: o.sessionId,
+      // NOTE: never expose the raw Stripe `sessionId` here. It is treated as a
+      // bearer secret by /api/order-details and /api/portal, so returning it to
+      // anyone who knows an email address would leak full PII (name, phone,
+      // address, invoices) and allow opening the customer's Stripe billing
+      // portal. The UI only needs the public 8-char order number.
       orderId: o.sessionId.slice(-8).toUpperCase(),
       amountTotal: o.amountTotal,
       currency: o.currency,

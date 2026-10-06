@@ -2,6 +2,14 @@ import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { Redis } from '@upstash/redis';
 import Stripe from 'stripe';
 import { getResend, MAIL_FROM_NEWSLETTER, UNSUBSCRIBE_HEADERS, discountCodeHtml } from '../email.js';
+import { rateLimit, getClientIp } from '../rateLimit.js';
+
+// The verification code is a 6-digit number (~900k values) that lives in Redis
+// for 24h. Without a cap, an attacker could brute-force it for any email that
+// was sent a code. We bound guessing two ways: a per-IP/per-email request rate
+// limit, and a hard per-code failed-attempt counter that invalidates the code.
+const MAX_ATTEMPTS = 5;
+const CODE_TTL_SECONDS = 86400; // matches the 24h code lifetime set on subscribe
 
 function getRedis(): Redis | null {
   if (!process.env.UPSTASH_REDIS_REST_URL || !process.env.UPSTASH_REDIS_REST_TOKEN) return null;
@@ -22,6 +30,17 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return;
   }
 
+  // Bound the request volume per IP and per email before touching the code.
+  const ip = getClientIp(req);
+  const [ipRl, emailRl] = await Promise.all([
+    rateLimit({ key: `verify-email:ip:${ip}`, limit: 10, windowSeconds: 60 }),
+    rateLimit({ key: `verify-email:email:${email}`, limit: 10, windowSeconds: 60 }),
+  ]);
+  if (!ipRl.allowed || !emailRl.allowed) {
+    res.status(429).json({ error: 'Too many attempts. Please try again in a minute.' });
+    return;
+  }
+
   const redis = getRedis();
   if (!redis) {
     res.status(503).json({ error: 'Verification service not configured.' });
@@ -29,6 +48,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   }
 
   const key = `verify:${email}`;
+  const attemptsKey = `verify:attempts:${email}`;
   const storedCode = await redis.get<string>(key);
 
   if (!storedCode) {
@@ -37,12 +57,23 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   }
 
   if (storedCode !== code) {
+    // Atomically count the failed attempt; after MAX_ATTEMPTS, burn the code so
+    // it can no longer be guessed and the user must request a fresh one.
+    const attempts = await redis.incr(attemptsKey);
+    await redis.expire(attemptsKey, CODE_TTL_SECONDS);
+    if (attempts >= MAX_ATTEMPTS) {
+      await redis.del(key);
+      await redis.del(attemptsKey);
+      res.status(429).json({ error: 'Too many incorrect attempts. Please subscribe again to get a new code.' });
+      return;
+    }
     res.status(400).json({ error: 'Incorrect code. Check your email and try again.' });
     return;
   }
 
-  // Single-use: delete immediately on match
+  // Single-use: delete the code and reset the attempt counter on match.
   await redis.del(key);
+  await redis.del(attemptsKey);
 
   // Create a unique, single-use Stripe promo code (10% off, 24h expiry)
   let promoCode = '';
