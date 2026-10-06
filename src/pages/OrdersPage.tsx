@@ -5,7 +5,6 @@ import SEO from '@/components/SEO';
 import CopyButton from '@/components/CopyButton';
 
 interface OrderSummary {
-  sessionId: string;
   orderId: string;
   amountTotal: number;
   currency: string;
@@ -191,7 +190,7 @@ export default function OrdersPage() {
             <div className="space-y-3">
               <p className="font-body text-[13px] text-earth mb-4">{orders.length} order{orders.length !== 1 ? 's' : ''} found</p>
               {orders.map((order) => (
-                <OrderCard key={order.sessionId} order={order} />
+                <OrderCard key={order.orderId} order={order} />
               ))}
             </div>
           )
