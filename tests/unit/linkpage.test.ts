@@ -10,6 +10,7 @@ import {
   twemojiSticker,
   emojitwoSticker,
   stickerThumb,
+  notoMotion,
   stickerSourceOf,
   parseFluentSticker,
   stickerCredits,
@@ -137,5 +138,20 @@ describe('sticker sources', () => {
 
   it('returns no credits when no attribution-required sticker is present', () => {
     expect(stickerCredits([fluentSticker('Cat face', 'cat_face', '3d'), 'https://example.com/x.png'])).toEqual([]);
+  });
+});
+
+describe('notoMotion', () => {
+  it('switches a Noto sticker between its animated and still forms', () => {
+    const anim = notoSticker('1f431');
+    const still = notoMotion(anim, false);
+    expect(still.endsWith('/1f431/emoji.svg')).toBe(true);
+    expect(notoMotion(still, true)).toBe(anim);
+    expect(stickerThumb(anim)).toBe(still);
+  });
+
+  it('leaves non-Noto stickers untouched', () => {
+    const f = fluentSticker('Lime', 'lime', '3d');
+    expect(notoMotion(f, false)).toBe(f);
   });
 });

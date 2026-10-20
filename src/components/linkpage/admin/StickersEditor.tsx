@@ -6,6 +6,8 @@ import {
   STICKER_SOURCES,
   emojitwoSticker,
   fluentSticker,
+  isNotoSticker,
+  notoMotion,
   notoSticker,
   parseFluentSticker,
   stickerThumb,
@@ -260,6 +262,27 @@ export default function StickersEditor({ config, onChange, selectedId, onSelect 
                 ))}
               </select>
             </Field>
+            {isNotoSticker(selected.imageUrl) && (
+              <Field label="Motion">
+                <div className="flex gap-2">
+                  {[
+                    { label: 'Animated', animated: true },
+                    { label: 'Still', animated: false },
+                  ].map((m) => (
+                    <button
+                      key={m.label}
+                      type="button"
+                      onClick={() => patch({ imageUrl: notoMotion(selected.imageUrl, m.animated) })}
+                      className={`px-3 py-1.5 rounded-lg font-body text-[13px] ${
+                        selected.imageUrl.endsWith('.json') === m.animated ? 'bg-deep-brown text-white' : 'bg-cream text-deep-brown'
+                      }`}
+                    >
+                      {m.label}
+                    </button>
+                  ))}
+                </div>
+              </Field>
+            )}
             {fluent && (
               <Field label="Fluent style">
                 <div className="flex gap-2">

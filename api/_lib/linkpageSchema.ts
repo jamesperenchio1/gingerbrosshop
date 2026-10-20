@@ -301,6 +301,12 @@ export function stickerThumb(url: string): string {
   return isNotoSticker(url) ? url.replace(/lottie\.json$/, 'emoji.svg') : url;
 }
 
+/** The animated (Lottie) and still (SVG) forms of a Noto sticker share a codepoint folder. */
+export function notoMotion(url: string, animated: boolean): string {
+  if (!isNotoSticker(url)) return url;
+  return url.replace(/(lottie\.json|emoji\.svg)$/, animated ? 'lottie.json' : 'emoji.svg');
+}
+
 /** Pull name/snake/style back out of a Fluent URL, so the editor can switch style. */
 export function parseFluentSticker(url: string): { name: string; snake: string; style: FluentStyle } | null {
   if (!url.startsWith(FLUENT_BASE)) return null;

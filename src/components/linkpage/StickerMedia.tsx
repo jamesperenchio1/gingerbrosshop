@@ -1,5 +1,6 @@
 import { useEffect, useRef, type CSSProperties } from 'react';
 import { stickerThumb } from '@/lib/linkpage';
+import { buildOutlineAnimation } from '@/lib/lottieOutline';
 
 // White die-cut border for STATIC artwork: stacked hard drop-shadows in eight
 // directions, plus a soft lift underneath. Cheap here because static pixels are
@@ -14,27 +15,6 @@ function outlineFilter(px: number): string {
   return [...dirs.map(([x, y]) => `drop-shadow(${x.toFixed(1)}px ${y.toFixed(1)}px 0 #fff)`), 'drop-shadow(0 2px 3px rgba(0,0,0,0.18))'].join(' ');
 }
 
-export const STICKER_OUTLINE_ID = 'gb-sticker-outline';
-
-/**
- * Shared SVG filter used by animated stickers: dilate the artwork's own alpha
- * into a solid white silhouette. Rendered once per page; because it is applied
- * to a *static* layer the browser rasterises it a single time.
- */
-export function StickerOutlineDefs() {
-  return (
-    <svg aria-hidden="true" focusable="false" style={{ position: 'absolute', width: 0, height: 0, overflow: 'hidden' }}>
-      <defs>
-        <filter id={STICKER_OUTLINE_ID} x="-25%" y="-25%" width="150%" height="150%" colorInterpolationFilters="sRGB">
-          <feMorphology in="SourceAlpha" operator="dilate" radius="2" result="dilated" />
-          <feFlood floodColor="#fff" floodOpacity="1" result="white" />
-          <feComposite in="white" in2="dilated" operator="in" />
-        </filter>
-      </defs>
-    </svg>
-  );
-}
-
 const prefersReducedMotion = () =>
   typeof window !== 'undefined' && window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
 
@@ -45,45 +25,84 @@ export default function StickerMedia({ url, size, outline }: { url: string; size
     const style: CSSProperties = { width: '100%', height: '100%', filter: outline ? outlineFilter(size / 28) : undefined };
     return <img src={url} alt="" draggable={false} className="w-full h-full object-contain" style={style} />;
   }
-  return <LottieMedia url={url} outline={outline} />;
+  return <LottieMedia url={url} size={size} outline={outline} />;
 }
 
-function LottieMedia({ url, outline }: { url: string; outline: boolean }) {
+type LottieData = Record<string, unknown>;
+const animationCache = new Map<string, Promise<LottieData>>();
+
+function loadAnimationData(url: string): Promise<LottieData> {
+  let p = animationCache.get(url);
+  if (!p) {
+    p = fetch(url).then((r) => {
+      if (!r.ok) throw new Error(`sticker ${r.status}`);
+      return r.json() as Promise<LottieData>;
+    });
+    p.catch(() => animationCache.delete(url));
+    animationCache.set(url, p);
+  }
+  return p;
+}
+
+function LottieMedia({ url, size, outline }: { url: string; size: number; outline: boolean }) {
   const box = useRef<HTMLDivElement>(null);
+  const borderBox = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     let cancelled = false;
-    let anim: { destroy: () => void } | null = null;
+    const players: { destroy: () => void }[] = [];
     // lottie_light: SVG renderer only, no expression eval, so it runs under our CSP.
-    import('lottie-web/build/player/lottie_light').then(({ default: lottie }) => {
-      if (cancelled || !box.current) return;
-      box.current.replaceChildren(); // drop the static placeholder
-      const still = prefersReducedMotion();
-      const a = lottie.loadAnimation({ container: box.current, renderer: 'svg', loop: !still, autoplay: !still, path: url });
-      anim = a;
-      if (still) a.addEventListener('DOMLoaded', () => a.goToAndStop(0, true));
-    });
+    Promise.all([import('lottie-web/build/player/lottie_light'), loadAnimationData(url)])
+      .then(([{ default: lottie }, data]) => {
+        if (cancelled || !box.current) return;
+        const still = prefersReducedMotion();
+        box.current.replaceChildren(); // drop the static placeholder
+        const main = lottie.loadAnimation({ container: box.current, renderer: 'svg', loop: !still, autoplay: !still, animationData: structuredClone(data) });
+        players.push(main);
+
+        let border: ReturnType<typeof lottie.loadAnimation> | null = null;
+        if (outline && borderBox.current) {
+          // The white border is the same animation recoloured and thickened, played in lock-step
+          // behind the real one, so it follows every movement.
+          borderBox.current.replaceChildren();
+          border = lottie.loadAnimation({
+            container: borderBox.current,
+            renderer: 'svg',
+            loop: false,
+            autoplay: false,
+            animationData: buildOutlineAnimation(data, Math.max(1.5, size / 28), size),
+          });
+          players.push(border);
+          const sync = () => border?.goToAndStop(main.currentFrame, true);
+          main.addEventListener('enterFrame', sync);
+          main.addEventListener('DOMLoaded', sync);
+        }
+        if (still) main.addEventListener('DOMLoaded', () => main.goToAndStop(0, true));
+      })
+      .catch(() => {
+        // Keep the static placeholders if the animation can't load.
+      });
     return () => {
       cancelled = true;
-      anim?.destroy();
+      players.forEach((a) => a.destroy());
     };
-  }, [url]);
+  }, [url, size, outline]);
 
   const thumb = stickerThumb(url);
   return (
     <div className="relative w-full h-full">
-      {/* White die-cut border: a static silhouette behind the animation. */}
+      {/* White die-cut border: a static silhouette until the animated one is ready. */}
       {outline && (
-        <img
-          src={thumb}
-          alt=""
-          aria-hidden
-          draggable={false}
-          className="absolute inset-0 w-full h-full object-contain"
-          style={{ filter: `url(#${STICKER_OUTLINE_ID}) drop-shadow(0 2px 3px rgba(0,0,0,0.18))` }}
-        />
+        <div ref={borderBox} className="absolute inset-0 w-full h-full" aria-hidden>
+          <img
+            src={thumb}
+            alt=""
+            draggable={false}
+            className="w-full h-full object-contain"
+            style={{ filter: outlineFilter(size / 28) }}
+          />
+        </div>
       )}
-      {/* The animation itself stays unfiltered so it renders on the compositor. */}
       <div ref={box} className="absolute inset-0 w-full h-full">
         <img src={thumb} alt="" draggable={false} className="w-full h-full object-contain" />
       </div>
