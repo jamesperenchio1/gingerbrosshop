@@ -321,6 +321,7 @@ function StickerView({
   const [pressed, setPressed] = useState(false);
   const taps = useRef({ count: 0, last: 0 });
   const resetTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
+  const activePointer = useRef<number | null>(null);
 
   const react = useCallback(() => {
     const now = Date.now();
@@ -344,14 +345,31 @@ function StickerView({
       if ((e.target as Element | null)?.closest('a, button, input, textarea, select, label')) return;
       const r = box.getBoundingClientRect();
       if (e.clientX < r.left || e.clientX > r.right || e.clientY < r.top || e.clientY > r.bottom) return;
+      if (activePointer.current !== null) return; // one finger per sticker
+      // Overlapping stickers: only the one drawn on top (highest z-index, later in the DOM on ties) takes the press.
+      let top: HTMLElement = box;
+      let topZ = Number(getComputedStyle(box).zIndex) || 0;
+      document.querySelectorAll<HTMLElement>('.lp-sticker').forEach((other) => {
+        if (other === box) return;
+        const o = other.getBoundingClientRect();
+        if (e.clientX < o.left || e.clientX > o.right || e.clientY < o.top || e.clientY > o.bottom) return;
+        const z = Number(getComputedStyle(other).zIndex) || 0;
+        if (z > topZ || (z === topZ && box.compareDocumentPosition(other) & Node.DOCUMENT_POSITION_FOLLOWING)) {
+          top = other;
+          topZ = z;
+        }
+      });
+      if (top !== box) return;
 
       if (e.pointerType === 'mouse') e.preventDefault(); // no text selection while dragging
       clearTimeout(resetTimer.current); // a previous release's spring-back must not cancel this drag
       const startX = e.clientX;
       const startY = e.clientY;
       let moved = false;
+      activePointer.current = e.pointerId;
       setPressed(true);
       const move = (ev: PointerEvent) => {
+        if (ev.pointerId !== e.pointerId) return;
         const dx = ev.clientX - startX;
         const dy = ev.clientY - startY;
         if (!moved && Math.hypot(dx, dy) < 6) return;
@@ -361,6 +379,8 @@ function StickerView({
         setOffset({ x: damp(dx), y: damp(dy), released: false });
       };
       const end = (ev: PointerEvent) => {
+        if (ev.pointerId !== e.pointerId) return;
+        activePointer.current = null;
         window.removeEventListener('pointermove', move);
         window.removeEventListener('pointerup', end);
         window.removeEventListener('pointercancel', end);
