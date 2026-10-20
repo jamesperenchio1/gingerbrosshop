@@ -11,7 +11,7 @@ import {
   SOCIAL_LABELS,
 } from '@/lib/linkpage';
 import SocialIcon from './SocialIcon';
-import StickerMedia, { StickerOutlineDefs } from './StickerMedia';
+import StickerMedia from './StickerMedia';
 
 const CORNER_PX = { square: 0, sm: 8, md: 16, pill: 9999 } as const;
 const THUMB_CORNER_PX = { square: 0, sm: 4, md: 10, pill: 9999 } as const;
@@ -117,7 +117,6 @@ export default function LinkPageView(props: LinkPageViewProps) {
       style={{ ...pageBackground, color: theme.textColor, fontFamily }}
     >
       <style>{KEYFRAMES}</style>
-      <StickerOutlineDefs />
 
       {/* Top bar: Subscribe + Share, like Linktree */}
       <div className="flex items-center justify-end gap-2 px-4 pt-4 h-16 relative z-20">
