@@ -21,6 +21,8 @@ export default function LinkPage() {
   // wait for the fetch (falling back to the built-in snapshot if the API fails).
   const [config, setConfig] = useState<LinkPageConfig | null>(() => readCached());
   const [products, setProducts] = useState<CatalogProduct[]>([]);
+  // Where this visit came from (?src=stall, ?src=meta, …). Read in an effect to stay hydration-safe.
+  const [srcTag, setSrcTag] = useState('');
 
   useEffect(() => {
     fetch('/api/links')
@@ -36,6 +38,8 @@ export default function LinkPage() {
       .catch(() => setConfig((c) => c ?? DEFAULT_LINKPAGE_CONFIG));
 
     const src = new URLSearchParams(window.location.search).get('src');
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- reading the URL after hydration
+    setSrcTag((src ?? '').toLowerCase().replace(/[^a-z0-9_-]/g, '').slice(0, 24));
     sendLinkEvent({ type: 'view', referrer: document.referrer, src });
   }, []);
 
@@ -73,6 +77,7 @@ export default function LinkPage() {
       config={config}
       products={products}
       pageUrl={pageUrl}
+      srcTag={srcTag}
       onLinkClick={(blockId) => sendLinkEvent({ type: 'click', blockId })}
       onSignup={onSignup}
     />

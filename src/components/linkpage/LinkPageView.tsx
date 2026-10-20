@@ -9,7 +9,6 @@ import {
   type LinkPageConfig,
   type Sticker,
   SOCIAL_LABELS,
-  stickerCredits,
 } from '@/lib/linkpage';
 import SocialIcon from './SocialIcon';
 import StickerMedia, { StickerOutlineDefs } from './StickerMedia';
@@ -23,6 +22,8 @@ export interface LinkPageViewProps {
   products?: CatalogProduct[];
   /** Absolute URL used for Share buttons. */
   pageUrl: string;
+  /** `?src=` tag this visit arrived with (e.g. "stall"); forwarded to shop links so orders keep it. */
+  srcTag?: string;
   /** Admin preview: no desktop frame, links don't navigate. */
   preview?: boolean;
   onLinkClick?: (blockId: string) => void;
@@ -38,14 +39,27 @@ function clamp(n: number, min: number, max: number) {
   return Math.min(max, Math.max(min, n));
 }
 
-function blockHref(block: LinkBlock): string | null {
+/** Carry the visit's `?src=` tag onto shop links so the order records where the customer first scanned. */
+function withSrc(url: string, src?: string): string {
+  if (!src) return url;
+  try {
+    const u = new URL(url);
+    if (!/(^|\.)gingerbrosshop\.com$/i.test(u.hostname) || u.hostname.startsWith('link.')) return url;
+    if (!u.searchParams.has('src')) u.searchParams.set('src', src);
+    return u.toString();
+  } catch {
+    return url;
+  }
+}
+
+function blockHref(block: LinkBlock, src?: string): string | null {
   switch (block.type) {
     case 'link':
-      return block.utm ? withUtm(block.url, block.title) : block.url;
+      return withSrc(block.utm ? withUtm(block.url, block.title) : block.url, src);
     case 'social-card':
       return block.url;
     case 'product':
-      return withUtm(`${SHOP_URL}/product/${encodeURIComponent(block.productId)}`, block.productId);
+      return withSrc(withUtm(`${SHOP_URL}/product/${encodeURIComponent(block.productId)}`, block.productId), src);
     default:
       return null;
   }
@@ -176,6 +190,7 @@ export default function LinkPageView(props: LinkPageViewProps) {
               theme={config.theme}
               products={props.products}
               preview={preview}
+              srcTag={props.srcTag}
               onClick={() => props.onLinkClick?.(block.id)}
               onShare={(title, url) => share(title, url)}
               onSignup={props.onSignup}
@@ -186,24 +201,12 @@ export default function LinkPageView(props: LinkPageViewProps) {
 
       <footer className="mt-auto pb-8 pt-2 flex flex-col items-center gap-3">
         <a
-          href={withUtm(SHOP_URL, 'footer')}
+          href={withSrc(withUtm(SHOP_URL, 'footer'), props.srcTag)}
           onClick={(e) => preview && e.preventDefault()}
           className="h-10 px-4 rounded-full bg-white/90 text-[14px] font-semibold text-black flex items-center hover:bg-white transition-colors"
         >
           gingerbrosshop.com
         </a>
-        {stickerCredits(config.stickers.map((st) => st.imageUrl)).map((c) => (
-          <a
-            key={c.key}
-            href={c.href}
-            target="_blank"
-            rel="noopener noreferrer"
-            onClick={(e) => preview && e.preventDefault()}
-            className="text-[11px] opacity-50 hover:opacity-80"
-          >
-            {c.text}
-          </a>
-        ))}
       </footer>
 
       {signupOpen && (
@@ -282,6 +285,8 @@ function Anchor({
   );
 }
 
+const REACTIONS = ['lp-st-pop', 'lp-st-spin', 'lp-st-wiggle', 'lp-st-hop'] as const;
+
 function StickerView({
   sticker,
   anchorRef,
@@ -307,8 +312,57 @@ function StickerView({
     transform: `translate(-50%, -50%) rotate(${sticker.rotation}deg)`,
   };
 
-  const onPointerDown = (e: React.PointerEvent) => {
-    if (!editable) return;
+  // Visitor mode: tap to make it react, drag to fling it around — it springs back on release.
+  const [reaction, setReaction] = useState<{ cls: string; n: number } | null>(null);
+  const [offset, setOffset] = useState<{ x: number; y: number; released: boolean } | null>(null);
+  const taps = useRef({ count: 0, last: 0 });
+
+  const react = () => {
+    const now = Date.now();
+    taps.current.count = now - taps.current.last < 700 ? taps.current.count + 1 : 1;
+    taps.current.last = now;
+    // Rapid tapping escalates to a full spin.
+    const cls = taps.current.count >= 4 ? 'lp-st-spin' : REACTIONS[Math.floor(Math.random() * REACTIONS.length)];
+    setReaction((r) => ({ cls, n: (r?.n ?? 0) + 1 }));
+    try {
+      navigator.vibrate?.(8);
+    } catch {
+      // vibration unsupported — purely cosmetic
+    }
+  };
+
+  const onVisitorPointerDown = (e: React.PointerEvent) => {
+    const el = e.currentTarget as HTMLElement;
+    const startX = e.clientX;
+    const startY = e.clientY;
+    let moved = false;
+    el.setPointerCapture(e.pointerId);
+    const move = (ev: PointerEvent) => {
+      const dx = ev.clientX - startX;
+      const dy = ev.clientY - startY;
+      if (!moved && Math.hypot(dx, dy) < 6) return;
+      moved = true;
+      // Rubber-band: the further you pull, the more it resists.
+      const damp = (v: number) => Math.sign(v) * Math.min(Math.abs(v) * 0.8, 90);
+      setOffset({ x: damp(dx), y: damp(dy), released: false });
+    };
+    const up = () => {
+      el.removeEventListener('pointermove', move);
+      el.removeEventListener('pointerup', up);
+      el.removeEventListener('pointercancel', up);
+      if (moved) {
+        setOffset((o) => (o ? { ...o, released: true } : o));
+        setTimeout(() => setOffset(null), 650);
+      } else {
+        react();
+      }
+    };
+    el.addEventListener('pointermove', move);
+    el.addEventListener('pointerup', up);
+    el.addEventListener('pointercancel', up);
+  };
+
+  const onEditPointerDown = (e: React.PointerEvent) => {
     e.preventDefault();
     e.stopPropagation();
     onSelect?.(sticker.id);
@@ -331,15 +385,26 @@ function StickerView({
     el.addEventListener('pointercancel', up);
   };
 
+  const inner: CSSProperties | undefined = offset
+    ? {
+        transform: offset.released ? 'translate(0,0)' : `translate(${offset.x}px, ${offset.y}px) scale(1.12)`,
+        transition: offset.released ? 'transform 600ms cubic-bezier(0.34, 1.9, 0.5, 1)' : 'none',
+      }
+    : undefined;
+
   return (
     <div
-      onPointerDown={onPointerDown}
-      className={`absolute select-none ${editable ? 'cursor-grab active:cursor-grabbing touch-none' : 'pointer-events-none'} ${
-        selected ? 'outline outline-2 outline-dashed outline-blue-500 outline-offset-2' : ''
-      }`}
-      style={style}
+      onPointerDown={editable ? onEditPointerDown : onVisitorPointerDown}
+      className={`absolute select-none ${
+        editable ? 'cursor-grab active:cursor-grabbing touch-none' : 'lp-sticker cursor-pointer'
+      } ${selected ? 'outline outline-2 outline-dashed outline-blue-500 outline-offset-2' : ''}`}
+      style={editable ? style : { ...style, touchAction: 'pan-y' }}
     >
-      <StickerMedia url={sticker.imageUrl} size={size} outline={sticker.outline} />
+      <div className="w-full h-full" style={inner}>
+        <div key={reaction?.n ?? 0} className={`w-full h-full ${reaction ? reaction.cls : ''}`}>
+          <StickerMedia url={sticker.imageUrl} size={size} outline={sticker.outline} />
+        </div>
+      </div>
     </div>
   );
 }
@@ -351,6 +416,7 @@ interface BlockViewProps {
   theme: LinkPageConfig['theme'];
   products?: CatalogProduct[];
   preview: boolean;
+  srcTag?: string;
   onClick: () => void;
   onShare: (title: string, url: string) => void;
   onSignup?: LinkPageViewProps['onSignup'];
@@ -378,8 +444,8 @@ function highlightClass(h: LinkBlock['highlight']): string {
   return '';
 }
 
-function BlockView({ block, theme, products, preview, onClick, onShare, onSignup }: BlockViewProps) {
-  const href = blockHref(block);
+function BlockView({ block, theme, products, preview, srcTag, onClick, onShare, onSignup }: BlockViewProps) {
+  const href = blockHref(block, srcTag);
   const style = buttonStyle(theme);
   const thumbRadius = THUMB_CORNER_PX[theme.corner];
 
@@ -556,5 +622,16 @@ const KEYFRAMES = `
 .lp-shine > a { position: relative }
 .lp-shine > a::after { content: ''; position: absolute; top: 0; bottom: 0; width: 40%; left: -60%;
   background: linear-gradient(100deg, transparent, rgba(255,255,255,.55), transparent); animation: lp-shine 2.6s ease-in-out infinite }
-@media (prefers-reduced-motion: reduce) { .lp-pulse, .lp-wobble, .lp-shine > a::after { animation: none } }
+@keyframes lp-st-pop { 0% { transform: scale(1) } 35% { transform: scale(1.4) rotate(-8deg) } 65% { transform: scale(0.9) rotate(6deg) } 100% { transform: scale(1) } }
+@keyframes lp-st-spin { 0% { transform: rotate(0) scale(1) } 50% { transform: rotate(200deg) scale(1.3) } 100% { transform: rotate(360deg) scale(1) } }
+@keyframes lp-st-wiggle { 0%,100% { transform: rotate(0) } 20% { transform: rotate(-18deg) } 40% { transform: rotate(16deg) } 60% { transform: rotate(-10deg) } 80% { transform: rotate(6deg) } }
+@keyframes lp-st-hop { 0%,100% { transform: translateY(0) scale(1,1) } 30% { transform: translateY(-26px) scale(0.92,1.1) } 55% { transform: translateY(0) scale(1.15,0.85) } 75% { transform: translateY(-8px) } }
+.lp-st-pop { animation: lp-st-pop 520ms cubic-bezier(0.34, 1.56, 0.64, 1) }
+.lp-st-spin { animation: lp-st-spin 700ms cubic-bezier(0.34, 1.2, 0.64, 1) }
+.lp-st-wiggle { animation: lp-st-wiggle 600ms ease-in-out }
+.lp-st-hop { animation: lp-st-hop 640ms ease-out }
+.lp-sticker { transition: filter 150ms }
+@media (hover: hover) { .lp-sticker:hover { filter: brightness(1.06) } .lp-sticker:hover > div { transform: scale(1.12); transition: transform 150ms } }
+.lp-sticker:active > div { transform: scale(0.92) }
+@media (prefers-reduced-motion: reduce) { .lp-pulse, .lp-wobble, .lp-shine > a::after, .lp-st-pop, .lp-st-spin, .lp-st-wiggle, .lp-st-hop { animation: none } }
 `;
