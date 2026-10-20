@@ -404,6 +404,7 @@ export const DEFAULT_LINKPAGE_CONFIG: LinkPageConfig = {
     { id: 'st-click', imageUrl: notoSticker('1f446'), anchor: 'socials', x: 0.19, y: 1.4, rotation: -15, scale: 0.85, zIndex: 0, outline: true },
     { id: 'st-shop', imageUrl: fluentSticker('Shopping cart', 'shopping_cart', '3d'), anchor: 'shop', x: 0.9, y: -0.06, rotation: 8, scale: 1, zIndex: 2, outline: true },
     { id: 'st-apple', imageUrl: notoSticker('1f34e'), anchor: 'grab', x: 0.26, y: 0.42, rotation: -9, scale: 0.7, zIndex: 3, outline: true },
+    { id: 'st-ginger', imageUrl: fluentSticker('Ginger root', 'ginger_root', '3d'), anchor: 'header', x: 0.82, y: 0.78, rotation: -14, scale: 1, zIndex: 3, outline: true },
   ],
   showSubscribeButton: true,
   showShareButton: true,
