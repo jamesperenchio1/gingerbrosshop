@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, type CSSProperties, type ReactNode } from 'react';
+import { useCallback, useEffect, useRef, useState, type CSSProperties, type ReactNode } from 'react';
 import { Bell, Share2, MoreHorizontal, X, Check, ArrowRight } from 'lucide-react';
 import type { CatalogProduct } from '@/lib/catalog';
 import { defaultPrice } from '@/lib/catalog';
@@ -313,11 +313,16 @@ function StickerView({
   };
 
   // Visitor mode: tap to make it react, drag to fling it around — it springs back on release.
+  // The box itself is pointer-events:none so it never blocks the links beneath it; instead a
+  // document listener hit-tests the sticker and ignores presses that land on a link or button.
+  const boxRef = useRef<HTMLDivElement>(null);
   const [reaction, setReaction] = useState<{ cls: string; n: number } | null>(null);
   const [offset, setOffset] = useState<{ x: number; y: number; released: boolean } | null>(null);
+  const [pressed, setPressed] = useState(false);
   const taps = useRef({ count: 0, last: 0 });
+  const resetTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
 
-  const react = () => {
+  const react = useCallback(() => {
     const now = Date.now();
     taps.current.count = now - taps.current.last < 700 ? taps.current.count + 1 : 1;
     taps.current.last = now;
@@ -329,38 +334,54 @@ function StickerView({
     } catch {
       // vibration unsupported — purely cosmetic
     }
-  };
+  }, []);
 
-  const onVisitorPointerDown = (e: React.PointerEvent) => {
-    const el = e.currentTarget as HTMLElement;
-    const startX = e.clientX;
-    const startY = e.clientY;
-    let moved = false;
-    el.setPointerCapture(e.pointerId);
-    const move = (ev: PointerEvent) => {
-      const dx = ev.clientX - startX;
-      const dy = ev.clientY - startY;
-      if (!moved && Math.hypot(dx, dy) < 6) return;
-      moved = true;
-      // Rubber-band: the further you pull, the more it resists.
-      const damp = (v: number) => Math.sign(v) * Math.min(Math.abs(v) * 0.8, 90);
-      setOffset({ x: damp(dx), y: damp(dy), released: false });
+  useEffect(() => {
+    if (editable) return;
+    const onDown = (e: PointerEvent) => {
+      const box = boxRef.current;
+      if (!box || (e.pointerType === 'mouse' && e.button !== 0)) return;
+      if ((e.target as Element | null)?.closest('a, button, input, textarea, select, label')) return;
+      const r = box.getBoundingClientRect();
+      if (e.clientX < r.left || e.clientX > r.right || e.clientY < r.top || e.clientY > r.bottom) return;
+
+      if (e.pointerType === 'mouse') e.preventDefault(); // no text selection while dragging
+      clearTimeout(resetTimer.current); // a previous release's spring-back must not cancel this drag
+      const startX = e.clientX;
+      const startY = e.clientY;
+      let moved = false;
+      setPressed(true);
+      const move = (ev: PointerEvent) => {
+        const dx = ev.clientX - startX;
+        const dy = ev.clientY - startY;
+        if (!moved && Math.hypot(dx, dy) < 6) return;
+        moved = true;
+        // Rubber-band: the further you pull, the more it resists.
+        const damp = (v: number) => Math.sign(v) * Math.min(Math.abs(v) * 0.8, 90);
+        setOffset({ x: damp(dx), y: damp(dy), released: false });
+      };
+      const end = (ev: PointerEvent) => {
+        window.removeEventListener('pointermove', move);
+        window.removeEventListener('pointerup', end);
+        window.removeEventListener('pointercancel', end);
+        setPressed(false);
+        if (moved) {
+          setOffset((o) => (o ? { ...o, released: true } : o));
+          resetTimer.current = setTimeout(() => setOffset(null), 650);
+        } else if (ev.type === 'pointerup') {
+          react();
+        }
+      };
+      window.addEventListener('pointermove', move);
+      window.addEventListener('pointerup', end);
+      window.addEventListener('pointercancel', end);
     };
-    const up = () => {
-      el.removeEventListener('pointermove', move);
-      el.removeEventListener('pointerup', up);
-      el.removeEventListener('pointercancel', up);
-      if (moved) {
-        setOffset((o) => (o ? { ...o, released: true } : o));
-        setTimeout(() => setOffset(null), 650);
-      } else {
-        react();
-      }
+    document.addEventListener('pointerdown', onDown);
+    return () => {
+      document.removeEventListener('pointerdown', onDown);
+      clearTimeout(resetTimer.current);
     };
-    el.addEventListener('pointermove', move);
-    el.addEventListener('pointerup', up);
-    el.addEventListener('pointercancel', up);
-  };
+  }, [editable, react]);
 
   const onEditPointerDown = (e: React.PointerEvent) => {
     e.preventDefault();
@@ -390,15 +411,32 @@ function StickerView({
         transform: offset.released ? 'translate(0,0)' : `translate(${offset.x}px, ${offset.y}px) scale(1.12)`,
         transition: offset.released ? 'transform 600ms cubic-bezier(0.34, 1.9, 0.5, 1)' : 'none',
       }
-    : undefined;
+    : pressed
+      ? { transform: 'scale(0.92)', transition: 'transform 100ms' }
+      : undefined;
 
   return (
     <div
-      onPointerDown={editable ? onEditPointerDown : onVisitorPointerDown}
+      ref={boxRef}
+      onPointerDown={editable ? onEditPointerDown : undefined}
+      // Keyboard users get the same reaction as a tap (dragging stays pointer-only).
+      {...(editable
+        ? {}
+        : {
+            role: 'button',
+            tabIndex: 0,
+            'aria-label': 'Sticker — press to play',
+            onKeyDown: (e: React.KeyboardEvent) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                react();
+              }
+            },
+          })}
       className={`absolute select-none ${
-        editable ? 'cursor-grab active:cursor-grabbing touch-none' : 'lp-sticker cursor-pointer'
+        editable ? 'cursor-grab active:cursor-grabbing touch-none' : 'pointer-events-none lp-sticker rounded-xl'
       } ${selected ? 'outline outline-2 outline-dashed outline-blue-500 outline-offset-2' : ''}`}
-      style={editable ? style : { ...style, touchAction: 'pan-y' }}
+      style={style}
     >
       <div className="w-full h-full" style={inner}>
         <div key={reaction?.n ?? 0} className={`w-full h-full ${reaction ? reaction.cls : ''}`}>
@@ -630,8 +668,6 @@ const KEYFRAMES = `
 .lp-st-spin { animation: lp-st-spin 700ms cubic-bezier(0.34, 1.2, 0.64, 1) }
 .lp-st-wiggle { animation: lp-st-wiggle 600ms ease-in-out }
 .lp-st-hop { animation: lp-st-hop 640ms ease-out }
-.lp-sticker { transition: filter 150ms }
-@media (hover: hover) { .lp-sticker:hover { filter: brightness(1.06) } .lp-sticker:hover > div { transform: scale(1.12); transition: transform 150ms } }
-.lp-sticker:active > div { transform: scale(0.92) }
+.lp-sticker:focus-visible { outline: 2px solid #2563eb; outline-offset: 2px }
 @media (prefers-reduced-motion: reduce) { .lp-pulse, .lp-wobble, .lp-shine > a::after, .lp-st-pop, .lp-st-spin, .lp-st-wiggle, .lp-st-hop { animation: none } }
 `;
