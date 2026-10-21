@@ -320,6 +320,9 @@ function QrRow({
         </div>
         <p className="font-mono text-[12px] text-earth truncate">{SHORT_BASE.replace('https://', '')}{code.slug}</p>
         <p className="font-body text-[12px] text-earth/80 truncate">→ {code.targetUrl}</p>
+        <p className="font-body text-[12px] text-earth/80 truncate">
+          Source tag: <span className="font-mono">qr-{code.slug}</span>
+        </p>
         <div className="mt-2 flex flex-wrap gap-1.5">
           <button type="button" className={btn} onClick={onPng}>
             <Download className="w-3.5 h-3.5" /> PNG

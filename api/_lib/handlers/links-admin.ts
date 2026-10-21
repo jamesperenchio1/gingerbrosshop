@@ -46,7 +46,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       }
       if (view === 'analytics') {
         const days = Math.min(Math.max(Number(req.query.days) || 30, 1), 365);
-        res.status(200).json(await getLinkAnalytics(days));
+        const [analytics, codes] = await Promise.all([getLinkAnalytics(days), listQrCodes()]);
+        res.status(200).json({ ...analytics, qrNames: Object.fromEntries(codes.map((c) => [c.slug, c.name])) });
         return;
       }
       if (view === 'signups') {

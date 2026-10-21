@@ -14,7 +14,10 @@ vi.mock('../../api/_lib/linkpage.js', () => ({
   recordLinkEvent,
   addLinkPageSignup: vi.fn(async () => {}),
   getQrCode: vi.fn(async (slug: string) =>
-    slug === 'bottle' ? { slug, name: 'Bottle', targetUrl: 'https://link.gingerbrosshop.com/?src=qr', fg: '#000000', bg: '#ffffff', createdAt: '' } : null,
+    slug === 'bottle' ? { slug, name: 'Bottle', targetUrl: 'https://link.gingerbrosshop.com/?src=qr', fg: '#000000', bg: '#ffffff', createdAt: '' }
+    : slug === 'tea' ? { slug, name: 'Tea', targetUrl: 'https://gingerbrosshop.com/product/ginger-fizz?x=1', fg: '#000000', bg: '#ffffff', createdAt: '' }
+    : slug === 'ext' ? { slug, name: 'Ext', targetUrl: 'https://example.com/page', fg: '#000000', bg: '#ffffff', createdAt: '' }
+    : null,
   ),
   recordQrScan,
 }));
@@ -67,9 +70,18 @@ describe('/api/links handler', () => {
       const res = mockRes();
       await handler(mockReq(url, query), res as unknown as Res);
       expect(res.statusCode).toBe(302);
-      expect(res.headers.location).toBe('https://link.gingerbrosshop.com/?src=qr');
+      expect(res.headers.location).toBe('https://link.gingerbrosshop.com/?src=qr-bottle');
     }
     expect(recordQrScan).toHaveBeenCalledTimes(2);
+  });
+
+  it('tags each QR code with its own source and leaves external targets alone', async () => {
+    const tea = mockRes();
+    await handler(mockReq('/q/tea', {}), tea as unknown as Res);
+    expect(tea.headers.location).toBe('https://gingerbrosshop.com/product/ginger-fizz?x=1&src=qr-tea');
+    const ext = mockRes();
+    await handler(mockReq('/q/ext', {}), ext as unknown as Res);
+    expect(ext.headers.location).toBe('https://example.com/page');
   });
 
   it('sends unknown QR codes home without counting', async () => {

@@ -53,9 +53,23 @@ function referrerSource(ref: unknown): string {
   return hit ?? host.slice(0, 40);
 }
 
+/** Our own sites get `?src=qr-<slug>` so every order and visit says which printed code it came from. */
+function tagQrTarget(targetUrl: string, slug: string): string {
+  try {
+    const u = new URL(targetUrl);
+    if (u.hostname === 'gingerbrosshop.com' || u.hostname.endsWith('.gingerbrosshop.com')) {
+      u.searchParams.set('src', `qr-${slug}`);
+      return u.toString();
+    }
+  } catch {
+    // malformed target: fall through to the stored URL
+  }
+  return targetUrl;
+}
+
 /** Explicit `?src=` tag on the link (e.g. bio links, QR codes) — trusted over document.referrer. */
 function sourceLabel(src: string): string {
-  return src.toLowerCase().replace(/[^a-z0-9_-]/g, '').slice(0, 24);
+  return src.toLowerCase().replace(/[^a-z0-9_-]/g, '').slice(0, 48);
 }
 
 function parseBody(req: VercelRequest): Record<string, unknown> {
@@ -99,7 +113,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       await recordQrScan(slug).catch((err) => console.error('QR scan record failed:', err));
     }
     res.setHeader('Cache-Control', 'no-store');
-    res.setHeader('Location', code.targetUrl);
+    res.setHeader('Location', tagQrTarget(code.targetUrl, slug));
     res.status(302).end();
     return;
   }

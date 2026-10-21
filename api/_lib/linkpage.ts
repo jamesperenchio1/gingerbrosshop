@@ -46,7 +46,7 @@ export async function getLinkPageHistory(): Promise<HistoryEntry[]> {
 
 // ── Analytics ──────────────────────────────────────────────────────────────
 // One Redis hash per day (Bangkok time) holding every counter for that day:
-//   views, clicks, qr (scans via /q/<slug>), click:<blockId>, country:<CC>, device:<type>, ref:<host>
+//   views, clicks, qr (scans via /q/<slug>), qrscan:<slug>, click:<blockId>, country:<CC>, device:<type>, ref:<host>
 
 export type LinkEvent =
   | { type: 'view'; country: string; device: string; referrer: string }
@@ -76,6 +76,8 @@ export interface LinkAnalytics {
   days: { day: string; views: number; clicks: number; qr: number }[];
   totals: { views: number; clicks: number; qr: number };
   clicksByBlock: Record<string, number>;
+  /** Scans per QR code (slug → count) in the window. */
+  qrByCode: Record<string, number>;
   countries: Record<string, number>;
   devices: Record<string, number>;
   referrers: Record<string, number>;
@@ -94,6 +96,7 @@ export async function getLinkAnalytics(dayCount: number): Promise<LinkAnalytics>
     days: [],
     totals: { views: 0, clicks: 0, qr: 0 },
     clicksByBlock: {},
+    qrByCode: {},
     countries: {},
     devices: {},
     referrers: {},
@@ -117,6 +120,7 @@ export async function getLinkAnalytics(dayCount: number): Promise<LinkAnalytics>
       const kind = field.slice(0, sep);
       const name = field.slice(sep + 1);
       if (kind === 'click') bump(result.clicksByBlock, name, n);
+      else if (kind === 'qrscan') bump(result.qrByCode, name, n);
       else if (kind === 'country') bump(result.countries, name, n);
       else if (kind === 'device') bump(result.devices, name, n);
       else if (kind === 'ref') bump(result.referrers, name, n);
@@ -184,5 +188,5 @@ export async function deleteQrCode(slug: string): Promise<void> {
 
 export async function recordQrScan(slug: string): Promise<void> {
   const day = STATS_PREFIX + bangkokDay();
-  await redis.pipeline().hincrby(QR_SCANS_KEY, slug, 1).hincrby(day, 'qr', 1).expire(day, STATS_TTL_SECONDS).exec();
+  await redis.pipeline().hincrby(QR_SCANS_KEY, slug, 1).hincrby(day, 'qr', 1).hincrby(day, `qrscan:${slug}`, 1).expire(day, STATS_TTL_SECONDS).exec();
 }

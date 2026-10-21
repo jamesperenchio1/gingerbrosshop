@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { Search, Trash2, Upload } from 'lucide-react';
+import { Pause, Play, Search, Trash2, Upload } from 'lucide-react';
 import {
   FLUENT_STYLES,
   MAX_STICKERS,
@@ -153,6 +153,14 @@ export default function StickersEditor({ config, onChange, selectedId, onSelect 
   const patch = (p: Partial<Sticker>) =>
     selected && onChange({ ...config, stickers: config.stickers.map((s) => (s.id === selected.id ? { ...s, ...p } : s)) });
 
+  const setMotion = (ids: string[] | null, animated: boolean) =>
+    onChange({
+      ...config,
+      stickers: config.stickers.map((s) => (ids === null || ids.includes(s.id) ? { ...s, imageUrl: notoMotion(s.imageUrl, animated) } : s)),
+    });
+  const animatedCount = config.stickers.filter((s) => isNotoSticker(s.imageUrl) && s.imageUrl.endsWith('.json')).length;
+  const motionCapable = config.stickers.filter((s) => isNotoSticker(s.imageUrl)).length;
+
   const upload = async (file: File | undefined) => {
     if (!file) return;
     setBusy(true);
@@ -236,19 +244,59 @@ export default function StickersEditor({ config, onChange, selectedId, onSelect 
       </section>
 
       <section className="bg-white rounded-xl border border-soft-peach p-4">
-        <h3 className="font-display text-[18px] text-deep-brown mb-3">On the page</h3>
+        <div className="flex items-center justify-between gap-2 mb-3">
+          <h3 className="font-display text-[18px] text-deep-brown">On the page</h3>
+          {motionCapable > 0 && (
+            <div className="flex gap-1.5">
+              <button
+                type="button"
+                disabled={animatedCount === 0}
+                onClick={() => setMotion(null, false)}
+                className="px-2.5 py-1 rounded-lg font-body text-[12px] bg-cream text-deep-brown hover:bg-soft-peach disabled:opacity-40"
+              >
+                All still
+              </button>
+              <button
+                type="button"
+                disabled={animatedCount === motionCapable}
+                onClick={() => setMotion(null, true)}
+                className="px-2.5 py-1 rounded-lg font-body text-[12px] bg-cream text-deep-brown hover:bg-soft-peach disabled:opacity-40"
+              >
+                All animated
+              </button>
+            </div>
+          )}
+        </div>
         {config.stickers.length === 0 && <p className="font-body text-[13px] text-earth">No stickers yet.</p>}
         <div className="flex flex-wrap gap-2">
-          {config.stickers.map((s) => (
-            <button
-              key={s.id}
-              type="button"
-              onClick={() => onSelect(s.id)}
-              className={`w-14 h-14 rounded-lg p-1.5 bg-cream border-2 ${s.id === selectedId ? 'border-deep-brown' : 'border-transparent'}`}
-            >
-              <img src={stickerThumb(s.imageUrl)} alt="" className="w-full h-full object-contain" />
-            </button>
-          ))}
+          {config.stickers.map((s) => {
+            const canMove = isNotoSticker(s.imageUrl);
+            const moving = s.imageUrl.endsWith('.json');
+            return (
+              <div key={s.id} className="relative">
+                <button
+                  type="button"
+                  onClick={() => onSelect(s.id)}
+                  className={`w-14 h-14 rounded-lg p-1.5 bg-cream border-2 ${s.id === selectedId ? 'border-deep-brown' : 'border-transparent'}`}
+                >
+                  <img src={stickerThumb(s.imageUrl)} alt="" className="w-full h-full object-contain" />
+                </button>
+                {canMove && (
+                  <button
+                    type="button"
+                    aria-label={moving ? 'Animated. Tap to make still' : 'Still. Tap to animate'}
+                    title={moving ? 'Animated. Tap to make still' : 'Still. Tap to animate'}
+                    onClick={() => setMotion([s.id], !moving)}
+                    className={`absolute -bottom-1.5 -right-1.5 w-6 h-6 rounded-full flex items-center justify-center border-2 border-white ${
+                      moving ? 'bg-deep-brown text-white' : 'bg-soft-peach text-deep-brown'
+                    }`}
+                  >
+                    {moving ? <Play className="w-3 h-3" fill="currentColor" /> : <Pause className="w-3 h-3" fill="currentColor" />}
+                  </button>
+                )}
+              </div>
+            );
+          })}
         </div>
 
         {selected && (

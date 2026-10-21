@@ -6,6 +6,8 @@ interface AnalyticsData {
   days: { day: string; views: number; clicks: number; qr: number }[];
   totals: { views: number; clicks: number; qr: number };
   clicksByBlock: Record<string, number>;
+  qrByCode: Record<string, number>;
+  qrNames: Record<string, string>;
   countries: Record<string, number>;
   devices: Record<string, number>;
   referrers: Record<string, number>;
@@ -99,6 +101,18 @@ export default function Analytics({ blocks }: { blocks: LinkBlock[] }) {
               }))}
               color={CLICKS}
               empty="No clicks yet."
+            />
+          </section>
+
+          <section className="bg-white rounded-xl border border-soft-peach p-4">
+            <h3 className="font-display text-[18px] text-deep-brown mb-1">QR scans by code</h3>
+            <p className="font-body text-[12px] text-earth mb-3">
+              Orders from each code show as <span className="font-mono">qr-&lt;short link&gt;</span> in the order source.
+            </p>
+            <BarList
+              rows={Object.entries(data.qrByCode).map(([slug, n]) => ({ label: data.qrNames?.[slug] ?? `${slug} (deleted)`, value: n }))}
+              color={CLICKS}
+              empty="No scans yet."
             />
           </section>
 

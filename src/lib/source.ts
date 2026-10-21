@@ -10,7 +10,7 @@ const CLICK_ID_SOURCES: Array<[param: string, source: string]> = [
 ];
 
 function clean(value: string): string {
-  return value.toLowerCase().replace(/[^a-z0-9_-]/g, '').slice(0, 24);
+  return value.toLowerCase().replace(/[^a-z0-9_-]/g, '').slice(0, 48);
 }
 
 /** Remembers where the visitor came from (`?src=`, `?utm_source=`, or an ad click id).

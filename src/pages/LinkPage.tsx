@@ -39,7 +39,7 @@ export default function LinkPage() {
 
     const src = new URLSearchParams(window.location.search).get('src');
     // eslint-disable-next-line react-hooks/set-state-in-effect -- reading the URL after hydration
-    setSrcTag((src ?? '').toLowerCase().replace(/[^a-z0-9_-]/g, '').slice(0, 24));
+    setSrcTag((src ?? '').toLowerCase().replace(/[^a-z0-9_-]/g, '').slice(0, 48));
     sendLinkEvent({ type: 'view', referrer: document.referrer, src });
   }, []);
 
