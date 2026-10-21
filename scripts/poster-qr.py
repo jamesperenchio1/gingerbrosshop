@@ -81,13 +81,13 @@ def main():
         page.insert_text((px + (PLATE_W - tw) / 2, py + 14), p["label"], fontname="hebo", fontsize=fs, color=DARK)
         qr_size = 62
         url = BASE + p["slug"]
-        qr = draw_qr(page, url, px + (PLATE_W - qr_size) / 2, py + 20, qr_size)
+        qr = draw_qr(page, url, px + (PLATE_W - qr_size) / 2, py + 23, qr_size)
         if a.svg_dir:
             out = Path(a.svg_dir)
             out.mkdir(parents=True, exist_ok=True)
-            qr.save(out / f"gingerbros-{p['slug']}.svg", scale=20, border=2,
+            qr.save(out / f"gingerbros-{p['slug']}.svg", scale=20, border=4,
                     dark="#2b2118", light="#fff4e0")
-            qr.save(out / f"gingerbros-{p['slug']}.png", scale=20, border=2,
+            qr.save(out / f"gingerbros-{p['slug']}.png", scale=20, border=4,
                     dark="#2b2118", light="#fff4e0")
         print(f"page {p['page'] + 1}: {url} -> {p['target']}")
 
