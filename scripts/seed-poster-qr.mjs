@@ -1,4 +1,4 @@
-// Registers the five poster QR codes (see scripts/poster-qr.py) so /q/<slug> counts
+// Registers the three poster QR codes (see scripts/poster-qr.py) so /q/<slug> counts
 // scans and shows them in Admin → QR Codes. Existing slugs are left untouched, so it
 // is safe to re-run. Edit a target later in the admin page — no reprint needed.
 //
@@ -9,8 +9,6 @@ const QR_KEY = 'linkpage:qrcodes'; // same hash as api/_lib/linkpage.ts
 const LINK_PAGE = 'https://link.gingerbrosshop.com/?src=qr';
 
 const CODES = [
-  { slug: 'poster-promo-popcorn', name: 'Poster: Promo popcorn deals', targetUrl: LINK_PAGE },
-  { slug: 'poster-promo-6pack', name: 'Poster: Promo 6-packs', targetUrl: LINK_PAGE },
   { slug: 'poster-fizz-tea', name: 'Poster: Fizz + Tea', targetUrl: LINK_PAGE },
   { slug: 'poster-fizz', name: 'Poster: Ginger Fizz', targetUrl: 'https://gingerbrosshop.com/product/ginger-fizz' },
   { slug: 'poster-tea', name: 'Poster: Ginger Tea', targetUrl: LINK_PAGE },

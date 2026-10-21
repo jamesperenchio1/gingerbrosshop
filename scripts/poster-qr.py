@@ -26,12 +26,7 @@ CREAM = (1.0, 0.957, 0.878)  # #fff4e0
 # fully cover; None where the page has no code yet. `plate` is the (x0, y0) of the new plate.
 PLATE_W, PLATE_H = 80, 98
 POSTERS = [
-    # page 1: promo popcorn deals — no code yet, bottom centre between the price boxes
-    dict(page=0, slug="poster-promo-popcorn", name="Poster: Promo popcorn deals", label="Follow Us At:",
-         target="https://link.gingerbrosshop.com/?src=qr", plate=(266, 722)),
-    # page 2: promo popcorn + 6-packs — no code yet
-    dict(page=1, slug="poster-promo-6pack", name="Poster: Promo 6-packs", label="Follow Us At:",
-         target="https://link.gingerbrosshop.com/?src=qr", plate=(266, 722)),
+    # pages 1-2 (promo deals) intentionally have no code
     dict(page=2, slug="poster-fizz-tea", name="Poster: Fizz + Tea", label="Follow Us At:",
          target="https://link.gingerbrosshop.com/?src=qr", plate=(22, 726)),
     dict(page=3, slug="poster-fizz", name="Poster: Ginger Fizz", label="Shop Online:",
@@ -65,8 +60,8 @@ def main():
     a = ap.parse_args()
 
     doc = fitz.open(a.src)
-    if len(doc) != len(POSTERS):
-        sys.exit(f"expected {len(POSTERS)} pages, found {len(doc)}")
+    if len(doc) != 5:
+        sys.exit(f"expected 5 pages, found {len(doc)}")
 
     for p in POSTERS:
         page = doc[p["page"]]
