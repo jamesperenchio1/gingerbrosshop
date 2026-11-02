@@ -150,6 +150,28 @@ const KNOWN_ROUTES: Record<string, RouteMeta> = {
   },
 };
 
+/** Thai meta for the pages that have a Thai version (src/lib/locale.ts TH_PATHS). */
+const TH_KNOWN_ROUTES: Record<string, RouteMeta> = {
+  '/': {
+    title: 'GingerBros | น้ำขิงซ่า & ชาขิง เครื่องดื่มขิงยุคใหม่ ผลิตในไทย',
+    description: 'คิดแบบขิง ดื่มให้แตกต่าง น้ำขิงซ่าและชาขิงจากขิงไทยสด มะนาวแท้ หวานน้อย สั่งออนไลน์ส่งทั่วไทย',
+    image: FALLBACK_IMAGE,
+    type: 'website',
+  },
+  '/shop': {
+    title: 'ช้อปน้ำขิงซ่า ชาขิง และแพ็กสุดคุ้ม | GingerBros',
+    description: 'สั่งน้ำขิงซ่าและชาขิงออนไลน์ ส่งทั่วไทย ขวดเดี่ยว แพ็ก 2, 3 และ 6 ขวด ผสมได้ตามใจ ส่วนลดคิดอัตโนมัติ',
+    image: FALLBACK_IMAGE,
+    type: 'website',
+  },
+  '/story': {
+    title: 'เรื่องราวของเรา | GingerBros',
+    description: 'GingerBros อยากให้ขิงไทยเป็นเครื่องดื่มที่คุณอยากหยิบจริง ๆ ขิงไทยสด มะนาวแท้ หวานน้อย ผลิตในประเทศไทย',
+    image: FALLBACK_IMAGE,
+    type: 'website',
+  },
+};
+
 interface CatalogPrice {
   unitAmount: number | null;
   currency: string;
@@ -463,8 +485,9 @@ export default async function middleware(request: Request): Promise<Response> {
 
   // A supported Thai page that wasn't prerendered: serve the SPA shell with the
   // page's meta (never redirect it, or a Thai visitor would bounce EN↔TH).
-  const metaKey = thStripped && TH_PATHS.includes(thStripped) ? thStripped : pathname;
-  const meta = KNOWN_ROUTES[metaKey] ?? {
+  const isThai = !!thStripped && TH_PATHS.includes(thStripped);
+  const metaKey = isThai ? thStripped! : pathname;
+  const meta = (isThai ? TH_KNOWN_ROUTES[metaKey] : undefined) ?? KNOWN_ROUTES[metaKey] ?? {
     title: 'Page Not Found | GingerBros',
     description: 'The page you are looking for could not be found.',
     image: FALLBACK_IMAGE,
@@ -473,6 +496,11 @@ export default async function middleware(request: Request): Promise<Response> {
   const status = metaKey in KNOWN_ROUTES ? 200 : 404;
 
   html = injectMeta(html, meta, pathname);
+  if (isThai) {
+    html = html
+      .replace('<html lang="en">', '<html lang="th">')
+      .replace(/<meta\s+property="og:locale"\s+content="[^"]*"\s*\/?>/i, '<meta property="og:locale" content="th_TH" />');
+  }
 
   return new Response(html, {
     status,
