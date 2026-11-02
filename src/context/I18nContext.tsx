@@ -398,7 +398,9 @@ export function I18nProvider({ children, locale }: { children: ReactNode; locale
       window.location.href = '/th';
       return;
     }
-    window.location.href = target + window.location.search;
+    // Final guard: only ever navigate within this origin.
+    const url = new URL(`/${target.replace(/^[/\\]+/, '')}${window.location.search}`, window.location.origin);
+    window.location.href = url.origin === window.location.origin ? url.href : '/';
   }, [locale]);
 
   const toggleLocale = useCallback(() => {
