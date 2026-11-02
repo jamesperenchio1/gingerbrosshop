@@ -3,6 +3,7 @@ import Stripe from 'stripe';
 import { getStripe } from '../stripe.js';
 import { rateLimit, getClientIp } from '../rateLimit.js';
 import { getCredit } from '../credits.js';
+import { multiBuyDiscount, bottlesFromMetadata, type BottleLine } from '../multiBuy.js';
 
 interface CheckoutLine {
   // The Stripe price ID to purchase. `id` is accepted as a legacy alias.
@@ -63,6 +64,10 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   // Resolve and validate every price directly against Stripe — Stripe is the
   // source of truth, so there is no per-product env var or hardcoded map.
   const priceIdToQuantity = new Map<string, number>();
+  // Legacy fallback for cold-chain shipping until every drink product carries
+  // bottles_* metadata in Stripe.
+  const LEGACY_DRINK_IDS = new Set(['ginger-fizz', 'ginger-fizz-6pack']);
+  let hasDrinks = items.some((i) => !!i.productId && LEGACY_DRINK_IDS.has(i.productId));
   for (const item of items) {
     const priceId = item.priceId ?? item.id;
     if (!priceId) {
@@ -77,13 +82,15 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   let recurringCount = 0;
   let subtotalMinor = 0;
   let subInterval: { interval: string; intervalCount: number } | null = null;
+  // One-time lines with their bottle counts, for multi-buy deal pricing.
+  const bottleLines: BottleLine[] = [];
 
   try {
     const resolved = await Promise.all(
       Array.from(priceIdToQuantity.entries()).map(async ([priceId, qty]) => {
         let price: Stripe.Price;
         try {
-          price = await stripe.prices.retrieve(priceId);
+          price = await stripe.prices.retrieve(priceId, { expand: ['product'] });
         } catch {
           throw new Error(`Unknown product: ${priceId}`);
         }
@@ -103,6 +110,17 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       }
       subtotalMinor += (price.unit_amount ?? 0) * qty;
       lineItems.push({ price: price.id, quantity: qty });
+
+      const product = price.product;
+      const productMeta = product && typeof product === 'object' && !('deleted' in product && product.deleted)
+        ? (product as Stripe.Product).metadata ?? {}
+        : {};
+      const bottlesFizz = bottlesFromMetadata(productMeta.bottles_fizz);
+      const bottlesTea = bottlesFromMetadata(productMeta.bottles_tea);
+      if (bottlesFizz + bottlesTea > 0) hasDrinks = true;
+      if (!price.recurring) {
+        bottleLines.push({ price: (price.unit_amount ?? 0) / 100, quantity: qty, bottlesFizz, bottlesTea });
+      }
     }
   } catch (err) {
     const message = err instanceof Error ? err.message : 'Unable to verify products. Please try again.';
@@ -120,8 +138,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     'week_2':  'price_1TlT9h4xTvnGlHCDBXJjknzd',
     'month_1': 'price_1TlT9j4xTvnGlHCDwrgy2MEu',
   };
-  const hasGingerFizzSub = recurringCount > 0 && items.some(i => i.productId === 'ginger-fizz' || i.productId === 'ginger-fizz-6pack');
-  if (hasGingerFizzSub && subInterval) {
+  const hasDrinkSub = recurringCount > 0 && hasDrinks;
+  if (hasDrinkSub && subInterval) {
     if (deliveryMethod === 'hand-delivered') {
       // Inline recurring price so no pre-created Stripe price is needed, and
       // the cadence matches the subscription itself.
@@ -180,12 +198,15 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     metadata.giftMessage = giftInfo.message ?? '';
   }
 
+  // Multi-buy deals (2 Fizz ฿260, 1 Fizz + 1 Tea ฿240, ...) on one-time orders,
+  // computed from Stripe's own prices and bottle metadata, never the client's.
+  const multiBuyMinor = hasSubscription ? 0 : multiBuyDiscount(bottleLines) * 100;
+
   // Shipping: standard delivery is the default for everyone; cold-chain is an
-  // optional upgrade when the cart contains ginger fizz.
+  // optional upgrade when the cart contains drinks.
   const FREE_SHIPPING_THRESHOLD = 50000; // ฿500 in satang
   const SHIPPING_FLAT = 10000; // ฿100 in satang
-  const hasGingerFizz = items.some(i => i.productId === 'ginger-fizz' || i.productId === 'ginger-fizz-6pack');
-  const shippingFree = subtotalMinor >= FREE_SHIPPING_THRESHOLD;
+  const shippingFree = subtotalMinor - multiBuyMinor >= FREE_SHIPPING_THRESHOLD;
   const standardAmount = shippingFree ? 0 : SHIPPING_FLAT;
   const shippingOptions: Stripe.Checkout.SessionCreateParams.ShippingOption[] = [
     {
@@ -197,7 +218,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       },
     },
   ];
-  if (hasGingerFizz) {
+  if (hasDrinks) {
     const coldChainAmount = shippingFree ? SHIPPING_FLAT : SHIPPING_FLAT * 2;
     shippingOptions.push({
       shipping_rate_data: {
@@ -222,27 +243,32 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
   // Auto-apply the returnable-box store credit when the shopper's email has a
   // balance. Capped to the product subtotal so none is wasted (coupons discount
-  // line items, not shipping). Stripe forbids combining `discounts` with
-  // `allow_promotion_codes`, so a credited order can't also stack a typed code.
+  // line items, not shipping). Stripe Checkout takes a single discount, so the
+  // multi-buy deal and the credit are merged into one coupon, and neither can
+  // also stack a typed code (`discounts` excludes `allow_promotion_codes`).
   let discounts: Stripe.Checkout.SessionCreateParams.Discount[] | undefined;
+  let appliedMinor = 0;
   if (customerEmail) {
     const creditMinor = await getCredit(customerEmail);
-    const appliedMinor = Math.min(creditMinor, subtotalMinor);
+    appliedMinor = Math.min(creditMinor, subtotalMinor - multiBuyMinor);
     if (appliedMinor > 0) {
-      const coupon = await stripe.coupons.create({
-        amount_off: appliedMinor,
-        currency: 'thb',
-        duration: 'once',
-        name: 'Box-return credit',
-      });
-      discounts = [{ coupon: coupon.id }];
       metadata.creditEmail = customerEmail;
       metadata.creditApplied = String(appliedMinor);
     }
   }
+  if (multiBuyMinor > 0) metadata.multiBuyDiscount = String(multiBuyMinor);
+  if (multiBuyMinor + appliedMinor > 0) {
+    const coupon = await stripe.coupons.create({
+      amount_off: multiBuyMinor + appliedMinor,
+      currency: 'thb',
+      duration: 'once',
+      name: [multiBuyMinor > 0 && 'Multi-buy deal', appliedMinor > 0 && 'Box-return credit'].filter(Boolean).join(' + '),
+    });
+    discounts = [{ coupon: coupon.id }];
+  }
 
   // Auto-apply a promo code carried over from the discount email. Only when no
-  // store credit is already applied (Stripe Checkout allows one or the other
+  // deal or store credit is already applied (Stripe Checkout allows one or the other
   // here); an invalid or expired code just falls back to the typed-code box.
   if (!discounts && promoCodeInput) {
     try {
@@ -266,8 +292,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       customer_email: customerEmail || undefined,
       payment_method_types: paymentMethod === 'cod' ? ['card', 'promptpay'] : undefined,
       metadata,
-      // A credited order uses `discounts`; otherwise let shoppers type a promo
-      // code. The two are mutually exclusive in Stripe Checkout.
+      // A deal or credited order uses `discounts`; otherwise let shoppers type
+      // a promo code. The two are mutually exclusive in Stripe Checkout.
       ...(discounts ? { discounts } : { allow_promotion_codes: true }),
       // One-time orders: collect shipping via Stripe's shipping_options (not
       // supported in subscription mode — see chilled delivery line item above),

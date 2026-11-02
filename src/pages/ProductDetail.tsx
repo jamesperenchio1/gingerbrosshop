@@ -6,7 +6,8 @@ import { PlusIcon, MinusIcon } from '@/components/Icons';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import SEO from '@/components/SEO';
 import NotFound from '@/pages/NotFound';
-import { useCatalog, defaultPrice, intervalLabel, oneTimePrice, savingsPercent, stockStatus, hasVariantPrices, type CatalogProduct } from '@/lib/catalog';
+import { DEALS } from '@/lib/multiBuy';
+import { useCatalog, defaultPrice, bottleCounts, intervalLabel, oneTimePrice, savingsPercent, stockStatus, hasVariantPrices, type CatalogProduct } from '@/lib/catalog';
 import { getDeliveryEstimateMessage } from '@/constants/store';
 import { startCheckout, trackInitiateCheckout } from '@/lib/checkout';
 import type { CartItem } from '@/types/cart';
@@ -125,7 +126,7 @@ function NutritionPanel({ nutrition }: { nutrition: { label: string; value: stri
       </div>
 
       <p className="font-body text-[12px] text-earth/50 mt-4">
-        * Daily Value percentages are approximate. Values may vary slightly between batches due to natural fermentation.
+        * Daily Value percentages are approximate. Values may vary slightly between batches.
       </p>
     </div>
   );
@@ -175,6 +176,25 @@ function RecentlyViewed({ currentProductId }: { currentProductId: string }) {
   );
 }
 
+/* ──────────────────────── Multi-buy deals ──────────────────────── */
+
+// Shown on single-bottle drinks: the print-shop deals this bottle counts towards.
+function DealsStrip({ kind }: { kind: 'fizz' | 'tea' }) {
+  const own = DEALS.filter((d) => (kind === 'fizz' ? d.fizz > 1 && d.tea === 0 : d.tea > 1 && d.fizz === 0));
+  const mixed = DEALS.filter((d) => d.fizz > 0 && d.tea > 0);
+  return (
+    <div className="bg-cream rounded-2xl px-4 py-3 mb-6">
+      <p className="font-body font-semibold text-[12px] uppercase tracking-[0.1em] text-rust mb-1.5">Multi-buy deals</p>
+      <p className="font-body text-[14px] text-deep-brown">
+        {own.map((d) => `${kind === 'fizz' ? d.fizz : d.tea} for ฿${d.price}`).join(' · ')}
+      </p>
+      <p className="font-body text-[13px] text-earth mt-1">
+        Mix Fizz &amp; Tea: {mixed.map((d) => `${d.fizz} + ${d.tea} for ฿${d.price}`).join(' · ')}. Applied automatically in your cart.
+      </p>
+    </div>
+  );
+}
+
 /* ──────────────────────── Related Products ──────────────────────── */
 
 function RelatedProductCard({ product }: { product: CatalogProduct }) {
@@ -190,7 +210,7 @@ function RelatedProductCard({ product }: { product: CatalogProduct }) {
 
   const handleAdd = useCallback(() => {
     if (!price || hasVariants) return;
-    addItem({ id: price.priceId, priceId: price.priceId, productId: product.id, name: product.name, variant: product.id, price: price.unitAmount ?? 0, quantity: 1, image, badge: product.badge ?? '', badgeColor: product.badgeColor ?? '' });
+    addItem({ id: price.priceId, priceId: price.priceId, productId: product.id, name: product.name, variant: product.id, price: price.unitAmount ?? 0, quantity: 1, image, badge: product.badge ?? '', badgeColor: product.badgeColor ?? '', ...bottleCounts(product) });
     setAdded(true);
     toast.success(`${product.name} added to cart`);
     if (timerRef.current) clearTimeout(timerRef.current);
@@ -303,6 +323,11 @@ export default function ProductDetail() {
     : 0;
 
   const isEquipment = product?.category === 'brewing-equipment';
+  const bottles = product ? bottleCounts(product) : { bottlesFizz: 0, bottlesTea: 0 };
+  const singleBottle: 'fizz' | 'tea' | null =
+    bottles.bottlesFizz === 1 && bottles.bottlesTea === 0 ? 'fizz'
+      : bottles.bottlesTea === 1 && bottles.bottlesFizz === 0 ? 'tea'
+        : null;
 
   // Track this product as recently viewed.
   useRecentlyViewed(product?.id);
@@ -424,6 +449,7 @@ export default function ProductDetail() {
       badgeColor: product.badgeColor ?? 'bg-sky-500',
       isSubscription: !!selectedPrice.recurring,
       interval: selectedPrice.recurring ? intervalLabel(selectedPrice.recurring) : undefined,
+      ...bottleCounts(product),
       isGift,
       recipientEmail: isGift ? giftEmail : undefined,
       recipientName: isGift ? giftName : undefined,
@@ -626,6 +652,9 @@ export default function ProductDetail() {
                 {stock === 'out_of_stock' ? 'Out of Stock' : stock === 'low_stock' ? 'Low Stock' : 'In Stock'}
               </span>
             </div>
+
+            {/* Multi-buy deals (single bottles, one-time purchase) */}
+            {!selectedPrice.recurring && singleBottle && <DealsStrip kind={singleBottle} />}
 
             {/* Back-in-stock alert signup */}
             {stock === 'out_of_stock' && (

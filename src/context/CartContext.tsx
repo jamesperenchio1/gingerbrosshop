@@ -1,6 +1,7 @@
 import { createContext, useContext, useReducer, useCallback, useMemo, useEffect, useRef, type ReactNode } from 'react';
 import type { CartItem, CartState, CartAction } from '@/types/cart';
 import { trackPixelEvent } from '@/lib/metaPixel';
+import { multiBuyDiscount as computeMultiBuyDiscount } from '@/lib/multiBuy';
 
 
 const CART_EMAIL_KEY = 'gingerbros-cart-email';
@@ -118,6 +119,10 @@ interface CartContextType {
   clearCart: () => void;
   totalItems: number;
   subtotal: number;
+  // Baht off the subtotal from multi-buy deals (one-time bottles only).
+  multiBuyDiscount: number;
+  // Fizz / Tea bottles on one-time lines, for the "add one more" deal hint.
+  bottles: { fizz: number; tea: number };
   getItemQuantity: (id: string) => number;
 }
 
@@ -193,6 +198,18 @@ export function CartProvider({ children }: { children: ReactNode }) {
     () => state.items.reduce((sum, item) => sum + item.price * item.quantity, 0),
     [state.items],
   );
+  const oneTimeItems = useMemo(() => state.items.filter((item) => !item.isSubscription), [state.items]);
+  const multiBuyDiscount = useMemo(() => computeMultiBuyDiscount(oneTimeItems), [oneTimeItems]);
+  const bottles = useMemo(
+    () => oneTimeItems.reduce(
+      (acc, item) => ({
+        fizz: acc.fizz + (item.bottlesFizz ?? 0) * item.quantity,
+        tea: acc.tea + (item.bottlesTea ?? 0) * item.quantity,
+      }),
+      { fizz: 0, tea: 0 },
+    ),
+    [oneTimeItems],
+  );
   const getItemQuantity = useCallback((id: string) => {
     return state.items.find(item => item.id === id)?.quantity ?? 0;
   }, [state.items]);
@@ -211,6 +228,8 @@ export function CartProvider({ children }: { children: ReactNode }) {
         clearCart,
         totalItems,
         subtotal,
+        multiBuyDiscount,
+        bottles,
         getItemQuantity,
       }}
     >

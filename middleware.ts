@@ -63,7 +63,7 @@ const KNOWN_ROUTES: Record<string, RouteMeta> = {
   '/product/ginger-fizz': {
     title: 'GingerBros Ginger Fizz',
     description:
-      `${FERMENT_DAYS}-day naturally fermented craft ginger fizz brewed in Thailand. Real ginger, fresh lime, prebiotic acacia fibre, low in sugar, delivered to your door.`,
+      'Sparkling ginger fizz made in Thailand with fresh Thai ginger and real lime, delivered to your door.',
     image: `${SITE_URL}/images/ginger-fizz-new.png`,
     type: 'product',
     jsonLd: {
@@ -71,7 +71,7 @@ const KNOWN_ROUTES: Record<string, RouteMeta> = {
       '@type': 'Product',
       name: 'GingerBros Ginger Fizz',
       description:
-        `${FERMENT_DAYS}-day naturally fermented craft ginger fizz brewed in Thailand. Real ginger, fresh lime, prebiotic acacia fibre, low in sugar, delivered to your door.`,
+        'Sparkling ginger fizz made in Thailand with fresh Thai ginger and real lime, delivered to your door.',
       image: [
         `${SITE_URL}/images/ginger-fizz-new.png`,
         `${SITE_URL}/images/story-brewing.webp`,

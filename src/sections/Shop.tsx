@@ -6,6 +6,7 @@ import { PlusIcon, MinusIcon } from '@/components/Icons';
 import {
   useCatalog,
   defaultPrice,
+  bottleCounts,
   cheapestSubscription,
   maxSubscriptionSavings,
   intervalLabel,
@@ -79,6 +80,7 @@ function ProductCard({ product, reviewSummary }: { product: CatalogProduct; revi
       image,
       badge: product.badge ?? '',
       badgeColor: product.badgeColor ?? 'bg-sky-500',
+      ...bottleCounts(product),
     });
     setAdded(true);
     toast.success(`${product.name} added to cart`);
@@ -249,7 +251,14 @@ export default function Shop() {
   const visibleProducts =
     activeCategory === 'brewing-equipment'
       ? products.filter((p) => p.category === 'brewing-equipment')
-      : products.filter((p) => p.category === 'drinks' || p.category === null);
+      : products
+          .filter((p) => p.category === 'drinks' || p.category === null)
+          // Single bottles first, then bundles by size; Fizz before Tea.
+          .map((p) => ({ p, b: bottleCounts(p) }))
+          .sort((x, y) =>
+            (x.b.bottlesFizz + x.b.bottlesTea) - (y.b.bottlesFizz + y.b.bottlesTea)
+            || y.b.bottlesFizz - x.b.bottlesFizz)
+          .map(({ p }) => p);
 
   // One reveal path for both first paint and tab switches. `useReveal` plays
   // immediately when the target is already on screen, so switching tabs fades
@@ -277,7 +286,7 @@ export default function Shop() {
 
   const categoryHeading = activeCategory === 'brewing-equipment'
     ? { eyebrow: 'BREWING EQUIPMENT', title: 'KegLand Equipment', sub: 'Precision-engineered components for homebrewing, carbonation, and draft systems.' }
-    : { eyebrow: 'OUR BREWS', title: 'Ginger Fizz', sub: 'Real fermented ginger with prebiotic acacia fibre. Brewed slow, enjoyed easy.' };
+    : { eyebrow: 'OUR DRINKS', title: 'Ginger Fizz & Ginger Tea', sub: 'Real Thai ginger, two ways. Mix and match, and multi-buy deals apply in your cart.' };
 
   return (
     <section id="shop" ref={sectionRef} className="bg-warm-white py-[60px] md:py-[80px]">

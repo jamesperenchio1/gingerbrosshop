@@ -390,109 +390,96 @@ export const PRODUCT_CONTENT: Record<string, ProductContent> = {
   },
 
   // ─── Drink products ───────────────────────────────────────────────────────
+  // Neither drink is fermented any more. Ingredients, nutrition and shelf life
+  // are left off until they're confirmed against the current recipes; add them
+  // back here (from the label) rather than guessing.
 
   'ginger-fizz': {
-    headline: 'Real fermented ginger fizz with a bright lime lift. Bold flavour, low sugar, made in Thailand.',
+    headline: 'Sparkling ginger with a bright lime lift. Bold flavour, made in Thailand.',
     longDescription:
-      'GingerBros Ginger Fizz is a naturally fermented craft soda made with fresh Thai ginger, real lime, and simple ingredients. Every bottle is brewed slow, bottled fresh, and delivered to your door. With prebiotic acacia fibre and less than 2g sugar per serving, it is a crisp ginger kick you can feel good about.',
-    ingredients: ['Fresh Thai Ginger', 'Filtered Water', 'Erythritol', 'White Sugar (ferment starter)', 'Ginger Bug Culture', 'Acacia Fibre', 'Fresh Lime'],
+      'GingerBros Ginger Fizz is a sparkling ginger drink made with fresh Thai ginger and real lime. Crisp, bright and properly gingery, it is best poured ice cold, over ice, with food or on its own.',
     specs: [
       { label: 'Volume', value: '330ml per bottle' },
       { label: 'Packaging', value: 'Amber glass bottle with crown cap' },
-      { label: 'Shelf Life', value: '30 days from brew date when refrigerated' },
-      { label: 'Storage', value: 'Keep refrigerated at 2–6°C; do not freeze' },
-      { label: 'Serving Temp', value: 'Ice cold at 2–4°C; pour gently' },
-      { label: 'Carbonation', value: 'Naturally effervescent from fermentation' },
-      { label: 'Fermentation', value: 'Natural ginger-bug ferment' },
-      { label: 'pH', value: '~3.6 (naturally acidic)' },
-      { label: 'Origin', value: 'Brewed & bottled in Chiang Mai, Thailand' },
-      { label: 'Dietary', value: 'Vegan, gluten-free, no artificial colours or preservatives' },
-      { label: 'Allergens', value: 'Free from major allergens' },
+      { label: 'Storage', value: 'Keep refrigerated; do not freeze' },
+      { label: 'Serving', value: 'Ice cold, on its own or over ice' },
+      { label: 'Origin', value: 'Made in Thailand' },
       { label: 'Bottle Return', value: 'Returnable/recyclable glass bottle' },
     ],
-    nutrition: [
-      { label: 'Serving Size', value: '330ml' },
-      { label: 'Servings Per Container', value: '1' },
-      { label: 'Energy', value: '30 kcal (1% DV)' },
-      { label: 'Total Fat', value: '0g (0% DV)' },
-      { label: '— Saturated Fat', value: '0g' },
-      { label: '— Trans Fat', value: '0g' },
-      { label: 'Cholesterol', value: '0mg (0% DV)' },
-      { label: 'Sodium', value: '5mg (0% DV)' },
-      { label: 'Total Carbohydrate', value: '8g (3% DV)' },
-      { label: '— Dietary Fibre', value: '2g (7% DV)' },
-      { label: '— Total Sugars', value: '<2g' },
-      { label: '—— Includes Added Sugars', value: '0g (0% DV)' },
-      { label: '—— Erythritol', value: '4g' },
-      { label: 'Protein', value: '0g (0% DV)' },
-      { label: 'Vitamin D', value: '0mcg (0% DV)' },
-      { label: 'Calcium', value: '0mg (0% DV)' },
-      { label: 'Iron', value: '0mg (0% DV)' },
-      { label: 'Potassium', value: '20mg (0% DV)' },
-      { label: 'Caffeine', value: '0mg' },
-    ],
     features: [
-      'Low sugar, sweetened with erythritol',
-      'Natural fermentation for real ginger flavour',
       'Fresh Thai ginger and real lime',
-      'Prebiotic acacia fibre',
-      'Bold, complex, naturally effervescent flavour',
-      'Brewed and bottled in Thailand',
+      'Bright, sparkling and properly gingery',
+      'Multi-buy deals: 2 for ฿260, 3 for ฿390, 6 for ฿780',
+      'Made in Thailand',
     ],
-    relatedProducts: ['ginger-fizz-6pack'],
+    relatedProducts: ['ginger-tea', 'ginger-fizz-6pack', 'fizz-tea-duo'],
   },
 
-  // ─── Ginger Fizz 6-Pack ─────────────────────────────────────────────────
-
-  'ginger-fizz-6pack': {
-    headline: 'Stock up and save. Six bottles of real fermented ginger fizz with prebiotic acacia fibre.',
+  'ginger-tea': {
+    headline: 'Real ginger, slowly simmered with lemongrass, lime and spices.',
     longDescription:
-      'GingerBros Ginger Fizz 6-Pack gives you six bottles of our signature naturally fermented craft soda. Every bottle is brewed with fresh Thai ginger, real lime, and simple ingredients, plus prebiotic acacia fibre and less than 2g sugar per serving. Brewed slow, bottled fresh, and delivered to your door.',
-    ingredients: ['Fresh Thai Ginger', 'Filtered Water', 'Erythritol', 'White Sugar (ferment starter)', 'Ginger Bug Culture', 'Acacia Fibre', 'Fresh Lime'],
+      'GingerBros Ginger Tea (ชาขิงกลมกล่อม สูตร Thai Spice) is made from fresh ginger, slowly simmered with lemongrass, lime and spices. Smooth and warming, with no artificial colours or flavours. Enjoy it chilled or over ice.',
+    ingredients: ['Ginger', 'Lemongrass', 'Lime', 'Spices'],
+    specs: [
+      { label: 'Volume', value: '330ml per bottle' },
+      { label: 'Recipe', value: 'Thai Spice' },
+      { label: 'Packaging', value: 'Amber glass bottle with crown cap' },
+      { label: 'Storage', value: 'Keep refrigerated; do not freeze' },
+      { label: 'Serving', value: 'Chilled or over ice' },
+      { label: 'Dietary', value: 'No artificial colours or flavours' },
+      { label: 'Origin', value: 'Made in Thailand' },
+    ],
+    features: [
+      'Made from real fresh ginger',
+      'Slowly simmered with lemongrass, lime and spices',
+      'No artificial colours or flavours',
+      'Multi-buy deals: 2 for ฿220, 3 for ฿315, 6 for ฿600',
+    ],
+    relatedProducts: ['ginger-fizz', 'ginger-tea-6pack', 'fizz-tea-duo'],
+  },
+
+  // ─── Bundles (priced at the print-shop multi-buy deals) ─────────────────
+
+  'ginger-fizz-2pack': {
+    headline: 'Two bottles of Ginger Fizz for ฿260.',
+    relatedProducts: ['ginger-fizz', 'ginger-fizz-3pack', 'ginger-fizz-6pack'],
+  },
+  'ginger-fizz-3pack': {
+    headline: 'Three bottles of Ginger Fizz for ฿390.',
+    relatedProducts: ['ginger-fizz', 'ginger-fizz-6pack', 'fizz-tea-4pack'],
+  },
+  'ginger-fizz-6pack': {
+    headline: 'Stock up: six bottles of Ginger Fizz for ฿780.',
+    longDescription:
+      'Six bottles of GingerBros Ginger Fizz, sparkling ginger made with fresh Thai ginger and real lime. Perfect for sharing or keeping the fridge stocked.',
     specs: [
       { label: 'Volume', value: '6 × 330ml (1,980ml total)' },
       { label: 'Packaging', value: 'Six amber glass bottles with crown caps' },
-      { label: 'Shelf Life', value: '30 days from brew date when refrigerated' },
-      { label: 'Storage', value: 'Keep refrigerated at 2–6°C; do not freeze' },
-      { label: 'Serving Temp', value: 'Ice cold at 2–4°C; pour gently' },
-      { label: 'Carbonation', value: 'Naturally effervescent from fermentation' },
-      { label: 'Fermentation', value: 'Natural ginger-bug ferment' },
-      { label: 'pH', value: '~3.6 (naturally acidic)' },
-      { label: 'Origin', value: 'Brewed & bottled in Chiang Mai, Thailand' },
-      { label: 'Dietary', value: 'Vegan, gluten-free, no artificial colours or preservatives' },
-      { label: 'Allergens', value: 'Free from major allergens' },
+      { label: 'Storage', value: 'Keep refrigerated; do not freeze' },
+      { label: 'Origin', value: 'Made in Thailand' },
       { label: 'Bottle Return', value: 'Returnable/recyclable glass bottle' },
     ],
-    nutrition: [
-      { label: 'Serving Size', value: '330ml' },
-      { label: 'Servings Per Container', value: '6' },
-      { label: 'Energy', value: '30 kcal (1% DV)' },
-      { label: 'Total Fat', value: '0g (0% DV)' },
-      { label: '— Saturated Fat', value: '0g' },
-      { label: '— Trans Fat', value: '0g' },
-      { label: 'Cholesterol', value: '0mg (0% DV)' },
-      { label: 'Sodium', value: '5mg (0% DV)' },
-      { label: 'Total Carbohydrate', value: '8g (3% DV)' },
-      { label: '— Dietary Fibre', value: '2g (7% DV)' },
-      { label: '— Total Sugars', value: '<2g' },
-      { label: '—— Includes Added Sugars', value: '0g (0% DV)' },
-      { label: '—— Erythritol', value: '4g' },
-      { label: 'Protein', value: '0g (0% DV)' },
-      { label: 'Vitamin D', value: '0mcg (0% DV)' },
-      { label: 'Calcium', value: '0mg (0% DV)' },
-      { label: 'Iron', value: '0mg (0% DV)' },
-      { label: 'Potassium', value: '20mg (0% DV)' },
-      { label: 'Caffeine', value: '0mg' },
-    ],
-    features: [
-      'Bundle savings vs buying 6 singles',
-      'Natural fermentation for real ginger flavour',
-      'Fresh Thai ginger and real lime',
-      'Prebiotic acacia fibre',
-      'Bold, complex, naturally effervescent flavour',
-      'Brewed and bottled in Thailand',
-    ],
-    relatedProducts: ['ginger-fizz'],
+    relatedProducts: ['ginger-fizz', 'ginger-tea-6pack'],
+  },
+  'ginger-tea-2pack': {
+    headline: 'Two bottles of Ginger Tea, Thai Spice, for ฿220.',
+    relatedProducts: ['ginger-tea', 'ginger-tea-3pack', 'ginger-tea-6pack'],
+  },
+  'ginger-tea-3pack': {
+    headline: 'Three bottles of Ginger Tea, Thai Spice, for ฿315.',
+    relatedProducts: ['ginger-tea', 'ginger-tea-6pack', 'fizz-tea-4pack'],
+  },
+  'ginger-tea-6pack': {
+    headline: 'Stock up: six bottles of Ginger Tea, Thai Spice, for ฿600.',
+    relatedProducts: ['ginger-tea', 'ginger-fizz-6pack'],
+  },
+  'fizz-tea-duo': {
+    headline: 'Can\'t pick? One Ginger Fizz and one Ginger Tea for ฿240.',
+    relatedProducts: ['ginger-fizz', 'ginger-tea', 'fizz-tea-4pack'],
+  },
+  'fizz-tea-4pack': {
+    headline: 'Two Ginger Fizz and two Ginger Tea for ฿460.',
+    relatedProducts: ['fizz-tea-duo', 'ginger-fizz-6pack', 'ginger-tea-6pack'],
   },
 };
 
