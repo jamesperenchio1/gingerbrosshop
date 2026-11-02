@@ -85,15 +85,21 @@ async function run() {
       }));
     const prices = await stripe.prices.list({ product: sixpack.id, active: true, limit: 100 });
     const oneTime = prices.data.filter((p) => !p.recurring);
-    if (oneTime.some((p) => p.unit_amount === 78000)) {
+    let newPrice = oneTime.find((p) => p.unit_amount === 78000);
+    if (newPrice) {
       console.log('  ✓ 6-pack already has a ฿780 one-time price');
     } else {
-      await step('create 6-pack one-time price ฿780', () =>
+      newPrice = await step('create 6-pack one-time price ฿780', () =>
         stripe.prices.create({ product: sixpack.id, unit_amount: 78000, currency: 'thb', nickname: 'Ginger Fizz 6-Pack' }));
-      for (const old of oneTime) {
-        await step(`archive old 6-pack price ${old.id} (฿${(old.unit_amount ?? 0) / 100})`, () =>
-          stripe.prices.update(old.id, { active: false }));
-      }
+    }
+    // The old price can't be archived while it is the product's default.
+    if (newPrice && sixpack.default_price !== newPrice.id) {
+      await step(`set 6-pack default price → ${newPrice.id}`, () =>
+        stripe.products.update(sixpack.id, { default_price: newPrice.id }));
+    }
+    for (const old of oneTime.filter((p) => p.unit_amount !== 78000)) {
+      await step(`archive old 6-pack price ${old.id} (฿${(old.unit_amount ?? 0) / 100})`, () =>
+        stripe.prices.update(old.id, { active: false }));
     }
   } else {
     console.log('⚠️  ginger-fizz-6pack not found — skipping');
