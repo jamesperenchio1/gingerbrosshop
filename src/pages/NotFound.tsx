@@ -1,28 +1,22 @@
-import { useNavigate } from 'react-router';
-import { Home } from 'lucide-react';
+import { Link } from 'react-router';
 import SEO from '@/components/SEO';
 
 export default function NotFound() {
-  const navigate = useNavigate();
   return (
-    <div className="min-h-screen bg-warm-white flex items-center justify-center px-6">
+    <div className="flex min-h-screen items-center justify-center bg-charcoal px-6 pt-20 text-cream">
       <SEO
         title="Page Not Found | GingerBros"
-        description="Sorry, we couldn't find the page you were looking for. Browse our craft ginger fizz collection or return to the homepage."
-        path=""
+        description="Sorry, we couldn't find that page. Browse Ginger Fizz and Ginger Tea, or head back to the homepage."
         noindex
       />
-      <div className="text-center max-w-md">
-        <h1 className="font-display font-bold text-deep-brown text-6xl mb-4">404</h1>
-        <p className="font-body text-earth text-lg mb-2">Page not found</p>
-        <p className="font-body text-earth/60 mb-8">The page you are looking for does not exist or has been moved.</p>
-        <button
-          onClick={() => navigate('/')}
-          className="inline-flex items-center gap-2 bg-deep-brown text-cream font-body font-medium px-8 py-3 rounded-full hover:bg-rust transition-colors"
-        >
-          <Home className="w-4 h-4" />
-          Back to Home
-        </button>
+      <div className="max-w-lg text-center">
+        <p className="font-poster text-[clamp(6rem,25vw,12rem)] text-ginger">404</p>
+        <h1 className="font-poster text-[clamp(2rem,6vw,3.5rem)]">This page went flat.</h1>
+        <p className="mt-4 font-body text-[16px] text-cream/85">The page you are looking for doesn&apos;t exist or has moved. The ginger is still here, though.</p>
+        <div className="mt-8 flex flex-col justify-center gap-3 sm:flex-row">
+          <Link to="/shop" className="rounded-full bg-ginger px-7 py-3.5 font-body text-[13px] font-bold uppercase tracking-[0.1em] text-charcoal">Shop the drinks</Link>
+          <Link to="/" className="rounded-full border-2 border-cream/40 px-7 py-3.5 font-body text-[13px] font-bold uppercase tracking-[0.1em] text-cream">Back to home</Link>
+        </div>
       </div>
     </div>
   );

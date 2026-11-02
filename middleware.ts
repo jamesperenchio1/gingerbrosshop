@@ -7,7 +7,8 @@
  */
 
 import { BLOG_SEO_META } from './src/lib/blogSeoMeta';
-import { SITE_URL, FERMENT_DAYS } from './src/constants/site';
+import { SITE_URL, DEFAULT_OG_IMAGE, LOGO_URL, SOCIAL_LINKS } from './src/constants/site';
+import { OG_IMAGES } from './src/lib/ogImages';
 
 interface RouteMeta {
   title: string;
@@ -18,80 +19,44 @@ interface RouteMeta {
   jsonLd?: object;
 }
 
-const FALLBACK_IMAGE = `${SITE_URL}/images/ginger-fizz-new.png`;
+const FALLBACK_IMAGE = DEFAULT_OG_IMAGE;
 
 const KNOWN_ROUTES: Record<string, RouteMeta> = {
   '/': {
-    title: "GingerBros | Thailand's Best Ginger Fizz",
+    title: 'GingerBros | Ginger Fizz & Ginger Tea, Modern Ginger Drinks from Thailand',
     description:
-      `${FERMENT_DAYS}-day naturally fermented craft ginger fizz brewed in Thailand. Real ginger, fresh lime, prebiotic acacia fibre, low in sugar, delivered to your door nationwide.`,
+      'Think Ginger. Drink Different. Ginger Fizz and Ginger Tea made in Thailand with fresh Thai ginger, real lime and low sugar. Delivered cold, nationwide.',
     image: FALLBACK_IMAGE,
     type: 'website',
     jsonLd: {
       '@context': 'https://schema.org',
       '@graph': [
-        {
-          '@type': 'Organization',
-          name: 'GingerBros',
-          url: SITE_URL,
-          logo: `${SITE_URL}/images/ginger-fizz-new.png`,
-          sameAs: [
-            'https://www.instagram.com/drinkgingerbros',
-            'https://www.tiktok.com/@gingerbrosbrew',
-          ],
-        },
-        {
-          '@type': 'WebSite',
-          name: 'GingerBros',
-          url: SITE_URL,
-        },
-        {
-          '@type': 'ItemList',
-          name: 'GingerBros Craft Ginger Fizz Products',
-          itemListElement: [
-            {
-              '@type': 'ListItem',
-              position: 1,
-              url: `${SITE_URL}/product/ginger-fizz`,
-              name: 'GingerBros Ginger Fizz',
-            },
-          ],
-        },
+        { '@type': 'Organization', name: 'GingerBros', url: SITE_URL, logo: LOGO_URL, slogan: 'Think Ginger. Drink Different.', sameAs: SOCIAL_LINKS },
+        { '@type': 'WebSite', name: 'GingerBros', url: SITE_URL, inLanguage: ['en', 'th'] },
       ],
     },
   },
-  '/product/ginger-fizz': {
-    title: 'GingerBros Ginger Fizz',
-    description:
-      'Sparkling ginger fizz made in Thailand with fresh Thai ginger and real lime, delivered to your door.',
-    image: `${SITE_URL}/images/ginger-fizz-new.png`,
-    type: 'product',
-    jsonLd: {
-      '@context': 'https://schema.org',
-      '@type': 'Product',
-      name: 'GingerBros Ginger Fizz',
-      description:
-        'Sparkling ginger fizz made in Thailand with fresh Thai ginger and real lime, delivered to your door.',
-      image: [
-        `${SITE_URL}/images/ginger-fizz-new.png`,
-        `${SITE_URL}/images/story-brewing.webp`,
-      ],
-      brand: { '@type': 'Brand', name: 'GingerBros' },
-      sku: 'ginger-fizz',
-      offers: {
-        '@type': 'Offer',
-        url: `${SITE_URL}/product/ginger-fizz`,
-        priceCurrency: 'THB',
-        price: '140',
-        availability: 'https://schema.org/InStock',
-        seller: { '@type': 'Organization', name: 'GingerBros' },
-      },
-    },
+  '/shop': {
+    title: 'Shop Ginger Fizz, Ginger Tea & Multi-Buy Packs | GingerBros',
+    description: 'Buy Ginger Fizz and Ginger Tea online in Thailand. Singles, 2, 3 and 6-packs, mix-and-match bundles and subscriptions. Deals apply automatically.',
+    image: FALLBACK_IMAGE,
+    type: 'website',
   },
-  '/blog': {
-    title: 'The Brew Blog, Ginger Fizz Recipes, Gut Health & Brewing Tips | GingerBros',
-    description:
-      'Explore GingerBros blog for ginger fizz recipes, probiotic gut health guides, and behind-the-scenes craft brewing stories from Thailand.',
+  '/story': {
+    title: 'Our Story: Rooted in Ginger, Made for Today | GingerBros',
+    description: 'Why GingerBros exists: to make Thai ginger the drink you actually want to reach for. Fresh Thai ginger, real lime, low sugar, made in Thailand.',
+    image: FALLBACK_IMAGE,
+    type: 'website',
+  },
+  '/find-us': {
+    title: 'Where to Buy GingerBros | Online, LINE, Shopee & Stockists',
+    description: 'Order GingerBros online with nationwide delivery in Thailand, or find us on LINE, Shopee and at our stockists.',
+    image: FALLBACK_IMAGE,
+    type: 'website',
+  },
+  '/guide': {
+    title: 'The Ginger Guide: Serves, Mocktails & Food Pairings | GingerBros',
+    description: 'How to serve Ginger Fizz and Ginger Tea, ginger mocktails and cocktails, Thai food pairings and everything worth knowing about Thai ginger.',
     image: FALLBACK_IMAGE,
     type: 'website',
   },
@@ -102,23 +67,30 @@ const KNOWN_ROUTES: Record<string, RouteMeta> = {
     image: FALLBACK_IMAGE,
     type: 'website',
   },
-  '/wholesale': {
-    title: 'Wholesale | GingerBros',
+  '/business': {
+    title: 'GingerBros for Cafés, Bars & Restaurants | Wholesale & Signature Serve',
     description:
-      'Wholesale pricing for cafes, restaurants, bars, and retailers. Order GingerBros ginger fizz in Thailand.',
+      'Put GingerBros on your menu. Free samples, recipe cards, menu copy and wholesale pricing for cafés, bars, restaurants and hotels in Thailand.',
     image: FALLBACK_IMAGE,
     type: 'website',
   },
   '/shipping': {
     title: 'Shipping Information | GingerBros',
     description:
-      'Shipping rates and delivery information for GingerBros ginger fizz. Standard nationwide delivery across Thailand with optional cold-chain upgrade.',
+      'Shipping rates and delivery information for GingerBros ginger drinks. Standard nationwide delivery across Thailand with optional cold-chain upgrade.',
     image: FALLBACK_IMAGE,
     type: 'website',
   },
   '/track': {
     title: 'Track Your Order | GingerBros',
     description: 'Track your GingerBros order status with your email and order reference.',
+    image: FALLBACK_IMAGE,
+    type: 'website',
+    noindex: true,
+  },
+  '/orders': {
+    title: 'My Orders | GingerBros',
+    description: 'Look up your GingerBros orders.',
     image: FALLBACK_IMAGE,
     type: 'website',
     noindex: true,
@@ -132,7 +104,7 @@ const KNOWN_ROUTES: Record<string, RouteMeta> = {
   },
   '/links': {
     title: 'GingerBros | Links',
-    description: 'All new Ginger Fizz, with 3.5g of prebiotics! Shop, LINE, Grab, Shopee, Instagram, TikTok and Facebook.',
+    description: 'Think Ginger. Drink Different. Shop Ginger Fizz and Ginger Tea, or find us on LINE, Grab, Shopee, Instagram, TikTok and Facebook.',
     image: `${SITE_URL}/linkpage/avatar.png`,
     type: 'website',
   },
@@ -210,7 +182,7 @@ async function fetchCatalogProduct(origin: string, id: string): Promise<CatalogP
 }
 
 function productRouteMeta(product: CatalogProduct, pathname: string): RouteMeta {
-  const image = product.images[0] ?? FALLBACK_IMAGE;
+  const image = OG_IMAGES.has(product.id) ? `${SITE_URL}/images/og/${product.id}.jpg` : product.images[0] ?? FALLBACK_IMAGE;
   const description =
     product.metadata.short_description ?? product.description ?? `${product.name} from GingerBros.`;
   const price = product.prices.find((p) => !p.recurring) ?? product.prices[0];
@@ -235,7 +207,7 @@ function productRouteMeta(product: CatalogProduct, pathname: string): RouteMeta 
               url: `${SITE_URL}${pathname}`,
               priceCurrency: price.currency.toUpperCase(),
               price: String(price.unitAmount),
-              availability: 'https://schema.org/InStock',
+              availability: product.metadata.stock_status === 'out_of_stock' ? 'https://schema.org/OutOfStock' : 'https://schema.org/InStock',
               seller: { '@type': 'Organization', name: 'GingerBros' },
             },
           }
@@ -249,10 +221,10 @@ const BLOG_POSTS_BY_SLUG = new Map(BLOG_SEO_META.map((post) => [post.slug, post]
 function blogPostMeta(slug: string): RouteMeta | null {
   const post = BLOG_POSTS_BY_SLUG.get(slug);
   if (!post) return null;
-  const url = `${SITE_URL}/blog/${slug}`;
+  const url = `${SITE_URL}/guide/${slug}`;
   const image = post.image ? `${SITE_URL}${post.image}` : FALLBACK_IMAGE;
   return {
-    title: `${post.title} | GingerBros Brew Journal`,
+    title: `${post.title} | The Ginger Guide`,
     description: post.excerpt,
     image,
     type: 'article',
@@ -270,7 +242,7 @@ function blogPostMeta(slug: string): RouteMeta | null {
         name: 'GingerBros',
         logo: {
           '@type': 'ImageObject',
-          url: `${SITE_URL}/images/ginger-fizz-new.png`,
+          url: LOGO_URL,
         },
       },
     },
@@ -453,9 +425,9 @@ export default async function middleware(request: Request): Promise<Response> {
     });
   }
 
-  // Individual blog articles live at /blog/:slug. Valid slugs return 200 with
+  // Individual guide articles live at /guide/:slug. Valid slugs return 200 with
   // per-article meta; unknown slugs fall through to the 404 handling below.
-  const blogMatch = pathname.match(/^\/blog\/([^/]+)\/?$/);
+  const blogMatch = pathname.match(/^\/guide\/([^/]+)\/?$/);
   if (blogMatch) {
     const articleMeta = blogPostMeta(blogMatch[1]);
     if (articleMeta) {

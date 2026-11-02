@@ -1,11 +1,11 @@
 {
-  "name": "GingerBros | Thailand's Best Ginger Fizz",
+  "name": "GingerBros | Think Ginger. Drink Different.",
   "short_name": "GingerBros",
-  "description": "7-day naturally fermented craft ginger fizz from Thailand. Low sugar, good for the gut.",
+  "description": "Modern ginger drinks made in Thailand: Ginger Fizz and Ginger Tea with fresh Thai ginger, real lime and low sugar.",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#FDF6EC",
-  "theme_color": "#3D1F0A",
+  "background_color": "#FDF8F0",
+  "theme_color": "#1E1A17",
   "icons": [
     {
       "src": "/icon-192.png",

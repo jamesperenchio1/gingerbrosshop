@@ -21,6 +21,8 @@ module.exports = {
         'green-ink': '#4F6E36',
         'grab-green': '#00B14F',
         'soft-peach': '#F0D4A8',
+        charcoal: '#1E1A17',
+        ginger: '#F2B632',
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",
@@ -56,8 +58,8 @@ module.exports = {
         },
       },
       fontFamily: {
-        display: ['"Playfair Display"', 'serif'],
-        body: ['"Inter"', 'sans-serif'],
+        display: ['"Bricolage Grotesque Variable"', '"Anuphan Variable"', 'system-ui', 'sans-serif'],
+        body: ['"Inter Variable"', '"Anuphan Variable"', 'system-ui', 'sans-serif'],
       },
       borderRadius: {
         xl: "calc(var(--radius) + 4px)",
@@ -82,6 +84,10 @@ module.exports = {
           from: { height: "var(--radix-accordion-content-height)" },
           to: { height: "0" },
         },
+        marquee: {
+          from: { transform: "translateX(0)" },
+          to: { transform: "translateX(-50%)" },
+        },
         "bounce-gentle": {
           "0%, 100%": { transform: "translateY(0)" },
           "50%": { transform: "translateY(8px)" },
@@ -91,6 +97,7 @@ module.exports = {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
         "bounce-gentle": "bounce-gentle 2s ease-in-out infinite",
+        marquee: "marquee 40s linear infinite",
       },
     },
   },

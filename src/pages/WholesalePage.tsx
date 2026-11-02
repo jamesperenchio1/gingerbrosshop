@@ -63,7 +63,7 @@ function WholesaleForm() {
           value={businessName}
           onChange={(e) => setBusinessName(e.target.value)}
           placeholder="Business name *"
-          className="bg-cream border border-soft-peach rounded-xl px-4 py-3 font-body text-deep-brown placeholder:text-earth/50 focus:outline-none focus:ring-2 focus:ring-amber/40"
+          className="bg-cream border border-soft-peach rounded-xl px-4 py-3 font-body text-deep-brown placeholder:text-earth/80 focus:outline-none focus:ring-2 focus:ring-amber/40"
         />
         <label htmlFor="wholesale-contact-name" className="sr-only">Contact name</label>
         <input
@@ -72,7 +72,7 @@ function WholesaleForm() {
           value={contactName}
           onChange={(e) => setContactName(e.target.value)}
           placeholder="Contact name *"
-          className="bg-cream border border-soft-peach rounded-xl px-4 py-3 font-body text-deep-brown placeholder:text-earth/50 focus:outline-none focus:ring-2 focus:ring-amber/40"
+          className="bg-cream border border-soft-peach rounded-xl px-4 py-3 font-body text-deep-brown placeholder:text-earth/80 focus:outline-none focus:ring-2 focus:ring-amber/40"
         />
         <label htmlFor="wholesale-email" className="sr-only">Email</label>
         <input
@@ -82,7 +82,7 @@ function WholesaleForm() {
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           placeholder="Email *"
-          className="bg-cream border border-soft-peach rounded-xl px-4 py-3 font-body text-deep-brown placeholder:text-earth/50 focus:outline-none focus:ring-2 focus:ring-amber/40"
+          className="bg-cream border border-soft-peach rounded-xl px-4 py-3 font-body text-deep-brown placeholder:text-earth/80 focus:outline-none focus:ring-2 focus:ring-amber/40"
         />
         <label htmlFor="wholesale-phone" className="sr-only">Phone</label>
         <input
@@ -90,7 +90,7 @@ function WholesaleForm() {
           value={phone}
           onChange={(e) => setPhone(e.target.value)}
           placeholder="Phone (optional)"
-          className="bg-cream border border-soft-peach rounded-xl px-4 py-3 font-body text-deep-brown placeholder:text-earth/50 focus:outline-none focus:ring-2 focus:ring-amber/40"
+          className="bg-cream border border-soft-peach rounded-xl px-4 py-3 font-body text-deep-brown placeholder:text-earth/80 focus:outline-none focus:ring-2 focus:ring-amber/40"
         />
       </div>
 
@@ -156,7 +156,7 @@ function WholesaleForm() {
         onChange={(e) => setMessage(e.target.value)}
         placeholder="Tell us about your venue, estimated volume, and any specific requirements"
         rows={4}
-        className="w-full bg-cream border border-soft-peach rounded-xl px-4 py-3 font-body text-deep-brown placeholder:text-earth/50 focus:outline-none focus:ring-2 focus:ring-amber/40 resize-none"
+        className="w-full bg-cream border border-soft-peach rounded-xl px-4 py-3 font-body text-deep-brown placeholder:text-earth/80 focus:outline-none focus:ring-2 focus:ring-amber/40 resize-none"
       />
       {error && <p className="font-body text-[13px] text-rust">{error}</p>}
       <button
@@ -190,7 +190,7 @@ export default function WholesalePage() {
     {
       icon: <BadgeCheck className="w-8 h-8 text-amber" />,
       title: 'Consistent Quality',
-      description: 'Every batch is naturally fermented using fresh Thai ginger, real lime, and prebiotic acacia fibre.',
+      description: 'Fresh Thai ginger in every bottle. Ginger Fizz with real lime, Ginger Tea slow-simmered with lemongrass and spices.',
     },
     {
       icon: <TrendingDown className="w-8 h-8 text-amber" />,
@@ -200,12 +200,12 @@ export default function WholesalePage() {
     {
       icon: <Package className="w-8 h-8 text-amber" />,
       title: 'Flexible Packaging',
-      description: 'Order single bottles (24 per case) or 6-packs (4 per case). Mix and match to suit your venue.',
+      description: 'Ginger Fizz and Ginger Tea by the case. Mix and match to suit your menu.',
     },
     {
       icon: <Clock className="w-8 h-8 text-amber" />,
       title: 'Fresh Rotation',
-      description: 'We date every batch and work with you on rotation so your stock is always fresh. 30-day shelf life when refrigerated.',
+      description: 'Every bottle is dated, and we plan deliveries with you so your fridge is always stocked with fresh bottles.',
     },
   ];
 
@@ -233,14 +233,15 @@ export default function WholesalePage() {
   const products = [
     { product: 'Ginger Fizz Single Bottle', unit: '330ml', caseQty: '24 bottles', sku: 'GB-GF-330' },
     { product: 'Ginger Fizz 6-Pack', unit: '6 × 330ml', caseQty: '4 packs (24 bottles)', sku: 'GB-GF-6PK' },
+    { product: 'Ginger Tea · Thai Spice', unit: '330ml', caseQty: '24 bottles', sku: 'GB-GT-330' },
   ];
 
   const jsonLd = {
     '@context': 'https://schema.org',
     '@type': 'WebPage',
-    name: 'Wholesale | GingerBros',
-    description: 'Wholesale pricing for cafes, restaurants, bars, and retailers. Order GingerBros ginger fizz in Thailand.',
-    url: 'https://gingerbrosshop.com/wholesale',
+    name: 'GingerBros for Business',
+    description: 'Wholesale pricing and the Signature Serve programme for cafés, restaurants, bars and hotels in Thailand.',
+    url: 'https://gingerbrosshop.com/business',
     mainEntity: {
       '@type': 'Organization',
       name: 'GingerBros',
@@ -251,24 +252,45 @@ export default function WholesalePage() {
   return (
     <div className="min-h-screen bg-warm-white">
       <SEO
-        title="Wholesale | GingerBros"
-        description="Wholesale pricing for cafes, restaurants, bars, and retailers. Order GingerBros craft ginger fizz in Thailand."
-        path="/wholesale"
+        title="GingerBros for Cafés, Bars & Restaurants | Wholesale & Signature Serve"
+        description="Put GingerBros on your menu. Free samples, recipe cards, menu copy and wholesale pricing for cafés, bars, restaurants and hotels in Thailand."
+        path="/business"
         jsonLd={jsonLd}
       />
 
-      <main className="pt-28 pb-20">
+      <div className="pt-28 pb-20">
         <div className="max-w-[900px] mx-auto px-6">
           <div className="text-center mb-16">
             <span className="font-body font-medium text-[13px] uppercase tracking-[0.08em] text-rust mb-3 block">
-              B2B / TRADE
+              FOR CAFÉS, BARS, RESTAURANTS &amp; HOTELS
             </span>
-            <h1 className="font-display font-bold text-deep-brown text-[clamp(2rem,4vw,3rem)] mb-4">
-              GingerBros Wholesale
+            <h1 className="font-poster text-deep-brown text-[clamp(2.6rem,7vw,5rem)] mb-4">
+              Put GingerBros on your menu.
             </h1>
             <p className="font-body text-earth text-lg max-w-[600px] mx-auto leading-relaxed">
-              Serve Thailand&apos;s best craft ginger fizz at your venue. Premium margins, reliable supply, and a product customers actually remember.
+              Modern ginger drinks your guests haven&apos;t seen before. Great margins, reliable supply, and a drink people ask about by name.
             </p>
+          </div>
+
+          {/* Signature Serve programme */}
+          <div className="bg-charcoal text-cream rounded-[28px] p-8 md:p-10 mb-16">
+            <span className="font-body text-[12px] font-bold uppercase tracking-[0.16em] text-ginger">The Signature Serve programme</span>
+            <h2 className="font-poster text-[clamp(2rem,5vw,3.2rem)] mt-3 mb-6">Everything you need to sell it.</h2>
+            <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+              {[
+                ['Free samples', 'Taste Fizz and Tea with your team before you commit.'],
+                ['Recipe card', 'Three signature serves your staff can make in seconds.'],
+                ['Menu copy', 'Ready-to-use descriptions in Thai and English.'],
+                ['Tabletop display', 'A small branded stand so guests notice it.'],
+                ['Wholesale pricing', 'Trade rates that get better as you grow.'],
+                ['Social collabs', 'We feature our partner venues on our channels.'],
+              ].map(([title, desc]) => (
+                <li key={title} className="rounded-2xl bg-cream/[0.06] p-5">
+                  <h3 className="font-display text-[1.1rem] font-bold text-ginger">{title}</h3>
+                  <p className="mt-1 font-body text-[14px] text-cream/85">{desc}</p>
+                </li>
+              ))}
+            </ul>
           </div>
 
           {/* Benefits Grid */}
@@ -301,7 +323,7 @@ export default function WholesalePage() {
                 </div>
               ))}
             </div>
-            <p className="font-body text-[13px] text-earth/70 mt-6 text-center">
+            <p className="font-body text-[13px] text-earth/80 mt-6 text-center">
               Exact trade pricing is customised based on your volume, frequency, and location. Request a quote below.
             </p>
           </div>
@@ -327,7 +349,7 @@ export default function WholesalePage() {
                       <td className="font-body text-deep-brown py-4">{row.product}</td>
                       <td className="font-body text-earth py-4">{row.unit}</td>
                       <td className="font-body text-earth py-4">{row.caseQty}</td>
-                      <td className="font-body text-earth/70 py-4 font-mono text-[13px]">{row.sku}</td>
+                      <td className="font-body text-earth/80 py-4 font-mono text-[13px]">{row.sku}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -346,7 +368,7 @@ export default function WholesalePage() {
             <WholesaleForm />
           </div>
         </div>
-      </main>
+      </div>
     </div>
   );
 }

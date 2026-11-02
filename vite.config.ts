@@ -11,6 +11,11 @@ export default defineConfig(({ command }) => ({
   plugins: [...(command === 'serve' ? [inspectAttr()] : []), react()],
   server: {
     port: 3000,
+    // Opt-in: API_PROXY=https://gingerbrosshop.com npm run dev serves the real
+    // catalog locally. It talks to production, so never check out through it.
+    ...(process.env.API_PROXY
+      ? { proxy: { '^/api/(?!_lib/)': { target: process.env.API_PROXY, changeOrigin: true } } }
+      : {}),
   },
   resolve: {
     alias: {

@@ -229,7 +229,7 @@ interface Row {
 }
 
 function imageUrl(src: string | undefined): string {
-  if (!src) return `${SITE_URL}/images/ginger-fizz-new.png`;
+  if (!src) return `${SITE_URL}/images/gen/bottle-fizz.jpg`;
   return /^https?:\/\//i.test(src) ? src : `${SITE_URL}${src.startsWith('/') ? '' : '/'}${src}`;
 }
 

@@ -155,7 +155,7 @@ export default function OrdersPage() {
             onChange={(e) => setEmail(e.target.value)}
             placeholder="Email address"
             required
-            className="flex-1 bg-cream border border-soft-peach rounded-xl px-4 py-3 font-body text-deep-brown placeholder:text-earth/50 focus:outline-none focus:ring-2 focus:ring-rust/30"
+            className="flex-1 bg-cream border border-soft-peach rounded-xl px-4 py-3 font-body text-deep-brown placeholder:text-earth/80 focus:outline-none focus:ring-2 focus:ring-rust/30"
           />
           <button
             type="submit"
@@ -182,7 +182,7 @@ export default function OrdersPage() {
             <div className="text-center py-12">
               <Package className="w-10 h-10 text-earth/30 mx-auto mb-3" />
               <p className="font-body text-earth">No orders found for this email.</p>
-              <p className="font-body text-earth/60 text-sm mt-1">
+              <p className="font-body text-earth/80 text-sm mt-1">
                 If you checked out as a guest, make sure to use the same email.
               </p>
             </div>

@@ -14,7 +14,71 @@ export interface ProductContent {
   features?: string[];
   compatibility?: string[];
   relatedProducts?: string[];
+  /** One-line "tastes like" note shown with the taste meter (drinks). */
+  tasting?: string;
+  /** Short serving ideas (drinks). */
+  serves?: { title: string; desc: string }[];
+  /** Dishes it goes with (drinks). */
+  pairings?: string[];
+  /** Extra gallery images: keys in src/lib/imageManifest.ts. */
+  gallery?: string[];
 }
+
+/** Shared by Ginger Fizz and its packs. */
+const FIZZ: ProductContent = {
+  tasting: 'Bright, peppery fresh ginger up front, a squeeze of real lime, then a sharp sparkle. Low in sugar, so the ginger does the talking.',
+  serves: [
+    { title: 'Ice cold', desc: 'Straight from a cold fridge, in a tall glass packed with ice.' },
+    { title: 'Bangkok Mule', desc: 'Over ice with lime and mint. Add vodka if the night calls for it.' },
+    { title: 'Long & light', desc: 'Half Fizz, half soda water for an all-afternoon drink.' },
+  ],
+  pairings: ['Som tam', 'Gai yang', 'Pad kra pao', 'Moo ping', 'Anything off the grill'],
+  gallery: ['fizz-angle', 'fizz-back', 'life-pour-cold', 'life-pair-som-tam', 'life-night-market'],
+  ingredients: ['Fresh Thai ginger', 'Real lime', 'Full list on the bottle label'],
+  specs: [
+    { label: 'Volume', value: '330ml per bottle' },
+    { label: 'Style', value: 'Sparkling, low sugar' },
+    { label: 'Packaging', value: 'Amber glass bottle with crown cap' },
+    { label: 'Storage', value: 'Keep refrigerated; do not freeze' },
+    { label: 'Serving', value: 'Ice cold, on its own or over ice' },
+    { label: 'Origin', value: 'Made in Thailand' },
+  ],
+  features: [
+    'Fresh Thai ginger and real lime',
+    'Sparkling, bright, properly gingery',
+    'Low in sugar',
+    'Made in Thailand',
+  ],
+};
+
+/** Shared by Ginger Tea and its packs. Wording follows the Tea label. */
+const TEA: ProductContent = {
+  tasting: 'Warm, rounded ginger with lemongrass and lime on the nose and a gentle Thai-spice finish. Still, smooth, and seriously drinkable.',
+  serves: [
+    { title: 'Over ice', desc: 'A full glass of ice, a slice of lime. Our default.' },
+    { title: 'Warmed up', desc: 'Heat gently in a pan (don\'t boil) and pour into a mug.' },
+    { title: 'Lemongrass cooler', desc: 'Two parts Tea, one part soda water, a bruised lemongrass stalk.' },
+  ],
+  pairings: ['Khao man gai', 'Tom yum', 'Tom kha', 'Mango sticky rice (warm)', 'Lunch at your desk'],
+  gallery: ['life-pair-mango', 'life-stoop'],
+  ingredients: ['Ginger', 'Lemongrass', 'Lime', 'Spices'],
+  specs: [
+    { label: 'Volume', value: '330ml per bottle' },
+    { label: 'Recipe', value: 'Thai Spice' },
+    { label: 'Style', value: 'Still, slow-simmered' },
+    { label: 'Packaging', value: 'Amber glass bottle with crown cap' },
+    { label: 'Storage', value: 'Keep refrigerated; do not freeze' },
+    { label: 'Serving', value: 'Over ice, or gently warmed' },
+    { label: 'Dietary', value: 'No artificial colours or flavours' },
+    { label: 'Origin', value: 'Made in Thailand' },
+  ],
+  features: [
+    'Real ginger, slowly simmered',
+    'Lemongrass, lime and Thai spices',
+    'No artificial colours or flavours',
+    'Great iced or warm',
+  ],
+};
 
 export const PRODUCT_CONTENT: Record<string, ProductContent> = {
 
@@ -390,68 +454,44 @@ export const PRODUCT_CONTENT: Record<string, ProductContent> = {
   },
 
   // ─── Drink products ───────────────────────────────────────────────────────
-  // Neither drink is fermented any more. Ingredients, nutrition and shelf life
-  // are left off until they're confirmed against the current recipes; add them
-  // back here (from the label) rather than guessing.
+  // Neither drink is fermented. Only state what's verified: fresh Thai ginger,
+  // real lime, low sugar (Fizz); the Tea label's own wording (Tea). Nutrition
+  // and shelf life stay off until confirmed against the current recipes.
 
   'ginger-fizz': {
-    headline: 'Sparkling ginger with a bright lime lift. Bold flavour, made in Thailand.',
+    ...FIZZ,
+    headline: 'Sparkling. Bright. A proper kick. Fresh Thai ginger and real lime, low in sugar.',
     longDescription:
-      'GingerBros Ginger Fizz is a sparkling ginger drink made with fresh Thai ginger and real lime. Crisp, bright and properly gingery, it is best poured ice cold, over ice, with food or on its own.',
-    specs: [
-      { label: 'Volume', value: '330ml per bottle' },
-      { label: 'Packaging', value: 'Amber glass bottle with crown cap' },
-      { label: 'Storage', value: 'Keep refrigerated; do not freeze' },
-      { label: 'Serving', value: 'Ice cold, on its own or over ice' },
-      { label: 'Origin', value: 'Made in Thailand' },
-      { label: 'Bottle Return', value: 'Returnable/recyclable glass bottle' },
-    ],
-    features: [
-      'Fresh Thai ginger and real lime',
-      'Bright, sparkling and properly gingery',
-      'Multi-buy deals: 2 for ฿260, 3 for ฿390, 6 for ฿780',
-      'Made in Thailand',
-    ],
+      "Ginger Fizz is what happens when you stop treating ginger like a remedy and start treating it like the main event. Fresh Thai ginger brings real heat, real lime keeps it bright, and a sharp, lively sparkle carries it all. It's low in sugar and big on bite, so it refreshes instead of cloying. Crack one ice cold on a hot afternoon, pour it next to anything off the grill, or use it as the best mixer in your fridge.",
     relatedProducts: ['ginger-tea', 'ginger-fizz-6pack', 'fizz-tea-duo'],
   },
-
   'ginger-tea': {
-    headline: 'Real ginger, slowly simmered with lemongrass, lime and spices.',
+    ...TEA,
+    headline: 'Slow-simmered. Warm spice. Smooth. Real ginger with lemongrass, lime and Thai spices.',
     longDescription:
-      'GingerBros Ginger Tea (ชาขิงกลมกล่อม สูตร Thai Spice) is made from fresh ginger, slowly simmered with lemongrass, lime and spices. Smooth and warming, with no artificial colours or flavours. Enjoy it chilled or over ice.',
-    ingredients: ['Ginger', 'Lemongrass', 'Lime', 'Spices'],
-    specs: [
-      { label: 'Volume', value: '330ml per bottle' },
-      { label: 'Recipe', value: 'Thai Spice' },
-      { label: 'Packaging', value: 'Amber glass bottle with crown cap' },
-      { label: 'Storage', value: 'Keep refrigerated; do not freeze' },
-      { label: 'Serving', value: 'Chilled or over ice' },
-      { label: 'Dietary', value: 'No artificial colours or flavours' },
-      { label: 'Origin', value: 'Made in Thailand' },
-    ],
-    features: [
-      'Made from real fresh ginger',
-      'Slowly simmered with lemongrass, lime and spices',
-      'No artificial colours or flavours',
-      'Multi-buy deals: 2 for ฿220, 3 for ฿315, 6 for ฿600',
-    ],
+      'Ginger Tea · Thai Spice (ชาขิง) is real ginger, slowly simmered with lemongrass, lime and spices, then bottled still. Rich, rounded and warming, with no artificial colours or flavours. Pour it over a full glass of ice on a hot day, or warm it gently in a pan when the rain comes in. Same ginger kick, a whole different mood.',
     relatedProducts: ['ginger-fizz', 'ginger-tea-6pack', 'fizz-tea-duo'],
   },
 
-  // ─── Bundles (priced at the print-shop multi-buy deals) ─────────────────
+  // ─── Packs (priced at the multi-buy deals) ──────────────────────────────
 
   'ginger-fizz-2pack': {
-    headline: 'Two bottles of Ginger Fizz for ฿260.',
+    ...FIZZ,
+    headline: 'Two bottles of Ginger Fizz for ฿260. One for you, one for whoever asks.',
+    longDescription: 'Two bottles of Ginger Fizz: fresh Thai ginger, real lime, low sugar and a proper sparkle. The easy upgrade from a single, and ฿20 cheaper than buying two.',
     relatedProducts: ['ginger-fizz', 'ginger-fizz-3pack', 'ginger-fizz-6pack'],
   },
   'ginger-fizz-3pack': {
-    headline: 'Three bottles of Ginger Fizz for ฿390.',
+    ...FIZZ,
+    headline: 'Three bottles of Ginger Fizz for ฿390. A fridge shelf, sorted.',
+    longDescription: 'Three bottles of Ginger Fizz for the week ahead: fresh Thai ginger, real lime and a sharp sparkle, ready whenever you are.',
     relatedProducts: ['ginger-fizz', 'ginger-fizz-6pack', 'fizz-tea-4pack'],
   },
   'ginger-fizz-6pack': {
-    headline: 'Stock up: six bottles of Ginger Fizz for ฿780.',
+    ...FIZZ,
+    headline: 'Six bottles of Ginger Fizz for ฿780. Stock the fridge, share the kick.',
     longDescription:
-      'Six bottles of GingerBros Ginger Fizz, sparkling ginger made with fresh Thai ginger and real lime. Perfect for sharing or keeping the fridge stocked.',
+      "Six bottles of Ginger Fizz: fresh Thai ginger, real lime, low sugar and a proper sparkle. Our best value per bottle, made for parties, office fridges, and anyone who knows they'll want another one.",
     specs: [
       { label: 'Volume', value: '6 × 330ml (1,980ml total)' },
       { label: 'Packaging', value: 'Six amber glass bottles with crown caps' },
@@ -459,26 +499,43 @@ export const PRODUCT_CONTENT: Record<string, ProductContent> = {
       { label: 'Origin', value: 'Made in Thailand' },
       { label: 'Bottle Return', value: 'Returnable/recyclable glass bottle' },
     ],
-    relatedProducts: ['ginger-fizz', 'ginger-tea-6pack'],
+    gallery: ['fizz-six-lineup', ...(FIZZ.gallery ?? [])],
+    relatedProducts: ['ginger-fizz', 'ginger-tea-6pack', 'fizz-tea-4pack'],
   },
   'ginger-tea-2pack': {
-    headline: 'Two bottles of Ginger Tea, Thai Spice, for ฿220.',
+    ...TEA,
+    headline: 'Two bottles of Ginger Tea · Thai Spice for ฿220.',
+    longDescription: 'Two bottles of slow-simmered Ginger Tea with lemongrass, lime and Thai spices. One iced today, one warmed up on the next rainy evening.',
     relatedProducts: ['ginger-tea', 'ginger-tea-3pack', 'ginger-tea-6pack'],
   },
   'ginger-tea-3pack': {
-    headline: 'Three bottles of Ginger Tea, Thai Spice, for ฿315.',
+    ...TEA,
+    headline: 'Three bottles of Ginger Tea · Thai Spice for ฿315.',
+    longDescription: 'Three bottles of Ginger Tea, real ginger slowly simmered with lemongrass, lime and spices. Brilliant with lunch, great over ice, just as good warm.',
     relatedProducts: ['ginger-tea', 'ginger-tea-6pack', 'fizz-tea-4pack'],
   },
   'ginger-tea-6pack': {
-    headline: 'Stock up: six bottles of Ginger Tea, Thai Spice, for ฿600.',
-    relatedProducts: ['ginger-tea', 'ginger-fizz-6pack'],
+    ...TEA,
+    headline: 'Six bottles of Ginger Tea · Thai Spice for ฿600. Our best value.',
+    longDescription: 'Six bottles of slow-simmered Ginger Tea at our lowest price per bottle. Keep a shelf of it cold for hot days, and warm one up when the weather turns.',
+    relatedProducts: ['ginger-tea', 'ginger-fizz-6pack', 'fizz-tea-4pack'],
   },
   'fizz-tea-duo': {
-    headline: 'Can\'t pick? One Ginger Fizz and one Ginger Tea for ฿240.',
+    tasting: 'One sparkling and bright, one still and warmly spiced. Taste both and pick a side (or don\'t).',
+    serves: [...(FIZZ.serves ?? []).slice(0, 1), ...(TEA.serves ?? []).slice(0, 2)],
+    pairings: ['Som tam + gai yang (Fizz)', 'Khao man gai (Tea, iced)', 'Night-market grills (Fizz)', 'Mango sticky rice (Tea, warm)'],
+    gallery: ['life-cheers', 'life-pair-som-tam'],
+    headline: "Can't pick? One Ginger Fizz and one Ginger Tea for ฿240.",
+    longDescription: 'The best way to meet GingerBros: one sparkling, lime-bright Ginger Fizz and one slow-simmered Ginger Tea · Thai Spice. Try them side by side and find your favourite.',
     relatedProducts: ['ginger-fizz', 'ginger-tea', 'fizz-tea-4pack'],
   },
   'fizz-tea-4pack': {
+    tasting: 'Two sparkling, two still. Enough to cover every dish on the table.',
+    serves: [...(FIZZ.serves ?? []).slice(0, 2), ...(TEA.serves ?? []).slice(0, 1)],
+    pairings: ['Som tam + gai yang (Fizz)', 'Khao man gai (Tea, iced)', 'Tom yum (Tea, iced)', 'Moo ping (Fizz)'],
+    gallery: ['life-pair-kra-pao', 'life-stoop'],
     headline: 'Two Ginger Fizz and two Ginger Tea for ฿460.',
+    longDescription: 'Two of each: sparkling Ginger Fizz and slow-simmered Ginger Tea. Built for sharing, dinner parties and anyone who refuses to choose.',
     relatedProducts: ['fizz-tea-duo', 'ginger-fizz-6pack', 'ginger-tea-6pack'],
   },
 };

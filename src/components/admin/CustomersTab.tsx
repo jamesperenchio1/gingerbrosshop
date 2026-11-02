@@ -59,7 +59,7 @@ export default function CustomersTab() {
     <div>
       <form onSubmit={onSubmitSearch} className="flex flex-wrap items-center gap-2 mb-4">
         <div className="relative flex-1 min-w-[220px]">
-          <Search className="w-4 h-4 text-earth/50 absolute left-3 top-1/2 -translate-y-1/2" />
+          <Search className="w-4 h-4 text-earth/80 absolute left-3 top-1/2 -translate-y-1/2" />
           <input
             value={emailFilter}
             onChange={(e) => setEmailFilter(e.target.value)}
@@ -113,7 +113,7 @@ export default function CustomersTab() {
                 )}
               </div>
               <p className="font-body text-earth text-[13px] truncate">{c.email ?? 'No email'}</p>
-              <p className="font-body text-earth/60 text-[12px] mt-0.5">
+              <p className="font-body text-earth/80 text-[12px] mt-0.5">
                 Since {new Date(c.created * 1000).toLocaleDateString('en-GB')}
               </p>
             </div>
@@ -343,7 +343,7 @@ function CustomerDetailPanel({
                   Adjust credit
                 </button>
               </div>
-              <p className="font-body text-earth/60 text-[11px]">
+              <p className="font-body text-earth/80 text-[11px]">
                 Enter a positive amount to add credit (e.g. 50 adds ฿50), or a negative amount to deduct.
                 Every change is logged with a reason.
               </p>
@@ -501,7 +501,7 @@ function Field({
 function Row({ label, value, copy }: { label: string; value: string; copy?: boolean }) {
   return (
     <div className="flex items-start justify-between gap-4">
-      <span className="font-body text-[13px] text-earth/70 shrink-0">{label}</span>
+      <span className="font-body text-[13px] text-earth/80 shrink-0">{label}</span>
       <span className="font-body text-[13px] text-deep-brown text-right break-all">
         {value}
         {copy && <CopyButton value={value} />}

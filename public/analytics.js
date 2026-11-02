@@ -17,7 +17,9 @@
   window.dataLayer = window.dataLayer || [];
   window.gtag = function () { window.dataLayer.push(arguments); };
   gtag('js', new Date());
-  gtag('config', GA_ID);
+  // Page views are sent by the app on every route change (src/App.tsx), so
+  // turn off the automatic one to avoid double counting the landing page.
+  gtag('config', GA_ID, { send_page_view: false });
 
   // Meta Pixel — fbq queues until fbevents.js loads.
   !function (f, b, e, v, n) {
@@ -29,7 +31,6 @@
     n.push = n; n.loaded = !0; n.version = '2.0'; n.queue = [];
   }(window, document, 'script');
   fbq('init', FB_PIXEL_ID);
-  fbq('track', 'PageView');
 
   function inject(src) {
     var s = document.createElement('script');

@@ -21,7 +21,7 @@ function statusClass(status: string | null): string {
     case 'draft':
       return 'bg-earth/15 text-earth';
     default:
-      return 'bg-earth/10 text-earth/70';
+      return 'bg-earth/10 text-earth/80';
   }
 }
 
@@ -77,7 +77,7 @@ export default function InvoicesTab() {
         className="flex flex-wrap items-center gap-2 mb-4"
       >
         <div className="relative flex-1 min-w-[200px]">
-          <Search className="w-4 h-4 text-earth/50 absolute left-3 top-1/2 -translate-y-1/2" />
+          <Search className="w-4 h-4 text-earth/80 absolute left-3 top-1/2 -translate-y-1/2" />
           <input
             value={emailFilter}
             onChange={(e) => setEmailFilter(e.target.value)}
@@ -297,7 +297,7 @@ function InvoiceDetailPanel({
             <section className="bg-cream rounded-2xl p-4 space-y-2">
               <h3 className="font-display text-deep-brown">Lines</h3>
               {invoice.lines.length === 0 && (
-                <p className="font-body text-[13px] text-earth/70">No line items.</p>
+                <p className="font-body text-[13px] text-earth/80">No line items.</p>
               )}
               <div className="space-y-2">
                 {invoice.lines.map((line) => (
@@ -310,7 +310,7 @@ function InvoiceDetailPanel({
                         {line.description ?? 'Item'}
                       </div>
                       {line.quantity != null && (
-                        <div className="font-body text-[12px] text-earth/70">
+                        <div className="font-body text-[12px] text-earth/80">
                           Qty {line.quantity}
                         </div>
                       )}
@@ -368,7 +368,7 @@ function InvoiceDetailPanel({
                 </button>
               </div>
               {!invoice.canSend && !invoice.canVoid && (
-                <p className="font-body text-[12px] text-earth/70">
+                <p className="font-body text-[12px] text-earth/80">
                   This invoice is {invoice.status ?? 'final'} and can no longer be sent or voided.
                 </p>
               )}
@@ -408,7 +408,7 @@ function InvoiceDetailPanel({
 function Row({ label, value, copy }: { label: string; value: string; copy?: boolean }) {
   return (
     <div className="flex items-start justify-between gap-4">
-      <span className="font-body text-[13px] text-earth/70 shrink-0">{label}</span>
+      <span className="font-body text-[13px] text-earth/80 shrink-0">{label}</span>
       <span className="font-body text-[13px] text-deep-brown text-right break-all">{value}</span>
       {copy && <CopyButton value={value} />}
     </div>

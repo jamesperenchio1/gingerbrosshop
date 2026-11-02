@@ -241,7 +241,7 @@ export default function OrderDetailPanel({
                 <button
                   onClick={grantCode}
                   disabled={busy}
-                  className="text-earth/70 font-body text-[12px] hover:underline disabled:opacity-60"
+                  className="text-earth/80 font-body text-[12px] hover:underline disabled:opacity-60"
                 >
                   No email? Generate code
                 </button>
@@ -296,7 +296,7 @@ export default function OrderDetailPanel({
                   <Ban className="w-4 h-4" /> Cancel order
                 </button>
               </div>
-              <p className="font-body text-earth/60 text-[11px]">
+              <p className="font-body text-earth/80 text-[11px]">
                 Refund returns money to the customer. Cancel refunds a paid order in full, or cancels an
                 uncaptured payment / subscription.
               </p>
@@ -365,7 +365,7 @@ export default function OrderDetailPanel({
 function Row({ label, value, copy }: { label: string; value: string; copy?: boolean }) {
   return (
     <div className="flex items-start justify-between gap-4">
-      <span className="font-body text-[13px] text-earth/70 shrink-0">{label}</span>
+      <span className="font-body text-[13px] text-earth/80 shrink-0">{label}</span>
       <span className="font-body text-[13px] text-deep-brown text-right break-all">
         {value}
         {copy && <CopyButton value={value} />}

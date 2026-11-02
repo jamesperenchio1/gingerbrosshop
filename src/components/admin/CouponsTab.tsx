@@ -276,7 +276,7 @@ function CouponDetailPanel({
                 </button>
               </div>
               {promoCodes.length === 0 && (
-                <p className="font-body text-[13px] text-earth/70">No promotion codes.</p>
+                <p className="font-body text-[13px] text-earth/80">No promotion codes.</p>
               )}
               <div className="space-y-2">
                 {promoCodes.map((code) => (
@@ -289,7 +289,7 @@ function CouponDetailPanel({
                         <span className="font-body text-sm text-deep-brown">{code.code}</span>
                         <CopyButton value={code.code} />
                       </div>
-                      <div className="font-body text-[12px] text-earth/70">
+                      <div className="font-body text-[12px] text-earth/80">
                         {code.timesRedeemed}
                         {code.maxRedemptions ? ` / ${code.maxRedemptions}` : ''} redeemed
                         {code.expiresAt ? ` · expires ${new Date(code.expiresAt).toLocaleDateString()}` : ''}
@@ -617,7 +617,7 @@ function CreatePromotionCodePanel({
 function Row({ label, value, copy }: { label: string; value: string; copy?: boolean }) {
   return (
     <div className="flex items-start justify-between gap-4">
-      <span className="font-body text-[13px] text-earth/70 shrink-0">{label}</span>
+      <span className="font-body text-[13px] text-earth/80 shrink-0">{label}</span>
       <span className="font-body text-[13px] text-deep-brown text-right break-all">{value}</span>
       {copy && <CopyButton value={value} />}
     </div>

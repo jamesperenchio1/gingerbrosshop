@@ -7,6 +7,9 @@ import { PENDING_SUBSCRIPTION_CHECKOUT_KEY, REFERRAL_CODE_STORAGE_KEY, DELIVERY_
 import { FREE_SHIPPING_THRESHOLD, CURRENCY_SYMBOL, getDeliveryEstimateMessage } from '@/constants/store';
 import { useI18n } from '@/context/I18nContext';
 import { optimizedImageUrl } from '@/lib/image';
+import { thumbUrl } from '@/lib/productImages';
+import { useCatalog } from '@/lib/catalog';
+import { useAddProduct } from '@/components/shop/useAddProduct';
 import type { CartItem } from '@/types/cart';
 import { usePromo, promoDiscount } from '@/lib/promo';
 import { nextDealHint } from '@/lib/multiBuy';
@@ -24,6 +27,8 @@ export default function CartDrawer() {
   const dealHint = nextDealHint(bottles.fizz, bottles.tea);
   const { t } = useI18n();
   const drawerRef = useRef<HTMLDivElement>(null);
+  const { products } = useCatalog();
+  const addProduct = useAddProduct();
   const [mounted, setMounted] = useState(state.isOpen);
   const [isCheckingOut, setIsCheckingOut] = useState(false);
   const [checkoutError, setCheckoutError] = useState('');
@@ -101,9 +106,30 @@ export default function CartDrawer() {
     }
   }, [state.isOpen]);
 
+  // Dialog focus management: move focus in on open, keep Tab inside the
+  // drawer, and hand focus back to whatever opened it on close.
+  useEffect(() => {
+    if (!state.isOpen) return;
+    const opener = document.activeElement as HTMLElement | null;
+    const id = window.setTimeout(() => drawerRef.current?.querySelector<HTMLElement>('[data-testid="cart-close"]')?.focus(), 50);
+    return () => {
+      window.clearTimeout(id);
+      opener?.focus?.();
+    };
+  }, [state.isOpen]);
+
   useEffect(() => {
     const handleKey = (e: KeyboardEvent) => {
       if (e.key === 'Escape') closeCart();
+      if (e.key === 'Tab' && drawerRef.current) {
+        const focusable = [...drawerRef.current.querySelectorAll<HTMLElement>('a[href], button:not([disabled]), input:not([disabled]), textarea, select, [tabindex]:not([tabindex="-1"])')]
+          .filter((el) => el.offsetParent !== null);
+        if (focusable.length === 0) return;
+        const first = focusable[0];
+        const last = focusable[focusable.length - 1];
+        if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+        else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+      }
     };
     const handlePageShow = () => {
       // Reset body overflow when page is restored from bfcache
@@ -214,6 +240,9 @@ export default function CartDrawer() {
       <div
         ref={drawerRef}
         data-testid="cart-drawer"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="cart-title"
         aria-hidden={!state.isOpen}
         inert={!state.isOpen || undefined}
         className={`fixed top-0 right-0 h-full w-full sm:w-[min(92vw,400px)] bg-warm-white z-[70] shadow-[-8px_0_40px_rgba(61,36,16,0.1)] flex flex-col transition-transform duration-300 ${
@@ -221,7 +250,7 @@ export default function CartDrawer() {
         }`}
       >
         <div className="flex items-center justify-between px-5 py-4 border-b border-soft-peach/50">
-          <h2 className="font-display font-semibold text-deep-brown text-[1.1rem]">
+          <h2 id="cart-title" className="font-display font-bold text-deep-brown text-[1.25rem]">
             {t('yourCart')}
           </h2>
           <button onClick={closeCart} aria-label="Close cart" data-testid="cart-close" className="text-deep-brown hover:text-rust transition-colors">
@@ -234,8 +263,8 @@ export default function CartDrawer() {
             <div className="flex flex-col items-center justify-center h-full text-center">
               <ShoppingBagIcon className="text-soft-peach mb-4" />
               <p className="font-body text-earth mb-2">{t('cartEmpty')}</p>
-              <button onClick={closeCart} className="font-body font-medium text-rust hover:underline">
-                {t('startShopping')}
+              <button onClick={() => { closeCart(); navigate('/shop'); }} className="mt-2 rounded-full bg-charcoal px-6 py-3 font-body text-[13px] font-bold uppercase tracking-[0.08em] text-cream hover:bg-deep-brown">
+                {t('startShopping')} →
               </button>
             </div>
           ) : (
@@ -244,18 +273,19 @@ export default function CartDrawer() {
                 <div key={item.id} data-testid={`cart-item-${item.id}`} className="flex gap-3 pb-3 border-b border-soft-peach last:border-0">
                   <button
                     onClick={() => handleViewProduct(item)}
-                    className="w-14 h-14 rounded-xl overflow-hidden bg-cream flex-shrink-0 hover:opacity-80 transition-opacity"
+                    aria-label={`View ${item.name}`}
+                    className="w-16 h-16 rounded-xl overflow-hidden bg-cream flex-shrink-0 hover:opacity-80 transition-opacity"
                   >
-                    <img src={optimizedImageUrl(item.image, 112)} alt={item.name} className="w-full h-full object-contain" />
+                    <img src={thumbUrl(item.productId, optimizedImageUrl(item.image, 128))} alt="" loading="lazy" className="w-full h-full object-contain p-0.5" />
                   </button>
 
                   <div className="flex-1 min-w-0">
                     <div className="flex items-start justify-between gap-2">
                       <div>
                         <button onClick={() => handleViewProduct(item)}>
-                          <h4 className="font-body font-medium text-deep-brown text-[15px] leading-tight text-left hover:text-rust transition-colors">
+                          <span className="block font-body font-semibold text-deep-brown text-[15px] leading-tight text-left hover:text-rust transition-colors">
                             {item.name}
-                          </h4>
+                          </span>
                         </button>
                         {item.isSubscription && (
                           <span className="inline-block mt-1 font-body font-semibold text-[10px] uppercase tracking-wider px-2 py-0.5 rounded-full bg-deep-brown text-cream">
@@ -319,11 +349,26 @@ export default function CartDrawer() {
                 <p className="font-body text-[12px] text-earth">Applied automatically at checkout. Estimated total ฿{dealSubtotal}, before shipping.</p>
               </>
             )}
-            {dealHint && (
-              <p className="font-body text-[12px] text-earth">
-                Add 1 more {dealHint.kind === 'fizz' ? 'Ginger Fizz' : 'Ginger Tea'} and save ฿{dealHint.saving} with our multi-buy deals.
-              </p>
-            )}
+            {dealHint && (() => {
+              const single = products.find((p) => p.id === (dealHint.kind === 'fizz' ? 'ginger-fizz' : 'ginger-tea'));
+              const label = dealHint.kind === 'fizz' ? 'Ginger Fizz' : 'Ginger Tea';
+              return (
+                <div className="flex items-center justify-between gap-3 rounded-xl bg-ginger/25 px-3 py-2.5">
+                  <p className="font-body text-[13px] text-deep-brown">
+                    Add 1 more {label}, unlock a deal and save <strong>฿{dealHint.saving}</strong>.
+                  </p>
+                  {single && (
+                    <button
+                      type="button"
+                      onClick={() => addProduct(single)}
+                      className="flex-shrink-0 rounded-full bg-charcoal px-3.5 py-1.5 font-body text-[12px] font-bold uppercase tracking-[0.06em] text-cream hover:bg-deep-brown"
+                    >
+                      + Add
+                    </button>
+                  )}
+                </div>
+              );
+            })()}
             {multiBuyDiscount === 0 && promo && promoDiscount(promo, subtotal) > 0 && (
               <>
                 <div className="flex items-center justify-between font-body text-[14px] text-green-ink">
@@ -384,7 +429,7 @@ export default function CartDrawer() {
                   />
                   <span className="font-body text-[13px] text-deep-brown">
                     Standard delivery
-                    <span className="block text-[12px] text-earth/70">฿100 per delivery</span>
+                    <span className="block text-[12px] text-earth/80">฿100 per delivery</span>
                   </span>
                 </label>
                 <label
@@ -402,7 +447,7 @@ export default function CartDrawer() {
                   />
                   <span className="font-body text-[13px] text-deep-brown">
                     Personally hand delivered
-                    <span className="block text-[12px] text-earth/70">
+                    <span className="block text-[12px] text-earth/80">
                       ฿5,000 per delivery, a GingerBros team member brings it to you
                     </span>
                   </span>
@@ -431,7 +476,7 @@ export default function CartDrawer() {
                   value={referralCode}
                   onChange={(e) => handleReferralChange(e.target.value)}
                   placeholder="Referral code"
-                  className="flex-1 bg-cream border border-soft-peach rounded-full px-4 py-2 font-body text-[13px] text-deep-brown placeholder:text-earth/50 focus:outline-none focus:ring-2 focus:ring-rust/30"
+                  className="flex-1 bg-cream border border-soft-peach rounded-full px-4 py-2 font-body text-[13px] text-deep-brown placeholder:text-earth/80 focus:outline-none focus:ring-2 focus:ring-rust/30"
                 />
                 <button
                   onClick={() => setReferralInput(false)}
@@ -454,7 +499,7 @@ export default function CartDrawer() {
               <div className="space-y-1.5">
                 <div className="flex items-center justify-between">
                   <label htmlFor="cart-order-note" className="font-body text-[13px] text-earth">Order note / gift message</label>
-                  <span className="font-body text-[11px] text-earth/50">{orderNote.length}/500</span>
+                  <span className="font-body text-[11px] text-earth/80">{orderNote.length}/500</span>
                 </div>
                 <textarea
                   id="cart-order-note"
@@ -507,7 +552,7 @@ export default function CartDrawer() {
               <button
                 onClick={closeCart}
                 data-testid="cart-continue"
-                className="font-body font-medium text-[13px] text-earth/60 hover:text-rust transition-colors"
+                className="font-body font-medium text-[13px] text-earth/80 hover:text-rust transition-colors"
               >
                 {t('continueShopping')}
               </button>
@@ -515,7 +560,7 @@ export default function CartDrawer() {
                 onClick={handleShareCart}
                 disabled={isSharing}
                 title="Copy a shareable link to this cart"
-                className="font-body text-[13px] text-earth/60 hover:text-rust transition-colors disabled:opacity-50"
+                className="font-body text-[13px] text-earth/80 hover:text-rust transition-colors disabled:opacity-50"
               >
                 {isSharing ? '…' : 'Share cart'}
               </button>

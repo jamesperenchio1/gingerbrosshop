@@ -48,7 +48,7 @@ export default function ProductReviews({ productId, productName }: Props) {
   };
 
   return (
-    <div ref={scopeRef} className="mt-20 border-t border-soft-peach/50 pt-14">
+    <div ref={scopeRef} id="reviews" className="mt-20 scroll-mt-24 border-t border-soft-peach/50 pt-14">
       <h3
         ref={headerRef}
         className="font-display font-semibold text-deep-brown text-[1.35rem] mb-8 flex items-center gap-4"
@@ -92,7 +92,7 @@ export default function ProductReviews({ productId, productName }: Props) {
               >
                 <div className="flex items-center justify-between gap-3 mb-2">
                   <span className="font-display font-semibold text-deep-brown text-[14px]">{r.name}</span>
-                  <span className="font-body text-[12px] text-earth/50">
+                  <span className="font-body text-[12px] text-earth/80">
                     {new Date(r.createdAt).toLocaleDateString('en-US', {
                       year: 'numeric',
                       month: 'short',
@@ -129,7 +129,7 @@ export default function ProductReviews({ productId, productName }: Props) {
               placeholder="Your name"
               required
               maxLength={60}
-              className="w-full bg-white border border-soft-peach rounded-xl px-4 py-2.5 font-body text-[14px] text-deep-brown placeholder:text-earth/50 focus:outline-none focus:ring-2 focus:ring-rust/30"
+              className="w-full bg-white border border-soft-peach rounded-xl px-4 py-2.5 font-body text-[14px] text-deep-brown placeholder:text-earth/80 focus:outline-none focus:ring-2 focus:ring-rust/30"
             />
           </div>
           <div>
@@ -144,7 +144,7 @@ export default function ProductReviews({ productId, productName }: Props) {
               required
               maxLength={1000}
               rows={4}
-              className="w-full bg-white border border-soft-peach rounded-xl px-4 py-2.5 font-body text-[14px] text-deep-brown placeholder:text-earth/50 focus:outline-none focus:ring-2 focus:ring-rust/30 resize-none"
+              className="w-full bg-white border border-soft-peach rounded-xl px-4 py-2.5 font-body text-[14px] text-deep-brown placeholder:text-earth/80 focus:outline-none focus:ring-2 focus:ring-rust/30 resize-none"
             />
           </div>
           <button

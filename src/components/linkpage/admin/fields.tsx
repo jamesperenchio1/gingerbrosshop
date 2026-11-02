@@ -3,7 +3,7 @@ import { Upload, X } from 'lucide-react';
 import { uploadImage } from './api';
 
 export const inputClass =
-  'w-full bg-white border border-soft-peach rounded-lg px-3 py-2 font-body text-[14px] text-deep-brown placeholder:text-earth/50 focus:outline-none focus:ring-2 focus:ring-rust/30';
+  'w-full bg-white border border-soft-peach rounded-lg px-3 py-2 font-body text-[14px] text-deep-brown placeholder:text-earth/80 focus:outline-none focus:ring-2 focus:ring-rust/30';
 
 export function Field({ label, hint, children }: { label: string; hint?: string; children: ReactNode }) {
   return (

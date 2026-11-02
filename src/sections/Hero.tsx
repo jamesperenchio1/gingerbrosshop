@@ -1,166 +1,87 @@
-import { useRef, useEffect, useState } from 'react';
-import NoiseCanvas from '@/components/NoiseCanvas';
-import BubbleCanvas from '@/components/BubbleCanvas';
-import { ChevronDownIcon } from '@/components/Icons';
+import { useRef } from 'react';
+import { Link } from 'react-router';
 import { useI18n } from '@/context/I18nContext';
-import { useReveal, prefersReducedMotion } from '@/lib/reveal';
+import { useReveal } from '@/lib/reveal';
+import ResponsiveImage from '@/components/ResponsiveImage';
 
+/**
+ * Charcoal stage, poster-size type, the two real bottles lit from behind.
+ * The headline is the LCP element (text, so it paints with the first byte);
+ * the bottles are high-priority responsive images.
+ */
 export default function Hero() {
   const { t } = useI18n();
-
-  const badgeRef = useRef<HTMLDivElement>(null);
-  const headlineRef = useRef<HTMLHeadingElement>(null);
-  const subRef = useRef<HTMLParagraphElement>(null);
-  const ctaRef = useRef<HTMLDivElement>(null);
-  const trustRef = useRef<HTMLDivElement>(null);
-  const imageRef = useRef<HTMLDivElement>(null);
-  const scrollRef = useRef<HTMLDivElement>(null);
-
   const sectionRef = useRef<HTMLElement>(null);
+  const bottlesRef = useRef<HTMLDivElement>(null);
 
-  // The WebGL shader + particle canvases are purely decorative: mount them once
-  // the browser is idle so they never compete with first paint / LCP.
-  const [showDecor, setShowDecor] = useState(false);
-  useEffect(() => {
-    const ric = window.requestIdleCallback as typeof window.requestIdleCallback | undefined;
-    if (ric) {
-      const id = ric(() => setShowDecor(true), { timeout: 1500 });
-      return () => window.cancelIdleCallback(id);
-    }
-    const id = window.setTimeout(() => setShowDecor(true), 300);
-    return () => window.clearTimeout(id);
-  }, []);
-
-  // Staged entrance. Delays are absolute seconds on a single timeline; they
-  // reproduce the previous GSAP timeline's relative offsets exactly.
+  // Only the bottles animate in: the headline is the LCP element and must
+  // paint with the first frame.
   useReveal(sectionRef, (reveal) => {
-    reveal(badgeRef.current, { y: -10, duration: 0.5, delay: 0.15, immediate: true });
-    reveal(headlineRef.current, { y: 30, duration: 0.8, delay: 0.45, immediate: true });
-    reveal(subRef.current, { y: 20, duration: 0.6, delay: 0.85, immediate: true });
-    reveal(ctaRef.current, { y: 15, duration: 0.5, delay: 1.15, immediate: true });
-    reveal(trustRef.current, { y: 10, duration: 0.5, delay: 1.35, immediate: true });
-    reveal(imageRef.current, { y: 30, scale: 0.94, duration: 0.9, delay: 0.95, immediate: true });
-    reveal(scrollRef.current, { y: 0, duration: 0.5, delay: 1.65, immediate: true });
+    reveal(bottlesRef.current, { y: 40, scale: 0.96, duration: 0.9, delay: 0.25, immediate: true });
   });
-
-  // Gentle looping float for the bottle + mug group, once the entrance is done.
-  useEffect(() => {
-    const node = imageRef.current;
-    if (!node || prefersReducedMotion()) return;
-    const float = node.animate(
-      [{ transform: 'translateY(0)' }, { transform: 'translateY(-14px)' }],
-      { duration: 2400, delay: 4000, iterations: Infinity, direction: 'alternate', easing: 'ease-in-out' },
-    );
-    return () => float.cancel();
-  }, []);
-
-  const handleShopClick = () => {
-    const el = document.querySelector('#shop');
-    if (el) el.scrollIntoView({ behavior: 'smooth' });
-  };
-
-  const handleStoryClick = () => {
-    const el = document.querySelector('#story');
-    if (el) el.scrollIntoView({ behavior: 'smooth' });
-  };
 
   return (
     <section
       id="hero"
       ref={sectionRef}
-      className="relative w-full min-h-[540px] sm:min-h-[600px] md:min-h-[700px] md:h-screen flex items-center overflow-hidden"
-      style={{ background: 'linear-gradient(135deg, #E8C97A 0%, #D4A34B 40%, #C9963A 100%)' }}
+      aria-labelledby="hero-title"
+      className="relative overflow-hidden bg-charcoal text-cream"
     >
-      {showDecor && <NoiseCanvas />}
-      {showDecor && <BubbleCanvas />}
+      {/* Warm glow + grain, pure CSS. */}
+      <div aria-hidden="true" className="pointer-events-none absolute inset-0 bg-[radial-gradient(60%_55%_at_75%_55%,rgba(242,182,50,0.35),transparent_70%),radial-gradient(40%_40%_at_10%_90%,rgba(139,90,43,0.35),transparent_70%)]" />
 
-      <div className="relative z-10 w-full max-w-[1120px] mx-auto px-6 grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-8 items-center pt-16 sm:pt-20 pb-36 md:py-0">
-        {/* Left: copy */}
-        <div className="flex flex-col items-center md:items-start text-center md:text-left order-2 md:order-1">
-          <div ref={badgeRef} className="mb-2 md:mb-5">
-            <span className="inline-block bg-cream text-deep-brown font-body font-medium text-[12px] md:text-[13px] px-4 py-1.5 md:px-5 md:py-2 rounded-full">
-              {t('heroBadge')}
-            </span>
-          </div>
-
-          <h1
-            ref={headlineRef}
-            className="font-display font-bold text-deep-brown leading-[0.95] mb-2 md:mb-4 text-[clamp(1.75rem,8vw,2.5rem)] md:text-[clamp(2.5rem,6vw,4.75rem)]"
-          >
-            {t('heroHeadline1')}
-            <br />
-            {t('heroHeadline2')}
-          </h1>
-
-          <p
-            ref={subRef}
-            className="font-body font-medium text-[14px] md:text-[15px] text-earth max-w-[460px] mb-4 md:mb-7 leading-relaxed"
-          >
-            {t('heroSub')}
+      <div className="relative mx-auto grid max-w-[1280px] grid-cols-1 items-center gap-6 px-4 pb-14 pt-28 sm:px-6 md:grid-cols-[1.15fr_1fr] md:pb-20 md:pt-32 lg:min-h-[min(100svh,880px)]">
+        <div className="relative z-10">
+          <p className="mb-5 inline-flex items-center gap-2 rounded-full border border-cream/25 px-4 py-1.5 font-body text-[12px] font-semibold uppercase tracking-[0.14em] text-cream/90">
+            <span aria-hidden="true" className="h-2 w-2 rounded-full bg-ginger" />
+            {t('heroBadge')}
           </p>
-
-          <div ref={ctaRef} className="flex flex-col xs:flex-row flex-wrap items-stretch xs:items-center justify-center md:justify-start gap-2 md:gap-3">
-            <button
-              onClick={handleShopClick}
-              className="bg-deep-brown text-cream font-body font-medium text-sm uppercase tracking-[0.08em] px-7 py-3 md:px-9 md:py-3.5 rounded-full hover:bg-rust hover:scale-[1.02] active:scale-[0.98] transition-all duration-200 text-center"
+          <h1 id="hero-title" className="font-poster text-[clamp(3.4rem,11vw,8.75rem)]">
+            <span className="block">{t('heroHeadline1')}</span>
+            <span className="block text-ginger">{t('heroHeadline2')}</span>
+          </h1>
+          <p className="mt-6 max-w-[520px] font-body text-[17px] leading-relaxed text-cream/85 md:text-[18px]">{t('heroSub')}</p>
+          <div className="mt-8 flex flex-col gap-3 xs:flex-row">
+            <Link
+              to="/shop"
+              className="rounded-full bg-ginger px-8 py-4 text-center font-body text-[14px] font-bold uppercase tracking-[0.1em] text-charcoal transition-transform hover:scale-[1.03] active:scale-[0.98]"
             >
-              {t('heroCtaShop')}
-            </button>
-            <button
-              onClick={handleStoryClick}
-              className="bg-transparent text-deep-brown font-body font-medium text-sm uppercase tracking-[0.08em] px-7 py-3 md:px-9 md:py-3.5 rounded-full border-2 border-deep-brown hover:bg-deep-brown hover:text-cream active:scale-[0.98] transition-all duration-200 text-center"
+              {t('heroCtaShop')} →
+            </Link>
+            <Link
+              to="/guide"
+              className="rounded-full border-2 border-cream/40 px-8 py-4 text-center font-body text-[14px] font-bold uppercase tracking-[0.1em] text-cream transition-colors hover:border-cream hover:bg-cream hover:text-charcoal"
             >
               {t('heroCtaStory')}
-            </button>
+            </Link>
           </div>
-
-          {/* Trust row */}
-          <div ref={trustRef} className="flex flex-wrap items-center justify-center md:justify-start gap-x-2 md:gap-x-3 gap-y-1 mt-4 md:mt-7">
-            {[t('heroTrust1'), t('heroTrust2'), t('heroTrust3')].map((label, i, arr) => (
-              <span key={label} className="flex items-center gap-x-2 md:gap-x-3 font-body font-semibold text-[13px] md:text-[15px] text-deep-brown/90">
+          <ul className="mt-8 flex flex-wrap gap-x-5 gap-y-2 font-body text-[14px] font-semibold text-cream/90">
+            {[t('heroTrust1'), t('heroTrust2'), t('heroTrust3')].map((label) => (
+              <li key={label} className="flex items-center gap-2">
+                <span aria-hidden="true" className="text-ginger">✦</span>
                 {label}
-                {i < arr.length - 1 && <span aria-hidden="true" className="text-[16px] md:text-[20px] leading-none">·</span>}
-              </span>
+              </li>
             ))}
-          </div>
+          </ul>
         </div>
 
-        {/* Right: product shot */}
-        <div ref={imageRef} className="flex justify-center md:justify-end order-1 md:order-2">
-          <div className="relative flex items-end justify-center md:justify-end gap-2 sm:gap-4 group">
-            <picture>
-              <source srcSet="/images/hero-mug.webp" type="image/webp" />
-              <img
-                src="/images/hero-mug.png"
-                alt="Frosty mug of GingerBros Ginger Fizz"
-                width={480}
-                height={712}
-                loading="eager"
-                fetchPriority="high"
-                decoding="async"
-                className="w-[90px] xs:w-[110px] sm:w-[160px] md:w-[240px] block drop-shadow-[0_16px_32px_rgba(80,45,8,0.22)] rotate-[-6deg] sm:rotate-[-4deg] md:rotate-[-2deg] group-hover:rotate-0 transition-transform duration-500"
-              />
-            </picture>
-            <picture>
-              <source srcSet="/images/bottle-hero-transparent.webp" type="image/webp" />
-              <img
-                src="/images/bottle-hero-transparent.png"
-                alt="GingerBros Ginger Fizz bottle"
-                width={195}
-                height={759}
-                loading="eager"
-                fetchPriority="high"
-                decoding="async"
-                className="w-[70px] xs:w-[85px] sm:w-[110px] md:w-[150px] block drop-shadow-[0_24px_48px_rgba(80,45,8,0.32)] rotate-[3deg] group-hover:rotate-0 transition-transform duration-500"
-              />
-            </picture>
-          </div>
+        <div ref={bottlesRef} className="relative mx-auto flex h-[360px] w-full max-w-[460px] items-end justify-center sm:h-[460px] md:h-[600px]">
+          <div aria-hidden="true" className="absolute bottom-[4%] left-1/2 h-[10%] w-[70%] -translate-x-1/2 rounded-[50%] bg-black/60 blur-2xl" />
+          <ResponsiveImage
+            name="bottle-tea"
+            alt="GingerBros Ginger Tea bottle"
+            priority
+            sizes="(min-width: 768px) 170px, 110px"
+            className="relative z-0 h-[88%] w-auto -mr-6 rotate-[-6deg] drop-shadow-[0_30px_40px_rgba(0,0,0,0.55)] sm:-mr-8"
+          />
+          <ResponsiveImage
+            name="bottle-fizz"
+            alt="GingerBros Ginger Fizz bottle"
+            priority
+            sizes="(min-width: 768px) 180px, 120px"
+            className="relative z-10 h-full w-auto rotate-[4deg] drop-shadow-[0_30px_40px_rgba(0,0,0,0.55)]"
+          />
         </div>
-      </div>
-
-      {/* Scroll indicator */}
-      <div ref={scrollRef} className="absolute bottom-6 left-1/2 -translate-x-1/2 z-10">
-        <ChevronDownIcon className="text-earth/40 animate-bounce-gentle" />
       </div>
     </section>
   );

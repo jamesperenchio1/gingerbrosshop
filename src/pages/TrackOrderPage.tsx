@@ -106,7 +106,7 @@ export default function TrackOrderPage() {
             onChange={(e) => setEmail(e.target.value)}
             placeholder="Email address"
             required
-            className="w-full bg-cream border border-soft-peach rounded-xl px-4 py-3 font-body text-deep-brown placeholder:text-earth/50 focus:outline-none focus:ring-2 focus:ring-rust/30"
+            className="w-full bg-cream border border-soft-peach rounded-xl px-4 py-3 font-body text-deep-brown placeholder:text-earth/80 focus:outline-none focus:ring-2 focus:ring-rust/30"
           />
           <label htmlFor="track-order-number" className="sr-only">Order number</label>
           <input
@@ -116,7 +116,7 @@ export default function TrackOrderPage() {
             onChange={(e) => setOrderNum(e.target.value)}
             placeholder="Order number (e.g. A1B2C3D4)"
             required
-            className="w-full bg-cream border border-soft-peach rounded-xl px-4 py-3 font-body text-deep-brown placeholder:text-earth/50 focus:outline-none focus:ring-2 focus:ring-rust/30"
+            className="w-full bg-cream border border-soft-peach rounded-xl px-4 py-3 font-body text-deep-brown placeholder:text-earth/80 focus:outline-none focus:ring-2 focus:ring-rust/30"
           />
           <button
             type="submit"

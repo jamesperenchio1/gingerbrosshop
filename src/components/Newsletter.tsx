@@ -144,7 +144,7 @@ export default function Newsletter() {
             <p className="font-body text-earth mb-1">
               {t('newsletterSub')}
             </p>
-            <p className="font-body text-earth/60 text-sm mb-8">
+            <p className="font-body text-earth/80 text-sm mb-8">
               {t('newsletterVerifyHint')}
             </p>
             <form onSubmit={handleSubscribe} className="flex flex-col sm:flex-row gap-3 w-full">
@@ -156,7 +156,7 @@ export default function Newsletter() {
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder={t('newsletterEmailPlaceholder')}
                 required
-                className="flex-1 min-w-0 bg-warm-white border border-soft-peach rounded-full px-5 py-3 font-body text-deep-brown placeholder:text-earth/50 focus:outline-none focus:ring-2 focus:ring-rust/30"
+                className="flex-1 min-w-0 bg-warm-white border border-soft-peach rounded-full px-5 py-3 font-body text-deep-brown placeholder:text-earth/80 focus:outline-none focus:ring-2 focus:ring-rust/30"
               />
               <button
                 type="submit"
@@ -234,7 +234,7 @@ export default function Newsletter() {
             <button
               onClick={handleResend}
               disabled={resendCooldown > 0 || loading}
-              className="flex items-center justify-center gap-1.5 mx-auto text-earth/60 hover:text-earth text-sm font-body transition-colors disabled:opacity-40"
+              className="flex items-center justify-center gap-1.5 mx-auto text-earth/80 hover:text-earth text-sm font-body transition-colors disabled:opacity-40"
             >
               <RefreshCw className="w-3.5 h-3.5" />
               {resendCooldown > 0 ? `${t('newsletterResendIn')} ${resendCooldown}s` : t('newsletterResend')}

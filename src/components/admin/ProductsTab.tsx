@@ -94,7 +94,7 @@ export default function ProductsTab() {
         className="flex flex-wrap items-center gap-2 mb-4"
       >
         <div className="relative flex-1 min-w-[200px]">
-          <Search className="w-4 h-4 text-earth/50 absolute left-3 top-1/2 -translate-y-1/2" />
+          <Search className="w-4 h-4 text-earth/80 absolute left-3 top-1/2 -translate-y-1/2" />
           <input
             value={search}
             onChange={(e) => setSearch(e.target.value)}
@@ -368,7 +368,7 @@ function ProductDetailPanel({
             <section className="bg-cream rounded-2xl p-4 space-y-3">
               <div className="flex items-center justify-between">
                 <h3 className="font-display text-deep-brown">Details</h3>
-                <span className="font-body text-[11px] text-earth/70">{detail.id}</span>
+                <span className="font-body text-[11px] text-earth/80">{detail.id}</span>
               </div>
               <label className="block">
                 <span className="font-body text-[13px] text-earth">Name</span>
@@ -478,7 +478,7 @@ function ProductDetailPanel({
                 </button>
               </div>
               {detail.prices.length === 0 && (
-                <p className="font-body text-[13px] text-earth/70">No prices yet.</p>
+                <p className="font-body text-[13px] text-earth/80">No prices yet.</p>
               )}
               <div className="space-y-2">
                 {detail.prices.map((price) => (
@@ -493,7 +493,7 @@ function ProductDetailPanel({
                           ? `/ ${price.recurring.intervalCount > 1 ? `${price.recurring.intervalCount} ` : ''}${price.recurring.interval}`
                           : ''}
                       </div>
-                      <div className="font-body text-[12px] text-earth/70 truncate">
+                      <div className="font-body text-[12px] text-earth/80 truncate">
                         {price.nickname ?? price.type}
                         {!price.active ? ' · inactive' : ''}
                       </div>
@@ -801,7 +801,7 @@ function CreateProductPanel({ onClose, onCreated }: { onClose: () => void; onCre
     <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/40 px-4">
       <div className="w-full max-w-lg max-h-[90vh] overflow-y-auto bg-warm-white rounded-2xl p-6 shadow-xl">
         <h3 className="font-display text-lg text-deep-brown mb-1">New product</h3>
-        <p className="font-body text-[12px] text-earth/70 mb-4">
+        <p className="font-body text-[12px] text-earth/80 mb-4">
           Creates a Stripe product. Everything except the name is optional — you can add more later.
         </p>
         {error && <p className="mb-3 font-body text-[13px] text-rust">{error}</p>}

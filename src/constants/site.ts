@@ -13,18 +13,19 @@ export const SITE_URL = 'https://gingerbrosshop.com';
 
 export const SITE_NAME = 'GingerBros';
 
-/** Default Open Graph / Twitter share image (1200×630). */
-export const DEFAULT_OG_IMAGE = `${SITE_URL}/images/ginger-fizz-new.png`;
+/** Default Open Graph / Twitter share image (1200×630, scripts/build-og.mjs). */
+export const DEFAULT_OG_IMAGE = `${SITE_URL}/images/og/default.jpg`;
 export const DEFAULT_OG_IMAGE_WIDTH = 1200;
 export const DEFAULT_OG_IMAGE_HEIGHT = 630;
+
+/** Square brand mark for Organization.logo. */
+export const LOGO_URL = `${SITE_URL}/icon-512.png`;
 
 export const SOCIAL_LINKS = [
   'https://www.instagram.com/drinkgingerbros',
   'https://www.tiktok.com/@gingerbrosbrew',
+  'https://shopee.co.th/gingerbros',
+  'https://line.me/R/ti/p/@852nqred',
 ];
 
-/**
- * How long the ferment runs, in days. Used in marketing copy so the number
- * can't drift between the page, the meta description and the edge middleware.
- */
-export const FERMENT_DAYS = 5;
+export const TAGLINE = 'Think Ginger. Drink Different.';

@@ -61,11 +61,11 @@ export default function ActivityTab() {
                 {a.amount ? ` · ${baht(a.amount)}` : ''}
               </p>
               {a.reason && <p className="font-body text-[12px] text-earth/80 italic">“{a.reason}”</p>}
-              {a.detail && <p className="font-body text-[11px] text-earth/50 break-all">{a.detail}</p>}
+              {a.detail && <p className="font-body text-[11px] text-earth/80 break-all">{a.detail}</p>}
             </div>
             <div className="text-right shrink-0">
-              <p className="font-body text-[11px] text-earth/60">{new Date(a.at).toLocaleString('en-GB')}</p>
-              <p className="font-body text-[11px] text-earth/60">{a.email ?? 'unknown'}</p>
+              <p className="font-body text-[11px] text-earth/80">{new Date(a.at).toLocaleString('en-GB')}</p>
+              <p className="font-body text-[11px] text-earth/80">{a.email ?? 'unknown'}</p>
               <p className="font-body text-[11px] text-accent-green">{a.result}</p>
             </div>
           </div>
