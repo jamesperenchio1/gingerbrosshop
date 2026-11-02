@@ -9,6 +9,7 @@
 import { BLOG_SEO_META } from './src/lib/blogSeoMeta';
 import { SITE_URL, DEFAULT_OG_IMAGE, LOGO_URL, SOCIAL_LINKS } from './src/constants/site';
 import { OG_IMAGES } from './src/lib/ogImages';
+import { TH_PATHS } from './src/lib/locale';
 
 interface RouteMeta {
   title: string;
@@ -387,9 +388,10 @@ export default async function middleware(request: Request): Promise<Response> {
 
   // /th/* pages without a Thai version (e.g. a product opened from the Thai
   // shop, then refreshed or shared) live at the English URL.
-  if (pathname.startsWith('/th/')) {
+  const thStripped = pathname === '/th' ? '/' : pathname.startsWith('/th/') ? `/${pathname.slice(4).replace(/^[/\\]+/, '')}` : null;
+  if (thStripped && !TH_PATHS.includes(thStripped)) {
     // Collapse leading slashes so "/th//evil.com" can't become an off-site redirect.
-    const target = new URL(`/${pathname.slice(3).replace(/^[/\\]+/, '')}${url.search}`, request.url);
+    const target = new URL(`${thStripped}${url.search}`, request.url);
     return Response.redirect(target.origin === url.origin ? target.toString() : new URL('/', request.url).toString(), 302);
   }
 
@@ -459,13 +461,16 @@ export default async function middleware(request: Request): Promise<Response> {
     });
   }
 
-  const meta = KNOWN_ROUTES[pathname] ?? {
+  // A supported Thai page that wasn't prerendered: serve the SPA shell with the
+  // page's meta (never redirect it, or a Thai visitor would bounce EN↔TH).
+  const metaKey = thStripped && TH_PATHS.includes(thStripped) ? thStripped : pathname;
+  const meta = KNOWN_ROUTES[metaKey] ?? {
     title: 'Page Not Found | GingerBros',
     description: 'The page you are looking for could not be found.',
     image: FALLBACK_IMAGE,
     noindex: true,
   };
-  const status = pathname in KNOWN_ROUTES ? 200 : 404;
+  const status = metaKey in KNOWN_ROUTES ? 200 : 404;
 
   html = injectMeta(html, meta, pathname);
 
