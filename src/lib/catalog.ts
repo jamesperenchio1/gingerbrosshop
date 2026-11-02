@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { bottlesFromMetadata } from '@/lib/multiBuy';
 
 export interface CatalogPrice {
   priceId: string;
@@ -206,4 +207,12 @@ export function unitLabel(product: CatalogProduct): string {
   if (product.category === 'brewing-equipment') return 'per unit';
   if (/pack/i.test(product.id) || /pack/i.test(product.name)) return 'per pack';
   return 'per bottle';
+}
+
+/** Bottles in one unit of this product, for multi-buy deal pricing. */
+export function bottleCounts(product: CatalogProduct): { bottlesFizz: number; bottlesTea: number } {
+  return {
+    bottlesFizz: bottlesFromMetadata(product.metadata.bottles_fizz),
+    bottlesTea: bottlesFromMetadata(product.metadata.bottles_tea),
+  };
 }

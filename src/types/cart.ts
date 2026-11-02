@@ -15,6 +15,9 @@ export interface CartItem {
   badgeColor: string;
   isSubscription?: boolean;
   interval?: string;
+  // Bottles per unit, from Stripe metadata, for multi-buy deal pricing.
+  bottlesFizz?: number;
+  bottlesTea?: number;
   isGift?: boolean;
   recipientEmail?: string;
   recipientName?: string;

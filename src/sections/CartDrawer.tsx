@@ -9,6 +9,7 @@ import { useI18n } from '@/context/I18nContext';
 import { optimizedImageUrl } from '@/lib/image';
 import type { CartItem } from '@/types/cart';
 import { usePromo, promoDiscount } from '@/lib/promo';
+import { nextDealHint } from '@/lib/multiBuy';
 
 /** localStorage read that is safe during server rendering. */
 function readLocal(key: string): string | null {
@@ -17,7 +18,10 @@ function readLocal(key: string): string | null {
 
 export default function CartDrawer() {
   const promo = usePromo();
-  const { state, closeCart, removeItem, addItem, updateQuantity, decrementOrRemove, subtotal } = useCart();
+  const { state, closeCart, removeItem, addItem, updateQuantity, decrementOrRemove, subtotal, multiBuyDiscount, bottles } = useCart();
+  // What the bottles cost after multi-buy deals; free shipping is measured on this.
+  const dealSubtotal = subtotal - multiBuyDiscount;
+  const dealHint = nextDealHint(bottles.fizz, bottles.tea);
   const { t } = useI18n();
   const drawerRef = useRef<HTMLDivElement>(null);
   const [mounted, setMounted] = useState(state.isOpen);
@@ -306,7 +310,21 @@ export default function CartDrawer() {
               <span className="font-body text-earth text-[15px]">Subtotal</span>
               <span className="font-display font-semibold text-deep-brown text-lg">฿{subtotal}</span>
             </div>
-            {promo && promoDiscount(promo, subtotal) > 0 && (
+            {multiBuyDiscount > 0 && (
+              <>
+                <div className="flex items-center justify-between font-body text-[14px] text-green-ink">
+                  <span>Multi-buy deal</span>
+                  <span>-฿{multiBuyDiscount}</span>
+                </div>
+                <p className="font-body text-[12px] text-earth">Applied automatically at checkout. Estimated total ฿{dealSubtotal}, before shipping.</p>
+              </>
+            )}
+            {dealHint && (
+              <p className="font-body text-[12px] text-earth">
+                Add 1 more {dealHint.kind === 'fizz' ? 'Ginger Fizz' : 'Ginger Tea'} and save ฿{dealHint.saving} with our multi-buy deals.
+              </p>
+            )}
+            {multiBuyDiscount === 0 && promo && promoDiscount(promo, subtotal) > 0 && (
               <>
                 <div className="flex items-center justify-between font-body text-[14px] text-green-ink">
                   <span>Code {promo.code}{promo.percentOff ? ` (${promo.percentOff}% off)` : ''}</span>
@@ -322,20 +340,20 @@ export default function CartDrawer() {
             </p>
 
             {/* Free shipping progress */}
-            {subtotal < FREE_SHIPPING_THRESHOLD && (
+            {dealSubtotal < FREE_SHIPPING_THRESHOLD && (
               <div className="bg-cream rounded-xl px-4 py-3">
                 <p className="font-body text-[13px] text-earth mb-2">
-                  Add <span className="font-semibold text-deep-brown">{CURRENCY_SYMBOL}{FREE_SHIPPING_THRESHOLD - subtotal}</span> more for {t('freeShippingOver').replace(/.*฿\d+/, 'free shipping')}
+                  Add <span className="font-semibold text-deep-brown">{CURRENCY_SYMBOL}{FREE_SHIPPING_THRESHOLD - dealSubtotal}</span> more for {t('freeShippingOver').replace(/.*฿\d+/, 'free shipping')}
                 </p>
                 <div className="h-2 bg-soft-peach rounded-full overflow-hidden">
                   <div
                     className="h-full bg-accent-green rounded-full transition-all duration-500"
-                    style={{ width: `${Math.min(100, (subtotal / FREE_SHIPPING_THRESHOLD) * 100)}%` }}
+                    style={{ width: `${Math.min(100, (dealSubtotal / FREE_SHIPPING_THRESHOLD) * 100)}%` }}
                   />
                 </div>
               </div>
             )}
-            {subtotal >= FREE_SHIPPING_THRESHOLD && (
+            {dealSubtotal >= FREE_SHIPPING_THRESHOLD && (
               <div className="bg-accent-green/10 rounded-xl px-4 py-3">
                 <p className="font-body text-[13px] text-green-ink font-medium">
  {t('freeShippingUnlocked')}

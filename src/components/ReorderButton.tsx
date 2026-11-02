@@ -1,7 +1,7 @@
 import { useCallback, useMemo } from 'react';
 import { Repeat } from 'lucide-react';
 import { useCart } from '@/context/CartContext';
-import { useCatalog, defaultPrice } from '@/lib/catalog';
+import { useCatalog, defaultPrice, bottleCounts } from '@/lib/catalog';
 import { toast } from 'sonner';
 
 interface OrderItem {
@@ -49,6 +49,7 @@ export default function ReorderButton({ items, className = '' }: ReorderButtonPr
         image: product.images[0] ?? '',
         badge: product.badge ?? '',
         badgeColor: product.badgeColor ?? 'bg-sky-500',
+        ...bottleCounts(product),
       });
     });
 

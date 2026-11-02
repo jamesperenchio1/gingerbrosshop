@@ -12,24 +12,33 @@ const createSessionMock = vi.fn(async (params: Record<string, unknown>) => {
 });
 
 // Mock price catalog: ids containing "sub" are recurring; "does-not-exist" throws.
+// "price_fizz" / "price_tea" carry bottle metadata like the real drink products.
 const retrievePriceMock = vi.fn(async (id: string) => {
   if (id === 'does-not-exist') {
     throw new Error('No such price');
   }
+  const isTea = id === 'price_tea';
+  const bottles = id === 'price_fizz' ? { bottles_fizz: '1' } : isTea ? { bottles_tea: '1' } : {};
   return {
     id,
     active: true,
     currency: 'thb',
-    unit_amount: 14000,
+    unit_amount: isTea ? 11900 : 14000,
     recurring: id.includes('sub') ? { interval: 'week', interval_count: 1 } : null,
+    product: { id: `prod_${id}`, metadata: bottles },
   };
 });
+
+const createCouponMock = vi.fn(async (params: Record<string, unknown>) => ({ id: 'coupon_test', ...params }));
 
 vi.mock('stripe', () => ({
   default: vi.fn().mockImplementation(function () {
     return {
       prices: {
         retrieve: retrievePriceMock,
+      },
+      coupons: {
+        create: createCouponMock,
       },
       checkout: {
         sessions: {
@@ -81,6 +90,7 @@ describe('checkout API handler', () => {
     lastSessionCreateParams = null;
     createSessionMock.mockClear();
     retrievePriceMock.mockClear();
+    createCouponMock.mockClear();
   });
 
   it('rejects non-POST requests', async () => {
@@ -169,5 +179,35 @@ describe('checkout API handler', () => {
 
     expect(res.statusCode).toBe(200);
     expect(lastSessionCreateParams?.metadata).toMatchObject({ referralCode: 'BRO1234' });
+  });
+
+  it('applies the multi-buy deal as a coupon (1 Fizz + 1 Tea = ฿240)', async () => {
+    const req = mockReq({
+      body: {
+        items: [
+          { priceId: 'price_fizz', quantity: 1, productId: 'ginger-fizz' },
+          { priceId: 'price_tea', quantity: 1, productId: 'ginger-tea' },
+        ],
+      },
+    });
+    const res = mockRes();
+    await handler(req, res);
+
+    expect(res.statusCode).toBe(200);
+    expect(createCouponMock).toHaveBeenCalledWith(expect.objectContaining({ amount_off: 1900, name: 'Multi-buy deal' }));
+    expect(lastSessionCreateParams?.discounts).toEqual([{ coupon: 'coupon_test' }]);
+    expect(lastSessionCreateParams?.allow_promotion_codes).toBeUndefined();
+  });
+
+  it('offers cold-chain delivery for tea and adds no coupon for a single bottle', async () => {
+    const req = mockReq({ body: { items: [{ priceId: 'price_tea', quantity: 1, productId: 'ginger-tea' }] } });
+    const res = mockRes();
+    await handler(req, res);
+
+    expect(res.statusCode).toBe(200);
+    expect(createCouponMock).not.toHaveBeenCalled();
+    const names = (lastSessionCreateParams?.shipping_options as { shipping_rate_data: { display_name: string } }[])
+      .map((o) => o.shipping_rate_data.display_name);
+    expect(names).toContain('Cold-chain delivery');
   });
 });
