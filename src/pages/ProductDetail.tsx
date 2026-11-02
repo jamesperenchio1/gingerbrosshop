@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect, useMemo } from 'react';
-import { useParams, useSearchParams, useNavigate, Link } from 'react-router';
+import { useParams, useSearchParams, useNavigate, useLocation, Link } from 'react-router';
 import { useCart } from '@/context/CartContext';
 import { toast } from 'sonner';
 import { PlusIcon, MinusIcon } from '@/components/Icons';
@@ -302,6 +302,7 @@ export default function ProductDetail() {
     if (!product) return;
     trackPixelEvent('ViewContent', {
       content_ids: [product.id],
+      contents: [{ id: product.id, quantity: 1, item_price: oneTimeForProduct?.unitAmount ?? defaultPrice(product)?.unitAmount ?? 0, name: product.name }],
       content_type: 'product',
       content_name: product.name,
       value: oneTimeForProduct?.unitAmount ?? defaultPrice(product)?.unitAmount ?? 0,
@@ -343,9 +344,11 @@ export default function ProductDetail() {
     if (match) setSelectedPriceId(match.priceId);
   };
 
+  const keepScroll = (useLocation().state as { keepScroll?: boolean } | null)?.keepScroll;
   useEffect(() => {
+    if (keepScroll) return; // switching pack size: stay on the picker
     window.scrollTo(0, 0);
-  }, [id, loading]);
+  }, [id, loading, keepScroll]);
 
   // Show sticky mobile ATC when the main CTA scrolls out of view.
   useEffect(() => {
@@ -678,7 +681,7 @@ export default function ProductDetail() {
                 <PackPicker
                   options={packOpts}
                   value={packIndex}
-                  onChange={(i) => navigate(`/product/${packOpts[i].product.id}`, { replace: true, preventScrollReset: true })}
+                  onChange={(i) => navigate(`/product/${packOpts[i].product.id}`, { replace: true, state: { keepScroll: true } })}
                   label={`${product.name}: ${t('packSize')}`}
                 />
                 {packOpts[packIndex].bottles > 1 && (

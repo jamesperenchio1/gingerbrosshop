@@ -35,7 +35,9 @@ export default function SEO({
 }: SEOProps) {
   const { locale } = useI18n();
   const routePath = path || '/';
-  const canonical = `${SITE_URL}${localizedPath(routePath, locale)}`.replace(/\/$/, '') || SITE_URL;
+  // Only pages with a real Thai version get a /th canonical; everything else
+  // (product pages, guide…) is canonical in English even when browsed under /th.
+  const canonical = `${SITE_URL}${localizedPath(routePath, hasThai(routePath) ? locale : 'en')}`.replace(/\/$/, '') || SITE_URL;
   const alternates = hasThai(routePath)
     ? [
         { lang: 'en', href: `${SITE_URL}${routePath === '/' ? '' : routePath}` },

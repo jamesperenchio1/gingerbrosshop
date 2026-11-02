@@ -76,8 +76,10 @@ function ReferralCapture() {
  * the page that moves the scroll position.
  */
 function ScrollToTop() {
-  const { pathname, hash } = useLocation();
+  const { pathname, hash, state } = useLocation();
+  const keepScroll = (state as { keepScroll?: boolean } | null)?.keepScroll;
   useLayoutEffect(() => {
+    if (keepScroll) return; // e.g. switching pack size on a product page
     if (hash) {
       const timer = setTimeout(() => {
         try {
@@ -89,7 +91,7 @@ function ScrollToTop() {
       return () => clearTimeout(timer);
     }
     window.scrollTo(0, 0);
-  }, [pathname, hash]);
+  }, [pathname, hash, keepScroll]);
   return null;
 }
 

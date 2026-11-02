@@ -156,6 +156,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
     if (opts?.silent) return;
     trackPixelEvent('AddToCart', {
       content_ids: [item.productId ?? item.id],
+      contents: [{ id: item.productId ?? item.id, quantity: item.quantity, item_price: item.price, name: item.name }],
       content_type: 'product',
       content_name: item.name,
       value: item.price * item.quantity,

@@ -1,7 +1,8 @@
 /**
  * GingerBros drinks are not fermented, and the site must not make health or
- * medical claims (Thai FDA rules). This fails the build if any of that copy
- * creeps back into storefront source, meta or public files.
+ * medical claims (Thai FDA rules). `npm run build` runs this first
+ * (`check:claims`), so any of that copy creeping back into storefront source,
+ * meta or public files fails the deploy.
  *
  * KegLand equipment content legitimately talks about brewing and kombucha, so
  * the equipment entries in productContent.ts are excluded.

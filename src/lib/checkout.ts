@@ -29,6 +29,7 @@ export const DELIVERY_METHOD_STORAGE_KEY = 'gbros-delivery-method';
 export function trackInitiateCheckout(items: CartItem[]): void {
   trackPixelEvent('InitiateCheckout', {
     content_ids: items.map((i) => i.productId ?? i.id),
+    contents: items.map((i) => ({ id: i.productId ?? i.id, quantity: i.quantity, item_price: i.price, name: i.name })),
     content_type: 'product',
     num_items: items.reduce((sum, i) => sum + i.quantity, 0),
     value: items.reduce((sum, i) => sum + i.price * i.quantity, 0),

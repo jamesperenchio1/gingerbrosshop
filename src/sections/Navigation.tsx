@@ -117,7 +117,7 @@ export default function Navigation() {
             </Dialog.Trigger>
             <Dialog.Portal>
               <Dialog.Overlay className="fixed inset-0 z-[60] bg-charcoal/50 backdrop-blur-sm data-[state=open]:animate-in data-[state=open]:fade-in-0" />
-              <Dialog.Content className="fixed inset-y-0 right-0 z-[61] flex w-[min(88vw,380px)] flex-col bg-charcoal p-6 text-cream shadow-2xl data-[state=open]:animate-in data-[state=open]:slide-in-from-right">
+              <Dialog.Content className="fixed inset-y-0 right-0 z-[61] flex w-[min(88vw,380px)] flex-col overflow-y-auto bg-charcoal p-6 text-cream shadow-2xl data-[state=open]:animate-in data-[state=open]:slide-in-from-right">
                 <div className="mb-8 flex items-center justify-between">
                   <Dialog.Title className="font-poster text-[1.6rem] normal-case">GingerBros<span className="text-ginger">.</span></Dialog.Title>
                   <Dialog.Close aria-label={t('closeMenu')} className="p-2">
@@ -128,14 +128,14 @@ export default function Navigation() {
                 <ul className="space-y-1">
                   {navLinks.map((l) => (
                     <li key={l.to}>
-                      <Link to={l.to} className="block py-2 font-poster text-[2.4rem] hover:text-ginger">{t(l.key)}</Link>
+                      <Link to={l.to} onClick={() => setMobileOpen(false)} className="block py-2 font-poster text-[2.4rem] hover:text-ginger">{t(l.key)}</Link>
                     </li>
                   ))}
                 </ul>
                 <ul className="mt-8 space-y-3 border-t border-cream/15 pt-6">
                   {mobileOnlyLinks.map((l) => (
                     <li key={l.to}>
-                      <Link to={l.to} className="font-body text-[15px] text-cream/90 hover:text-ginger">{t(l.key)}</Link>
+                      <Link to={l.to} onClick={() => setMobileOpen(false)} className="font-body text-[15px] text-cream/90 hover:text-ginger">{t(l.key)}</Link>
                     </li>
                   ))}
                 </ul>

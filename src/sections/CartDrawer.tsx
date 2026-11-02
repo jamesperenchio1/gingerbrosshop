@@ -8,7 +8,7 @@ import { FREE_SHIPPING_THRESHOLD, CURRENCY_SYMBOL, getDeliveryEstimateMessage } 
 import { useI18n } from '@/context/I18nContext';
 import { optimizedImageUrl } from '@/lib/image';
 import { thumbUrl } from '@/lib/productImages';
-import { useCatalog } from '@/lib/catalog';
+import { useCatalog, stockStatus } from '@/lib/catalog';
 import { useAddProduct } from '@/components/shop/useAddProduct';
 import type { CartItem } from '@/types/cart';
 import { usePromo, promoDiscount } from '@/lib/promo';
@@ -351,6 +351,8 @@ export default function CartDrawer() {
             )}
             {dealHint && (() => {
               const single = products.find((p) => p.id === (dealHint.kind === 'fizz' ? 'ginger-fizz' : 'ginger-tea'));
+              // Never upsell a bottle we can't sell.
+              if (!single || stockStatus(single) === 'out_of_stock') return null;
               const label = dealHint.kind === 'fizz' ? 'Ginger Fizz' : 'Ginger Tea';
               return (
                 <div className="flex items-center justify-between gap-3 rounded-xl bg-ginger/25 px-3 py-2.5">

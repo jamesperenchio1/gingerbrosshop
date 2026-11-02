@@ -12,6 +12,7 @@ import ReferralCard from '@/components/ReferralCard';
 import ReorderButton from '@/components/ReorderButton';
 
 interface OrderItem {
+  productId?: string | null;
   description: string;
   quantity: number;
   amountTotal: number;
@@ -160,10 +161,16 @@ export default function OrderSuccess() {
         setOrder(data);
         setLoading(false);
         const value = (data.amountTotal ?? 0) / 100;
-        const contentIds = data.items.map((item) => item.description);
+        const contentIds = data.items.map((item) => item.productId ?? item.description);
+        const contents = data.items.map((item) => ({
+          id: item.productId ?? item.description,
+          quantity: item.quantity,
+          item_price: item.unitAmount / 100,
+          name: item.description,
+        }));
         trackPixelEvent(
           'Purchase',
-          { content_ids: contentIds, content_type: 'product', value, currency: data.currency },
+          { content_ids: contentIds, contents, content_type: 'product', value, currency: data.currency },
           `${data.sessionId}-purchase`,
         );
         if (data.isSubscription) {

@@ -104,12 +104,14 @@ function hoistHead(html) {
   return { body, head: tags.join('\n') };
 }
 
+const xml = (s) => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&apos;');
+
 function sitemapXml(entries) {
   const urls = entries.map(({ loc, alternates = [], images = [] }) => [
     '  <url>',
-    `    <loc>${loc}</loc>`,
-    ...alternates.map((a) => `    <xhtml:link rel="alternate" hreflang="${a.lang}" href="${a.href}"/>`),
-    ...images.map((img) => `    <image:image><image:loc>${img}</image:loc></image:image>`),
+    `    <loc>${xml(loc)}</loc>`,
+    ...alternates.map((a) => `    <xhtml:link rel="alternate" hreflang="${xml(a.lang)}" href="${xml(a.href)}"/>`),
+    ...images.map((img) => `    <image:image><image:loc>${xml(img)}</image:loc></image:image>`),
     '  </url>',
   ].join('\n'));
   return `<?xml version="1.0" encoding="UTF-8"?>

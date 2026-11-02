@@ -24,12 +24,22 @@ const GA4_NAME: Record<PixelEvent, string> = {
 
 function trackGa4(name: PixelEvent, params: Record<string, unknown> = {}, eventId?: string): void {
   if (typeof window.gtag !== 'function') return;
-  const ids = Array.isArray(params.content_ids) ? (params.content_ids as string[]) : [];
+  // Prefer Meta's `contents` (id, quantity, item_price) so GA4 gets real
+  // quantities and unit prices; fall back to bare ids.
+  type Content = { id: string; quantity?: number; item_price?: number; name?: string };
+  const contents: Content[] = Array.isArray(params.contents)
+    ? (params.contents as Content[])
+    : (Array.isArray(params.content_ids) ? (params.content_ids as string[]) : []).map((id) => ({ id }));
   window.gtag('event', GA4_NAME[name], {
     currency: params.currency ? String(params.currency).toUpperCase() : 'THB',
     value: params.value,
     ...(name === 'Purchase' && eventId ? { transaction_id: eventId.replace(/-purchase$/, '') } : {}),
-    items: ids.map((id) => ({ item_id: id, item_name: (params.content_name as string | undefined) ?? id })),
+    items: contents.map((c) => ({
+      item_id: c.id,
+      item_name: c.name ?? (contents.length === 1 ? (params.content_name as string | undefined) : undefined) ?? c.id,
+      ...(c.quantity != null ? { quantity: c.quantity } : {}),
+      ...(c.item_price != null ? { price: c.item_price } : {}),
+    })),
   });
 }
 

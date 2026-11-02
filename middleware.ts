@@ -385,6 +385,14 @@ export default async function middleware(request: Request): Promise<Response> {
     }
   }
 
+  // /th/* pages without a Thai version (e.g. a product opened from the Thai
+  // shop, then refreshed or shared) live at the English URL.
+  if (pathname.startsWith('/th/')) {
+    // Collapse leading slashes so "/th//evil.com" can't become an off-site redirect.
+    const target = new URL(`/${pathname.slice(3).replace(/^[/\\]+/, '')}${url.search}`, request.url);
+    return Response.redirect(target.origin === url.origin ? target.toString() : new URL('/', request.url).toString(), 302);
+  }
+
   // Untouched SPA shell (index.html itself is the prerendered homepage).
   const htmlUrl = new URL('/shell.html', request.url);
   const response = await fetch(htmlUrl, internal);

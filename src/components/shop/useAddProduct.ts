@@ -1,7 +1,7 @@
 import { useCallback } from 'react';
 import { toast } from 'sonner';
 import { useCart } from '@/context/CartContext';
-import { bottleCounts, oneTimePrice, defaultPrice, type CatalogProduct } from '@/lib/catalog';
+import { bottleCounts, oneTimePrice, defaultPrice, stockStatus, type CatalogProduct } from '@/lib/catalog';
 import { thumbUrl } from '@/lib/productImages';
 
 /** Adds one-time units of a catalog product to the cart, with a toast. */
@@ -10,7 +10,7 @@ export function useAddProduct() {
   return useCallback(
     (product: CatalogProduct, quantity = 1) => {
       const price = oneTimePrice(product) ?? defaultPrice(product);
-      if (!price) return false;
+      if (!price || stockStatus(product) === 'out_of_stock') return false;
       addItem({
         id: price.priceId,
         priceId: price.priceId,

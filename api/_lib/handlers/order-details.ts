@@ -35,6 +35,10 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     const localOrder = await getOrderBySessionId(sessionId);
 
     const lineItems = session.line_items?.data.map((li) => ({
+      // Same id the storefront uses for views/cart events (Stripe metadata.app_id).
+      productId: (typeof li.price?.product === 'object' && li.price.product && !('deleted' in li.price.product && li.price.product.deleted)
+        ? (li.price.product as { metadata?: Record<string, string>; id: string }).metadata?.app_id ?? (li.price.product as { id: string }).id
+        : null),
       description: li.description ?? 'Item',
       quantity: li.quantity ?? 1,
       amountTotal: li.amount_total,
