@@ -388,7 +388,10 @@ export function I18nProvider({ children, locale }: { children: ReactNode; locale
     try { localStorage.setItem(LOCALE_KEY, l); } catch { /* ignore */ }
     if (l === locale) return;
     const current = window.location.pathname;
-    const routerPath = locale === 'th' ? current.replace(/^\/th(?=\/|$)/, '') || '/' : current;
+    // Collapse leading slashes/backslashes so a path like "//evil.com" can
+    // never become a protocol-relative (off-site) redirect.
+    const safe = `/${current.replace(/^[/\\]+/, '')}`;
+    const routerPath = locale === 'th' ? safe.replace(/^\/th(?=\/|$)/, '') || '/' : safe;
     const target = hasThai(routerPath.replace(/\/$/, '') || '/') ? localizedPath(routerPath, l) : routerPath;
     if (l === 'th' && target === routerPath) {
       // No Thai version of this page yet: go to the Thai homepage instead.

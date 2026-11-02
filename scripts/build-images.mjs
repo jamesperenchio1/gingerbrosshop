@@ -20,7 +20,7 @@ import path from 'node:path';
 const root = process.cwd();
 const SRC = path.join(root, 'assets-src');
 const OUT = path.join(root, 'public/images/gen');
-const WIDTHS = [480, 800, 1200, 1600];
+const WIDTHS = [160, 320, 480, 800, 1200, 1600];
 const CREAM = { r: 0xfd, g: 0xf8, b: 0xf0 };
 
 const manifest = {};

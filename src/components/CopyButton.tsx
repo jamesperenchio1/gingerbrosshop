@@ -19,7 +19,7 @@ export default function CopyButton({ value, label = 'Copy' }: { value: string; l
       }}
       aria-label={`Copy ${label}`}
       className={`inline-flex items-center gap-1 font-body font-medium text-[12px] transition-colors ${
-        copied ? 'text-accent-green' : 'text-rust hover:text-deep-brown'
+        copied ? 'text-green-ink' : 'text-rust hover:text-deep-brown'
       }`}
     >
       {copied ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}

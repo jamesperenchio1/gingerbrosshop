@@ -143,7 +143,7 @@ export default function OrderDetailPanel({
         )}
 
         {error && <p className="mx-5 mt-4 font-body text-[13px] text-rust">{error}</p>}
-        {message && <p className="mx-5 mt-4 font-body text-[13px] text-accent-green">{message}</p>}
+        {message && <p className="mx-5 mt-4 font-body text-[13px] text-green-ink">{message}</p>}
 
         {detail && (
           <div className="px-5 py-5 space-y-5">
@@ -234,7 +234,7 @@ export default function OrderDetailPanel({
                 <button
                   onClick={grantCredit}
                   disabled={busy}
-                  className="text-accent-green font-body text-[13px] hover:underline disabled:opacity-60"
+                  className="text-green-ink font-body text-[13px] hover:underline disabled:opacity-60"
                 >
                   Mark box returned (+฿50, emails customer)
                 </button>

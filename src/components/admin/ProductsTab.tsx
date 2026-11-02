@@ -363,7 +363,7 @@ function ProductDetailPanel({
         ) : (
           <div className="px-5 py-5 space-y-5">
             {error && <p className="font-body text-[13px] text-rust">{error}</p>}
-            {message && <p className="font-body text-[13px] text-accent-green">{message}</p>}
+            {message && <p className="font-body text-[13px] text-green-ink">{message}</p>}
 
             <section className="bg-cream rounded-2xl p-4 space-y-3">
               <div className="flex items-center justify-between">

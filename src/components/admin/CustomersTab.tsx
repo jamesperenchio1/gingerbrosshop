@@ -107,7 +107,7 @@ export default function CustomersTab() {
                   </span>
                 )}
                 {c.subscriptionCount > 0 && (
-                  <span className="text-[10px] uppercase tracking-wider px-2 py-0.5 rounded-full bg-accent-green/15 text-accent-green">
+                  <span className="text-[10px] uppercase tracking-wider px-2 py-0.5 rounded-full bg-accent-green/15 text-green-ink">
                     {c.subscriptionCount} sub{c.subscriptionCount !== 1 ? 's' : ''}
                   </span>
                 )}
@@ -118,7 +118,7 @@ export default function CustomersTab() {
               </p>
             </div>
             <div className="text-right shrink-0">
-              {c.storeCredit > 0 && <p className="font-body text-[12px] text-accent-green">{baht(c.storeCredit)} credit</p>}
+              {c.storeCredit > 0 && <p className="font-body text-[12px] text-green-ink">{baht(c.storeCredit)} credit</p>}
               <p className="font-body text-earth text-[12px]">{c.phone ?? ''}</p>
             </div>
           </button>
@@ -282,7 +282,7 @@ function CustomerDetailPanel({
         )}
 
         {error && <p className="mx-5 mt-4 font-body text-[13px] text-rust">{error}</p>}
-        {message && <p className="mx-5 mt-4 font-body text-[13px] text-accent-green">{message}</p>}
+        {message && <p className="mx-5 mt-4 font-body text-[13px] text-green-ink">{message}</p>}
 
         {detail && (
           <div className="px-5 py-5 space-y-5">

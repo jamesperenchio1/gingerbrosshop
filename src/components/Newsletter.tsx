@@ -244,7 +244,7 @@ export default function Newsletter() {
 
         {step === 'done' && (
           <div className="py-4">
-            <CheckCircle className="w-12 h-12 text-accent-green mx-auto mb-5" />
+            <CheckCircle className="w-12 h-12 text-green-ink mx-auto mb-5" />
             <h2 className="font-display font-bold text-deep-brown text-2xl mb-2">{t('newsletterDoneTitle')}</h2>
             <p className="font-body text-earth">
               {t('newsletterDoneSub')}

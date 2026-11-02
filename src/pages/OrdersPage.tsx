@@ -35,7 +35,7 @@ function OrderCard({ order }: { order: OrderSummary }) {
         <div className="flex items-start gap-3 text-left">
           <div className={`mt-0.5 w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 ${hasTracking ? 'bg-accent-green/15' : 'bg-amber/15'}`}>
             {hasTracking ? (
-              <Truck className="w-4 h-4 text-accent-green" />
+              <Truck className="w-4 h-4 text-green-ink" />
             ) : (
               <CheckCircle className="w-4 h-4 text-amber" />
             )}
@@ -70,7 +70,7 @@ function OrderCard({ order }: { order: OrderSummary }) {
           <div className="pt-3 border-t border-soft-peach/50 space-y-3">
             {hasTracking ? (
               <div className="flex items-center gap-2 font-body text-[14px]">
-                <Truck className="w-4 h-4 text-accent-green flex-shrink-0" />
+                <Truck className="w-4 h-4 text-green-ink flex-shrink-0" />
                 <span className="text-deep-brown">
                   {order.trackingCarrier ? `${order.trackingCarrier}: ` : ''}{order.trackingNumber}
                 </span>

@@ -117,7 +117,7 @@ export default function CouponsTab() {
                       No code
                     </span>
                   ) : (
-                    <span className="text-[11px] font-body px-2 py-0.5 rounded-full bg-accent-green/15 text-accent-green">
+                    <span className="text-[11px] font-body px-2 py-0.5 rounded-full bg-accent-green/15 text-green-ink">
                       {coupon.promotionCodeCount} code{coupon.promotionCodeCount === 1 ? '' : 's'}
                     </span>
                   )}
@@ -247,7 +247,7 @@ function CouponDetailPanel({
         ) : (
           <div className="px-5 py-5 space-y-5">
             {error && <p className="font-body text-[13px] text-rust">{error}</p>}
-            {message && <p className="font-body text-[13px] text-accent-green">{message}</p>}
+            {message && <p className="font-body text-[13px] text-green-ink">{message}</p>}
 
             <section className="bg-cream rounded-2xl p-4 space-y-2">
               <div className="flex items-center justify-between">

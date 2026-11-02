@@ -5,6 +5,8 @@ export const IMAGE_MANIFEST: Record<string, ImageEntry> = {
     "w": 1600,
     "h": 1600,
     "widths": [
+      160,
+      320,
       480,
       800,
       1200,
@@ -16,6 +18,8 @@ export const IMAGE_MANIFEST: Record<string, ImageEntry> = {
     "w": 1600,
     "h": 1600,
     "widths": [
+      160,
+      320,
       480,
       800,
       1200,
@@ -27,6 +31,8 @@ export const IMAGE_MANIFEST: Record<string, ImageEntry> = {
     "w": 1600,
     "h": 1600,
     "widths": [
+      160,
+      320,
       480,
       800,
       1200,
@@ -38,6 +44,8 @@ export const IMAGE_MANIFEST: Record<string, ImageEntry> = {
     "w": 1600,
     "h": 1600,
     "widths": [
+      160,
+      320,
       480,
       800,
       1200,
@@ -49,6 +57,8 @@ export const IMAGE_MANIFEST: Record<string, ImageEntry> = {
     "w": 1600,
     "h": 1600,
     "widths": [
+      160,
+      320,
       480,
       800,
       1200,
@@ -60,6 +70,8 @@ export const IMAGE_MANIFEST: Record<string, ImageEntry> = {
     "w": 1600,
     "h": 1600,
     "widths": [
+      160,
+      320,
       480,
       800,
       1200,
@@ -71,6 +83,8 @@ export const IMAGE_MANIFEST: Record<string, ImageEntry> = {
     "w": 1600,
     "h": 1600,
     "widths": [
+      160,
+      320,
       480,
       800,
       1200,
@@ -82,6 +96,8 @@ export const IMAGE_MANIFEST: Record<string, ImageEntry> = {
     "w": 1600,
     "h": 1600,
     "widths": [
+      160,
+      320,
       480,
       800,
       1200,
@@ -93,6 +109,8 @@ export const IMAGE_MANIFEST: Record<string, ImageEntry> = {
     "w": 1600,
     "h": 1600,
     "widths": [
+      160,
+      320,
       480,
       800,
       1200,
@@ -104,6 +122,8 @@ export const IMAGE_MANIFEST: Record<string, ImageEntry> = {
     "w": 1600,
     "h": 1600,
     "widths": [
+      160,
+      320,
       480,
       800,
       1200,
@@ -115,6 +135,8 @@ export const IMAGE_MANIFEST: Record<string, ImageEntry> = {
     "w": 497,
     "h": 2000,
     "widths": [
+      160,
+      320,
       480,
       497
     ],
@@ -124,6 +146,8 @@ export const IMAGE_MANIFEST: Record<string, ImageEntry> = {
     "w": 506,
     "h": 2000,
     "widths": [
+      160,
+      320,
       480,
       506
     ],
@@ -133,6 +157,8 @@ export const IMAGE_MANIFEST: Record<string, ImageEntry> = {
     "w": 2913,
     "h": 5721,
     "widths": [
+      160,
+      320,
       480,
       800,
       1200,
@@ -144,6 +170,8 @@ export const IMAGE_MANIFEST: Record<string, ImageEntry> = {
     "w": 2961,
     "h": 5692,
     "widths": [
+      160,
+      320,
       480,
       800,
       1200,
@@ -155,6 +183,8 @@ export const IMAGE_MANIFEST: Record<string, ImageEntry> = {
     "w": 3025,
     "h": 5748,
     "widths": [
+      160,
+      320,
       480,
       800,
       1200,
@@ -166,6 +196,8 @@ export const IMAGE_MANIFEST: Record<string, ImageEntry> = {
     "w": 2112,
     "h": 1316,
     "widths": [
+      160,
+      320,
       480,
       800,
       1200,
@@ -177,6 +209,8 @@ export const IMAGE_MANIFEST: Record<string, ImageEntry> = {
     "w": 1080,
     "h": 1350,
     "widths": [
+      160,
+      320,
       480,
       800,
       1080
@@ -187,6 +221,8 @@ export const IMAGE_MANIFEST: Record<string, ImageEntry> = {
     "w": 1080,
     "h": 1350,
     "widths": [
+      160,
+      320,
       480,
       800,
       1080
@@ -197,6 +233,8 @@ export const IMAGE_MANIFEST: Record<string, ImageEntry> = {
     "w": 1080,
     "h": 1350,
     "widths": [
+      160,
+      320,
       480,
       800,
       1080
@@ -207,6 +245,8 @@ export const IMAGE_MANIFEST: Record<string, ImageEntry> = {
     "w": 1080,
     "h": 1350,
     "widths": [
+      160,
+      320,
       480,
       800,
       1080
@@ -217,6 +257,8 @@ export const IMAGE_MANIFEST: Record<string, ImageEntry> = {
     "w": 1080,
     "h": 1350,
     "widths": [
+      160,
+      320,
       480,
       800,
       1080
@@ -227,6 +269,8 @@ export const IMAGE_MANIFEST: Record<string, ImageEntry> = {
     "w": 1080,
     "h": 1350,
     "widths": [
+      160,
+      320,
       480,
       800,
       1080
@@ -237,6 +281,8 @@ export const IMAGE_MANIFEST: Record<string, ImageEntry> = {
     "w": 1080,
     "h": 1350,
     "widths": [
+      160,
+      320,
       480,
       800,
       1080
@@ -247,6 +293,8 @@ export const IMAGE_MANIFEST: Record<string, ImageEntry> = {
     "w": 1080,
     "h": 1350,
     "widths": [
+      160,
+      320,
       480,
       800,
       1080

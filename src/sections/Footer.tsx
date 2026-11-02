@@ -79,9 +79,8 @@ export default function Footer() {
           ))}
         </div>
 
-        <p aria-hidden="true" className="font-poster mt-16 select-none whitespace-nowrap text-[clamp(3rem,13vw,11rem)] text-cream/[0.08]">
-          Think ginger.
-        </p>
+        {/* Decorative: drawn with CSS content so it isn't text (screen readers, contrast checks). */}
+        <div aria-hidden="true" className="font-poster mt-16 select-none whitespace-nowrap text-[clamp(3rem,13vw,11rem)] text-cream/[0.08] before:content-['Think\_ginger.']" />
 
         <div className="mt-6 flex flex-col items-center justify-between gap-4 border-t border-cream/10 pt-6 md:flex-row">
           <p className="font-body text-[13px] text-cream/75" suppressHydrationWarning>

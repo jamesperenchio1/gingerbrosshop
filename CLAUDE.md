@@ -10,10 +10,18 @@ Products are fetched dynamically from Stripe via `/api/products`. The frontend d
 
 ### Current Products
 
-- `ginger-fizz` — Single bottle, ฿140
-- `ginger-fizz-6pack` — 6-Pack bundle, ฿750
-- Subscription plans on single bottle (weekly, 2-week, monthly)
-- Brewing equipment (KegLand products)
+- `ginger-fizz` — Ginger Fizz, ฿140 (subscriptions: weekly, 2-week, monthly)
+- `ginger-tea` — Ginger Tea · Thai Spice, ฿119
+- Packs: `ginger-fizz-2pack/3pack/6pack` (฿260/390/780), `ginger-tea-2pack/3pack/6pack` (฿220/315/600), `fizz-tea-duo` ฿240, `fizz-tea-4pack` ฿460. Multi-buy pricing: `api/_lib/multiBuy.ts`.
+- Brewing equipment (KegLand products), shown on the /shop "Brewing Equipment" tab
+
+## Brand rules (Nov 2026 rebrand)
+
+- Tagline **Think Ginger. Drink Different.** Positioning: the modern ginger drink brand of Thailand. Lead with taste, not health.
+- **Neither drink is fermented.** No fermentation, prebiotic, probiotic, gut, immunity or other health claims anywhere. `tests/unit/brand-claims.test.ts` fails the build if they creep back.
+- Verified facts only: Fizz = fresh Thai ginger, real lime, low sugar (no sugar grams). Tea = the label's wording (real ginger slowly simmered with lemongrass, lime and spices; no artificial colours or flavours).
+- Design: charcoal `#1E1A17`, ginger yellow `#F2B632`, cream/amber/deep brown. Fonts self-hosted: Bricolage Grotesque (display, `.font-poster`), Inter (body), Anuphan (Thai).
+- Thai pages live under `/th` (router basename); only paths in `src/lib/locale.ts` `TH_PATHS` have Thai versions + hreflang.
 
 ## Key Files for Commerce Changes
 
@@ -24,7 +32,8 @@ Products are fetched dynamically from Stripe via `/api/products`. The frontend d
 | `api/_lib/handlers/email-tracking.ts` | Sends tracking emails via Resend |
 | `src/lib/productContent.ts` | Editorial content keyed by `app_id` |
 | `src/pages/ProductDetail.tsx` | Product detail page |
-| `src/sections/Shop.tsx` | Shop grid |
+| `src/sections/Shop.tsx` | Drinks lineup (pack pickers) + /shop tabs |
+| `src/lib/drinks.ts` | Groups packs into drink families, taste profiles |
 
 ## How Order Tracking Works
 
@@ -60,11 +69,12 @@ Rules for keeping pages hydration-safe (first client render must equal the serve
 
 ## Image Assets
 
-| Image | Path |
-|-------|------|
-| Single bottle | `public/images/ginger-fizz-new.png` |
-| 6-Pack | `public/images/ginger-fizz-6pack.png` |
-| Product video | `public/images/product-ginger-fizz.mp4` |
+Sources live in `assets-src/` (transparent bottle cutouts, real Fizz photos, text-free lifestyle shots). Generated output is committed:
+
+- `node scripts/build-images.mjs` → `public/images/gen/<name>-<width>.{avif,webp}` + `<name>.jpg`, and `src/lib/imageManifest.ts`. Render with `<ResponsiveImage name="...">`.
+- `node scripts/build-og.mjs` → 1200×630 share cards in `public/images/og/` + `src/lib/ogImages.ts`.
+- Stripe product images point at `/images/gen/<app_id>.jpg` (`scripts/update-drink-listings.js`, dry run unless `--apply`).
+- Product galleries, tasting notes, serves and pairings: `src/lib/productContent.ts`.
 
 ## Tech Stack
 

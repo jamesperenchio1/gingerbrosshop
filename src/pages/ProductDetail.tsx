@@ -95,10 +95,10 @@ function NutritionPanel({ nutrition }: { nutrition: { label: string; value: stri
         </div>
         <div className="flex flex-wrap gap-2">
           <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white border border-soft-peach/70 text-[12px] font-medium text-deep-brown">
-            <Leaf className="w-3.5 h-3.5 text-accent-green" /> Vegan
+            <Leaf className="w-3.5 h-3.5 text-green-ink" /> Vegan
           </span>
           <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white border border-soft-peach/70 text-[12px] font-medium text-deep-brown">
-            <CheckCircle2 className="w-3.5 h-3.5 text-accent-green" /> Gluten-Free
+            <CheckCircle2 className="w-3.5 h-3.5 text-green-ink" /> Gluten-Free
           </span>
           <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white border border-soft-peach/70 text-[12px] font-medium text-deep-brown">
             <Droplets className="w-3.5 h-3.5 text-amber" /> Low Sugar
@@ -758,7 +758,7 @@ export default function ProductDetail() {
                         </span>
                         <span className="flex-1 flex flex-col">
                           <span className="font-body font-medium text-[14px] text-deep-brown capitalize">{label}</span>
-                          {save > 0 && <span className="font-body font-semibold text-[11px] text-accent-green">Save {save}%</span>}
+                          {save > 0 && <span className="font-body font-semibold text-[11px] text-green-ink">Save {save}%</span>}
                         </span>
                         <span className="flex items-baseline gap-1.5">
                           {save > 0 && oneTimeForProduct?.unitAmount != null && <span className="font-body text-[12px] text-earth/80 line-through">฿{oneTimeForProduct.unitAmount}</span>}
@@ -774,9 +774,9 @@ export default function ProductDetail() {
                       Subscribe &amp; Save{savingsPercent(selectedPrice, oneTimeForProduct) > 0 && ` · ${savingsPercent(selectedPrice, oneTimeForProduct)}% off every delivery`}
                     </p>
                     <ul className="font-body text-[12px] text-earth/80 space-y-1.5">
-                      <li className="flex items-start gap-2"><CheckIcon className="text-accent-green flex-shrink-0 mt-0.5" /> Delivered {intervalLabel(selectedPrice.recurring)}, never run out</li>
-                      <li className="flex items-start gap-2"><CheckIcon className="text-accent-green flex-shrink-0 mt-0.5" /> A lower price than one-time, locked in</li>
-                      <li className="flex items-start gap-2"><CheckIcon className="text-accent-green flex-shrink-0 mt-0.5" /> Pause, skip, or cancel anytime</li>
+                      <li className="flex items-start gap-2"><CheckIcon className="text-green-ink flex-shrink-0 mt-0.5" /> Delivered {intervalLabel(selectedPrice.recurring)}, never run out</li>
+                      <li className="flex items-start gap-2"><CheckIcon className="text-green-ink flex-shrink-0 mt-0.5" /> A lower price than one-time, locked in</li>
+                      <li className="flex items-start gap-2"><CheckIcon className="text-green-ink flex-shrink-0 mt-0.5" /> Pause, skip, or cancel anytime</li>
                     </ul>
                   </div>
                 ) : oneTimeForProduct && maxSavings > 0 && (
@@ -1034,7 +1034,7 @@ export default function ProductDetail() {
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                         {content.features!.map((feat) => (
                           <div key={feat} className="flex items-start gap-2">
-                            <CheckIcon className="text-accent-green flex-shrink-0 mt-0.5" />
+                            <CheckIcon className="text-green-ink flex-shrink-0 mt-0.5" />
                             <span className="font-body text-[14px] text-earth">{feat}</span>
                           </div>
                         ))}

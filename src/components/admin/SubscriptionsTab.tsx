@@ -198,7 +198,7 @@ export default function SubscriptionsTab() {
 function StatusBadge({ status }: { status: string }) {
   const tone =
     status === 'active' || status === 'trialing'
-      ? 'bg-accent-green/15 text-accent-green'
+      ? 'bg-accent-green/15 text-green-ink'
       : status === 'past_due' || status === 'unpaid' || status === 'incomplete'
         ? 'bg-rust/10 text-rust'
         : 'bg-earth/10 text-earth';
@@ -287,7 +287,7 @@ function SubscriptionDetailPanel({
         )}
 
         {error && <p className="mx-5 mt-4 font-body text-[13px] text-rust">{error}</p>}
-        {message && <p className="mx-5 mt-4 font-body text-[13px] text-accent-green">{message}</p>}
+        {message && <p className="mx-5 mt-4 font-body text-[13px] text-green-ink">{message}</p>}
 
         {detail && (
           <div className="px-5 py-5 space-y-5">
@@ -694,7 +694,7 @@ function CreateSubscriptionPanel({ onClose, onCreated }: { onClose: () => void; 
           ) : (
             <>
               {error && <p className="font-body text-[13px] text-rust">{error}</p>}
-              {message && <p className="font-body text-[13px] text-accent-green break-all">{message}</p>}
+              {message && <p className="font-body text-[13px] text-green-ink break-all">{message}</p>}
 
               <label className="block">
                 <span className="font-body text-[13px] text-earth">Plan (recurring price)</span>

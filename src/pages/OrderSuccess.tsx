@@ -300,7 +300,7 @@ export default function OrderSuccess() {
                 <span>{baht(order.amountSubtotal)}</span>
               </div>
               {order.amountDiscount > 0 && (
-                <div className="flex justify-between text-accent-green">
+                <div className="flex justify-between text-green-ink">
                   <span>Discount</span>
                   <span>−{baht(order.amountDiscount)}</span>
                 </div>

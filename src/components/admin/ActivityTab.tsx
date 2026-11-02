@@ -66,7 +66,7 @@ export default function ActivityTab() {
             <div className="text-right shrink-0">
               <p className="font-body text-[11px] text-earth/80">{new Date(a.at).toLocaleString('en-GB')}</p>
               <p className="font-body text-[11px] text-earth/80">{a.email ?? 'unknown'}</p>
-              <p className="font-body text-[11px] text-accent-green">{a.result}</p>
+              <p className="font-body text-[11px] text-green-ink">{a.result}</p>
             </div>
           </div>
         ))}

@@ -45,7 +45,7 @@ function WholesaleForm() {
   if (sent) {
     return (
       <div className="flex items-center gap-3 text-cream">
-        <CheckCircle className="w-6 h-6 text-accent-green flex-shrink-0" />
+        <CheckCircle className="w-6 h-6 text-green-ink flex-shrink-0" />
         <p className="font-body text-[15px]">
           Thanks! We have received your inquiry for <strong>{businessName}</strong> and will reply within 24 hours.
         </p>
@@ -318,7 +318,7 @@ export default function WholesalePage() {
                 <div key={tier.name} className="bg-warm-white rounded-2xl p-5 text-center border-2 border-soft-peach/40 hover:border-amber transition-colors">
                   <p className="font-display font-bold text-deep-brown text-lg">{tier.name}</p>
                   <p className="font-body text-rust font-semibold text-[14px] mt-1">{tier.min}</p>
-                  <p className="font-body text-accent-green font-semibold text-[13px] mt-0.5">{tier.discount}</p>
+                  <p className="font-body text-green-ink font-semibold text-[13px] mt-0.5">{tier.discount}</p>
                   <p className="font-body text-earth text-[13px] mt-3 leading-relaxed">{tier.description}</p>
                 </div>
               ))}

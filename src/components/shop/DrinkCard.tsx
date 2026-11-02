@@ -71,7 +71,9 @@ export default function DrinkCard({ kind, options, review, priority, headingLeve
       <Link
         to={`/product/${product.id}`}
         className={`relative block aspect-square md:aspect-auto md:min-h-[520px] ${theme.panel}`}
-        aria-label={`${product.name}: view details`}
+        // Same destination as the title link: keep it out of the tab order.
+        tabIndex={-1}
+        aria-hidden="true"
       >
         <ResponsiveImage
           name={selected.bottles === 1 ? `bottle-${kind}` : product.id}

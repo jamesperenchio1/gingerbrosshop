@@ -139,7 +139,7 @@ export default function ShippingPage() {
               </div>
             </div>
             <div className="flex items-start gap-4 bg-cream rounded-2xl p-8">
-              <ShieldCheck className="w-8 h-8 text-accent-green flex-shrink-0" />
+              <ShieldCheck className="w-8 h-8 text-green-ink flex-shrink-0" />
               <div>
                 <h3 className="font-display font-semibold text-deep-brown text-[1.1rem] mb-2">Delivery Guarantee</h3>
                 <p className="font-body text-[14px] text-earth leading-relaxed">

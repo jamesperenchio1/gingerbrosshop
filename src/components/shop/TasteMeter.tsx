@@ -12,9 +12,10 @@ export default function TasteMeter({ kind, tone = 'light' }: { kind: DrinkKind; 
       {TASTE[kind].map(({ key, value }) => (
         <div key={key}>
           <dt className={`font-body text-[11px] uppercase tracking-[0.1em] mb-1 ${label}`}>{t(key)}</dt>
-          <dd className="flex gap-1" aria-label={`${value} out of 5`}>
+          <dd className="flex gap-1">
+            <span className="sr-only">{value} out of 5</span>
             {[1, 2, 3, 4, 5].map((n) => (
-              <span key={n} className={`h-1.5 flex-1 rounded-full ${n <= value ? on : off}`} />
+              <span key={n} aria-hidden="true" className={`h-1.5 flex-1 rounded-full ${n <= value ? on : off}`} />
             ))}
           </dd>
         </div>

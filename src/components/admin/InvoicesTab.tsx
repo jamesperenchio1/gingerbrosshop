@@ -15,7 +15,7 @@ const STATUSES = ['draft', 'open', 'paid', 'uncollectible', 'void'] as const;
 function statusClass(status: string | null): string {
   switch (status) {
     case 'paid':
-      return 'bg-accent-green/15 text-accent-green';
+      return 'bg-accent-green/15 text-green-ink';
     case 'open':
       return 'bg-rust/15 text-rust';
     case 'draft':
@@ -149,7 +149,7 @@ export default function InvoicesTab() {
               <div className="text-right shrink-0">
                 <div className="font-display text-deep-brown">{baht(invoice.amountDue)}</div>
                 {invoice.paid && (
-                  <div className="font-body text-[12px] text-accent-green">Paid</div>
+                  <div className="font-body text-[12px] text-green-ink">Paid</div>
                 )}
               </div>
             </button>
@@ -262,7 +262,7 @@ function InvoiceDetailPanel({
         ) : (
           <div className="px-5 py-5 space-y-5">
             {error && <p className="font-body text-[13px] text-rust">{error}</p>}
-            {message && <p className="font-body text-[13px] text-accent-green">{message}</p>}
+            {message && <p className="font-body text-[13px] text-green-ink">{message}</p>}
 
             <section className="bg-cream rounded-2xl p-4 space-y-2">
               <div className="flex items-center justify-between">

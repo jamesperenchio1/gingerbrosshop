@@ -139,7 +139,7 @@ export default function OrdersTab() {
                     </span>
                   )}
                   {order.trackingNumber && (
-                    <span className="text-[10px] uppercase tracking-wider px-2 py-0.5 rounded-full bg-accent-green/15 text-accent-green">
+                    <span className="text-[10px] uppercase tracking-wider px-2 py-0.5 rounded-full bg-accent-green/15 text-green-ink">
                       Shipped
                     </span>
                   )}

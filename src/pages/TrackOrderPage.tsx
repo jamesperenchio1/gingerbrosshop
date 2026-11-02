@@ -170,7 +170,7 @@ export default function TrackOrderPage() {
             <div className="pt-4 border-t border-soft-peach/50">
               {result.trackingNumber ? (
                 <div className="flex items-center gap-3">
-                  <Truck className="w-5 h-5 text-accent-green" />
+                  <Truck className="w-5 h-5 text-green-ink" />
                   <div>
                     <p className="font-body text-deep-brown font-medium">
                       {result.trackingCarrier ?? 'Carrier'}: {result.trackingNumber}
@@ -192,7 +192,7 @@ export default function TrackOrderPage() {
             {/* Email tracking button */}
             <div className="pt-2">
               {emailSent ? (
-                <div className="flex items-center gap-2 text-accent-green font-body text-[14px]">
+                <div className="flex items-center gap-2 text-green-ink font-body text-[14px]">
                   <CheckCircle className="w-4 h-4" />
                   Tracking info emailed to {email}
                 </div>
