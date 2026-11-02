@@ -17,6 +17,14 @@ describe('bestPrice', () => {
     expect(bestPrice(3, 2)).toBe(600); // 2F+2T + 1F beats 3F + 2T (610)
     expect(bestPrice(0, 0)).toBe(0);
   });
+
+  it('stays exact and fast for large orders', () => {
+    expect(bestPrice(24, 0)).toBe(24 * 130);
+    expect(bestPrice(0, 24)).toBe(4 * 600);
+    const start = Date.now();
+    expect(bestPrice(1_000_000, 1_000_000)).toBeGreaterThan(0);
+    expect(Date.now() - start).toBeLessThan(1000);
+  });
 });
 
 describe('multiBuyDiscount', () => {

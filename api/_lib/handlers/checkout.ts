@@ -37,6 +37,10 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     res.status(400).json({ error: 'Cart is empty' });
     return;
   }
+  if (items.length > 50) {
+    res.status(400).json({ error: 'Too many items in cart' });
+    return;
+  }
 
   const paymentMethod = (req.body?.paymentMethod as string | undefined) ?? 'card';
   const referralCode = (req.body?.referralCode as string | undefined) ?? '';

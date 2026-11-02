@@ -31,13 +31,19 @@ export const DEALS: Deal[] = [
 
 export const FIZZ_SINGLE = 140;
 export const TEA_SINGLE = 119;
+const SIX_FIZZ = 780;
+const SIX_TEA = 600;
 
 /** Cheapest total (baht) for this many bottles using any mix of DEALS. */
 export function bestPrice(fizz: number, tea: number): number {
-  const f = Math.max(0, Math.floor(fizz));
-  const t = Math.max(0, Math.floor(tea));
-  // cost[i][j] = cheapest price for i fizz and j tea. Carts cap each line at
-  // 24, so this table stays small.
+  let f = Math.max(0, Math.floor(fizz));
+  let t = Math.max(0, Math.floor(tea));
+  // Large counts: peel off 6-packs first (the cheapest per-bottle rate, and no
+  // mixed deal beats them), so the table below never grows with the input.
+  let base = 0;
+  while (f >= 18) { f -= 6; base += SIX_FIZZ; }
+  while (t >= 18) { t -= 6; base += SIX_TEA; }
+  // cost[i][j] = cheapest price for i fizz and j tea (at most 17 × 17).
   const cost: number[][] = Array.from({ length: f + 1 }, () => new Array(t + 1).fill(Infinity));
   cost[0][0] = 0;
   for (let i = 0; i <= f; i++) {
@@ -51,7 +57,7 @@ export function bestPrice(fizz: number, tea: number): number {
       }
     }
   }
-  return cost[f][t];
+  return base + cost[f][t];
 }
 
 export interface BottleLine {
