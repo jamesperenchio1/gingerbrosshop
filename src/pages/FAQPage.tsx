@@ -112,7 +112,7 @@ const FAQS: FAQItem[] = [
     {
       icon: <HelpCircle className="w-6 h-6 text-amber" />,
       q: 'How do I manage my subscription?',
-      a: 'You can pause, skip, or cancel your subscription at any time through your customer portal. A link to the portal is sent with every order confirmation email. No cancellation fees, no questions asked.',
+      a: 'You can pause (for a month), change your plan, update your card or address, or cancel at any time through your customer portal. Open it from the Manage Subscription link in the footer of this site (you will get a login code by email), or from the button on your order confirmation page. No cancellation fees, no questions asked.',
       category: 'subscription',
     },
     {

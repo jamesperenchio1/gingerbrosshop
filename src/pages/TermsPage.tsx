@@ -53,7 +53,7 @@ Risk of loss and title for items pass to you upon delivery to the courier. We ar
       title: 'Subscriptions',
       content: `Subscription billing recurs automatically at your chosen interval (weekly, every 2 weeks, or monthly). By subscribing, you authorise us to charge your payment method on each billing date until you cancel.
 
-You may pause, skip, or cancel your subscription at any time through your customer portal, no cancellation fees, no minimum commitment. Cancellations must be made before the next billing date to avoid being charged for that cycle.
+You may pause, change plan, or cancel your subscription at any time through your customer portal (linked as Manage Subscription in our website footer), no cancellation fees, no minimum commitment. Cancellations must be made before the next billing date to avoid being charged for that cycle.
 
 Subscription pricing is locked at the rate you signed up for, subject to our right to adjust prices with reasonable notice.`
     },

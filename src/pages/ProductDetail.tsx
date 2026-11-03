@@ -779,7 +779,7 @@ export default function ProductDetail() {
                     <ul className="font-body text-[12px] text-earth/80 space-y-1.5">
                       <li className="flex items-start gap-2"><CheckIcon className="text-green-ink flex-shrink-0 mt-0.5" /> Delivered {intervalLabel(selectedPrice.recurring)}, never run out</li>
                       <li className="flex items-start gap-2"><CheckIcon className="text-green-ink flex-shrink-0 mt-0.5" /> A lower price than one-time, locked in</li>
-                      <li className="flex items-start gap-2"><CheckIcon className="text-green-ink flex-shrink-0 mt-0.5" /> Pause, skip, or cancel anytime</li>
+                      <li className="flex items-start gap-2"><CheckIcon className="text-green-ink flex-shrink-0 mt-0.5" /> Pause or cancel anytime</li>
                     </ul>
                   </div>
                 ) : oneTimeForProduct && maxSavings > 0 && (

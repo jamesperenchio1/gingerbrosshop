@@ -1,0 +1,36 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><title>GingerBros table tent (A5 landscape, fold in the middle)</title>
+<link rel="stylesheet" href="_brand.css">
+<style>
+@page{size:210mm 148mm;margin:0}
+.sheet{width:210mm;height:148mm;display:grid;grid-template-columns:1fr 1fr;position:relative;overflow:hidden}
+.face{width:105mm;height:148mm;background:var(--charcoal);position:relative;overflow:hidden;padding:10mm 9mm;text-align:center}
+.face.flip{transform:rotate(180deg)}
+.k{font-size:2.8mm;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--ginger)}
+h1{font-size:15mm;margin-top:3mm}
+h1 em{font-style:normal;color:var(--ginger);display:block}
+.bt{position:absolute;left:0;right:0;top:46mm;height:68mm}
+.bt img{position:absolute;bottom:0;filter:drop-shadow(0 4mm 4mm rgba(0,0,0,.5))}
+.bt .t{height:60mm;left:20mm;transform:rotate(-7deg)}
+.bt .f{height:68mm;right:20mm;transform:rotate(5deg)}
+.sub{position:absolute;left:9mm;right:9mm;top:118mm;font-size:3.3mm;color:rgba(253,248,240,.9);line-height:1.4}
+.tag{position:absolute;left:0;right:0;bottom:6mm;font-size:4.6mm;color:var(--cream)}
+.tag i{font-style:normal;color:var(--ginger)}
+.fold{position:absolute;left:50%;top:0;bottom:0;border-left:.2mm dashed #999;z-index:5}
+@media print{.fold{display:none}}
+</style></head><body>
+<div class="sheet">
+<div class="face flip">
+  <div class="k">Ask us for a</div><h1 class="poster">Ginger<em>Bros.</em></h1>
+  <div class="bt"><img class="t" src="bottle-tea.png" alt=""><img class="f" src="bottle-fizz.png" alt=""></div>
+  <p class="sub">Fresh Thai ginger, real lime, low sugar.<br>Fizz or Tea, over ice. Ask for today's serve.</p>
+  <div class="tag poster">Think Ginger<i>.</i> Drink Different<i>.</i></div>
+</div>
+<div class="face">
+  <div class="k">Ask us for a</div><h1 class="poster">Ginger<em>Bros.</em></h1>
+  <div class="bt"><img class="t" src="bottle-tea.png" alt=""><img class="f" src="bottle-fizz.png" alt=""></div>
+  <p class="sub">Fresh Thai ginger, real lime, low sugar.<br>Fizz or Tea, over ice. Ask for today's serve.</p>
+  <div class="tag poster">Think Ginger<i>.</i> Drink Different<i>.</i></div>
+</div>
+<div class="fold"></div>
+</div>
+</body></html>

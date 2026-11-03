@@ -34,6 +34,8 @@ export default function Footer() {
         { label: t('returns'), to: '/returns' },
         { label: t('myOrders'), to: '/orders' },
         { label: t('trackOrder'), to: '/track' },
+        // Stripe customer portal: opens its email-code login (no order link needed).
+        { label: t('manageSubscription'), href: '/api/portal' },
       ],
     },
   ];
@@ -70,8 +72,12 @@ export default function Footer() {
               <h2 className="mb-4 font-body text-[12px] font-bold uppercase tracking-[0.14em] text-ginger">{col.title}</h2>
               <ul className="space-y-2.5">
                 {col.links.map((l) => (
-                  <li key={l.to + l.label}>
-                    <Link to={l.to} className="font-body text-[14px] text-cream/85 hover:text-ginger">{l.label}</Link>
+                  <li key={l.label}>
+                    {'href' in l ? (
+                      <a href={l.href} className="font-body text-[14px] text-cream/85 hover:text-ginger">{l.label}</a>
+                    ) : (
+                      <Link to={l.to} className="font-body text-[14px] text-cream/85 hover:text-ginger">{l.label}</Link>
+                    )}
                   </li>
                 ))}
               </ul>

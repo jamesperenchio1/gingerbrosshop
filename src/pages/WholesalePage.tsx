@@ -10,6 +10,7 @@ function WholesaleForm() {
   const [businessType, setBusinessType] = useState('');
   const [monthlyVolume, setMonthlyVolume] = useState('');
   const [products, setProducts] = useState<string[]>([]);
+  const [coldChain, setColdChain] = useState(false);
   const [message, setMessage] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -29,7 +30,7 @@ function WholesaleForm() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           businessName, contactName, email, phone,
-          message: `Business type: ${businessType}\nMonthly volume estimate: ${monthlyVolume}\nProducts interested: ${products.join(', ') || 'Not specified'}\n\n${message}`,
+          message: `Business type: ${businessType}\nMonthly volume estimate: ${monthlyVolume}\nProducts interested: ${products.join(', ') || 'Not specified'}\nDelivery: ${coldChain ? 'Cold-chain (insulated, with ice packs)' : 'Standard courier'}\n\n${message}`,
         }),
       });
       const data = await res.json().catch(() => ({}));
@@ -148,6 +149,25 @@ function WholesaleForm() {
         </div>
       </div>
 
+      <div className="flex items-center justify-between gap-4 rounded-xl border border-cream/30 bg-cream/10 px-4 py-3">
+        <div>
+          <p className="font-body text-[14px] font-medium text-cream">Cold-chain delivery</p>
+          <p className="font-body text-[12px] text-cream/70">
+            {coldChain ? 'Insulated box with ice packs (extra charge).' : 'Standard courier delivery (default).'}
+          </p>
+        </div>
+        <button
+          type="button"
+          role="switch"
+          aria-checked={coldChain}
+          aria-label="Cold-chain delivery"
+          onClick={() => setColdChain((v) => !v)}
+          className={`relative h-6 w-11 flex-shrink-0 rounded-full transition-colors ${coldChain ? 'bg-amber' : 'bg-cream/30'}`}
+        >
+          <span className={`absolute left-0.5 top-0.5 h-5 w-5 rounded-full bg-cream shadow transition-transform ${coldChain ? 'translate-x-5' : ''}`} />
+        </button>
+      </div>
+
       <label htmlFor="wholesale-message" className="sr-only">Message</label>
       <textarea
         id="wholesale-message"
@@ -185,7 +205,7 @@ export default function WholesalePage() {
     {
       icon: <Truck className="w-8 h-8 text-amber" />,
       title: 'Reliable Delivery',
-      description: 'Scheduled wholesale deliveries across Thailand by standard courier. No cold chain needed, and cold-chain delivery is available on request.',
+      description: 'Scheduled wholesale deliveries across Thailand by standard courier, with cold-chain delivery available as an option.',
     },
     {
       icon: <BadgeCheck className="w-8 h-8 text-amber" />,
@@ -253,7 +273,7 @@ export default function WholesalePage() {
     <div className="min-h-screen bg-warm-white">
       <SEO
         title="GingerBros for Cafés, Bars & Restaurants | Wholesale & Signature Serve"
-        description="Put GingerBros on your menu. Free samples (you cover shipping), recipe cards, menu copy and wholesale pricing for cafés, bars, restaurants and hotels in Thailand."
+        description="Put GingerBros on your menu. Free samples, recipe cards, menu copy and wholesale pricing for cafés, bars, restaurants and hotels in Thailand."
         path="/business"
         jsonLd={jsonLd}
       />
