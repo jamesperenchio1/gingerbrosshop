@@ -16,8 +16,8 @@ export default function BusinessTeaser() {
           </Link>
         </div>
         <ResponsiveImage
-          name="life-pair-kra-pao"
-          alt="GingerBros Ginger Fizz served with pad kra pao"
+          name="life-stoop"
+          alt="Two friends clinking GingerBros bottles on a sunlit Bangkok stoop"
           sizes="(min-width: 768px) 440px, 100vw"
           className="w-full rotate-[-2deg] rounded-[24px] shadow-card"
         />

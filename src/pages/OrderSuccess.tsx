@@ -389,7 +389,7 @@ export default function OrderSuccess() {
           <div className="bg-amber/10 border border-amber/30 rounded-2xl p-6 sm:p-8 mb-6">
             <h3 className="font-display font-semibold text-deep-brown mb-2">Your Subscription</h3>
             <p className="font-body text-earth text-[15px] leading-relaxed mb-4">
-              Your subscription is active. You can pause, skip a delivery, update your address, or cancel anytime from your customer portal. No lock-in, no hassle.
+              Your subscription is active. You can pause, change your plan, update your address, or cancel anytime from your customer portal. No lock-in, no hassle.
             </p>
             {order.customerEmail && (
               <a

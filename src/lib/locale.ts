@@ -8,7 +8,7 @@ import type { Locale } from '@/context/I18nContext';
 export const TH_PREFIX = '/th';
 
 /** Pages that have real Thai content (prerendered under /th, get hreflang). */
-export const TH_PATHS = ['/', '/shop', '/story'];
+export const TH_PATHS = ['/', '/shop', '/story', '/faq', '/shipping'];
 
 export function localeFromPath(pathname: string): Locale {
   return pathname === TH_PREFIX || pathname.startsWith(`${TH_PREFIX}/`) ? 'th' : 'en';

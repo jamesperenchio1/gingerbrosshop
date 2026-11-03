@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Store, Truck, BadgeCheck, Mail, CheckCircle, Package, TrendingDown, Clock } from 'lucide-react';
 import SEO from '@/components/SEO';
+import { trackPixelEvent } from '@/lib/metaPixel';
 
 function WholesaleForm() {
   const [businessName, setBusinessName] = useState('');
@@ -10,6 +11,7 @@ function WholesaleForm() {
   const [businessType, setBusinessType] = useState('');
   const [monthlyVolume, setMonthlyVolume] = useState('');
   const [products, setProducts] = useState<string[]>([]);
+  const [coldChain, setColdChain] = useState(false);
   const [message, setMessage] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -29,11 +31,12 @@ function WholesaleForm() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           businessName, contactName, email, phone,
-          message: `Business type: ${businessType}\nMonthly volume estimate: ${monthlyVolume}\nProducts interested: ${products.join(', ') || 'Not specified'}\n\n${message}`,
+          message: `Business type: ${businessType}\nMonthly volume estimate: ${monthlyVolume}\nProducts interested: ${products.join(', ') || 'Not specified'}\nDelivery: ${coldChain ? 'Cold-chain (insulated, with ice packs)' : 'Standard courier'}\n\n${message}`,
         }),
       });
       const data = await res.json().catch(() => ({}));
       if (!res.ok) throw new Error(data.error ?? 'Something went wrong. Please try again.');
+      trackPixelEvent('Lead', { content_name: 'wholesale_quote' });
       setSent(true);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to send inquiry.');
@@ -148,13 +151,31 @@ function WholesaleForm() {
         </div>
       </div>
 
+      <div className="flex items-center justify-between gap-4 rounded-xl border border-cream/30 bg-cream/10 px-4 py-3">
+        <div>
+          <p className="font-body text-[14px] font-medium text-cream">Cold-chain delivery</p>
+          <p className="font-body text-[12px] text-cream/70">
+            {coldChain ? 'Insulated box with ice packs (extra charge).' : 'Standard courier delivery (default).'}
+          </p>
+        </div>
+        <button
+          type="button"
+          role="switch"
+          aria-checked={coldChain}
+          aria-label="Cold-chain delivery"
+          onClick={() => setColdChain((v) => !v)}
+          className={`relative h-6 w-11 flex-shrink-0 rounded-full transition-colors ${coldChain ? 'bg-amber' : 'bg-cream/30'}`}
+        >
+          <span className={`absolute left-0.5 top-0.5 h-5 w-5 rounded-full bg-cream shadow transition-transform ${coldChain ? 'translate-x-5' : ''}`} />
+        </button>
+      </div>
+
       <label htmlFor="wholesale-message" className="sr-only">Message</label>
       <textarea
         id="wholesale-message"
-        required
         value={message}
         onChange={(e) => setMessage(e.target.value)}
-        placeholder="Tell us about your venue, estimated volume, and any specific requirements"
+        placeholder="Anything else? Your venue, estimated volume, special requirements (optional)"
         rows={4}
         className="w-full bg-cream border border-soft-peach rounded-xl px-4 py-3 font-body text-deep-brown placeholder:text-earth/80 focus:outline-none focus:ring-2 focus:ring-amber/40 resize-none"
       />
@@ -185,7 +206,7 @@ export default function WholesalePage() {
     {
       icon: <Truck className="w-8 h-8 text-amber" />,
       title: 'Reliable Delivery',
-      description: 'Scheduled wholesale deliveries across Thailand. Standard or cold-chain options to keep every bottle fresh.',
+      description: 'Scheduled wholesale deliveries across Thailand by standard courier, with cold-chain delivery available as an option.',
     },
     {
       icon: <BadgeCheck className="w-8 h-8 text-amber" />,
@@ -252,8 +273,8 @@ export default function WholesalePage() {
   return (
     <div className="min-h-screen bg-warm-white">
       <SEO
-        title="GingerBros for Cafés, Bars & Restaurants | Wholesale & Signature Serve"
-        description="Put GingerBros on your menu. Free samples, recipe cards, menu copy and wholesale pricing for cafés, bars, restaurants and hotels in Thailand."
+        title="Wholesale Ginger Drinks for Cafés & Bars"
+        description="Wholesale ginger drinks for cafés, bars, restaurants and hotels in Thailand. Free samples, recipe cards, menu copy and trade pricing. Request a quote."
         path="/business"
         jsonLd={jsonLd}
       />
@@ -270,6 +291,12 @@ export default function WholesalePage() {
             <p className="font-body text-earth text-lg max-w-[600px] mx-auto leading-relaxed">
               Modern ginger drinks your guests haven&apos;t seen before. Great margins, reliable supply, and a drink people ask about by name.
             </p>
+            <a
+              href="#quote"
+              className="mt-6 inline-block rounded-full bg-charcoal px-8 py-4 font-body text-[13px] font-bold uppercase tracking-[0.1em] text-cream hover:bg-deep-brown"
+            >
+              Request a quote →
+            </a>
           </div>
 
           {/* Signature Serve programme */}
@@ -278,7 +305,7 @@ export default function WholesalePage() {
             <h2 className="font-poster text-[clamp(2rem,5vw,3.2rem)] mt-3 mb-6">Everything you need to sell it.</h2>
             <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
               {[
-                ['Free samples', 'Taste Fizz and Tea with your team before you commit.'],
+                ['Free samples', 'Taste Fizz and Tea with your team before you commit. Samples are free; you cover the shipping.'],
                 ['Recipe card', 'Three signature serves your staff can make in seconds.'],
                 ['Menu copy', 'Ready-to-use descriptions in Thai and English.'],
                 ['Tabletop display', 'A small branded stand so guests notice it.'],
@@ -358,7 +385,7 @@ export default function WholesalePage() {
           </div>
 
           {/* How to Order */}
-          <div className="bg-deep-brown rounded-xxl p-8 md:p-10 text-cream">
+          <div id="quote" className="scroll-mt-24 bg-deep-brown rounded-xxl p-8 md:p-10 text-cream">
             <h2 className="font-display font-semibold text-[1.35rem] mb-4">
               Request a Quote
             </h2>

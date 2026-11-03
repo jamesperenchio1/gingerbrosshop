@@ -10,6 +10,7 @@ import { localeFromPath, basenameFor } from '@/lib/locale';
 export { TH_PATHS } from '@/lib/locale';
 
 export { BLOG_SLUGS };
+export { BLOG_SEO_META } from '@/lib/blogSeoMeta';
 
 export interface RenderResult {
   html: string;

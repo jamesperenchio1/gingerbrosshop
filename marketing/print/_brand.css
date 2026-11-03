@@ -1,0 +1,7 @@
+@font-face{font-family:'Bricolage';src:url('../../node_modules/@fontsource-variable/bricolage-grotesque/files/bricolage-grotesque-latin-wght-normal.woff2') format('woff2');font-weight:200 800;font-stretch:75% 100%}
+@font-face{font-family:'InterV';src:url('../../node_modules/@fontsource-variable/inter/files/inter-latin-wght-normal.woff2') format('woff2');font-weight:100 900}
+:root{--charcoal:#1E1A17;--ginger:#F2B632;--cream:#FDF8F0;--amber:#D4A34B;--brown:#4A2C14;--rust:#8B5A2B}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+body{font-family:'InterV',system-ui,sans-serif;color:var(--cream)}
+.poster{font-family:'Bricolage',system-ui,sans-serif;font-weight:800;font-variation-settings:'wdth' 75,'opsz' 96;letter-spacing:-.035em;line-height:.9;text-transform:uppercase}

@@ -17,6 +17,7 @@ const translations: Record<Locale, Record<string, string>> = {
     wholesale: 'For Business',
     myOrders: 'My Orders',
     trackOrder: 'Track Order',
+    manageSubscription: 'Manage Subscription',
     shipping: 'Shipping',
     returns: 'Returns',
     privacy: 'Privacy',
@@ -44,6 +45,7 @@ const translations: Record<Locale, Record<string, string>> = {
     startShopping: 'Start shopping',
     freeShippingOver: 'Free shipping on orders over ฿500',
     freeShippingUnlocked: 'You unlocked free shipping',
+    freeShippingAddMore: 'Add {n} more for free shipping',
 
     // Product status
     inStock: 'In Stock',
@@ -85,6 +87,7 @@ const translations: Record<Locale, Record<string, string>> = {
     heroTrust1: 'Fresh Thai ginger',
     heroTrust2: 'Real lime',
     heroTrust3: 'Low sugar',
+    heroPerks: 'Free shipping over ฿500 · Cards & PromptPay · Delivered across Thailand',
     tickerExtra1: 'Made in Thailand',
     tickerExtra2: 'Best served ice cold',
     tickerExtra3: "Not your grandma's ginger drink",
@@ -192,6 +195,7 @@ const translations: Record<Locale, Record<string, string>> = {
     wholesale: 'สำหรับธุรกิจ',
     myOrders: 'คำสั่งซื้อของฉัน',
     trackOrder: 'ติดตามคำสั่งซื้อ',
+    manageSubscription: 'จัดการการสมัครสมาชิก',
     shipping: 'การจัดส่ง',
     returns: 'การคืนสินค้า',
     privacy: 'ความเป็นส่วนตัว',
@@ -219,6 +223,7 @@ const translations: Record<Locale, Record<string, string>> = {
     startShopping: 'เริ่มช้อปปิ้ง',
     freeShippingOver: 'จัดส่งฟรีสำหรับคำสั่งซื้อเกิน ฿500',
     freeShippingUnlocked: 'คุณได้รับสิทธิ์จัดส่งฟรี',
+    freeShippingAddMore: 'เพิ่มอีก {n} เพื่อรับสิทธิ์จัดส่งฟรี',
 
     // Product status
     inStock: 'มีสินค้า',
@@ -260,6 +265,7 @@ const translations: Record<Locale, Record<string, string>> = {
     heroTrust1: 'ขิงไทยสด',
     heroTrust2: 'มะนาวแท้',
     heroTrust3: 'หวานน้อย',
+    heroPerks: 'จัดส่งฟรีเมื่อซื้อเกิน ฿500 · รับบัตรและพร้อมเพย์ · ส่งทั่วไทย',
     tickerExtra1: 'ผลิตในประเทศไทย',
     tickerExtra2: 'อร่อยสุดตอนเย็นจัด',
     tickerExtra3: 'ไม่ใช่น้ำขิงแบบที่บ้านยาย',
@@ -367,6 +373,17 @@ const I18nContext = createContext<I18nContextType | null>(null);
 const LOCALE_KEY = 'gingerbros-locale';
 
 /**
+ * Swap language in place: push the new URL in the shape React Router's history
+ * uses, then fire popstate so the router and the basename in main.tsx both
+ * pick it up. No reload, so scroll position and cart state stay put.
+ */
+function pushUrl(url: string) {
+  const state = { usr: null, key: Math.random().toString(36).slice(2, 10), idx: (window.history.state?.idx ?? 0) + 1 };
+  window.history.pushState(state, '', url);
+  window.dispatchEvent(new PopStateEvent('popstate', { state }));
+}
+
+/**
  * The locale comes from the URL (see src/lib/locale.ts), so server and client
  * always agree and Thai pages are crawlable. Switching language moves to the
  * other URL; the choice is remembered so a Thai visitor landing on an English
@@ -395,12 +412,13 @@ export function I18nProvider({ children, locale }: { children: ReactNode; locale
     const target = hasThai(routerPath.replace(/\/$/, '') || '/') ? localizedPath(routerPath, l) : routerPath;
     if (l === 'th' && target === routerPath) {
       // No Thai version of this page yet: go to the Thai homepage instead.
-      window.location.href = '/th';
+      pushUrl('/th');
       return;
     }
     // Final guard: only ever navigate within this origin.
     const url = new URL(`/${target.replace(/^[/\\]+/, '')}${window.location.search}`, window.location.origin);
-    window.location.href = url.origin === window.location.origin ? url.href : '/';
+    if (url.origin !== window.location.origin) { window.location.href = '/'; return; }
+    pushUrl(url.pathname + url.search);
   }, [locale]);
 
   const toggleLocale = useCallback(() => {

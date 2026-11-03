@@ -1,6 +1,5 @@
 import { Link } from 'react-router';
 import SEO from '@/components/SEO';
-import { useI18n } from '@/context/I18nContext';
 import { SITE_URL } from '@/constants/site';
 
 const CHANNELS = [
@@ -11,11 +10,10 @@ const CHANNELS = [
 ];
 
 export default function FindUsPage() {
-  const { locale } = useI18n();
   return (
     <>
       <SEO
-        title={locale === 'th' ? 'ซื้อ GingerBros ได้ที่ไหน | GingerBros' : 'Where to Buy GingerBros | Online, LINE, Shopee & Stockists'}
+        title="Where to Buy GingerBros | Online, LINE, Shopee & Stockists"
         description="Order GingerBros online with nationwide delivery in Thailand, or find us on LINE, Shopee, at markets and at our stockists."
         path="/find-us"
         jsonLd={{ '@context': 'https://schema.org', '@type': 'WebPage', name: 'Find GingerBros', url: `${SITE_URL}/find-us` }}

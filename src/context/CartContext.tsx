@@ -3,8 +3,7 @@ import type { CartItem, CartState, CartAction } from '@/types/cart';
 import { trackPixelEvent } from '@/lib/metaPixel';
 import { multiBuyDiscount as computeMultiBuyDiscount } from '@/lib/multiBuy';
 
-
-const CART_EMAIL_KEY = 'gingerbros-cart-email';
+import { getCartEmail } from '@/lib/cartEmail';
 const CART_STORAGE_KEY = 'gingerbros-cart';
 
 function snapshotCart(email: string | null, items: CartItem[], subtotal: number) {
@@ -145,7 +144,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
     if (!restored.current) return;
     const toStore = { items: state.items, isOpen: false };
     localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(toStore));
-    const email = typeof window !== 'undefined' ? localStorage.getItem(CART_EMAIL_KEY) : null;
+    const email = typeof window !== 'undefined' ? getCartEmail() : null;
     const subtotal = state.items.reduce((sum, item) => sum + item.price * item.quantity, 0);
     const id = window.setTimeout(() => { snapshotCart(email, state.items, subtotal); }, 1500);
     return () => window.clearTimeout(id);

@@ -1,3 +1,4 @@
+import { drinkSeo } from '@/lib/seoMeta';
 import { useState, useRef, useEffect, useMemo } from 'react';
 import { useParams, useSearchParams, useNavigate, useLocation, Link } from 'react-router';
 import { useCart } from '@/context/CartContext';
@@ -7,7 +8,7 @@ import { ChevronLeft, ChevronRight } from 'lucide-react';
 import SEO from '@/components/SEO';
 import NotFound from '@/pages/NotFound';
 import { useCatalog, defaultPrice, bottleCounts, intervalLabel, oneTimePrice, savingsPercent, stockStatus, hasVariantPrices, type CatalogProduct } from '@/lib/catalog';
-import { getDeliveryEstimateMessage } from '@/constants/store';
+import { getDeliveryEstimateMessage, FREE_SHIPPING_THRESHOLD } from '@/constants/store';
 import { startCheckout, trackInitiateCheckout } from '@/lib/checkout';
 import type { CartItem } from '@/types/cart';
 import { useRecentlyViewed, getRecentlyViewed } from '@/hooks/use-recently-viewed';
@@ -516,8 +517,6 @@ export default function ProductDetail() {
         applicableCountry: 'TH',
         returnPolicyCategory: 'https://schema.org/MerchantReturnFiniteReturnWindow',
         merchantReturnDays: 1,
-        returnMethod: 'https://schema.org/ReturnByMail',
-        returnFees: 'https://schema.org/FreeReturn',
       },
     },
   };
@@ -536,8 +535,8 @@ export default function ProductDetail() {
   return (
     <div className="min-h-screen bg-warm-white">
       <SEO
-        title={`${product.name}${isEquipment ? '' : kind === 'tea' ? ' | Ginger Drink Made in Thailand' : kind === 'fizz' ? ' | Ginger Soda Made in Thailand' : ' | Ginger Fizz & Tea Bundle'} | GingerBros`}
-        description={(content.headline ?? description).slice(0, 300)}
+        title={drinkSeo(product.id, product.name)?.title ?? product.name}
+        description={(drinkSeo(product.id, product.name)?.description ?? content.headline ?? description).slice(0, 300)}
         path={`/product/${product.id}`}
         image={ogCard ?? absImages[0] ?? undefined}
         imageWidth={ogCard ? 1200 : undefined}
@@ -779,7 +778,7 @@ export default function ProductDetail() {
                     <ul className="font-body text-[12px] text-earth/80 space-y-1.5">
                       <li className="flex items-start gap-2"><CheckIcon className="text-green-ink flex-shrink-0 mt-0.5" /> Delivered {intervalLabel(selectedPrice.recurring)}, never run out</li>
                       <li className="flex items-start gap-2"><CheckIcon className="text-green-ink flex-shrink-0 mt-0.5" /> A lower price than one-time, locked in</li>
-                      <li className="flex items-start gap-2"><CheckIcon className="text-green-ink flex-shrink-0 mt-0.5" /> Pause, skip, or cancel anytime</li>
+                      <li className="flex items-start gap-2"><CheckIcon className="text-green-ink flex-shrink-0 mt-0.5" /> Pause or cancel anytime</li>
                     </ul>
                   </div>
                 ) : oneTimeForProduct && maxSavings > 0 && (
@@ -871,6 +870,33 @@ export default function ProductDetail() {
               <p className="font-body text-[13px] text-green-ink mb-6 min-h-[1.25rem]">
                 {deliveryEstimate}
               </p>
+            )}
+
+            {/* Buying reassurance (drinks) */}
+            {!isEquipment && (
+              <ul className="mb-6 space-y-1.5 font-body text-[13px] text-earth">
+                <li>Free shipping over ฿{FREE_SHIPPING_THRESHOLD}, otherwise ฿100 flat. Dispatched Monday to Thursday.</li>
+                <li>Pay by card or PromptPay. Cold-chain delivery (insulated box with ice packs) is available at checkout.</li>
+                <li>Arrived damaged or wrong? Tell us within 24 hours and we will replace it or refund you.</li>
+              </ul>
+            )}
+            {!isEquipment && (
+              <div className="mb-6 divide-y divide-charcoal/10 rounded-2xl bg-cream font-body text-[14px] text-earth">
+                <details className="group px-4 py-3">
+                  <summary className="cursor-pointer list-none font-semibold text-deep-brown">How delivery and cold-chain work</summary>
+                  <p className="mt-2 leading-relaxed">
+                    Orders ship by courier Monday to Thursday and usually arrive in 2–4 business days. Keep the bottles in the fridge and drink before the best-before date on the label. On hot days or longer routes, choose cold-chain at checkout (+฿100): your order travels in an insulated box with ice packs.
+                  </p>
+                </details>
+                {kind === 'fizz' && (
+                  <details className="group px-4 py-3">
+                    <summary className="cursor-pointer list-none font-semibold text-deep-brown">How subscribing works</summary>
+                    <p className="mt-2 leading-relaxed">
+                      Pick weekly, every 2 weeks or monthly and a lower price is locked in. You are charged each time a delivery goes out. Pause for a month, change plan or cancel any time from Manage Subscription in the site footer (you get a login code by email). No cancellation fees.
+                    </p>
+                  </details>
+                )}
+              </div>
             )}
 
             {/* Ingredients (drinks) */}

@@ -55,7 +55,8 @@ export default function Hero() {
               {t('heroCtaStory')}
             </Link>
           </div>
-          <ul className="mt-8 flex flex-wrap gap-x-5 gap-y-2 font-body text-[14px] font-semibold text-cream/90">
+          <p className="mt-6 font-body text-[13px] text-cream/75">{t('heroPerks')}</p>
+          <ul className="mt-4 flex flex-wrap gap-x-5 gap-y-2 font-body text-[14px] font-semibold text-cream/90">
             {[t('heroTrust1'), t('heroTrust2'), t('heroTrust3')].map((label) => (
               <li key={label} className="flex items-center gap-2">
                 <span aria-hidden="true" className="text-ginger">✦</span>
