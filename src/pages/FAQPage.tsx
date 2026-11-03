@@ -50,20 +50,20 @@ const FAQS: FAQItem[] = [
     },
     {
       icon: <Thermometer className="w-6 h-6 text-amber" />,
-      q: 'How should I store GingerBros ginger fizz?',
-      a: 'GingerBros ginger fizz is brewed fresh and naturally fermented, keep it refrigerated at 2–6°C at all times. It is best consumed within 30 days of bottling. Natural sediment is normal and safe; gently invert before opening.',
+      q: 'How should I store GingerBros?',
+      a: 'Keep both Ginger Fizz and Ginger Tea in the fridge and enjoy them cold. Check the best-before date printed on each bottle. Ginger Tea can also be gently warmed in a pan if you like it hot.',
       category: 'product',
     },
     {
       icon: <FlaskConical className="w-6 h-6 text-amber" />,
-      q: 'What are the ingredients?',
-      a: 'Fresh Thai ginger, filtered water, erythritol, white sugar (fermentation starter), ginger bug culture, acacia fibre (prebiotic), and fresh lime. No artificial flavours, no preservatives, no colourants. The sugar is mostly consumed during the natural fermentation process, which is why the final drink contains less than 2g of sugar per serve.',
+      q: 'What is in Ginger Fizz and Ginger Tea?',
+      a: 'Ginger Fizz is made with fresh Thai ginger and real lime, and it is low in sugar. Ginger Tea · Thai Spice is real ginger slowly simmered with lemongrass, lime and spices, with no artificial colours or flavours. The full ingredient list and allergen information are printed on every bottle.',
       category: 'product',
     },
     {
       icon: <CalendarDays className="w-6 h-6 text-amber" />,
-      q: 'What is the shelf life?',
-      a: 'GingerBros is a fresh, living product. We lightly pasteurise to stabilise the brew while keeping live cultures intact, but no artificial preservatives are added. When stored refrigerated at 2–6°C, GingerBros stays fresh and flavourful for 3–4 months. For the best taste and fizz, we recommend enjoying within 30 days of bottling. The "bottled on" date is printed on every bottle.',
+      q: 'What is the difference between Ginger Fizz and Ginger Tea?',
+      a: 'Ginger Fizz is sparkling, bright and lime-forward with a big ginger kick: best ice-cold. Ginger Tea · Thai Spice is still, rounded and warmly spiced with lemongrass: great over ice and just as good warmed up. Can\'t decide? Try the Fizz & Tea Duo.',
       category: 'product',
     },
     {
@@ -75,7 +75,7 @@ const FAQS: FAQItem[] = [
     {
       icon: <RefreshCw className="w-6 h-6 text-amber" />,
       q: 'Do you offer subscriptions?',
-      a: 'Yes. You can subscribe to regular deliveries of GingerBros ginger fizz and save on every box. Choose weekly, every 2 weeks, or monthly. Manage, pause, or cancel anytime from your customer portal.',
+      a: 'Yes. You can subscribe to regular deliveries of GingerBros Ginger Fizz and save on every box. Choose weekly, every 2 weeks, or monthly. Manage, pause, or cancel anytime from your customer portal.',
       category: 'subscription',
     },
     {
@@ -96,8 +96,8 @@ const FAQS: FAQItem[] = [
       a: (
         <>
           Absolutely. We offer wholesale pricing for businesses. Visit our{' '}
-          <Link to="/wholesale" className="text-rust font-semibold underline underline-offset-2 hover:text-amber transition-colors">
-            Wholesale page
+          <Link to="/business" className="text-rust font-semibold underline underline-offset-2 hover:text-amber transition-colors">
+            For Business page
           </Link>{' '}
           or email{' '}
           <a href="mailto:gingerbros.brew@gmail.com" className="text-rust font-semibold underline underline-offset-2 hover:text-amber transition-colors">
@@ -106,7 +106,7 @@ const FAQS: FAQItem[] = [
           with your venue details and estimated volume.
         </>
       ),
-      aText: 'Absolutely. We offer wholesale pricing for businesses. Visit our Wholesale page (/wholesale) or email gingerbros.brew@gmail.com with your venue details and estimated volume.',
+      aText: 'Absolutely. We offer wholesale pricing for businesses. Visit our For Business page (/business) or email gingerbros.brew@gmail.com with your venue details and estimated volume.',
       category: 'wholesale',
     },
     {
@@ -117,8 +117,8 @@ const FAQS: FAQItem[] = [
     },
     {
       icon: <Package className="w-6 h-6 text-amber" />,
-      q: 'What is the difference between single bottles and the 6-pack?',
-      a: 'The 6-pack gives you six 330ml bottles at a bundled price, better value than buying six singles. Works well for households, offices, or anyone who drinks GingerBros regularly.',
+      q: 'Do multi-buy deals apply automatically?',
+      a: 'Yes. Packs of 2, 3 and 6 are cheaper per bottle, and you can mix Ginger Fizz and Ginger Tea. Your cart always works out the best price for the bottles in it, whether you add packs or single bottles.',
       category: 'product',
     },
     {
@@ -126,12 +126,6 @@ const FAQS: FAQItem[] = [
       q: 'How much is shipping?',
       a: 'Standard shipping is a flat ฿100 nationwide. Free on orders over ฿500. A cold-chain upgrade is available for an additional ฿100.',
       category: 'shipping',
-    },
-    {
-      icon: <FlaskConical className="w-6 h-6 text-amber" />,
-      q: 'Does ginger fizz contain alcohol?',
-      a: 'GingerBros is naturally fermented using a ginger bug culture. The fermentation process produces trace amounts of alcohol, typically well below 0.5% ABV, similar to kombucha or other naturally fermented drinks. It is non-intoxicating.',
-      category: 'product',
     },
     {
       icon: <Zap className="w-6 h-6 text-amber" />,
@@ -172,7 +166,7 @@ export default function FAQPage() {
         path="/faq"
         jsonLd={faqSchema}
       />
-      <main className="pt-28 pb-20">
+      <div className="pt-28 pb-20">
         <div className="max-w-[1120px] mx-auto px-6">
           {/* Header */}
           <div className="text-center mb-10">
@@ -190,7 +184,7 @@ export default function FAQPage() {
           {/* Search */}
           <div className="max-w-[480px] mx-auto mb-8">
             <div className="relative">
-              <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-earth/50" />
+              <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-earth/80" />
               <label htmlFor="faq-search" className="sr-only">Search questions</label>
               <input
                 id="faq-search"
@@ -198,7 +192,7 @@ export default function FAQPage() {
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Search questions..."
-                className="w-full pl-10 pr-4 py-3 bg-cream rounded-full font-body text-sm text-deep-brown placeholder:text-earth/50 focus:outline-none focus:ring-2 focus:ring-amber/50"
+                className="w-full pl-10 pr-4 py-3 bg-cream rounded-full font-body text-sm text-deep-brown placeholder:text-earth/80 focus:outline-none focus:ring-2 focus:ring-amber/50"
               />
             </div>
           </div>
@@ -299,7 +293,7 @@ export default function FAQPage() {
             </div>
           </div>
         </div>
-      </main>
+      </div>
     </div>
   );
 }

@@ -1,52 +1,43 @@
 import { useState, useEffect } from 'react';
-import { useLocation, useNavigate } from 'react-router';
+import { Link, NavLink, useLocation } from 'react-router';
+import * as Dialog from '@radix-ui/react-dialog';
 import { useCart } from '@/context/CartContext';
 import { useI18n } from '@/context/I18nContext';
 import { CartIcon, MenuIcon, CloseIcon } from '@/components/Icons';
 
 const navLinks = [
-  { key: 'shop', href: '#shop' },
-  { key: 'story', href: '#story' },
-  { key: 'process', href: '#process' },
-  { key: 'benefits', href: '#prebiotics' },
+  { key: 'shop', to: '/shop' },
+  { key: 'guide', to: '/guide' },
+  { key: 'story', to: '/story' },
+  { key: 'business', to: '/business' },
+  { key: 'findUs', to: '/find-us' },
 ];
 
-// Only shown in the mobile menu — utility pages that otherwise have no nav
-// entry point at all (previously reachable only via footer or direct URL).
+// Extra utility links in the mobile menu.
 const mobileOnlyLinks = [
-  { key: 'myOrders', to: '/orders', label: 'My Orders' },
+  { key: 'myOrders', to: '/orders' },
   { key: 'trackOrder', to: '/track' },
-  { key: 'wholesale', to: '/wholesale' },
   { key: 'faq', to: '/faq' },
 ];
 
-function LanguageToggle() {
+function LanguageToggle({ dark }: { dark: boolean }) {
   const { locale, setLocale, t } = useI18n();
-
+  const idle = dark ? 'text-cream/85 hover:text-cream' : 'text-earth hover:text-deep-brown';
+  const on = dark ? 'bg-cream text-charcoal' : 'bg-charcoal text-cream';
   return (
-    <div className="flex items-center rounded-full border border-soft-peach/80 overflow-hidden">
-      <button
-        onClick={() => setLocale('en')}
-        aria-pressed={locale === 'en'}
-        className={`px-2 py-1 text-[11px] font-body font-medium transition-colors ${
-          locale === 'en'
-            ? 'bg-deep-brown text-cream'
-            : 'bg-transparent text-earth hover:text-deep-brown'
-        }`}
-      >
-        {t('english')}
-      </button>
-      <button
-        onClick={() => setLocale('th')}
-        aria-pressed={locale === 'th'}
-        className={`px-2 py-1 text-[11px] font-body font-medium transition-colors ${
-          locale === 'th'
-            ? 'bg-deep-brown text-cream'
-            : 'bg-transparent text-earth hover:text-deep-brown'
-        }`}
-      >
-        {t('thai')}
-      </button>
+    <div role="group" aria-label={t('language')} className={`flex items-center overflow-hidden rounded-full border ${dark ? 'border-cream/30' : 'border-charcoal/20'}`}>
+      {(['en', 'th'] as const).map((l) => (
+        <button
+          key={l}
+          type="button"
+          lang={l}
+          onClick={() => setLocale(l)}
+          aria-pressed={locale === l}
+          className={`px-2.5 py-1 font-body text-[11px] font-semibold transition-colors ${locale === l ? on : idle}`}
+        >
+          {l === 'en' ? 'EN' : 'ไทย'}
+        </button>
+      ))}
     </div>
   );
 }
@@ -56,166 +47,107 @@ export default function Navigation() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const { toggleCart, totalItems } = useCart();
   const { t } = useI18n();
-  const location = useLocation();
-  const navigate = useNavigate();
-  const isHome = location.pathname === '/';
+  const { pathname } = useLocation();
+  // The homepage hero is charcoal: the bar starts transparent with light text.
+  const dark = pathname === '/' && !scrolled && !mobileOpen;
 
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 60);
+    const onScroll = () => setScrolled(window.scrollY > 40);
+    onScroll();
     window.addEventListener('scroll', onScroll, { passive: true });
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
 
-  const handleNavClick = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
-    e.preventDefault();
-    setMobileOpen(false);
-    if (isHome) {
-      const el = document.querySelector(href);
-      if (el) {
-        el.scrollIntoView({ behavior: 'smooth' });
-      }
-    } else {
-      navigate(`/${href}`);
-    }
-  };
+  // eslint-disable-next-line react-hooks/set-state-in-effect -- close the menu on navigation
+  useEffect(() => setMobileOpen(false), [pathname]);
 
-  const handleLogoClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
-    e.preventDefault();
-    setMobileOpen(false);
-    if (isHome) {
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    } else {
-      navigate('/');
-    }
-  };
-
-  const handleMobileLinkNavigate = (e: React.MouseEvent<HTMLAnchorElement>, to: string) => {
-    e.preventDefault();
-    setMobileOpen(false);
-    navigate(to);
-  };
-
-  // Match the cart drawer's behavior: close on Escape, lock body scroll while open.
-  useEffect(() => {
-    const handleKey = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') setMobileOpen(false);
-    };
-    if (mobileOpen) {
-      document.addEventListener('keydown', handleKey);
-      document.body.style.overflow = 'hidden';
-    }
-    return () => {
-      document.removeEventListener('keydown', handleKey);
-      document.body.style.overflow = '';
-    };
-  }, [mobileOpen]);
+  const ink = dark ? 'text-cream' : 'text-charcoal';
+  const linkCls = ({ isActive }: { isActive: boolean }) =>
+    `relative font-body text-[13px] font-semibold uppercase tracking-[0.1em] transition-colors ${ink} ${
+      isActive ? 'after:absolute after:-bottom-1.5 after:left-0 after:h-0.5 after:w-full after:bg-ginger' : 'opacity-90 hover:opacity-100'
+    }`;
 
   return (
-    <nav
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-        scrolled
-          ? 'h-14 bg-warm-white/95 backdrop-blur-xl shadow-sm'
-          : 'h-[72px] bg-transparent'
+    <header
+      className={`fixed inset-x-0 top-0 z-50 transition-[background-color,box-shadow,height] duration-300 ${
+        dark ? 'h-[72px] bg-transparent' : 'h-16 bg-warm-white/95 shadow-sm backdrop-blur-xl'
       }`}
     >
-      <div className="max-w-[1280px] mx-auto px-6 h-full flex items-center justify-between">
-        {/* Wordmark */}
-        <a
-          href="/"
-          className="font-display font-bold text-xl text-deep-brown tracking-tight"
-          onClick={handleLogoClick}
-        >
-          GingerBros
-        </a>
+      <nav aria-label="Main" className="mx-auto flex h-full max-w-[1280px] items-center justify-between gap-4 px-4 sm:px-6">
+        <Link to="/" aria-label="GingerBros home" className={`font-poster text-[1.7rem] normal-case tracking-[-0.03em] ${ink}`}>
+          GingerBros<span className="text-ginger">.</span>
+        </Link>
 
-        {/* Desktop Nav */}
-        <div className="hidden md:flex items-center gap-6">
-          {navLinks.map((link) => (
-            <a
-              key={link.href}
-              href={link.href}
-              onClick={(e) => handleNavClick(e, link.href)}
-              className="font-body font-medium text-sm uppercase tracking-[0.08em] text-earth hover:text-deep-brown relative group transition-colors duration-200"
-            >
-              {t(link.key)}
-              <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-rust transition-all duration-300 group-hover:w-full" />
-            </a>
+        <ul className="hidden items-center gap-7 lg:flex">
+          {navLinks.map((l) => (
+            <li key={l.to}>
+              <NavLink to={l.to} className={linkCls}>{t(l.key)}</NavLink>
+            </li>
           ))}
-        </div>
+        </ul>
 
-        {/* Right side */}
-        <div className="flex items-center gap-3 sm:gap-4">
+        <div className="flex items-center gap-3">
           <div className="hidden sm:block">
-            <LanguageToggle />
+            <LanguageToggle dark={dark} />
           </div>
-
           <button
+            type="button"
             onClick={toggleCart}
             data-testid="cart-button"
             aria-label={totalItems > 0 ? `Cart, ${totalItems} item${totalItems === 1 ? '' : 's'}` : 'Cart'}
-            className="flex items-center gap-2 font-body font-medium text-sm uppercase tracking-[0.08em] text-earth hover:text-deep-brown transition-colors"
+            className={`relative flex items-center gap-2 rounded-full px-3 py-2 font-body text-[13px] font-semibold uppercase tracking-[0.1em] ${dark ? 'bg-cream/10 text-cream hover:bg-cream/20' : 'bg-charcoal text-cream hover:bg-deep-brown'}`}
           >
+            <CartIcon className="h-5 w-5" />
             <span className="hidden sm:inline">{t('cart')}</span>
-            <span className="relative">
-              <CartIcon className="w-5 h-5" />
-              {totalItems > 0 && (
-                <span aria-hidden="true" className="absolute -top-2 -right-2 w-[18px] h-[18px] bg-amber text-deep-brown text-[10px] font-semibold rounded-full flex items-center justify-center">
-                  {totalItems}
-                </span>
-              )}
-            </span>
+            {totalItems > 0 && (
+              <span aria-hidden="true" data-testid="cart-count" className="flex h-[20px] min-w-[20px] items-center justify-center rounded-full bg-ginger px-1 text-[11px] font-bold text-charcoal">
+                {totalItems}
+              </span>
+            )}
             <span aria-live="polite" className="sr-only">
               {totalItems > 0 ? `${totalItems} item${totalItems === 1 ? '' : 's'} in cart` : ''}
             </span>
           </button>
-          <span className="hidden sm:inline font-body font-medium text-[13px] text-rust">THB</span>
 
-          {/* Mobile hamburger */}
-          <button
-            className="md:hidden text-deep-brown p-2.5 -mr-2.5"
-            aria-label={mobileOpen ? 'Close menu' : 'Open menu'}
-            aria-expanded={mobileOpen}
-            aria-controls="mobile-nav-menu"
-            onClick={() => setMobileOpen(!mobileOpen)}
-          >
-            {mobileOpen ? <CloseIcon /> : <MenuIcon />}
-          </button>
+          <Dialog.Root open={mobileOpen} onOpenChange={setMobileOpen}>
+            <Dialog.Trigger asChild>
+              <button type="button" aria-label={t('menu')} className={`-mr-2 p-2.5 lg:hidden ${ink}`}>
+                <MenuIcon />
+              </button>
+            </Dialog.Trigger>
+            <Dialog.Portal>
+              <Dialog.Overlay className="fixed inset-0 z-[60] bg-charcoal/50 backdrop-blur-sm data-[state=open]:animate-in data-[state=open]:fade-in-0" />
+              <Dialog.Content className="fixed inset-y-0 right-0 z-[61] flex w-[min(88vw,380px)] flex-col overflow-y-auto bg-charcoal p-6 text-cream shadow-2xl data-[state=open]:animate-in data-[state=open]:slide-in-from-right">
+                <div className="mb-8 flex items-center justify-between">
+                  <Dialog.Title className="font-poster text-[1.6rem] normal-case">GingerBros<span className="text-ginger">.</span></Dialog.Title>
+                  <Dialog.Close aria-label={t('closeMenu')} className="p-2">
+                    <CloseIcon />
+                  </Dialog.Close>
+                </div>
+                <Dialog.Description className="sr-only">Site navigation</Dialog.Description>
+                <ul className="space-y-1">
+                  {navLinks.map((l) => (
+                    <li key={l.to}>
+                      <Link to={l.to} onClick={() => setMobileOpen(false)} className="block py-2 font-poster text-[2.4rem] hover:text-ginger">{t(l.key)}</Link>
+                    </li>
+                  ))}
+                </ul>
+                <ul className="mt-8 space-y-3 border-t border-cream/15 pt-6">
+                  {mobileOnlyLinks.map((l) => (
+                    <li key={l.to}>
+                      <Link to={l.to} onClick={() => setMobileOpen(false)} className="font-body text-[15px] text-cream/90 hover:text-ginger">{t(l.key)}</Link>
+                    </li>
+                  ))}
+                </ul>
+                <div className="mt-auto flex items-center justify-between pt-6">
+                  <span className="font-body text-[13px] uppercase tracking-[0.1em] text-cream/85">{t('language')}</span>
+                  <LanguageToggle dark />
+                </div>
+              </Dialog.Content>
+            </Dialog.Portal>
+          </Dialog.Root>
         </div>
-      </div>
-
-      {/* Mobile menu */}
-      {mobileOpen && (
-        <div id="mobile-nav-menu" className="md:hidden absolute top-full left-0 right-0 bg-warm-white/95 backdrop-blur-xl border-t border-soft-peach/50 shadow-lg">
-          <div className="flex flex-col px-6 py-2">
-            {navLinks.map((link) => (
-              <a
-                key={link.href}
-                href={link.href}
-                onClick={(e) => handleNavClick(e, link.href)}
-                className="flex items-center py-3 font-body font-medium text-sm uppercase tracking-[0.08em] text-earth hover:text-deep-brown transition-colors border-b border-soft-peach/30 last:border-0"
-              >
-                {t(link.key)}
-              </a>
-            ))}
-            {mobileOnlyLinks.map((link) => (
-              <a
-                key={link.to}
-                href={link.to}
-                onClick={(e) => handleMobileLinkNavigate(e, link.to)}
-                className="flex items-center py-3 font-body font-medium text-sm uppercase tracking-[0.08em] text-earth hover:text-deep-brown transition-colors border-b border-soft-peach/30 last:border-0"
-              >
-                {t(link.key)}
-              </a>
-            ))}
-            <div className="py-3 flex items-center justify-between border-b border-soft-peach/30">
-              <span className="font-body font-medium text-sm uppercase tracking-[0.08em] text-earth">
-                {t('language')}
-              </span>
-              <LanguageToggle />
-            </div>
-          </div>
-        </div>
-      )}
-    </nav>
+      </nav>
+    </header>
   );
 }

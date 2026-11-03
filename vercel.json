@@ -6,8 +6,73 @@
       "permanent": true
     },
     {
+      "source": "/wholesale",
+      "destination": "/business",
+      "permanent": true
+    },
+    {
+      "source": "/blog",
+      "destination": "/guide",
+      "permanent": true
+    },
+    {
+      "source": "/blog/art-of-the-ginger-bug",
+      "destination": "/story",
+      "permanent": true
+    },
+    {
+      "source": "/blog/meet-the-brewers",
+      "destination": "/story",
+      "permanent": true
+    },
+    {
+      "source": "/blog/sustainability-bottle-to-soil",
+      "destination": "/story",
+      "permanent": true
+    },
+    {
+      "source": "/blog/ginger-bug-at-home",
+      "destination": "/guide/thai-ginger-101",
+      "permanent": true
+    },
+    {
+      "source": "/blog/gut-health",
+      "destination": "/guide/thai-ginger-101",
+      "permanent": true
+    },
+    {
+      "source": "/blog/probiotics-prebiotics",
+      "destination": "/guide/thai-ginger-101",
+      "permanent": true
+    },
+    {
+      "source": "/blog/ginger-immunity",
+      "destination": "/guide/thai-ginger-101",
+      "permanent": true
+    },
+    {
+      "source": "/blog/low-sugar-drinking",
+      "destination": "/product/ginger-fizz",
+      "permanent": true
+    },
+    {
+      "source": "/blog/hydration-electrolytes",
+      "destination": "/guide/how-to-serve-ginger-fizz",
+      "permanent": true
+    },
+    {
+      "source": "/blog/storing-living-fizz",
+      "destination": "/guide/how-to-serve-ginger-fizz",
+      "permanent": true
+    },
+    {
       "source": "/blog/unpasteurized-vs-pasteurized",
-      "destination": "/blog",
+      "destination": "/guide",
+      "permanent": true
+    },
+    {
+      "source": "/blog/:slug",
+      "destination": "/guide/:slug",
       "permanent": true
     }
   ],
@@ -68,15 +133,6 @@
     },
     {
       "source": "/stickers/(.*)",
-      "headers": [
-        {
-          "key": "Cache-Control",
-          "value": "public, max-age=604800, stale-while-revalidate=86400"
-        }
-      ]
-    },
-    {
-      "source": "/fonts.js",
       "headers": [
         {
           "key": "Cache-Control",

@@ -9,16 +9,34 @@ test('home page loads with hero and shop sections', async ({ page }) => {
   await page.goto('/');
   await expect(page).toHaveTitle(/GingerBros/);
   await expect(page.locator('body')).toBeVisible();
-  await expect(page.locator('#hero').getByRole('heading', { name: /Fermented Ginger/i })).toBeVisible();
+  await expect(page.locator('#hero').getByRole('heading', { name: /Think Ginger/i })).toBeVisible();
   await expect(page.getByTestId('add-to-cart')).toBeVisible({ timeout: 15_000 });
 });
 
-test('hero shows the bottle and mug', async ({ page }) => {
+test('hero shows both bottles', async ({ page }) => {
   await page.goto('/');
   const hero = page.locator('#hero');
-  await expect(hero.getByRole('heading', { name: /Fermented Ginger/i })).toBeVisible();
-  await expect(hero.locator('img[alt*="bottle" i]')).toBeVisible();
-  await expect(hero.locator('img[alt*="mug" i]')).toBeVisible();
+  await expect(hero.getByRole('heading', { name: /Think Ginger/i })).toBeVisible();
+  await expect(hero.locator('img[alt*="Ginger Fizz bottle" i]')).toBeVisible();
+  await expect(hero.locator('img[alt*="Ginger Tea bottle" i]')).toBeVisible();
+});
+
+test('no fermentation or health claims on the homepage', async ({ page }) => {
+  await page.goto('/');
+  await expect(page.locator('body')).not.toContainText(/ferment|prebiotic|probiotic|gut health|immun/i);
+});
+
+test('pack picker switches the Fizz card to the 6-pack', async ({ page }) => {
+  await page.goto('/');
+  const group = page.getByRole('radiogroup', { name: /Ginger Fizz/i });
+  await group.getByRole('radio', { name: /×6/ }).click();
+  await expect(page.getByTestId('add-to-cart')).toContainText('฿780');
+});
+
+test('Thai homepage is served under /th', async ({ page }) => {
+  await page.goto('/th');
+  await expect(page.locator('#hero h1')).toContainText('คิดแบบขิง');
+  await expect(page.locator('html')).toHaveAttribute('lang', 'th');
 });
 
 test('add to cart opens drawer with item', async ({ page }) => {
@@ -30,12 +48,12 @@ test('add to cart opens drawer with item', async ({ page }) => {
 test('product page loads directly', async ({ page }) => {
   await page.goto('/product/ginger-fizz');
   await expect(page.locator('h1')).toContainText('Ginger Fizz');
-  await expect(page.getByRole('button', { name: /add to cart/i })).toBeVisible();
+  await expect(page.getByRole('button', { name: /^add to cart · ฿/i })).toBeVisible();
 });
 
 test('unknown product page shows 404 message', async ({ page }) => {
   await page.goto('/product/this-does-not-exist');
-  await expect(page.getByText(/page not found/i)).toBeVisible();
+  await expect(page.getByRole('heading', { name: /this page went flat/i })).toBeVisible();
 });
 
 test('checkout button triggers Stripe redirect', async ({ page }) => {

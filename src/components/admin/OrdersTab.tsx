@@ -64,7 +64,7 @@ export default function OrdersTab() {
     <div>
       <form onSubmit={onSubmitSearch} className="flex flex-wrap items-center gap-2 mb-4">
         <div className="relative flex-1 min-w-[220px]">
-          <Search className="w-4 h-4 text-earth/50 absolute left-3 top-1/2 -translate-y-1/2" />
+          <Search className="w-4 h-4 text-earth/80 absolute left-3 top-1/2 -translate-y-1/2" />
           <input
             value={emailFilter}
             onChange={(e) => setEmailFilter(e.target.value)}
@@ -92,7 +92,7 @@ export default function OrdersTab() {
         </button>
       </form>
 
-      <p className="font-body text-[12px] text-earth/70 mb-4">
+      <p className="font-body text-[12px] text-earth/80 mb-4">
         Completed orders are paid checkouts. Abandoned checkouts are carts that were never paid (open or expired)
         and usually have no customer or items.
       </p>
@@ -139,7 +139,7 @@ export default function OrdersTab() {
                     </span>
                   )}
                   {order.trackingNumber && (
-                    <span className="text-[10px] uppercase tracking-wider px-2 py-0.5 rounded-full bg-accent-green/15 text-accent-green">
+                    <span className="text-[10px] uppercase tracking-wider px-2 py-0.5 rounded-full bg-accent-green/15 text-green-ink">
                       Shipped
                     </span>
                   )}
@@ -157,7 +157,7 @@ export default function OrdersTab() {
                 <p className="font-body text-earth text-[13px] truncate">
                   {order.customerName ?? 'Guest'} · {order.customerEmail ?? 'No email'}
                 </p>
-                <p className="font-body text-earth/60 text-[12px] mt-0.5">
+                <p className="font-body text-earth/80 text-[12px] mt-0.5">
                   {date} · {order.paymentStatus}
                 </p>
               </div>

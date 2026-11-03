@@ -106,7 +106,7 @@ export default function TrackOrderPage() {
             onChange={(e) => setEmail(e.target.value)}
             placeholder="Email address"
             required
-            className="w-full bg-cream border border-soft-peach rounded-xl px-4 py-3 font-body text-deep-brown placeholder:text-earth/50 focus:outline-none focus:ring-2 focus:ring-rust/30"
+            className="w-full bg-cream border border-soft-peach rounded-xl px-4 py-3 font-body text-deep-brown placeholder:text-earth/80 focus:outline-none focus:ring-2 focus:ring-rust/30"
           />
           <label htmlFor="track-order-number" className="sr-only">Order number</label>
           <input
@@ -116,7 +116,7 @@ export default function TrackOrderPage() {
             onChange={(e) => setOrderNum(e.target.value)}
             placeholder="Order number (e.g. A1B2C3D4)"
             required
-            className="w-full bg-cream border border-soft-peach rounded-xl px-4 py-3 font-body text-deep-brown placeholder:text-earth/50 focus:outline-none focus:ring-2 focus:ring-rust/30"
+            className="w-full bg-cream border border-soft-peach rounded-xl px-4 py-3 font-body text-deep-brown placeholder:text-earth/80 focus:outline-none focus:ring-2 focus:ring-rust/30"
           />
           <button
             type="submit"
@@ -170,7 +170,7 @@ export default function TrackOrderPage() {
             <div className="pt-4 border-t border-soft-peach/50">
               {result.trackingNumber ? (
                 <div className="flex items-center gap-3">
-                  <Truck className="w-5 h-5 text-accent-green" />
+                  <Truck className="w-5 h-5 text-green-ink" />
                   <div>
                     <p className="font-body text-deep-brown font-medium">
                       {result.trackingCarrier ?? 'Carrier'}: {result.trackingNumber}
@@ -192,7 +192,7 @@ export default function TrackOrderPage() {
             {/* Email tracking button */}
             <div className="pt-2">
               {emailSent ? (
-                <div className="flex items-center gap-2 text-accent-green font-body text-[14px]">
+                <div className="flex items-center gap-2 text-green-ink font-body text-[14px]">
                   <CheckCircle className="w-4 h-4" />
                   Tracking info emailed to {email}
                 </div>

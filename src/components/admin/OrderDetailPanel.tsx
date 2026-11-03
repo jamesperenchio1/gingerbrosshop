@@ -143,7 +143,7 @@ export default function OrderDetailPanel({
         )}
 
         {error && <p className="mx-5 mt-4 font-body text-[13px] text-rust">{error}</p>}
-        {message && <p className="mx-5 mt-4 font-body text-[13px] text-accent-green">{message}</p>}
+        {message && <p className="mx-5 mt-4 font-body text-[13px] text-green-ink">{message}</p>}
 
         {detail && (
           <div className="px-5 py-5 space-y-5">
@@ -234,14 +234,14 @@ export default function OrderDetailPanel({
                 <button
                   onClick={grantCredit}
                   disabled={busy}
-                  className="text-accent-green font-body text-[13px] hover:underline disabled:opacity-60"
+                  className="text-green-ink font-body text-[13px] hover:underline disabled:opacity-60"
                 >
                   Mark box returned (+฿50, emails customer)
                 </button>
                 <button
                   onClick={grantCode}
                   disabled={busy}
-                  className="text-earth/70 font-body text-[12px] hover:underline disabled:opacity-60"
+                  className="text-earth/80 font-body text-[12px] hover:underline disabled:opacity-60"
                 >
                   No email? Generate code
                 </button>
@@ -296,7 +296,7 @@ export default function OrderDetailPanel({
                   <Ban className="w-4 h-4" /> Cancel order
                 </button>
               </div>
-              <p className="font-body text-earth/60 text-[11px]">
+              <p className="font-body text-earth/80 text-[11px]">
                 Refund returns money to the customer. Cancel refunds a paid order in full, or cancels an
                 uncaptured payment / subscription.
               </p>
@@ -365,7 +365,7 @@ export default function OrderDetailPanel({
 function Row({ label, value, copy }: { label: string; value: string; copy?: boolean }) {
   return (
     <div className="flex items-start justify-between gap-4">
-      <span className="font-body text-[13px] text-earth/70 shrink-0">{label}</span>
+      <span className="font-body text-[13px] text-earth/80 shrink-0">{label}</span>
       <span className="font-body text-[13px] text-deep-brown text-right break-all">
         {value}
         {copy && <CopyButton value={value} />}

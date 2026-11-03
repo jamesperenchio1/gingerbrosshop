@@ -1,10 +1,14 @@
 import { createRoot, hydrateRoot } from 'react-dom/client'
 import { BrowserRouter } from 'react-router'
 import { HelmetProvider } from 'react-helmet-async'
+import '@fontsource-variable/bricolage-grotesque'
+import '@fontsource-variable/inter'
+import '@fontsource-variable/anuphan'
 import './index.css'
 import App from './App.tsx'
 import { capturePromoFromUrl } from '@/lib/promo'
 import { captureSourceFromUrl } from '@/lib/source'
+import { localeFromPath, basenameFor } from '@/lib/locale'
 
 // Own scroll positioning ourselves. Left on 'auto', the browser restores the
 // previous scroll offset on back/forward *after* React has mounted the new
@@ -18,9 +22,10 @@ capturePromoFromUrl()
 // Remember which ad/link brought the visitor so the order can be attributed.
 captureSourceFromUrl()
 
+const locale = localeFromPath(location.pathname)
 const app = (
   <HelmetProvider>
-    <BrowserRouter>
+    <BrowserRouter basename={basenameFor(locale)}>
       <App />
     </BrowserRouter>
   </HelmetProvider>

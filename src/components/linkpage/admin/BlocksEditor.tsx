@@ -169,12 +169,12 @@ function SortableRow({
       className={`bg-white rounded-xl border border-soft-peach ${isDragging ? 'shadow-panel relative z-10' : ''}`}
     >
       <div className="flex items-center gap-2 p-2 pr-3">
-        <button type="button" {...attributes} {...listeners} aria-label="Drag to reorder" className="p-2 text-earth/70 hover:text-deep-brown cursor-grab touch-none">
+        <button type="button" {...attributes} {...listeners} aria-label="Drag to reorder" className="p-2 text-earth/80 hover:text-deep-brown cursor-grab touch-none">
           <GripVertical className="w-4 h-4" />
         </button>
         <Icon className="w-4 h-4 text-earth shrink-0" />
         <button type="button" onClick={onToggleOpen} className="flex-1 min-w-0 text-left">
-          <span className={`block font-body text-[14px] font-medium truncate ${block.enabled ? 'text-deep-brown' : 'text-earth/60 line-through'}`}>
+          <span className={`block font-body text-[14px] font-medium truncate ${block.enabled ? 'text-deep-brown' : 'text-earth/80 line-through'}`}>
             {blockLabel(block)}
           </span>
           {scheduled && (

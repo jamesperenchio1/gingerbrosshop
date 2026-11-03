@@ -1,12 +1,11 @@
-import { useState, useRef, useEffect, useCallback, useMemo } from 'react';
-import { useParams, useSearchParams, Link } from 'react-router';
+import { useState, useRef, useEffect, useMemo } from 'react';
+import { useParams, useSearchParams, useNavigate, useLocation, Link } from 'react-router';
 import { useCart } from '@/context/CartContext';
 import { toast } from 'sonner';
 import { PlusIcon, MinusIcon } from '@/components/Icons';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import SEO from '@/components/SEO';
 import NotFound from '@/pages/NotFound';
-import { DEALS } from '@/lib/multiBuy';
 import { useCatalog, defaultPrice, bottleCounts, intervalLabel, oneTimePrice, savingsPercent, stockStatus, hasVariantPrices, type CatalogProduct } from '@/lib/catalog';
 import { getDeliveryEstimateMessage } from '@/constants/store';
 import { startCheckout, trackInitiateCheckout } from '@/lib/checkout';
@@ -20,6 +19,17 @@ import { getProductContent } from '@/lib/productContent';
 import { useReveal } from '@/lib/reveal';
 import { optimizedImageUrl } from '@/lib/image';
 import { trackPixelEvent } from '@/lib/metaPixel';
+import ResponsiveImage from '@/components/ResponsiveImage';
+import CompactCard from '@/components/shop/CompactCard';
+import PackPicker from '@/components/shop/PackPicker';
+import TasteMeter from '@/components/shop/TasteMeter';
+import { packOptions, mixOptions, drinkKind } from '@/lib/drinks';
+import { manifestJpg, thumbUrl } from '@/lib/productImages';
+import { OG_IMAGES } from '@/lib/ogImages';
+import { IMAGE_MANIFEST } from '@/lib/imageManifest';
+import { useReviewSummaries } from '@/lib/reviews';
+import { SITE_URL } from '@/constants/site';
+import { useI18n } from '@/context/I18nContext';
 import {
   Leaf,
   ThermometerSnowflake,
@@ -29,7 +39,6 @@ import {
   MapPin,
   Wheat,
   Info,
-  FlaskConical,
   Recycle,
   CheckCircle2,
   Scale,
@@ -63,8 +72,6 @@ function SpecIcon({ label, className = '' }: { label: string; className?: string
     servingtemp: ThermometerSnowflake,
     servingtemperature: ThermometerSnowflake,
     carbonation: Droplets,
-    fermentation: Clock,
-    ph: FlaskConical,
     origin: MapPin,
     dietary: Leaf,
     allergens: Wheat,
@@ -84,14 +91,14 @@ function NutritionPanel({ nutrition }: { nutrition: { label: string; value: stri
       <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 mb-6">
         <div>
           <h3 className="font-display font-bold text-deep-brown text-2xl">Nutrition Facts</h3>
-          <p className="font-body text-[13px] text-earth/70 mt-1">Amount per serving. %DV based on a 2,000-calorie diet.</p>
+          <p className="font-body text-[13px] text-earth/80 mt-1">Amount per serving. %DV based on a 2,000-calorie diet.</p>
         </div>
         <div className="flex flex-wrap gap-2">
           <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white border border-soft-peach/70 text-[12px] font-medium text-deep-brown">
-            <Leaf className="w-3.5 h-3.5 text-accent-green" /> Vegan
+            <Leaf className="w-3.5 h-3.5 text-green-ink" /> Vegan
           </span>
           <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white border border-soft-peach/70 text-[12px] font-medium text-deep-brown">
-            <CheckCircle2 className="w-3.5 h-3.5 text-accent-green" /> Gluten-Free
+            <CheckCircle2 className="w-3.5 h-3.5 text-green-ink" /> Gluten-Free
           </span>
           <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white border border-soft-peach/70 text-[12px] font-medium text-deep-brown">
             <Droplets className="w-3.5 h-3.5 text-amber" /> Low Sugar
@@ -125,7 +132,7 @@ function NutritionPanel({ nutrition }: { nutrition: { label: string; value: stri
         })}
       </div>
 
-      <p className="font-body text-[12px] text-earth/50 mt-4">
+      <p className="font-body text-[12px] text-earth/80 mt-4">
         * Daily Value percentages are approximate. Values may vary slightly between batches.
       </p>
     </div>
@@ -163,93 +170,42 @@ function RecentlyViewed({ currentProductId }: { currentProductId: string }) {
 
   return (
     <div className="mt-20 border-t border-soft-peach/50 pt-14">
-      <h3 className="font-display font-semibold text-deep-brown text-[1.35rem] mb-8 flex items-center gap-4">
-        Recently Viewed
+      <h2 className="font-display font-bold text-deep-brown text-[1.35rem] mb-8 flex items-center gap-4">
+        Recently viewed
         <span className="flex-1 h-px bg-soft-peach/60 hidden sm:block" />
-      </h3>
+      </h2>
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6">
         {recentlyViewed.map((rp) => (
-          <RelatedProductCard key={rp.id} product={rp} />
+          <CompactCard key={rp.id} product={rp} />
         ))}
       </div>
     </div>
   );
 }
 
-/* ──────────────────────── Multi-buy deals ──────────────────────── */
+/* ──────────────────────── Mix & match ──────────────────────── */
 
-// Shown on single-bottle drinks: the print-shop deals this bottle counts towards.
-function DealsStrip({ kind }: { kind: 'fizz' | 'tea' }) {
-  const own = DEALS.filter((d) => (kind === 'fizz' ? d.fizz > 1 && d.tea === 0 : d.tea > 1 && d.fizz === 0));
-  const mixed = DEALS.filter((d) => d.fizz > 0 && d.tea > 0);
+// Drinks only: links to the mixed Fizz + Tea bundles, and the reminder that
+// deals stack up automatically however you build the cart.
+function MixStrip({ products, currentId }: { products: CatalogProduct[]; currentId: string }) {
+  const mixes = mixOptions(products).filter((o) => o.product.id !== currentId);
+  if (mixes.length === 0) return null;
   return (
-    <div className="bg-cream rounded-2xl px-4 py-3 mb-6">
-      <p className="font-body font-semibold text-[12px] uppercase tracking-[0.1em] text-rust mb-1.5">Multi-buy deals</p>
-      <p className="font-body text-[14px] text-deep-brown">
-        {own.map((d) => `${kind === 'fizz' ? d.fizz : d.tea} for ฿${d.price}`).join(' · ')}
-      </p>
-      <p className="font-body text-[13px] text-earth mt-1">
-        Mix Fizz &amp; Tea: {mixed.map((d) => `${d.fizz} + ${d.tea} for ฿${d.price}`).join(' · ')}. Applied automatically in your cart.
-      </p>
+    <div className="mb-6 rounded-2xl bg-cream px-4 py-3.5">
+      <p className="mb-2 font-body text-[12px] font-semibold uppercase tracking-[0.1em] text-rust">Mix Fizz &amp; Tea</p>
+      <div className="flex flex-wrap gap-2">
+        {mixes.map((o) => (
+          <Link key={o.product.id} to={`/product/${o.product.id}`} className="rounded-full border-2 border-charcoal/15 bg-white px-3.5 py-1.5 font-body text-[13px] font-semibold text-deep-brown hover:border-charcoal">
+            {o.product.name} · ฿{o.price}{o.saving > 0 ? ` (save ฿${o.saving})` : ''}
+          </Link>
+        ))}
+      </div>
+      <p className="mt-2 font-body text-[12px] text-earth">Multi-buy deals apply automatically in your cart, however you mix it.</p>
     </div>
   );
 }
 
 /* ──────────────────────── Related Products ──────────────────────── */
-
-function RelatedProductCard({ product }: { product: CatalogProduct }) {
-  const { addItem } = useCart();
-  const [added, setAdded] = useState(false);
-  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  useEffect(() => () => { if (timerRef.current) clearTimeout(timerRef.current); }, []);
-
-  const price = defaultPrice(product);
-  const image = product.images[0] ?? '';
-  const shortDesc = product.metadata.short_description ?? product.description ?? '';
-  const hasVariants = hasVariantPrices(product);
-
-  const handleAdd = useCallback(() => {
-    if (!price || hasVariants) return;
-    addItem({ id: price.priceId, priceId: price.priceId, productId: product.id, name: product.name, variant: product.id, price: price.unitAmount ?? 0, quantity: 1, image, badge: product.badge ?? '', badgeColor: product.badgeColor ?? '', ...bottleCounts(product) });
-    setAdded(true);
-    toast.success(`${product.name} added to cart`);
-    if (timerRef.current) clearTimeout(timerRef.current);
-    timerRef.current = setTimeout(() => setAdded(false), 800);
-  }, [price, hasVariants, addItem, product, image]);
-
-  return (
-    <article className="relative bg-white border border-soft-peach/60 rounded-xxl p-5 flex flex-col hover:shadow-panel-hover transition-shadow duration-300 focus-within:outline focus-within:outline-2 focus-within:outline-amber focus-within:outline-offset-2">
-      <div className="flex items-center justify-center h-[160px] mb-4">
-        <img src={optimizedImageUrl(image, 320)} alt={product.name} loading="lazy" decoding="async" className="max-h-full w-auto object-contain" />
-      </div>
-      <h4 className="font-display font-semibold text-deep-brown text-[15px] mb-1 leading-snug">
-        <Link to={`/product/${product.id}`} className="outline-none after:absolute after:inset-0 after:content-[''] after:rounded-xxl hover:text-rust transition-colors">
-          {product.name}
-        </Link>
-      </h4>
-      <p className="font-body text-earth text-[13px] leading-relaxed mb-4 flex-grow line-clamp-2">{shortDesc}</p>
-      <div className="flex items-center justify-between gap-3 mt-auto">
-        <span className="font-display font-semibold text-deep-brown text-lg">฿{price?.unitAmount ?? '—'}</span>
-        {hasVariants ? (
-          <Link
-            to={`/product/${product.id}`}
-            className="relative z-10 font-body font-medium text-[12px] uppercase tracking-[0.07em] px-4 py-2 rounded-full bg-amber text-deep-brown hover:bg-warm-gold transition-all"
-          >
-            Options →
-          </Link>
-        ) : (
-          <button
-            onClick={handleAdd}
-            aria-label={`Add ${product.name} to cart`}
-            className={`relative z-10 font-body font-medium text-[12px] uppercase tracking-[0.07em] px-4 py-2 rounded-full transition-all ${added ? 'bg-accent-green text-white' : 'bg-amber text-deep-brown hover:bg-warm-gold'}`}
-          >
-            {added ? 'Added!' : 'Add to Cart'}
-          </button>
-        )}
-      </div>
-    </article>
-  );
-}
 
 /* ──────────────────────── Page Component ──────────────────────── */
 
@@ -268,6 +224,9 @@ export default function ProductDetail() {
 
   const product = products.find((p) => p.id === id);
   const content = getProductContent(id);
+  const navigate = useNavigate();
+  const { t } = useI18n();
+  const reviewSummary = useReviewSummaries(useMemo(() => (id ? [id] : []), [id]))[id ?? ''];
 
   const [activeImage, setActiveImage] = useState(0);
   const [quantity, setQuantity] = useState(1);
@@ -287,7 +246,19 @@ export default function ProductDetail() {
   const [showStickyAtc, setShowStickyAtc] = useState(false);
   const atcRef = useRef<HTMLDivElement>(null);
 
-  const images = product?.images ?? [];
+  // Gallery: generated full-res images first (product shot, then editorial
+  // shots from productContent), Stripe images only for products we didn't
+  // generate (equipment). Each slide is a manifest key or a plain URL.
+  const kind = product ? drinkKind(product) : null;
+  const heroName = product
+    ? (bottleCounts(product).bottlesFizz + bottleCounts(product).bottlesTea === 1 && (kind === 'fizz' || kind === 'tea')
+      ? `bottle-${kind}`
+      : IMAGE_MANIFEST[product.id] ? product.id : undefined)
+    : undefined;
+  const slides: { name?: string; src: string }[] = heroName
+    ? [heroName, ...(content.gallery ?? [])].filter((n) => IMAGE_MANIFEST[n]).map((n) => ({ name: n, src: manifestJpg(n)! }))
+    : (product?.images ?? []).map((src) => ({ src }));
+  const images = slides.map((sl) => sl.src);
   const video = content.video;
   const slideCount = images.length + (video ? 1 : 0);
   const goToPrevSlide = () => setActiveImage((i) => (i === 0 ? slideCount - 1 : i - 1));
@@ -323,11 +294,6 @@ export default function ProductDetail() {
     : 0;
 
   const isEquipment = product?.category === 'brewing-equipment';
-  const bottles = product ? bottleCounts(product) : { bottlesFizz: 0, bottlesTea: 0 };
-  const singleBottle: 'fizz' | 'tea' | null =
-    bottles.bottlesFizz === 1 && bottles.bottlesTea === 0 ? 'fizz'
-      : bottles.bottlesTea === 1 && bottles.bottlesFizz === 0 ? 'tea'
-        : null;
 
   // Track this product as recently viewed.
   useRecentlyViewed(product?.id);
@@ -336,6 +302,7 @@ export default function ProductDetail() {
     if (!product) return;
     trackPixelEvent('ViewContent', {
       content_ids: [product.id],
+      contents: [{ id: product.id, quantity: 1, item_price: oneTimeForProduct?.unitAmount ?? defaultPrice(product)?.unitAmount ?? 0, name: product.name }],
       content_type: 'product',
       content_name: product.name,
       value: oneTimeForProduct?.unitAmount ?? defaultPrice(product)?.unitAmount ?? 0,
@@ -377,9 +344,11 @@ export default function ProductDetail() {
     if (match) setSelectedPriceId(match.priceId);
   };
 
+  const keepScroll = (useLocation().state as { keepScroll?: boolean } | null)?.keepScroll;
   useEffect(() => {
+    if (keepScroll) return; // switching pack size: stay on the picker
     window.scrollTo(0, 0);
-  }, [id, loading]);
+  }, [id, loading, keepScroll]);
 
   // Show sticky mobile ATC when the main CTA scrolls out of view.
   useEffect(() => {
@@ -444,7 +413,7 @@ export default function ProductDetail() {
         : product.id,
       price: selectedPrice.unitAmount ?? 0,
       quantity,
-      image: images[0] ?? '',
+      image: thumbUrl(product.id, product.images[0] ?? ''),
       badge: product.badge ?? '',
       badgeColor: product.badgeColor ?? 'bg-sky-500',
       isSubscription: !!selectedPrice.recurring,
@@ -508,33 +477,73 @@ export default function ProductDetail() {
     .filter((p): p is CatalogProduct => !!p)
     .slice(0, 4);
 
+  const productUrl = `${SITE_URL}/product/${product.id}`;
+  const absImages = images.map((src) => (src.startsWith('http') ? src : `${SITE_URL}${src}`));
+  const ogCard = OG_IMAGES.has(product.id) ? `${SITE_URL}/images/og/${product.id}.jpg` : null;
+  const description = content.longDescription ?? product.description ?? '';
   const productJsonLd = {
     '@context': 'https://schema.org',
     '@type': 'Product',
     name: product.name,
-    description: product.description ?? '',
-    image: images,
-    brand: { '@type': 'Brand', name: isEquipment ? 'KegLand' : 'GingerBros' },
+    description,
+    image: absImages,
+    brand: { '@type': 'Brand', name: isEquipment ? (product.metadata.brand ?? 'KegLand') : 'GingerBros' },
     sku: product.id,
+    category: isEquipment ? 'Homebrewing equipment' : 'Beverages > Ginger drinks',
+    ...(reviewSummary && reviewSummary.count > 0
+      ? { aggregateRating: { '@type': 'AggregateRating', ratingValue: reviewSummary.average.toFixed(1), reviewCount: reviewSummary.count } }
+      : {}),
     offers: {
       '@type': 'Offer',
-      url: `https://gingerbrosshop.com/product/${product.id}`,
+      url: productUrl,
       priceCurrency: (selectedPrice.currency ?? 'thb').toUpperCase(),
       price: selectedPrice.unitAmount ?? 0,
-      availability: 'https://schema.org/InStock',
+      availability: stock === 'out_of_stock' ? 'https://schema.org/OutOfStock' : stock === 'low_stock' ? 'https://schema.org/LimitedAvailability' : 'https://schema.org/InStock',
+      itemCondition: 'https://schema.org/NewCondition',
       seller: { '@type': 'Organization', name: 'GingerBros' },
+      shippingDetails: {
+        '@type': 'OfferShippingDetails',
+        shippingRate: { '@type': 'MonetaryAmount', value: 100, currency: 'THB' },
+        shippingDestination: { '@type': 'DefinedRegion', addressCountry: 'TH' },
+        deliveryTime: {
+          '@type': 'ShippingDeliveryTime',
+          handlingTime: { '@type': 'QuantitativeValue', minValue: 0, maxValue: 2, unitCode: 'DAY' },
+          transitTime: { '@type': 'QuantitativeValue', minValue: 1, maxValue: 4, unitCode: 'DAY' },
+        },
+      },
+      hasMerchantReturnPolicy: {
+        '@type': 'MerchantReturnPolicy',
+        applicableCountry: 'TH',
+        returnPolicyCategory: 'https://schema.org/MerchantReturnFiniteReturnWindow',
+        merchantReturnDays: 1,
+        returnMethod: 'https://schema.org/ReturnByMail',
+        returnFees: 'https://schema.org/FreeReturn',
+      },
     },
   };
+  const breadcrumbJsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Home', item: SITE_URL },
+      { '@type': 'ListItem', position: 2, name: 'Shop', item: `${SITE_URL}/shop` },
+      { '@type': 'ListItem', position: 3, name: product.name, item: productUrl },
+    ],
+  };
+  const packOpts = kind === 'fizz' || kind === 'tea' ? packOptions(products, kind) : [];
+  const packIndex = packOpts.findIndex((o) => o.product.id === product.id);
 
   return (
     <div className="min-h-screen bg-warm-white">
       <SEO
-        title={`${product.name} | GingerBros`}
-        description={product.description ?? ''}
+        title={`${product.name}${isEquipment ? '' : kind === 'tea' ? ' | Ginger Drink Made in Thailand' : kind === 'fizz' ? ' | Ginger Soda Made in Thailand' : ' | Ginger Fizz & Tea Bundle'} | GingerBros`}
+        description={(content.headline ?? description).slice(0, 300)}
         path={`/product/${product.id}`}
-        image={images[0] ?? ''}
+        image={ogCard ?? absImages[0] ?? undefined}
+        imageWidth={ogCard ? 1200 : undefined}
+        imageHeight={ogCard ? 630 : undefined}
         type="product"
-        jsonLd={[productJsonLd]}
+        jsonLd={[productJsonLd, breadcrumbJsonLd]}
       />
 
       <div className="max-w-[1280px] mx-auto px-4 sm:px-6 pt-20 sm:pt-24 md:pt-28 pb-12 md:pb-16">
@@ -553,22 +562,24 @@ export default function ProductDetail() {
                 does what it says. */}
             <div
               ref={mainImageContainerRef}
-              className="relative rounded-xxl overflow-hidden mb-4 h-[480px] md:h-[600px] flex items-center justify-center select-none bg-cream/40"
+              className={`relative rounded-[28px] overflow-hidden mb-3 aspect-square max-h-[52vh] sm:aspect-[4/5] sm:max-h-[78vh] w-full flex items-center justify-center select-none ${kind === 'tea' ? 'bg-[radial-gradient(circle_at_50%_60%,#5C3D1E_0%,#1E1A17_100%)]' : 'bg-[radial-gradient(circle_at_50%_60%,#F2B632_0%,#D4A34B_60%,#C9963A_100%)]'}`}
             >
               {video && activeImage === images.length ? (
                 <video src={video} controls autoPlay muted loop playsInline className="max-h-full max-w-full object-contain" />
               ) : (
                 <button
                   onClick={() => setLightboxOpen(true)}
-                  className="h-full w-full p-4 flex items-center justify-center cursor-zoom-in"
+                  className="absolute inset-0 cursor-zoom-in"
                   aria-label={`Open ${product.name} image gallery`}
                 >
-                  <img
-                    src={optimizedImageUrl(images[activeImage] ?? images[0], 1400)}
-                    alt={product.name}
-                    decoding="async"
-                    fetchPriority="high"
-                    className="max-h-full max-w-full object-contain pointer-events-none"
+                  <ResponsiveImage
+                    key={activeImage}
+                    name={slides[activeImage]?.name}
+                    src={slides[activeImage]?.src ?? slides[0]?.src}
+                    alt={activeImage === 0 ? product.name : `${product.name}, photo ${activeImage + 1}`}
+                    priority={activeImage === 0}
+                    sizes="(min-width: 1024px) 600px, 100vw"
+                    className={`h-full w-full pointer-events-none ${slides[activeImage]?.name?.startsWith('life-') ? 'object-cover' : 'object-contain p-6 md:p-10'}`}
                     draggable={false}
                   />
                 </button>
@@ -599,9 +610,9 @@ export default function ProductDetail() {
               )}
             </div>
             <div className="flex gap-3 overflow-x-auto pb-2">
-              {images.map((img, i) => (
-                <button key={i} onClick={() => setActiveImage(i)} aria-label={`View ${product.name} photo ${i + 1}`} className={`flex-shrink-0 w-20 h-20 rounded-xl overflow-hidden border-2 transition-all ${activeImage === i ? 'border-amber' : 'border-transparent hover:border-soft-peach'}`}>
-                  <img src={optimizedImageUrl(img, 160)} alt={`${product.name} thumbnail ${i + 1}`} loading="lazy" decoding="async" className="w-full h-full object-contain p-1" />
+              {slides.length > 1 && slides.map((sl, i) => (
+                <button key={i} onClick={() => setActiveImage(i)} aria-label={`View ${product.name} photo ${i + 1}`} aria-current={activeImage === i} className={`flex-shrink-0 w-20 h-20 rounded-xl overflow-hidden border-2 bg-cream transition-all ${activeImage === i ? 'border-charcoal' : 'border-transparent hover:border-soft-peach'}`}>
+                  <img src={sl.name ? thumbUrl(sl.name, sl.src) : optimizedImageUrl(sl.src, 160)} alt="" loading="lazy" decoding="async" className={`w-full h-full ${sl.name?.startsWith('life-') ? 'object-cover' : 'object-contain p-1'}`} />
                 </button>
               ))}
               {video && (
@@ -617,10 +628,15 @@ export default function ProductDetail() {
 
           {/* Product Info */}
           <div ref={infoRef}>
-            <Link to="/#shop" className="flex w-fit items-center gap-2 font-body font-medium text-[13px] text-earth hover:text-deep-brown transition-colors mb-4">
-              <ArrowLeftIcon />
-              {isEquipment ? 'Back to Equipment' : 'Back to Shop'}
-            </Link>
+            <nav aria-label="Breadcrumb" className="mb-4">
+              <ol className="flex flex-wrap items-center gap-1.5 font-body text-[13px] text-earth">
+                <li><Link to="/" className="hover:text-deep-brown">Home</Link></li>
+                <li aria-hidden="true">/</li>
+                <li><Link to="/shop" className="inline-flex items-center gap-1 hover:text-deep-brown"><ArrowLeftIcon className="w-3.5 h-3.5" />Shop</Link></li>
+                <li aria-hidden="true">/</li>
+                <li aria-current="page" className="font-semibold text-deep-brown">{product.name}</li>
+              </ol>
+            </nav>
 
             {/* Brand (equipment) or Badge (drinks) */}
             {isEquipment && (
@@ -630,13 +646,19 @@ export default function ProductDetail() {
             )}
 
             {/* Name */}
-            <h1 className="font-display font-bold text-deep-brown text-[1.75rem] sm:text-[2rem] md:text-[2.5rem] leading-tight mb-3">
+            <h1 className="font-poster text-deep-brown text-[clamp(2.4rem,6vw,4rem)] mb-3">
               {product.name}
             </h1>
+            {reviewSummary && reviewSummary.count > 0 && (
+              <a href="#reviews" className="mb-3 inline-flex items-center gap-1.5 font-body text-[13px] text-earth hover:text-deep-brown">
+                <span aria-hidden="true" className="text-amber">{'★'.repeat(Math.round(reviewSummary.average))}</span>
+                {reviewSummary.average.toFixed(1)} · {reviewSummary.count} review{reviewSummary.count === 1 ? '' : 's'}
+              </a>
+            )}
 
             {/* Headline */}
             {content.headline && (
-              <p className="font-body text-earth text-[15px] leading-relaxed mb-5">
+              <p className="font-display font-semibold text-deep-brown text-[1.15rem] leading-snug mb-5">
                 {content.headline}
               </p>
             )}
@@ -647,14 +669,32 @@ export default function ProductDetail() {
               {selectedPrice.recurring && (
                 <span className="font-body font-medium text-[15px] text-rust">{intervalLabel(selectedPrice.recurring)}</span>
               )}
-              <span className={`flex items-center gap-1.5 font-body font-medium text-[13px] ${stock === 'out_of_stock' ? 'text-earth/60' : stock === 'low_stock' ? 'text-amber-ink' : 'text-green-ink'}`}>
+              <span className={`flex items-center gap-1.5 font-body font-medium text-[13px] ${stock === 'out_of_stock' ? 'text-earth/80' : stock === 'low_stock' ? 'text-amber-ink' : 'text-green-ink'}`}>
                 <span className={`w-2 h-2 rounded-full ${stock === 'out_of_stock' ? 'bg-earth/40' : stock === 'low_stock' ? 'bg-amber' : 'bg-accent-green'}`} />
                 {stock === 'out_of_stock' ? 'Out of Stock' : stock === 'low_stock' ? 'Low Stock' : 'In Stock'}
               </span>
             </div>
 
-            {/* Multi-buy deals (single bottles, one-time purchase) */}
-            {!selectedPrice.recurring && singleBottle && <DealsStrip kind={singleBottle} />}
+            {/* Pack size: each pack is its own product page */}
+            {packOpts.length > 1 && packIndex >= 0 && !selectedPrice.recurring && (
+              <div className="mb-6 max-w-[440px]">
+                <PackPicker
+                  options={packOpts}
+                  value={packIndex}
+                  onChange={(i) => navigate(`/product/${packOpts[i].product.id}`, { replace: true, state: { keepScroll: true } })}
+                  label={`${product.name}: ${t('packSize')}`}
+                />
+                {packOpts[packIndex].bottles > 1 && (
+                  <p className="mt-2 font-body text-[13px] text-earth">
+                    ฿{packOpts[packIndex].perBottle} {t('perBottle')}
+                    {packOpts[packIndex].saving > 0 && <> · <span className="font-semibold text-green-ink">{t('youSave')} ฿{packOpts[packIndex].saving}</span></>}
+                  </p>
+                )}
+              </div>
+            )}
+
+            {/* Mix & match (drinks, one-time purchase) */}
+            {!selectedPrice.recurring && !isEquipment && kind && <MixStrip products={products} currentId={product.id} />}
 
             {/* Back-in-stock alert signup */}
             {stock === 'out_of_stock' && (
@@ -699,7 +739,7 @@ export default function ProductDetail() {
                   </div>
                 </div>
                 {selectedSize && selectedType && (
-                  <p className="font-body text-[12px] text-earth/50 mt-3">Selected: {selectedSize} · {selectedType}</p>
+                  <p className="font-body text-[12px] text-earth/80 mt-3">Selected: {selectedSize} · {selectedType}</p>
                 )}
               </div>
             )}
@@ -721,10 +761,10 @@ export default function ProductDetail() {
                         </span>
                         <span className="flex-1 flex flex-col">
                           <span className="font-body font-medium text-[14px] text-deep-brown capitalize">{label}</span>
-                          {save > 0 && <span className="font-body font-semibold text-[11px] text-accent-green">Save {save}%</span>}
+                          {save > 0 && <span className="font-body font-semibold text-[11px] text-green-ink">Save {save}%</span>}
                         </span>
                         <span className="flex items-baseline gap-1.5">
-                          {save > 0 && oneTimeForProduct?.unitAmount != null && <span className="font-body text-[12px] text-earth/50 line-through">฿{oneTimeForProduct.unitAmount}</span>}
+                          {save > 0 && oneTimeForProduct?.unitAmount != null && <span className="font-body text-[12px] text-earth/80 line-through">฿{oneTimeForProduct.unitAmount}</span>}
                           <span className="font-body font-semibold text-[15px] text-deep-brown">฿{p.unitAmount}</span>
                         </span>
                       </button>
@@ -737,9 +777,9 @@ export default function ProductDetail() {
                       Subscribe &amp; Save{savingsPercent(selectedPrice, oneTimeForProduct) > 0 && ` · ${savingsPercent(selectedPrice, oneTimeForProduct)}% off every delivery`}
                     </p>
                     <ul className="font-body text-[12px] text-earth/80 space-y-1.5">
-                      <li className="flex items-start gap-2"><CheckIcon className="text-accent-green flex-shrink-0 mt-0.5" /> Delivered {intervalLabel(selectedPrice.recurring)}, never run out</li>
-                      <li className="flex items-start gap-2"><CheckIcon className="text-accent-green flex-shrink-0 mt-0.5" /> A lower price than one-time, locked in</li>
-                      <li className="flex items-start gap-2"><CheckIcon className="text-accent-green flex-shrink-0 mt-0.5" /> Pause, skip, or cancel anytime</li>
+                      <li className="flex items-start gap-2"><CheckIcon className="text-green-ink flex-shrink-0 mt-0.5" /> Delivered {intervalLabel(selectedPrice.recurring)}, never run out</li>
+                      <li className="flex items-start gap-2"><CheckIcon className="text-green-ink flex-shrink-0 mt-0.5" /> A lower price than one-time, locked in</li>
+                      <li className="flex items-start gap-2"><CheckIcon className="text-green-ink flex-shrink-0 mt-0.5" /> Pause, skip, or cancel anytime</li>
                     </ul>
                   </div>
                 ) : oneTimeForProduct && maxSavings > 0 && (
@@ -747,7 +787,7 @@ export default function ProductDetail() {
                     className="mt-3 w-full flex items-center justify-between gap-3 rounded-xl border-2 border-amber bg-amber/10 px-4 py-3.5 text-left hover:bg-amber/20 transition-colors group">
                     <div>
                       <p className="font-display font-bold text-deep-brown text-[15px] leading-tight">Subscribe &amp; Save {maxSavings}%</p>
-                      <p className="font-body text-[12px] text-earth/70 mt-0.5">Auto-delivery · pause or cancel anytime</p>
+                      <p className="font-body text-[12px] text-earth/80 mt-0.5">Auto-delivery · pause or cancel anytime</p>
                     </div>
                     <span className="flex-shrink-0 bg-deep-brown text-cream font-body font-semibold text-[12px] uppercase tracking-[0.06em] px-3.5 py-1.5 rounded-full group-hover:bg-rust transition-colors">Switch →</span>
                   </button>
@@ -756,9 +796,9 @@ export default function ProductDetail() {
             )}
 
             {/* Short description (from Stripe) */}
-            {product.description && (
-              <p className="font-body text-earth leading-relaxed mb-8">
-                {product.description.replace(/\d+-day\s+/gi, '')}
+            {description && (
+              <p className="font-body text-earth text-[16px] leading-relaxed mb-8">
+                {description}
               </p>
             )}
 
@@ -777,7 +817,7 @@ export default function ProductDetail() {
                     added
                       ? 'bg-accent-green text-white'
                       : stock === 'out_of_stock'
-                      ? 'bg-soft-peach text-earth/60 cursor-not-allowed active:scale-100'
+                      ? 'bg-soft-peach text-earth/80 cursor-not-allowed active:scale-100'
                       : 'bg-amber text-deep-brown hover:bg-warm-gold'
                   }`}
                 >
@@ -815,11 +855,11 @@ export default function ProductDetail() {
                   {isGift && (
                     <div className="mt-3 space-y-3">
                       <label htmlFor="gift-recipient-name" className="sr-only">Recipient name</label>
-                      <input id="gift-recipient-name" type="text" value={giftName} onChange={(e) => setGiftName(e.target.value)} placeholder="Recipient name" data-testid="gift-name" className="w-full bg-cream border border-soft-peach rounded-xl px-4 py-2.5 font-body text-[14px] text-deep-brown placeholder:text-earth/50 focus:outline-none focus:ring-2 focus:ring-rust/30" />
+                      <input id="gift-recipient-name" type="text" value={giftName} onChange={(e) => setGiftName(e.target.value)} placeholder="Recipient name" data-testid="gift-name" className="w-full bg-cream border border-soft-peach rounded-xl px-4 py-2.5 font-body text-[14px] text-deep-brown placeholder:text-earth/80 focus:outline-none focus:ring-2 focus:ring-rust/30" />
                       <label htmlFor="gift-recipient-email" className="sr-only">Recipient email</label>
-                      <input id="gift-recipient-email" type="email" value={giftEmail} onChange={(e) => setGiftEmail(e.target.value)} placeholder="Recipient email" data-testid="gift-email" className="w-full bg-cream border border-soft-peach rounded-xl px-4 py-2.5 font-body text-[14px] text-deep-brown placeholder:text-earth/50 focus:outline-none focus:ring-2 focus:ring-rust/30" />
+                      <input id="gift-recipient-email" type="email" value={giftEmail} onChange={(e) => setGiftEmail(e.target.value)} placeholder="Recipient email" data-testid="gift-email" className="w-full bg-cream border border-soft-peach rounded-xl px-4 py-2.5 font-body text-[14px] text-deep-brown placeholder:text-earth/80 focus:outline-none focus:ring-2 focus:ring-rust/30" />
                       <label htmlFor="gift-message" className="sr-only">Gift message</label>
-                      <textarea id="gift-message" value={giftMessage} onChange={(e) => setGiftMessage(e.target.value)} placeholder="Gift message (optional)" rows={3} data-testid="gift-message" className="w-full bg-cream border border-soft-peach rounded-xl px-4 py-2.5 font-body text-[14px] text-deep-brown placeholder:text-earth/50 focus:outline-none focus:ring-2 focus:ring-rust/30 resize-none" />
+                      <textarea id="gift-message" value={giftMessage} onChange={(e) => setGiftMessage(e.target.value)} placeholder="Gift message (optional)" rows={3} data-testid="gift-message" className="w-full bg-cream border border-soft-peach rounded-xl px-4 py-2.5 font-body text-[14px] text-deep-brown placeholder:text-earth/80 focus:outline-none focus:ring-2 focus:ring-rust/30 resize-none" />
                     </div>
                   )}
                 </div>
@@ -833,18 +873,6 @@ export default function ProductDetail() {
               </p>
             )}
 
-            {/* Quick feature bullets (drinks) */}
-            {!isEquipment && hasFeatures && (
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-8">
-                {content.features!.slice(0, 4).map((feat) => (
-                  <div key={feat} className="flex items-start gap-2">
-                    <CheckIcon className="text-accent-green flex-shrink-0 mt-0.5" />
-                    <span className="font-body text-[14px] text-earth">{feat}</span>
-                  </div>
-                ))}
-              </div>
-            )}
-
             {/* Ingredients (drinks) */}
             {!isEquipment && (content.ingredients?.length ?? 0) > 0 && (
               <div className="mb-6">
@@ -855,7 +883,7 @@ export default function ProductDetail() {
 
             {/* Equipment compatibility note (inline) */}
             {isEquipment && (
-              <p className="font-body text-[13px] text-earth/60 italic border-t border-soft-peach/40 pt-4">
+              <p className="font-body text-[13px] text-earth/80 italic border-t border-soft-peach/40 pt-4">
                 Works perfectly with other KegLand and Duotight components.
               </p>
             )}
@@ -927,11 +955,54 @@ export default function ProductDetail() {
                       <span className="font-body text-[14px] text-earth leading-relaxed">{note}</span>
                     </div>
                   ))}
-                  <p className="font-body text-[13px] text-earth/50 italic pt-2">Works perfectly with other KegLand and Duotight components.</p>
+                  <p className="font-body text-[13px] text-earth/80 italic pt-2">Works perfectly with other KegLand and Duotight components.</p>
                 </div>
               </div>
             )}
           </div>
+        )}
+
+        {/* ── Drinks: taste, serves, pairings ── */}
+        {!isEquipment && (content.tasting || content.serves || content.pairings) && (
+          <section aria-labelledby="taste-title" className="mt-16 grid gap-6 lg:grid-cols-3">
+            {content.tasting && (
+              <div className={`rounded-[24px] p-7 ${kind === 'tea' ? 'bg-charcoal text-cream' : 'bg-ginger text-charcoal'}`}>
+                <h2 id="taste-title" className="font-poster text-[2rem]">Tastes like</h2>
+                <p className="mt-3 font-body text-[15px] leading-relaxed">{content.tasting}</p>
+                {(kind === 'fizz' || kind === 'tea') && (
+                  <div className="mt-6"><TasteMeter kind={kind} tone={kind === 'tea' ? 'dark' : 'light'} /></div>
+                )}
+              </div>
+            )}
+            {content.serves && (
+              <div className="rounded-[24px] bg-cream p-7">
+                <h2 className="font-poster text-[2rem] text-deep-brown">How to serve</h2>
+                <ol className="mt-4 space-y-4">
+                  {content.serves.map((sv, i) => (
+                    <li key={sv.title} className="flex gap-3">
+                      <span aria-hidden="true" className="font-poster text-[1.6rem] leading-none text-rust">{i + 1}</span>
+                      <div>
+                        <h3 className="font-display text-[1.05rem] font-bold text-deep-brown">{sv.title}</h3>
+                        <p className="font-body text-[14px] text-earth">{sv.desc}</p>
+                      </div>
+                    </li>
+                  ))}
+                </ol>
+                <Link to="/guide" className="mt-5 inline-block font-body text-[13px] font-semibold text-deep-brown underline underline-offset-4">More serves in the Ginger Guide →</Link>
+              </div>
+            )}
+            {content.pairings && (
+              <div className="rounded-[24px] border-2 border-charcoal/10 bg-white p-7">
+                <h2 className="font-poster text-[2rem] text-deep-brown">Pairs with</h2>
+                <ul className="mt-4 flex flex-wrap gap-2">
+                  {content.pairings.map((d) => (
+                    <li key={d} className="rounded-full bg-cream px-3.5 py-1.5 font-body text-[14px] font-medium text-deep-brown">{d}</li>
+                  ))}
+                </ul>
+                <Link to="/guide/ginger-and-thai-food" className="mt-5 inline-block font-body text-[13px] font-semibold text-deep-brown underline underline-offset-4">The Thai food pairing cheat sheet →</Link>
+              </div>
+            )}
+          </section>
         )}
 
         {/* ── Drinks: Tab Sections ── */}
@@ -950,7 +1021,7 @@ export default function ProductDetail() {
                     role="tab"
                     aria-selected={activeTab === tab}
                     onClick={() => setActiveTab(tab)}
-                    className={`flex-shrink-0 font-body font-medium text-[13px] sm:text-[14px] uppercase tracking-[0.08em] pb-3 transition-colors border-b-2 -mb-px whitespace-nowrap outline-none focus-visible:ring-2 focus-visible:ring-amber rounded-t ${activeTab === tab ? 'text-deep-brown border-amber' : 'text-earth/60 border-transparent hover:text-earth'}`}
+                    className={`flex-shrink-0 font-body font-medium text-[13px] sm:text-[14px] uppercase tracking-[0.08em] pb-3 transition-colors border-b-2 -mb-px whitespace-nowrap outline-none focus-visible:ring-2 focus-visible:ring-amber rounded-t ${activeTab === tab ? 'text-deep-brown border-amber' : 'text-earth/80 border-transparent hover:text-earth'}`}
                   >
                     {tab === 'details' ? 'Product Details' : tab === 'nutrition' ? 'Nutrition Info' : 'Specifications'}
                   </button>
@@ -966,7 +1037,7 @@ export default function ProductDetail() {
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                         {content.features!.map((feat) => (
                           <div key={feat} className="flex items-start gap-2">
-                            <CheckIcon className="text-accent-green flex-shrink-0 mt-0.5" />
+                            <CheckIcon className="text-green-ink flex-shrink-0 mt-0.5" />
                             <span className="font-body text-[14px] text-earth">{feat}</span>
                           </div>
                         ))}
@@ -990,13 +1061,13 @@ export default function ProductDetail() {
         {/* ── Related Products ── */}
         {relatedProducts.length > 0 && (
           <div className="mt-20 border-t border-soft-peach/50 pt-14">
-            <h3 className="font-display font-semibold text-deep-brown text-[1.35rem] mb-8 flex items-center gap-4">
-              Related Products
+            <h2 className="font-poster text-deep-brown text-[clamp(2rem,5vw,3rem)] mb-8 flex items-center gap-4">
+              You might also like
               <span className="flex-1 h-px bg-soft-peach/60 hidden sm:block" />
-            </h3>
+            </h2>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6">
               {relatedProducts.map((rp) => (
-                <RelatedProductCard key={rp.id} product={rp} />
+                <CompactCard key={rp.id} product={rp} />
               ))}
             </div>
           </div>
@@ -1019,6 +1090,8 @@ export default function ProductDetail() {
         {showStickyAtc && (
           <div className="fixed bottom-0 left-0 right-0 z-40 bg-warm-white/95 backdrop-blur-xl border-t border-soft-peach/50 px-4 py-3 md:hidden">
             <div className="flex items-center gap-3 max-w-[1280px] mx-auto">
+              <img src={thumbUrl(heroName ?? product.id, product.images[0] ?? '')} alt="" className="h-11 w-11 flex-shrink-0 rounded-lg bg-cream object-contain p-0.5" />
+              <span className="min-w-0 flex-1 truncate font-display text-[14px] font-bold text-deep-brown">{product.name}</span>
               <div className="flex items-center gap-3 border-2 border-soft-peach rounded-full py-2 px-3 flex-shrink-0">
                 <button
                   onClick={() => setQuantity(Math.max(1, quantity - 1))}
@@ -1039,11 +1112,11 @@ export default function ProductDetail() {
               <button
                 onClick={handleAdd}
                 disabled={stock === 'out_of_stock'}
-                className={`flex-1 font-body font-medium text-sm uppercase tracking-[0.08em] py-3 rounded-full transition-all duration-200 active:scale-[0.98] ${
+                className={`flex-shrink-0 px-4 font-body font-bold text-[13px] uppercase tracking-[0.06em] py-3 rounded-full transition-all duration-200 active:scale-[0.98] ${
                   added
                     ? 'bg-accent-green text-white'
                     : stock === 'out_of_stock'
-                    ? 'bg-soft-peach text-earth/60 cursor-not-allowed active:scale-100'
+                    ? 'bg-soft-peach text-earth/80 cursor-not-allowed active:scale-100'
                     : 'bg-amber text-deep-brown hover:bg-warm-gold'
                 }`}
               >

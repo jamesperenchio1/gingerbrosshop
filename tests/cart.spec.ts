@@ -58,20 +58,20 @@ test('cart quantity can be increased and decreased', async ({ page }) => {
   const increase = item.getByRole('button', { name: /increase quantity/i });
   const decrease = item.getByRole('button', { name: /decrease quantity/i });
 
-  await expect(page.getByTestId('cart-button').locator('span.absolute')).toHaveText('1');
+  await expect(page.getByTestId('cart-count')).toHaveText('1');
 
   await increase.click();
-  await expect(page.getByTestId('cart-button').locator('span.absolute')).toHaveText('2');
+  await expect(page.getByTestId('cart-count')).toHaveText('2');
 
   await decrease.click();
-  await expect(page.getByTestId('cart-button').locator('span.absolute')).toHaveText('1');
+  await expect(page.getByTestId('cart-count')).toHaveText('1');
 });
 
 test('removing the last item shows empty cart', async ({ page }) => {
   await page.getByTestId('add-to-cart').click();
 
   const item = page.getByTestId(/^cart-item-/).first();
-  await item.getByRole('button', { name: /remove item/i }).click();
+  await item.getByRole('button', { name: /remove .* from cart/i }).click();
 
   await expect(page.getByTestId('cart-items')).not.toBeAttached();
   await expect(page.getByText(/your cart is empty/i)).toBeVisible();

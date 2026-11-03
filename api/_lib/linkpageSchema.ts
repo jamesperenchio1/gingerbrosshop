@@ -347,12 +347,12 @@ export const DEFAULT_LINKPAGE_CONFIG: LinkPageConfig = {
   version: 1,
   profile: {
     name: 'GingerBros',
-    bio: 'All new Ginger Fizz, with 3.5g of prebiotics!\n\nน้ำขิงซา พรีไบโอติก\n\n↓↓↓↓↓↓↓↓↓↓↓↓',
+    bio: 'Think Ginger. Drink Different.\n\nGinger Fizz & Ginger Tea · น้ำขิงซ่า & ชาขิง\n\n↓↓↓↓↓↓↓↓↓↓↓↓',
     avatarUrl: '/linkpage/avatar.png',
   },
   seo: {
     title: 'GingerBros | Links',
-    description: 'All new Ginger Fizz, with 3.5g of prebiotics! Shop, LINE, Grab, Shopee, Instagram, TikTok and Facebook.',
+    description: 'Think Ginger. Drink Different. Shop Ginger Fizz and Ginger Tea, or find us on LINE, Grab, Shopee, Instagram, TikTok and Facebook.',
   },
   theme: {
     background: { type: 'color', color: '#ffeee1', color2: '#ffffff', imageUrl: null },

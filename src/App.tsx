@@ -1,10 +1,12 @@
 import { Suspense, lazy, useEffect, useLayoutEffect } from 'react';
-import { Routes, Route, useLocation } from 'react-router';
+import { Routes, Route, useLocation, useHref } from 'react-router';
 import { Analytics } from '@vercel/analytics/react';
 import { SpeedInsights } from '@vercel/speed-insights/react';
 import { CartProvider, useCart } from '@/context/CartContext';
-import { I18nProvider } from '@/context/I18nContext';
+import { I18nProvider, useI18n } from '@/context/I18nContext';
+import { prefersReducedMotion } from '@/lib/reveal';
 import Navigation from '@/sections/Navigation';
+import Footer from '@/sections/Footer';
 import PromoNotice from '@/components/PromoNotice';
 import CartDrawer from '@/sections/CartDrawer';
 import HomePage from '@/pages/HomePage';
@@ -13,6 +15,8 @@ import ErrorBoundary from '@/components/ErrorBoundary';
 import BackToTop from '@/components/BackToTop';
 import { REFERRAL_CODE_STORAGE_KEY } from '@/lib/checkout';
 import { isLinkHost } from '@/lib/linkpage';
+import { localeFromPath } from '@/lib/locale';
+import { trackPageView } from '@/lib/metaPixel';
 
 /** Loads a shared cart from `?cart=<uuid>` and pre-fills CartContext, then removes the param. */
 function CartLinkLoader() {
@@ -29,13 +33,25 @@ function CartLinkLoader() {
       .then((data) => {
         if (Array.isArray(data.items) && data.items.length > 0) {
           clearCart();
-          for (const item of data.items) addItem(item);
+          // Restoring a shared cart isn't the visitor adding anything, so
+          // don't report AddToCart for each line.
+          for (const item of data.items) addItem(item, { silent: true });
           openCart();
         }
       })
       .catch(() => {});
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+  return null;
+}
+
+/** One page view per route (the first load included), for GA4 and Meta. */
+function PageViewTracker() {
+  const { pathname } = useLocation();
+  const href = useHref(pathname);
+  useEffect(() => {
+    trackPageView(href);
+  }, [href]);
   return null;
 }
 
@@ -60,12 +76,14 @@ function ReferralCapture() {
  * the page that moves the scroll position.
  */
 function ScrollToTop() {
-  const { pathname, hash } = useLocation();
+  const { pathname, hash, state } = useLocation();
+  const keepScroll = (state as { keepScroll?: boolean } | null)?.keepScroll;
   useLayoutEffect(() => {
+    if (keepScroll) return; // e.g. switching pack size on a product page
     if (hash) {
       const timer = setTimeout(() => {
         try {
-          document.querySelector(hash)?.scrollIntoView({ behavior: 'smooth' });
+          document.querySelector(hash)?.scrollIntoView({ behavior: prefersReducedMotion() ? 'auto' : 'smooth' });
         } catch {
           // Malformed hash — nothing to scroll to.
         }
@@ -73,8 +91,13 @@ function ScrollToTop() {
       return () => clearTimeout(timer);
     }
     window.scrollTo(0, 0);
-  }, [pathname, hash]);
+  }, [pathname, hash, keepScroll]);
   return null;
+}
+
+function SkipLink() {
+  const { t } = useI18n();
+  return <a href="#main" className="skip-link">{t('skipToContent')}</a>;
 }
 
 /** Lightweight branded fallback while a lazy page chunk loads. */
@@ -98,6 +121,9 @@ const ReturnsPage = lazy(() => import('@/pages/ReturnsPage'));
 const PrivacyPage = lazy(() => import('@/pages/PrivacyPage'));
 const TermsPage = lazy(() => import('@/pages/TermsPage'));
 const WholesalePage = lazy(() => import('@/pages/WholesalePage'));
+const ShopPage = lazy(() => import('@/pages/ShopPage'));
+const StoryPage = lazy(() => import('@/pages/StoryPage'));
+const FindUsPage = lazy(() => import('@/pages/FindUsPage'));
 const TrackOrderPage = lazy(() => import('@/pages/TrackOrderPage'));
 const BlogPage = lazy(() => import('@/pages/BlogPage'));
 const OrdersPage = lazy(() => import('@/pages/OrdersPage'));
@@ -114,6 +140,7 @@ function AppContent() {
           chunk resolves, so the new page could render mid-scroll (landing on
           the wrong section instead of the top). */}
       <ScrollToTop />
+      <PageViewTracker />
       <ReferralCapture />
       <CartLinkLoader />
       <Suspense fallback={<PageLoader />}>
@@ -126,10 +153,13 @@ function AppContent() {
           <Route path="/returns" element={<ReturnsPage />} />
           <Route path="/privacy" element={<PrivacyPage />} />
           <Route path="/terms" element={<TermsPage />} />
-          <Route path="/wholesale" element={<WholesalePage />} />
+          <Route path="/shop" element={<ShopPage />} />
+          <Route path="/story" element={<StoryPage />} />
+          <Route path="/find-us" element={<FindUsPage />} />
+          <Route path="/business" element={<WholesalePage />} />
           <Route path="/track" element={<TrackOrderPage />} />
-          <Route path="/blog" element={<BlogPage />} />
-          <Route path="/blog/:slug" element={<BlogPage />} />
+          <Route path="/guide" element={<BlogPage />} />
+          <Route path="/guide/:slug" element={<BlogPage />} />
           <Route path="/orders" element={<OrdersPage />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
@@ -155,6 +185,8 @@ function AppToaster() {
 }
 
 export default function App() {
+  // The router's basename ("/th" or "") carries the locale on server and client.
+  const locale = localeFromPath(useHref('/'));
   // link.gingerbrosshop.com is just the link-in-bio page: no shop nav, cart or
   // routes, so the page stays light and loads fast from social apps. /links is
   // the same page on the main domain, handy for previewing.
@@ -189,11 +221,15 @@ export default function App() {
   }
 
   return (
-    <I18nProvider>
+    <I18nProvider locale={locale}>
       <CartProvider>
         <ErrorBoundary>
+          <SkipLink />
           <Navigation />
-          <AppContent />
+          <main id="main" tabIndex={-1} className="outline-none">
+            <AppContent />
+          </main>
+          <Footer />
           <CartDrawer />
         </ErrorBoundary>
         <AppToaster />

@@ -1,360 +1,168 @@
-import { useState, useRef, useEffect, useCallback, useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router';
-import { useCart } from '@/context/CartContext';
-import { toast } from 'sonner';
-import { PlusIcon, MinusIcon } from '@/components/Icons';
-import {
-  useCatalog,
-  defaultPrice,
-  bottleCounts,
-  cheapestSubscription,
-  maxSubscriptionSavings,
-  intervalLabel,
-  stockStatus,
-  hasVariantPrices,
-  unitLabel,
-  type CatalogProduct,
-} from '@/lib/catalog';
+import * as Tabs from '@radix-ui/react-tabs';
+import { useI18n } from '@/context/I18nContext';
+import { useCatalog } from '@/lib/catalog';
+import { packOptions, mixOptions, groupEquipment } from '@/lib/drinks';
+import { useReviewSummaries } from '@/lib/reviews';
+import DrinkCard from '@/components/shop/DrinkCard';
+import CompactCard from '@/components/shop/CompactCard';
 import { Skeleton } from '@/components/ui/skeleton';
-import StockAlertForm from '@/components/StockAlertForm';
-import StarRating from '@/components/StarRating';
-import { useReviewSummaries, type ReviewSummary } from '@/lib/reviews';
-import { useReveal } from '@/lib/reveal';
-import { prefetchProductDetail } from '@/lib/prefetch';
-import { optimizedImageUrl } from '@/lib/image';
 
-function ProductCardSkeleton() {
+type Tab = 'drinks' | 'equipment';
+const TAB_KEY = 'shopTab';
+
+function Loading() {
   return (
-    <div className="bg-white border border-soft-peach/60 shadow-card rounded-3xl p-5 sm:p-8 flex flex-col">
-      <Skeleton className="w-full aspect-square rounded-2xl mb-5" />
-      <Skeleton className="h-5 w-2/3 mb-3" />
-      <Skeleton className="h-4 w-full mb-2" />
-      <Skeleton className="h-4 w-5/6 mb-5" />
-      <Skeleton className="h-12 w-full rounded-full mb-3" />
-      <Skeleton className="h-4 w-1/3" />
+    <div className="space-y-8">
+      {[0, 1].map((i) => (
+        <Skeleton key={i} className="h-[520px] w-full rounded-[28px]" />
+      ))}
+    </div>
+  );
+}
+
+/** Ginger Fizz + Ginger Tea (with pack sizes), the mixed bundles, subscription strip. */
+export function DrinksLineup({ headingLevel = 'h3' }: { headingLevel?: 'h2' | 'h3' }) {
+  const { t } = useI18n();
+  const { products, loading, error } = useCatalog();
+  const ids = useMemo(() => products.map((p) => p.id), [products]);
+  const reviews = useReviewSummaries(ids);
+  const fizz = packOptions(products, 'fizz');
+  const tea = packOptions(products, 'tea');
+  const mix = mixOptions(products);
+  const subscribable = fizz.find((o) => o.product.prices.some((p) => p.recurring));
+
+  if (loading) return <Loading />;
+  if (error) {
+    return (
+      <div className="py-12 text-center">
+        <p className="mb-4 font-body text-earth">We couldn&apos;t load the shop just now. This is on us, not on your connection.</p>
+        <button onClick={() => window.location.reload()} className="rounded-full bg-charcoal px-6 py-3 font-body text-sm font-semibold uppercase tracking-[0.08em] text-cream">
+          Try again
+        </button>
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-8 md:space-y-10">
+      {fizz.length > 0 && <DrinkCard kind="fizz" options={fizz} review={reviews[fizz[0].product.id]} priority headingLevel={headingLevel} />}
+      {tea.length > 0 && <DrinkCard kind="tea" options={tea} review={reviews[tea[0].product.id]} headingLevel={headingLevel} />}
+
+      {mix.length > 0 && (
+        <div className="rounded-[28px] bg-cream/70 p-6 sm:p-8">
+          <div className="mb-5 flex flex-wrap items-baseline justify-between gap-2">
+            <h3 className="font-poster text-[2rem] text-deep-brown">{t('mixMatchTitle')}</h3>
+            <p className="font-body text-[14px] text-earth">{t('mixMatchSub')}</p>
+          </div>
+          <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
+            {mix.map((o) => (
+              <CompactCard key={o.product.id} product={o.product} perBottle={o.perBottle} saving={o.saving} landscape />
+            ))}
+          </div>
+        </div>
+      )}
+
+      {subscribable && (
+        <Link
+          to={`/product/${subscribable.product.id}?plan=weekly`}
+          className="flex flex-col items-start justify-between gap-3 rounded-[28px] bg-charcoal p-6 text-cream transition-colors hover:bg-deep-brown sm:flex-row sm:items-center sm:p-8"
+        >
+          <span className="font-body text-[15px] leading-relaxed text-cream/90">{t('subscribeStrip')}</span>
+          <span className="flex-shrink-0 rounded-full bg-ginger px-5 py-2.5 font-body text-[13px] font-bold uppercase tracking-[0.08em] text-charcoal">
+            {t('subscribeStripCta')} →
+          </span>
+        </Link>
+      )}
+    </div>
+  );
+}
+
+function EquipmentGrid() {
+  const { products } = useCatalog();
+  const groups = groupEquipment(products.filter((p) => p.category === 'brewing-equipment'));
+  return (
+    <div className="space-y-10">
+      <p className="max-w-[560px] font-body text-earth">KegLand and Five Star gear for kegging, carbonating and pouring at home.</p>
+      {groups.map((g) => (
+        <section key={g.label} aria-labelledby={`eq-${g.label}`}>
+          <h3 id={`eq-${g.label}`} className="mb-4 font-display text-[1.4rem] font-bold text-deep-brown">{g.label}</h3>
+          <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4">
+            {g.items.map((p) => <CompactCard key={p.id} product={p} />)}
+          </div>
+        </section>
+      ))}
     </div>
   );
 }
 
 /**
- * Card layout note: the whole card is clickable via a "stretched link" — a real
- * `<Link>` on the title whose `::after` covers the card. That keeps
- * cmd/middle-click, right-click → open in new tab and crawlable `<a href>`
- * working (a `div role="link"` + `navigate()` gives you none of those), and it
- * removes the pile of `stopPropagation` calls the nested-button version needed.
- * Anything interactive that sits on top just needs `relative z-10`.
+ * The shop. On the homepage it's just the drinks lineup; on /shop it adds the
+ * Drinks / Brewing Equipment tabs.
  */
-function ProductCard({ product, reviewSummary }: { product: CatalogProduct; reviewSummary?: ReviewSummary }) {
-  const { addItem } = useCart();
-  const [quantity, setQuantity] = useState(1);
-  const [added, setAdded] = useState(false);
-  const addedTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+export default function Shop({ variant = 'home' }: { variant?: 'home' | 'page' }) {
+  const { t } = useI18n();
+  const { products } = useCatalog();
+  const hasEquipment = products.some((p) => p.category === 'brewing-equipment');
+  const [tab, setTab] = useState<Tab>('drinks');
 
-  useEffect(() => {
-    return () => { if (addedTimerRef.current) clearTimeout(addedTimerRef.current); };
-  }, []);
-
-  const price = defaultPrice(product);
-  const stock = stockStatus(product);
-  const subPrice = cheapestSubscription(product);
-  const subSavings = maxSubscriptionSavings(product);
-  const detailLink = `/product/${product.id}`;
-  const shortDescription = product.metadata.short_description ?? product.description ?? '';
-  const image = product.images[0] ?? '';
-  const hasVariants = hasVariantPrices(product);
-
-  const changeQuantity = useCallback((delta: number) => {
-    setQuantity((prev) => Math.max(1, Math.min(24, prev + delta)));
-  }, []);
-
-  const handleAddToCart = useCallback(() => {
-    if (!price) return;
-    addItem({
-      id: price.priceId,
-      priceId: price.priceId,
-      productId: product.id,
-      name: product.name,
-      variant: product.id,
-      price: price.unitAmount ?? 0,
-      quantity,
-      image,
-      badge: product.badge ?? '',
-      badgeColor: product.badgeColor ?? 'bg-sky-500',
-      ...bottleCounts(product),
-    });
-    setAdded(true);
-    toast.success(`${product.name} added to cart`);
-    if (addedTimerRef.current) clearTimeout(addedTimerRef.current);
-    addedTimerRef.current = setTimeout(() => setAdded(false), 800);
-  }, [price, addItem, product, quantity, image]);
-
-  return (
-    <article
-      onMouseEnter={prefetchProductDetail}
-      onFocus={prefetchProductDetail}
-      className="relative bg-white border border-soft-peach/60 shadow-card rounded-3xl p-5 sm:p-8 flex flex-col hover:shadow-card-hover transition-shadow duration-300 focus-within:outline focus-within:outline-2 focus-within:outline-amber focus-within:outline-offset-2"
-    >
-      <div className="flex items-center justify-center mb-6 h-[180px] sm:h-[200px] bg-cream/50 rounded-2xl p-4">
-        <img
-          src={optimizedImageUrl(image, 400)}
-          alt={product.name}
-          loading="lazy"
-          decoding="async"
-          className="max-h-full max-w-full object-contain"
-        />
-      </div>
-
-      <h3 className="font-display font-semibold text-deep-brown text-[1.15rem] mb-2">
-        <Link
-          to={detailLink}
-          className="outline-none after:absolute after:inset-0 after:content-[''] after:rounded-3xl hover:text-rust transition-colors"
-        >
-          {product.name}
-        </Link>
-      </h3>
-
-      {reviewSummary && reviewSummary.count > 0 && (
-        <div className="flex items-center gap-1.5 mb-2">
-          <StarRating value={Math.round(reviewSummary.average)} size={13} />
-          <span className="font-body text-[12px] text-earth/60">({reviewSummary.count})</span>
-        </div>
-      )}
-
-      <p className="font-body text-earth text-[14px] leading-relaxed mb-4 flex-grow">
-        {shortDescription}
-      </p>
-      <div className="flex items-baseline gap-2 mb-2">
-        <span className="font-display font-semibold text-deep-brown text-2xl">฿{price?.unitAmount ?? '—'}</span>
-        <span className="font-body font-medium text-[13px] text-rust">{unitLabel(product)}</span>
-      </div>
-
-      {subPrice && subSavings > 0 && (
-        <Link
-          to={`${detailLink}?plan=weekly`}
-          className="relative z-10 w-full flex items-center justify-between gap-3 mb-4 rounded-xl border-2 border-amber bg-amber/10 px-4 py-3 text-left hover:bg-amber/20 transition-colors group"
-        >
-          <span className="block">
-            <span className="block font-display font-bold text-deep-brown text-[14px] leading-tight">
-              Subscribe &amp; Save {subSavings}%
-            </span>
-            <span className="block font-body text-[11px] text-earth/70 mt-0.5">
-              From ฿{subPrice.unitAmount}/{intervalLabel(subPrice.recurring).replace(/^per |^every /, '')} · cancel anytime
-            </span>
-          </span>
-          <span className="flex-shrink-0 bg-deep-brown text-cream font-body font-semibold text-[11px] uppercase tracking-[0.05em] px-3 py-1.5 rounded-full group-hover:bg-rust transition-colors">
-            See plan →
-          </span>
-        </Link>
-      )}
-
-      {hasVariants ? (
-        <Link
-          to={detailLink}
-          className="relative z-10 w-full text-center font-body font-medium text-sm uppercase tracking-[0.08em] py-3.5 rounded-full bg-amber text-deep-brown hover:bg-warm-gold active:scale-[0.98] transition-all duration-200"
-        >
-          Choose Options →
-        </Link>
-      ) : (
-        <>
-          <div className="relative z-10 flex items-center justify-center gap-2 mb-4 border-2 border-soft-peach rounded-full py-1 px-2 self-start">
-            <button onClick={() => changeQuantity(-1)} className="text-earth hover:text-deep-brown transition-colors p-2" aria-label={`Decrease ${product.name} quantity`}>
-              <MinusIcon />
-            </button>
-            <span className="font-body font-medium text-earth min-w-[20px] text-center">{quantity}</span>
-            <button onClick={() => changeQuantity(1)} className="text-earth hover:text-deep-brown transition-colors p-2" aria-label={`Increase ${product.name} quantity`}>
-              <PlusIcon />
-            </button>
-          </div>
-          <button
-            onClick={handleAddToCart}
-            data-testid="add-to-cart"
-            disabled={!price || stock === 'out_of_stock'}
-            className={`relative z-10 w-full font-body font-medium text-sm uppercase tracking-[0.08em] py-3.5 rounded-full transition-all duration-200 ${
-              added
-                ? 'bg-accent-green text-white'
-                : stock === 'out_of_stock'
-                ? 'bg-soft-peach text-earth/60 cursor-not-allowed'
-                : 'bg-amber text-deep-brown hover:bg-warm-gold active:scale-[0.98]'
-            }`}
-          >
-            {added
-              ? 'Added!'
-              : stock === 'out_of_stock'
-              ? 'Out of Stock'
-              : price
-              ? `Add to Cart · ฿${((price.unitAmount ?? 0) * quantity).toLocaleString('en-US')}`
-              : 'Unavailable'}
-          </button>
-        </>
-      )}
-
-      <div className="flex items-center gap-2 mt-3">
-        <span className={`w-2 h-2 rounded-full ${stock === 'out_of_stock' ? 'bg-earth/40' : stock === 'low_stock' ? 'bg-amber' : 'bg-accent-green'}`} />
-        <span className="font-body font-medium text-[13px] text-earth">
-          {stock === 'out_of_stock' ? 'Out of Stock' : stock === 'low_stock' ? 'Low Stock' : 'In Stock'}
-        </span>
-      </div>
-      {stock === 'out_of_stock' && (
-        <div className="relative z-10">
-          <StockAlertForm productId={product.stripeProductId} className="mt-3" />
-        </div>
-      )}
-
-      <span aria-hidden="true" className="mt-4 text-center font-body font-medium text-[13px] text-rust">
-        View Details →
-      </span>
-    </article>
-  );
-}
-
-type ActiveCategory = 'drinks' | 'brewing-equipment';
-
-const SHOP_TAB_STORAGE_KEY = 'shopTab';
-
-function readStoredTab(): ActiveCategory {
-  try {
-    const stored = sessionStorage.getItem(SHOP_TAB_STORAGE_KEY);
-    return stored === 'brewing-equipment' ? 'brewing-equipment' : 'drinks';
-  } catch {
-    return 'drinks';
-  }
-}
-
-export default function Shop() {
-  const { products, loading, error } = useCatalog();
-  const productIds = useMemo(() => products.map((p) => p.id), [products]);
-  const reviewSummaries = useReviewSummaries(productIds);
-  const sectionRef = useRef<HTMLElement>(null);
-  const headerRef = useRef<HTMLDivElement>(null);
-  const cardsRef = useRef<HTMLDivElement>(null);
-  const [activeCategory, setActiveCategory] = useState<ActiveCategory>('drinks');
   // Restore the remembered tab after hydration so the first render matches the prerendered HTML.
   useEffect(() => {
-    const stored = readStoredTab();
-    // eslint-disable-next-line react-hooks/set-state-in-effect -- restoring the saved tab after hydration
-    if (stored !== 'drinks') setActiveCategory(stored);
-  }, []);
-
-  const handleCategoryChange = useCallback((cat: ActiveCategory) => {
     try {
-      sessionStorage.setItem(SHOP_TAB_STORAGE_KEY, cat);
-    } catch {
-      // sessionStorage unavailable (private browsing / quota) — non-fatal.
-    }
-    setActiveCategory(cat);
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- restoring the saved tab after hydration
+      if (sessionStorage.getItem(TAB_KEY) === 'equipment') setTab('equipment');
+    } catch { /* storage unavailable */ }
   }, []);
 
-  const hasEquipment = products.some((p) => p.category === 'brewing-equipment');
-  const hasDrinks = products.some((p) => p.category === 'drinks' || p.category === null);
-  const showTabs = hasEquipment && hasDrinks;
+  const changeTab = (v: string) => {
+    const next = v === 'equipment' ? 'equipment' : 'drinks';
+    setTab(next);
+    try { sessionStorage.setItem(TAB_KEY, next); } catch { /* ignore */ }
+  };
 
-  const visibleProducts =
-    activeCategory === 'brewing-equipment'
-      ? products.filter((p) => p.category === 'brewing-equipment')
-      : products
-          .filter((p) => p.category === 'drinks' || p.category === null)
-          // Single bottles first, then bundles by size; Fizz before Tea.
-          .map((p) => ({ p, b: bottleCounts(p) }))
-          .sort((x, y) =>
-            (x.b.bottlesFizz + x.b.bottlesTea) - (y.b.bottlesFizz + y.b.bottlesTea)
-            || y.b.bottlesFizz - x.b.bottlesFizz)
-          .map(({ p }) => p);
-
-  // One reveal path for both first paint and tab switches. `useReveal` plays
-  // immediately when the target is already on screen, so switching tabs fades
-  // the new cards in without a second, competing animation.
-  useReveal(
-    sectionRef,
-    (reveal) => {
-      reveal(headerRef.current, { trigger: sectionRef.current, start: 'top 80%' });
-      reveal(cardsRef.current?.children, {
-        y: 50,
-        scale: 0.96,
-        duration: 0.8,
-        stagger: 0.12,
-        trigger: cardsRef.current,
-        start: 'top 80%',
-      });
-    },
-    [loading, activeCategory, visibleProducts.length],
-  );
-
-  const gridClass =
-    visibleProducts.length === 1
-      ? 'grid grid-cols-1 md:grid-cols-3 gap-8 [&>*]:md:col-start-2'
-      : 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8';
-
-  const categoryHeading = activeCategory === 'brewing-equipment'
-    ? { eyebrow: 'BREWING EQUIPMENT', title: 'KegLand Equipment', sub: 'Precision-engineered components for homebrewing, carbonation, and draft systems.' }
-    : { eyebrow: 'OUR DRINKS', title: 'Ginger Fizz & Ginger Tea', sub: 'Real Thai ginger, two ways. Mix and match, and multi-buy deals apply in your cart.' };
+  const isPage = variant === 'page';
+  const Title = isPage ? 'h1' : 'h2';
 
   return (
-    <section id="shop" ref={sectionRef} className="bg-warm-white py-[60px] md:py-[80px]">
-      <div className="max-w-[1100px] mx-auto px-6">
-        {showTabs && !loading && (
-          <div role="tablist" className="flex gap-8 mb-10 border-b border-soft-peach/60 overflow-x-auto -mx-6 px-6 md:mx-0 md:px-0 scrollbar-none">
-            {(['drinks', 'brewing-equipment'] as const).map((cat) => {
-              const label = cat === 'drinks' ? 'Drinks' : 'Brewing Equipment';
-              const active = activeCategory === cat;
-              return (
-                <button
-                  key={cat}
-                  role="tab"
-                  aria-selected={active}
-                  onClick={() => handleCategoryChange(cat)}
-                  className={`flex-shrink-0 font-body font-semibold text-[13px] sm:text-[14px] uppercase tracking-[0.1em] pb-3.5 transition-colors border-b-2 -mb-px whitespace-nowrap ${
-                    active
-                      ? 'text-deep-brown border-amber'
-                      : 'text-earth/50 border-transparent hover:text-earth hover:border-soft-peach'
-                  }`}
+    <section id="shop" aria-labelledby="shop-title" className={`bg-warm-white ${isPage ? 'pb-20 pt-28 md:pt-32' : 'py-16 md:py-24'}`}>
+      <div className="mx-auto max-w-[1180px] px-4 sm:px-6">
+        <header className="mb-10 md:mb-14">
+          <span className="font-body text-[12px] font-semibold uppercase tracking-[0.16em] text-rust">{t(isPage ? 'shopLabel' : 'lineupLabel')}</span>
+          <Title id="shop-title" className="font-poster mt-3 text-[clamp(2.6rem,7vw,5.5rem)] text-deep-brown">
+            {t(isPage ? 'shopTitle' : 'lineupTitle')}
+          </Title>
+          <p className="mt-4 max-w-[560px] font-body text-[16px] leading-relaxed text-earth">{t('shopSub')}</p>
+        </header>
+
+        {isPage && hasEquipment ? (
+          <Tabs.Root value={tab} onValueChange={changeTab}>
+            <Tabs.List aria-label="Shop categories" className="mb-10 flex gap-2 overflow-x-auto">
+              {(['drinks', 'equipment'] as const).map((v) => (
+                <Tabs.Trigger
+                  key={v}
+                  value={v}
+                  className="whitespace-nowrap rounded-full border-2 border-charcoal px-5 py-2.5 font-body text-[13px] font-bold uppercase tracking-[0.1em] text-charcoal transition-colors data-[state=active]:bg-charcoal data-[state=active]:text-cream"
                 >
-                  {label}
-                </button>
-              );
-            })}
-          </div>
+                  {t(v === 'drinks' ? 'shopTabDrinks' : 'shopTabEquipment')}
+                </Tabs.Trigger>
+              ))}
+            </Tabs.List>
+            <Tabs.Content value="drinks" className="outline-none">
+              <DrinksLineup headingLevel="h2" />
+            </Tabs.Content>
+            <Tabs.Content value="equipment" className="outline-none">
+              <EquipmentGrid />
+            </Tabs.Content>
+          </Tabs.Root>
+        ) : (
+          <DrinksLineup headingLevel={isPage ? 'h2' : 'h3'} />
         )}
 
-        <div ref={headerRef} className="text-center mb-10 md:mb-14">
-          <span className="font-body font-medium text-[12px] uppercase tracking-[0.1em] text-rust mb-3 block">
-            {categoryHeading.eyebrow}
-          </span>
-          <h2 className="font-display font-semibold text-deep-brown text-[clamp(1.5rem,3vw,2.5rem)] mb-3">
-            {categoryHeading.title}
-          </h2>
-          <p className="font-body text-earth max-w-[480px] mx-auto">{categoryHeading.sub}</p>
-        </div>
-
-        {loading ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {Array.from({ length: 3 }).map((_, i) => <ProductCardSkeleton key={i} />)}
-          </div>
-        ) : error ? (
-          /* Previously an API failure rendered "No products available right
-             now", which reads as "sold out" rather than "we broke". */
-          <div className="text-center py-12">
-            <p className="font-body text-earth mb-4">
-              We couldn&apos;t load the shop just now. This is on us, not on your connection.
-            </p>
-            <button
-              onClick={() => window.location.reload()}
-              className="font-body font-medium text-sm uppercase tracking-[0.08em] px-6 py-3 rounded-full bg-amber text-deep-brown hover:bg-warm-gold transition-colors"
-            >
-              Try again
-            </button>
-          </div>
-        ) : visibleProducts.length === 0 ? (
-          <div className="text-center font-body text-earth py-12">No products available right now.</div>
-        ) : (
-          <div ref={cardsRef} className={gridClass}>
-            {visibleProducts.map((product) => (
-              <ProductCard
-                key={product.stripeProductId}
-                product={product}
-                reviewSummary={reviewSummaries[product.id]}
-              />
-            ))}
-          </div>
+        {!isPage && hasEquipment && (
+          <p className="mt-10 text-center font-body text-[14px] text-earth">
+            Homebrewer? <Link to="/shop" className="font-semibold text-deep-brown underline underline-offset-4">Browse brewing equipment →</Link>
+          </p>
         )}
       </div>
     </section>

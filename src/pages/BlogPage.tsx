@@ -5,10 +5,8 @@ import {
   ArrowLeft,
   ArrowRight,
   ChefHat,
-  Heart,
   Leaf,
   Sparkles,
-  FlaskConical,
   Search,
   Clock,
   Calendar,
@@ -23,7 +21,7 @@ import SEO from '@/components/SEO';
 import Newsletter from '@/components/Newsletter';
 import { BLOG_SEO_META, type BlogSeoMeta } from '@/lib/blogSeoMeta';
 
-type Category = 'Recipe' | 'Drinks' | 'Health' | 'Brewing' | 'Culture' | 'Guide';
+type Category = 'Recipe' | 'Drinks' | 'Culture' | 'Guide';
 
 interface Reference {
   label: string;
@@ -63,18 +61,6 @@ const CATEGORY_META: Record<
     ring: 'text-rust',
     chip: 'bg-rust/15 text-rust',
   },
-  Health: {
-    icon: Heart,
-    gradient: 'from-accent-green/30 via-pale-amber/25 to-amber/15',
-    ring: 'text-accent-green',
-    chip: 'bg-accent-green/15 text-accent-green',
-  },
-  Brewing: {
-    icon: FlaskConical,
-    gradient: 'from-rust/30 via-amber/20 to-deep-brown/15',
-    ring: 'text-rust',
-    chip: 'bg-rust/15 text-rust',
-  },
   Culture: {
     icon: Mountain,
     gradient: 'from-soft-peach/45 via-pale-amber/30 to-warm-gold/15',
@@ -97,92 +83,195 @@ function seoFor(slug: string): BlogSeoMeta {
 
 const POSTS: Post[] = [
   {
-    ...seoFor('art-of-the-ginger-bug'),
-    category: 'Brewing',
-    readTime: '9 min',
-    icon: FlaskConical,
-    tags: ['fermentation', 'process', 'behind the scenes'],
+    ...seoFor('how-to-serve-ginger-fizz'),
+    category: 'Guide',
+    readTime: '4 min',
+    icon: Sparkles,
+    tags: ['serving', 'ginger fizz', 'basics'],
     featured: true,
-    content: `Every bottle of GingerBros begins with something most people throw away: a knob of fresh ginger, a spoon of sugar, and a little patience. We call it the ginger bug, and it is the wild, living heart of our brew. There is no laboratory yeast, no factory carbonation tank, and no flavour concentrate. There is only time, temperature, and the invisible community of microbes that has lived on ginger skin for as long as ginger has grown.
+    content: `Ginger Fizz is built to be easy: open, pour, done. But a few small choices turn a good bottle into a great one. Here is how we drink it, and how we'd love you to.
 
-In this piece I want to show what actually happens in our brewhouse: the biology, the daily rhythm, and the judgement calls that no machine can make for us. By the end you will understand not just *how* we brew, but *why* a living soda is fundamentally different from anything that comes out of a factory.
+## 1. Cold. Properly cold.
 
-## What exactly is a ginger bug?
+Ginger tastes sharper and cleaner when it's cold, and the sparkle holds on longer. Give the bottle at least a few hours in the fridge, ideally the coldest shelf at the back. If you're in a hurry, 15 minutes in a bucket of ice and water does more than an hour in the freezer door.
 
-A ginger bug is a natural starter culture, a spontaneous colony of wild yeasts and lactic-acid bacteria that live on the skin of fresh ginger. Feed them sugar and water, and within a week they wake up, multiply, and begin producing carbon dioxide. That CO2 is what gives our fizz its natural sparkle. No injected carbonation, no shortcuts.
+## 2. Glass, lots of ice
 
-Two groups of organisms do most of the work:
+A tall glass packed to the top with ice is the move. More ice means it melts slower, so your last sip is as punchy as your first. Pour slowly down the side of the glass to keep the bubbles.
 
-• **Wild yeasts** (largely *Saccharomyces* and its relatives) convert sugar into a trace of alcohol and a great deal of carbon dioxide. They are the engine of the carbonation.
-• **Lactic-acid bacteria** (mainly *Lactobacillus*) produce the gentle lactic-acid tang that keeps the brew bright instead of cloying, and they steadily lower the pH into a naturally acidic, self-protecting range.
+## 3. Or straight from the bottle
 
-Together they form a tiny, self-regulating ecosystem: the yeasts and bacteria balance each other, and the rising acidity crowds out spoilage organisms. In short, it is a lot like a sourdough starter, but for soda.
+Honestly? At a night market, on the BTS, on a stoop with friends, the bottle is the glass. That's how [Ginger Fizz](/product/ginger-fizz) was meant to travel.
 
-![Fresh ginger being grated in the GingerBros brewhouse](/images/story-brewing.webp)
+## 4. A squeeze of lime
 
-## How we build, feed, and keep the bug alive
+Fizz is already made with real lime, so a wedge on the rim just turns the brightness up. Want it moodier? Try a strip of orange peel instead.
 
-This is the part most people never see, and it is the single most important habit in the whole operation. A ginger bug is not an ingredient you buy once, it is a culture you keep alive, and a living culture has to be **fed**.
+## 5. Make it a long drink
 
-**Building it from scratch (the first week).** We start by grating fresh, unpeeled organic ginger into filtered, non-chlorinated water with a measured spoon of white sugar. The skin matters: the wild yeast and bacteria live on it, so we never peel and never use chlorinated tap water, which would kill the very microbes we are trying to wake up.
+Top half a glass of Fizz with soda water for a lighter, all-afternoon drink. Or go the other way: a splash of Fizz over iced Thai tea or cold brew is a surprisingly good wake-up.
 
-**Feeding it every single day.** For a bug to thrive, it needs fresh fuel daily. Each day we "feed" the culture with another spoonful of grated ginger and another spoonful of sugar, and then we **stir it well**. Both steps matter for a specific reason:
+## The short version
 
-• **Adding sugar** replenishes the food supply. The microbes eat sugar continuously; starve them and the colony weakens, sours too far, and eventually dies.
-• **Stirring daily** folds in oxygen, which the yeast needs to multiply vigorously in this open, early stage. Stirring also keeps the grated ginger submerged and discourages mould from forming on the surface.
+• Fridge-cold bottle
+• Tall glass, full of ice
+• Pour slowly, add lime if you like
+• Drink it with food, friends, or both
 
-**Reading the signs of a healthy bug.** Within a few days you should see a rush of fine bubbles when you stir, and smell a bright, sharp, yeasty-gingery aroma. That is the sign the culture is alive and ready to work. A healthy bug always smells clean and peppery, never foul, never rotten.
+Stocking up? The [6-pack](/product/ginger-fizz-6pack) works out cheaper per bottle, and multi-buy deals apply automatically in your cart.`,
+  },
+  {
+    ...seoFor('ginger-tea-hot-or-iced'),
+    category: 'Guide',
+    readTime: '4 min',
+    icon: Leaf,
+    tags: ['ginger tea', 'serving', 'hot', 'iced'],
+    content: `[Ginger Tea · Thai Spice](/product/ginger-tea) is still, not sparkling. Real ginger slowly simmered with lemongrass, lime and spices, then bottled. That makes it one of the most flexible drinks we make: it's great cold, and just as good warm.
 
-**Keeping the mother culture going between batches.** We never let the bug die between brews. Like a sourdough starter, it lives on indefinitely as long as it is fed. When we are brewing daily, it stays at room temperature and is fed every day. To slow it down between batches, we move it to the cold, where its metabolism nearly stops, and feed it about once a week to keep it healthy. Cold is the pause button; warmth and food are the wake-up call.
+## Iced (our default)
 
-> A ginger bug is less like a recipe and more like a pet. Feed it, stir it, keep it clean, and it will reward you for years.
+Pour over a full glass of ice. The cold tightens the ginger and lets the lemongrass and lime come through clean. Perfect for a hot afternoon or alongside spicy food.
 
-## Day by day in the brewhouse
+**Upgrade it:** add a slice of lime and a sprig of mint, or a splash of soda water for a little sparkle.
 
-Once the mother bug is lively, we use it to inoculate a full batch. Our fermentation process is slow on purpose. Here is roughly how a batch moves through our Bangkok brewhouse:
+## Warm (rainy-season mode)
 
-• Day 1: We grate fresh, organic Thai ginger and combine it with filtered, non-chlorinated water, a measured amount of white sugar, fresh lime, and a generous pour of active ginger bug to kick-start fermentation.
-• Day 2 to 3: The wild cultures bloom. Tiny bubbles cling to the side of the vessel. The smell turns bright and peppery as the yeast population climbs into the millions.
-• Day 4 to 5: Fermentation hits full stride. The ginger bug eats most of the sugar, leaving behind complexity instead of sweetness, while the pH drops into a safe, naturally acidic range.
-• Day 6: We taste, adjust, and balance each batch by hand, checking aroma, acidity and carbonation.
-• Day 7: Bottling day. The fizz is alive, lightly tart, and unmistakably gingery.
+Pour into a small pan and warm gently until it's steaming, but don't let it boil, so the aromatics stay bright. Serve in a mug. The spice blend really opens up when it's warm.
 
-## The chemistry of the fizz
+**Upgrade it:** a thin slice of fresh ginger, a stick of cinnamon, or a spoon of honey if you like it sweeter.
 
-Carbonation in a living soda is not pumped in, it is grown. As yeast metabolises sugar through fermentation, it releases carbon dioxide. In a sealed bottle that gas has nowhere to go, so it dissolves back into the liquid under pressure. The result is a fine, persistent bead that feels softer on the tongue than the aggressive sparkle of force-carbonated soda. It is the same principle that puts bubbles in traditional sparkling wine and farmhouse cider.
+## Fizz or Tea?
 
-This is also why a living soda keeps evolving in the bottle: as long as a little sugar and a few active cultures remain, fermentation creeps slowly forward. Keeping the bottle cold slows that process to a crawl, which is why we recommend refrigerating on arrival and why a cold-chain delivery upgrade is available at checkout.
+• **Ginger Fizz:** sparkling, bright, lime-forward. Big kick, best ice-cold.
+• **Ginger Tea:** still, rounded, warmly spiced. Great iced, just as good warm.
 
-## Raw by default, pasteurized by choice
+Can't decide? That's exactly why the [Fizz & Tea Duo](/product/fizz-tea-duo) exists.`,
+  },
+  {
+    ...seoFor('ginger-and-thai-food'),
+    category: 'Guide',
+    readTime: '5 min',
+    icon: ChefHat,
+    tags: ['food pairing', 'thai food', 'ginger fizz', 'ginger tea'],
+    content: `Ginger and Thai food have been friends for a very long time. Here's our cheat sheet for what to drink with what.
 
-Here is the honest answer, because it is a question we get all the time: **do we pasteurize?** The answer is: it depends on the bottle, and we make both.
+## Som tam + gai yang → Ginger Fizz
 
-Pasteurization means gently heating a drink to a set temperature to kill microorganisms and extend shelf life. It is a genuinely brilliant food-safety tool. The catch is that heat does not discriminate: the same process that makes a drink shelf-stable also ends the fermentation and removes the live cultures.
+Sour, salty, fiery papaya salad and smoky grilled chicken want something cold and sparkling. The bubbles and lime in [Ginger Fizz](/product/ginger-fizz) reset your palate between bites, and the ginger stands up to the chilli instead of disappearing.
 
-So we offer two honest options instead of pretending one size fits all:
+## Pad kra pao → Ginger Fizz
 
-• **Our raw Ginger Fizz line** keeps every live culture intact. It is brighter, more complex, and a little tart, but it must stay refrigerated and is best enjoyed fresh. This is the bottle for people who want the living, gut-friendly version.
-• **Our pasteurized line** is gently heat-treated so it becomes shelf-stable, travel-friendly, and easy to gift. It trades the live cultures for convenience and a longer, more consistent shelf life.
+Holy basil, garlic, chilli, a crispy fried egg. Big, savoury flavours that a sweet soda just flattens. Fizz's ginger heat matches it beat for beat.
 
-> We would rather give you a clear choice between living and shelf-stable than quietly pasteurize everything and call it "raw".
+## Khao man gai → Ginger Tea, iced
 
-Same natural brew, same real ginger, same care, the only difference is whether we apply heat at the very end. If live cultures are your priority, reach for the raw bottle and keep it cold. If you want something for the cupboard or a long trip, the pasteurized bottle is the practical pick.
+The ginger-soy sauce on chicken rice is begging for more ginger. Iced [Ginger Tea](/product/ginger-tea) brings it, with lemongrass to keep things fresh.
 
-## The takeaway
+## Tom yum / tom kha → Ginger Tea, iced
 
-Great fizz is not manufactured, it is cultivated. Whether you choose the raw bottle or the pasteurized one, you are tasting a week of patient, living chemistry that started with a fed, stirred, carefully kept ginger bug. That is worth slowing down for.`,
-    references: [
-      {
-        label: 'Fermentation: how yeast produces carbon dioxide and alcohol, and lactic-acid fermentation',
-        source: 'Encyclopædia Britannica',
-        url: 'https://www.britannica.com/science/fermentation',
-      },
-      {
-        label: 'Why is milk pasteurized? Process, temperatures, and food safety',
-        source: 'Encyclopædia Britannica',
-        url: 'https://www.britannica.com/science/Why-Is-Milk-Pasteurized',
-      },
-    ],
+Lemongrass in the soup, lemongrass in the glass. They echo each other without fighting.
+
+## Moo ping and night-market grills → Ginger Fizz
+
+Sweet, sticky, charred pork skewers plus a cold, sharp, sparkling drink is about as good as a Bangkok evening gets.
+
+## Mango sticky rice → Ginger Tea, warm
+
+A warm cup of spiced ginger tea next to coconut-rich mango sticky rice is a dessert pairing people don't expect. Try it once.
+
+## Why it works
+
+Ginger brings heat, freshness and a little bitterness that cuts through richness, fat and sweetness. That's why it already appears in so many Thai dishes, and why it belongs in the glass next to them too.
+
+Hosting? Grab the [Fizz & Tea 4-Pack](/product/fizz-tea-4pack) and cover every dish on the table.`,
+  },
+  {
+    ...seoFor('ginger-mocktails'),
+    category: 'Recipe',
+    readTime: '6 min',
+    icon: Wine,
+    tags: ['mocktail', 'zero proof', 'recipe'],
+    content: `Five easy, zero-proof drinks that make the most of GingerBros. Nothing here needs a shaker or bar skills: a glass, ice and a spoon will do.
+
+## 1. Bangkok Mule (no vodka)
+
+• 200ml Ginger Fizz
+• Juice of half a lime
+• A few mint leaves
+• Lots of ice
+
+Bruise the mint in the glass, add ice and lime, top with Fizz. Serve in a copper mug if you have one.
+
+## 2. Lemongrass Cooler
+
+• 150ml Ginger Tea, chilled
+• 100ml soda water
+• 1 bruised lemongrass stalk to stir
+
+Build over ice. Light, aromatic, endlessly drinkable.
+
+## 3. Ginger Tamarind Spritz
+
+• 1 tbsp tamarind concentrate, loosened with a little water
+• 200ml Ginger Fizz
+• A pinch of salt and a lime wedge
+
+Stir the tamarind and salt over ice, top with Fizz. Sweet, sour, salty, spicy: very Thai.
+
+## 4. Thai Tea Kick
+
+• 150ml strong Thai iced tea (no milk)
+• 100ml Ginger Fizz
+
+Pour the tea over ice, float the Fizz on top. Earthy, spicy and sparkling at once.
+
+## 5. Warm Ginger Toddy (no booze)
+
+• 200ml Ginger Tea, warmed
+• 1 tsp honey
+• A cinnamon stick and a slice of lime
+
+Stir until the honey melts. For rainy nights.
+
+## Bonus: make a pitcher
+
+Scale any of these up by the bottle: a [6-pack of Fizz](/product/ginger-fizz-6pack) or [Tea](/product/ginger-tea-6pack) makes a big jug for a party, and multi-buy deals apply automatically.`,
+  },
+  {
+    ...seoFor('thai-ginger-101'),
+    category: 'Culture',
+    readTime: '5 min',
+    icon: Mountain,
+    tags: ['thai ginger', 'education', 'ingredients'],
+    content: `Ginger is in almost every Thai kitchen, but most of us never stop to think about it. Here's a quick crash course.
+
+## Ginger, galangal and fingerroot
+
+Thai cooking uses a whole family of rhizomes:
+
+• **Khing (ขิง):** ginger. Peppery, warm, bright. The star of GingerBros.
+• **Kha (ข่า):** galangal. Piney, citrusy and sharper. The backbone of tom kha and tom yum.
+• **Krachai (กระชาย):** fingerroot. Earthy and aromatic, used in curries and stir-fries.
+
+They look similar but taste very different. Swap one for another and you'll notice immediately.
+
+## Young ginger vs mature ginger
+
+**Young ginger (ขิงอ่อน)** has thin, pinkish skin and is juicy, tender and mild, which is why it's used for pickled ginger and stir-fries. **Mature ginger (ขิงแก่)** has tougher, tan skin and much more heat and aroma. It's the one you want for a drink with a proper kick.
+
+## Why does ginger burn?
+
+The heat comes from natural compounds in the rhizome called **gingerols**. When ginger is heated or dried, some of them change into **shogaols**, which taste even more pungent. That's why cooked or simmered ginger can taste spicier than raw. It's also why our [Ginger Tea](/product/ginger-tea), slowly simmered, has a different warmth from the bright, fresh kick of [Ginger Fizz](/product/ginger-fizz).
+
+## How to pick good ginger
+
+• Firm and heavy for its size
+• Smooth, tight skin, no wrinkles or soft spots
+• A sharp, fresh smell when you snap a piece
+
+## Thailand grows a lot of it
+
+Thailand is one of the world's notable ginger producers, and much of the crop is exported. We think Thai ginger deserves its moment at home, which is a big part of [why GingerBros exists](/story).`,
   },
   {
     ...seoFor('moscow-mule'),
@@ -190,7 +279,7 @@ Great fizz is not manufactured, it is cultivated. Whether you choose the raw bot
     readTime: '5 min',
     icon: ChefHat,
     tags: ['cocktail', 'vodka', 'classic'],
-    content: `The Moscow Mule is one of the simplest cocktails in the canon, vodka, lime, ginger, which is exactly why the *quality* of each part matters so much. There is nowhere to hide. A great Mule lives or dies on its ginger, and our naturally fermented brew brings a depth of flavour that mass-market ginger sodas simply cannot match. Most commercial mules lean on sweet, one-note ginger beer; ours leans on a living, lightly tart fizz that lets the lime and vodka breathe.
+    content: `The Moscow Mule is one of the simplest cocktails in the canon, vodka, lime, ginger, which is exactly why the *quality* of each part matters so much. There is nowhere to hide. A great Mule lives or dies on its ginger, and fresh Thai ginger with real lime brings a bite that mass-market ginger sodas simply cannot match. Most commercial mules lean on sweet, one-note ginger beer; ours leans on a bright, low-sugar fizz that lets the lime and vodka breathe.
 
 ## A little history
 
@@ -220,7 +309,7 @@ Because vodka is meant to be neutral, people assume it does not matter here, but
 
 ## Why our fizz works so well
 
-The natural fermentation gives our ginger fizz a subtle funk and complexity that sets this classic apart. Because our brew is less sweet than standard ginger beer, you taste the ginger heat and the citrus rather than syrup, the difference between a Mule that refreshes and one that cloys.
+Fresh Thai ginger gives our fizz a peppery depth that sets this classic apart. Because it is less sweet than standard ginger beer, you taste the ginger heat and the citrus rather than syrup, the difference between a Mule that refreshes and one that cloys.
 
 ## Make it your own
 
@@ -243,7 +332,7 @@ The natural fermentation gives our ginger fizz a subtle funk and complexity that
     readTime: '5 min',
     icon: ChefHat,
     tags: ['cocktail', 'rum', 'classic'],
-    content: `The Dark ’n’ Stormy is Bermuda’s national drink for a reason: dark rum and ginger were made for each other. The rum brings molasses, caramel and a little funk; the ginger brings heat and brightness to cut straight through it. Our version swaps the usual flat soda for GingerBros, so instead of sugar water you get real, living ginger and natural carbonation. The drink is named for its appearance, dark rum clouding through pale, stormy ginger like a squall rolling in off the Atlantic.
+    content: `The Dark ’n’ Stormy is Bermuda’s national drink for a reason: dark rum and ginger were made for each other. The rum brings molasses, caramel and a little funk; the ginger brings heat and brightness to cut straight through it. Our version swaps the usual flat soda for GingerBros, so instead of sugar water you get real Thai ginger with a proper sparkle. The drink is named for its appearance, dark rum clouding through pale, stormy ginger like a squall rolling in off the Atlantic.
 
 ## The most protected cocktail in the world
 
@@ -273,7 +362,7 @@ Reach for a dark or "black" rum rather than a light or spiced one. You want the 
 
 ## A note on the lime
 
-The classic Bermudian recipe is sometimes served without lime, but a squeeze of fresh lime brightens the whole thing and balances the rum's sweetness. Our ginger fizz already carries a faint lactic tartness from its live cultures, so a little lime amplifies that fresh, clean edge rather than fighting it.
+The classic Bermudian recipe is sometimes served without lime, but a squeeze of fresh lime brightens the whole thing and balances the rum's sweetness. Our ginger fizz is already made with real lime, so a little more amplifies that fresh, clean edge rather than fighting it.
 
 > Pro tip: serve it tall and over plenty of ice. This is a long, slow sipper meant for a hot evening, the kind of drink that tastes like the tropics whether or not you are anywhere near them.`,
   },
@@ -349,7 +438,7 @@ Scale the tequila, lime and triple sec for the crowd and keep that base chilled 
 
 ## Why it beats regular lemonade
 
-Most commercial lemonade is essentially sugar water with a little citrus flavouring, often 25 grams of sugar or more per glass. By letting the fermented ginger fizz carry the carbonation and a big share of the flavour, you can use far less added sweetener and still get something that tastes festive and complex. The ginger's natural heat fills the space where all that sugar used to be.
+Most commercial lemonade is essentially sugar water with a little citrus flavouring, often 25 grams of sugar or more per glass. By letting the ginger fizz carry the carbonation and a big share of the flavour, you can use far less added sweetener and still get something that tastes festive and complex. The ginger's natural heat fills the space where all that sugar used to be.
 
 ## The pinch-of-salt trick
 
@@ -379,7 +468,7 @@ Batch the lemon-and-honey base in a jug and keep it chilled, then top each glass
 ## Ingredients
 
 • 500g chicken wings (or firm tofu cubes for a vegan version)
-• 240ml GingerBros Ginger Fizz (raw or pasteurized, both reduce beautifully)
+• 240ml GingerBros Ginger Fizz
 • 2 tbsp soy sauce
 • 1 tbsp honey
 • 1 tsp grated fresh ginger
@@ -397,7 +486,7 @@ Batch the lemon-and-honey base in a jug and keep it chilled, then top each glass
 
 ## The science of the glaze
 
-This recipe is really a lesson in two kinds of browning. As the fizz reduces, its residual sugars concentrate and begin to **caramelise**, deepening in colour and flavour. Meanwhile, when the glaze hits the hot wings, the sugars and the proteins in the meat undergo the **Maillard reaction**, the same chemistry behind seared steak and toasted bread, producing hundreds of savoury, roasted aroma compounds. The soy sauce adds glutamate-rich umami (a product of its own fermentation), so you are really layering two fermented ingredients into one complex sauce.
+This recipe is really a lesson in two kinds of browning. As the fizz reduces, its residual sugars concentrate and begin to **caramelise**, deepening in colour and flavour. Meanwhile, when the glaze hits the hot wings, the sugars and the proteins in the meat undergo the **Maillard reaction**, the same chemistry behind seared steak and toasted bread, producing hundreds of savoury, roasted aroma compounds. The soy sauce adds glutamate-rich umami that layers with the ginger heat into one complex sauce.
 
 ## Make it a meal
 
@@ -407,7 +496,7 @@ This recipe is really a lesson in two kinds of browning. As the fizz reduces, it
 
 ## Storage and reuse
 
-The reduced glaze keeps in the fridge for up to a week in a sealed jar. Brush it on grilled corn, stir it into a stir-fry, or use it as a dipping sauce. The live cultures cook off in the reduction, but the real ginger flavour stays intense and bright.
+The reduced glaze keeps in the fridge for up to a week in a sealed jar. Brush it on grilled corn, stir it into a stir-fry, or use it as a dipping sauce. The fizz cooks off in the reduction, but the real ginger flavour stays intense and bright.
 
 > Make a double batch of glaze. You will find a use for it within days, it is that good.`,
   },
@@ -451,266 +540,6 @@ What makes this work as a dessert is the sheer number of contrasts happening at 
 > Serve it the instant it is built, with a spoon and a straw, and eat it fast. The whole point is to catch the hot, cold, fizzy and creamy all in the same mouthful before it melts together.`,
   },
   {
-    ...seoFor('gut-health'),
-    category: 'Health',
-    readTime: '9 min',
-    icon: Heart,
-    tags: ['gut health', 'probiotics', 'science'],
-    featured: true,
-    content: `Ginger has been used for digestive health for thousands of years, from Ayurvedic medicine in India to traditional Chinese formulas to the kitchens of Southeast Asia. Modern research is now catching up to what traditional medicine long suspected, and in some areas, confirming it outright. This article walks through what the evidence actually says, where it is strong, and where the honest answer is "we are not sure yet."
-
-A quick, important note before we start: food is not medicine, and no drink cures anything. What follows is a summary of published research, with sources you can read yourself. If you have a medical condition, talk to a professional rather than a beverage label.
-
-## Meet your gut microbiome
-
-Your large intestine is home to trillions of microorganisms, bacteria, yeasts and others, collectively called the gut microbiome. Far from being passive passengers, these microbes help digest fibre, produce certain vitamins, train your immune system, and manufacture short-chain fatty acids that nourish the cells lining your gut. Research over the last two decades has increasingly linked a *diverse* microbiome with better digestive, metabolic and even mental health. Diversity, in this context, generally means resilience.
-
-## The compounds in ginger that do the work
-
-Ginger's biological activity comes largely from a family of pungent compounds called **gingerols**, and the **shogaols** they convert into when ginger is heated or dried. These compounds have well-documented anti-inflammatory and antioxidant effects in laboratory and clinical studies, they scavenge free radicals and dampen several inflammatory signalling pathways. In the context of digestion, the research suggests ginger can help:
-
-• **Reduce nausea**, this is ginger's single best-evidenced benefit, with support across motion sickness, morning sickness and post-operative nausea.
-• **Speed up gastric emptying**, ginger appears to increase gastric motility, which may ease that heavy, over-full feeling after a big meal.
-• **Soothe digestion**, many people find it reduces bloating and gas, though responses vary.
-• **Support a healthy inflammatory response** throughout the body.
-
-## Where fermentation and live cultures come in
-
-This is where a *living* ginger soda differs from a flavoured one. Our raw line delivers live cultures straight from natural fermentation. A growing body of research links fermented foods to a more diverse microbiome: a widely cited Stanford study found that a diet high in fermented foods increased gut-microbiome diversity and lowered nearly twenty markers of inflammation in just ten weeks, an effect a high-fibre diet did not match over the same period.
-
-It is worth being precise about what this does and does not mean. Fermented foods are not a magic bullet, and a single drink is not a clinical dose. But as part of a varied diet, foods and drinks carrying live cultures are one easy, enjoyable lever you can pull.
-
-> Keep in mind: the live-culture benefits apply only to our raw line. Our pasteurized bottles are gently heat-treated for shelf stability, which removes the live cultures, a fair trade for travel and gifting, but a different product nutritionally.
-
-## How to actually get the benefit
-
-• Choose the **raw** bottle if live cultures are your goal, and keep it cold so the cultures stay viable.
-• Pair it with **prebiotic fibre** (think onions, garlic, oats, bananas), fibre is the fuel your gut microbes live on.
-• Think **consistency over intensity**: a little variety of fermented foods across the week beats an occasional megadose.
-• Do not expect overnight miracles; the microbiome shifts gradually.
-
-## A realistic bottom line
-
-Ginger fizz is not a supplement, and we will never pretend otherwise. But if you enjoy a drink made with real ginger and live cultures instead of artificial flavour and a heavy sugar load, you are making a small, pleasant choice that the science treats kindly. If gut health is your goal, the label matters more than the marketing, look for the word "raw," keep it cold, and let it be one good habit among many.`,
-    references: [
-      {
-        label: 'The health benefits of ginger, including nausea, digestion and gastric motility',
-        source: 'Cleveland Clinic (2023)',
-        url: 'https://health.clevelandclinic.org/ginger-health-benefits',
-      },
-      {
-        label: 'Fermented-food diet increases microbiome diversity, decreases inflammatory proteins',
-        source: 'Stanford Medicine (2021)',
-        url: 'https://med.stanford.edu/news/all-news/2021/07/fermented-food-diet-increases-microbiome-diversity-lowers-inflammation.html',
-      },
-      {
-        label: 'Anti-oxidative and anti-inflammatory effects of ginger: review of current evidence',
-        source: 'International Journal of Preventive Medicine, PMC',
-        url: 'https://pmc.ncbi.nlm.nih.gov/articles/PMC3665023/',
-      },
-    ],
-  },
-  {
-    ...seoFor('probiotics-prebiotics'),
-    category: 'Guide',
-    readTime: '6 min',
-    icon: Leaf,
-    tags: ['gut health', 'nutrition', 'guide'],
-    content: `The two words sound almost identical, and the marketing on most supermarket shelves does nothing to clear up the confusion. Here is the simple version, and then we will go a little deeper: **probiotics** are live, beneficial microorganisms, and **prebiotics** are the special fibres that feed them. One is the seed, the other is the fertiliser. You need both.
-
-## Probiotics: the live cultures
-
-Probiotics are the beneficial bacteria (and sometimes yeasts) themselves. The widely used scientific definition, from an expert panel convened around the World Health Organization's guidance, is "live microorganisms that, when administered in adequate amounts, confer a health benefit." Three things have to be true: the microbes must be **alive**, present in **adequate amounts**, and tied to a **documented benefit**.
-
-They turn up in fermented foods, yoghurt, kefir, kimchi, sauerkraut, miso, and in raw fermented drinks. Our raw ginger fizz carries live cultures straight from natural fermentation, so every chilled bottle delivers them to your gut. (Note the word *raw*: heat treatment, by design, removes live cultures.)
-
-One nuance worth knowing: different strains do different things. "Probiotic" is a category, not a single magic ingredient, and the research is strain-specific. That is a reason to get your cultures from a *variety* of real fermented foods rather than relying on one source.
-
-## Prebiotics: the fuel
-
-Prebiotics are not alive at all. They are specialised plant fibres your own digestive enzymes cannot break down, so they travel intact to the large intestine, where your resident bacteria ferment them for fuel. As your microbes digest these fibres, they produce short-chain fatty acids that nourish your gut lining, which is a big part of why fibre is so good for you. Prebiotic-rich foods include:
-
-• Bananas (especially slightly green ones)
-• Oats and barley
-• Garlic, onions, and leeks
-• Asparagus
-• Chicory root and Jerusalem artichoke
-• Cooled cooked potatoes and rice (which form resistant starch)
-
-## Putting them together: synbiotics
-
-> Think of probiotics as the seed and prebiotics as the water. You need both for a thriving gut garden.
-
-When you eat probiotics and prebiotics together, the combination is sometimes called a **synbiotic**, the live cultures and their food arrive as a package, giving the beneficial microbes a better chance to settle in and get to work. You do not need a supplement aisle to do this. A glass of GingerBros alongside a fibre-rich meal, say, a grain bowl with onions, garlic and greens, is an easy, genuinely enjoyable synbiotic.
-
-## A simple weekly habit
-
-You do not have to overthink any of this. Aim for a little variety of fermented foods across the week, eat plenty of plants for fibre, and your gut largely takes care of the rest. Slow and consistent beats intense and occasional.`,
-    references: [
-      {
-        label: 'Probiotics: definition and the criteria for a live microorganism to qualify',
-        source: 'International Scientific Association for Probiotics and Prebiotics (ISAPP)',
-        url: 'https://isappscience.org/for-scientists/resources/probiotics/',
-      },
-      {
-        label: 'Prebiotics: the consensus definition and how they feed your gut microbes',
-        source: 'International Scientific Association for Probiotics and Prebiotics (ISAPP)',
-        url: 'https://isappscience.org/for-scientists/resources/prebiotics/',
-      },
-    ],
-  },
-  {
-    ...seoFor('ginger-immunity'),
-    category: 'Health',
-    readTime: '6 min',
-    icon: Sparkles,
-    tags: ['immunity', 'science', 'inflammation'],
-    content: `"Boosts your immune system" might be the most overused phrase in all of wellness marketing. So let us be careful and honest here. Ginger is one of the most studied spices on the planet, and the results are genuinely promising, but promising is not the same as magical, and the word "immunity" deserves a lot more nuance than a label usually gives it.
-
-## What the studies actually suggest
-
-Clinical and laboratory studies indicate ginger can:
-
-• **Support a healthy inflammatory response**, gingerols and shogaols inhibit several inflammatory signalling pathways in the body.
-• **Reduce muscle soreness after exercise** in some trials, likely through that same anti-inflammatory action.
-• **Help with nausea and digestive discomfort**, comfortably its best-evidenced benefit.
-• **Provide antioxidants** that help protect cells from oxidative stress, the cumulative "wear and tear" caused by reactive molecules.
-
-## Why "boosting" immunity is the wrong mental model
-
-Here is the part the supplement aisle never tells you. Your immune system is not a single dial you can turn up. It is a vast, finely tuned network of cells and signals, and in many situations *more* immune activity is actively harmful, autoimmune disease and chronic inflammation are examples of an immune system doing too much, not too little. So a food that genuinely "boosted" immunity on demand would be as likely to hurt as to help.
-
-What the evidence actually supports is more useful: chronic, low-grade inflammation and a poorly diversified gut microbiome are bad for immune health, and diets that are anti-inflammatory, fibre-rich and friendly to fermented foods tend to support a better-regulated immune system. The goal is *balance and regulation*, not a boost. Ginger, anti-inflammatory, antioxidant, and easy to enjoy, fits comfortably into that picture.
-
-## The gut-immune connection
-
-There is a reason gut health keeps coming up in immunity conversations: a large share of your immune cells live in and around the gut, in constant dialogue with your microbiome. That is one mechanism by which fermented foods appear to influence immune markers, the Stanford fermented-foods study, for instance, found reduced inflammatory proteins and calmer immune-cell activation. Our raw line adds that live-culture angle on top of the ginger.
-
-## A realistic take
-
-None of this means ginger fizz replaces medicine, vaccines, sleep, exercise or a balanced diet, the genuinely powerful levers for immune health. But choosing a drink made with real ginger and no artificial junk, ideally one carrying live cultures, is a small and pleasant way to support overall wellness. Treat it as one good habit among many, not a shield in a bottle.`,
-    references: [
-      {
-        label: 'Anti-oxidative and anti-inflammatory effects of ginger: review of current evidence',
-        source: 'International Journal of Preventive Medicine, PMC',
-        url: 'https://pmc.ncbi.nlm.nih.gov/articles/PMC3665023/',
-      },
-      {
-        label: 'Fermented foods reduce inflammatory proteins and immune-cell activation',
-        source: 'Stanford Medicine (2021)',
-        url: 'https://med.stanford.edu/news/all-news/2021/07/fermented-food-diet-increases-microbiome-diversity-lowers-inflammation.html',
-      },
-    ],
-  },
-  {
-    ...seoFor('low-sugar-drinking'),
-    category: 'Health',
-    readTime: '5 min',
-    icon: Heart,
-    tags: ['low sugar', 'fermentation', 'nutrition'],
-    content: `A typical can of commercial ginger ale or soda contains somewhere around 30–40 grams of sugar. To put that in perspective: the World Health Organization recommends adults keep "free sugars" under 10% of daily energy, roughly 50 grams, or about 12 teaspoons, and suggests that dropping to 5% brings further benefit. A single sweet soda can eat most of that allowance in one go. Worse, most so-called ginger "ale" is not even fermented; it is carbonated sugar water with ginger flavouring added. We take a fundamentally different approach.
-
-## The ginger bug eats the sugar
-
-This is the quiet superpower of real fermentation, and it is worth understanding because it is genuinely different from how a diet soda is made. During our natural fermentation process, the wild yeast and bacteria in the ginger bug *consume* much of the white sugar we start with as their food, converting it into carbon dioxide (the bubbles), a trace of organic acids (the bright tang) and a cascade of flavour compounds. By the time we bottle, only a modest amount of residual sugar remains, just enough to balance the ginger's heat and sustain the natural carbonation.
-
-In other words, the lower sweetness is not something we engineer out with chemistry at the end. It is something the microbes do for us, gradually, over a week. The drink tastes less sweet because it genuinely *is* less sweet.
-
-## Why we do not use artificial sweeteners
-
-We could push the sugar number to zero with stevia, sucralose or aspartame. We choose not to, for a few reasons. Many artificial sweeteners carry a metallic or lingering aftertaste that fights the clean ginger flavour we work hard to build. There is also active scientific debate about how some non-nutritive sweeteners interact with the gut microbiome, and since our whole philosophy is built around a healthy ferment, adding ingredients that may disrupt gut microbes would be working against ourselves. We would rather let fermentation do the job and keep the ingredient list honest and short.
-
-## What this means for you
-
-• **As a standalone drink**, it satisfies a soda craving with a fraction of the sugar.
-• **As a mixer**, it will not bury your spirit under syrup, your cocktail tastes of ginger and citrus, not sugar.
-• **For anyone watching their intake**, it is a far gentler choice than a conventional ginger ale, without resorting to sweeteners.
-
-> Of course, moderation still matters, lower-sugar is not no-sugar, and it is still a treat. But it is a genuinely nice thing when the better choice also happens to taste better.`,
-    references: [
-      {
-        label: 'Healthy diet: limit free sugars to under 10% of total energy intake',
-        source: 'World Health Organization',
-        url: 'https://www.who.int/news-room/fact-sheets/detail/healthy-diet',
-      },
-      {
-        label: 'Fermentation: how microbes consume sugar to produce CO₂ and acids',
-        source: 'Encyclopædia Britannica',
-        url: 'https://www.britannica.com/science/fermentation',
-      },
-    ],
-  },
-  {
-    ...seoFor('hydration-electrolytes'),
-    category: 'Health',
-    readTime: '5 min',
-    icon: Leaf,
-    tags: ['hydration', 'summer', 'electrolytes'],
-    content: `Bangkok is hot, and staying hydrated here is not optional, it is daily maintenance. When you sweat, you lose water *and* electrolytes, mainly sodium, with smaller amounts of potassium, magnesium and chloride. These minerals carry the electrical signals your nerves and muscles run on, which is why serious dehydration leaves you foggy, crampy and drained. So can a fizzy ginger drink actually help on a sweaty afternoon? The honest answer is: in the right way, yes, but not for the reason most "hydration" marketing implies.
-
-## The most underrated factor in hydration: taste
-
-Here is something the research is surprisingly clear about. The biggest reason people fail to hydrate is simply that they do not drink enough, and they do not drink enough partly because plain water is boring. Studies on fluid intake show that **people voluntarily drink more when a beverage is palatable and flavourful**. A drink you actually *want* to reach for does more for your hydration than a "perfect" electrolyte formula you leave half-finished. A cold, lively ginger fizz is exactly that kind of nudge: it makes drinking more fluid feel like a pleasure rather than a chore.
-
-## A little help from the rhizome
-
-Ginger naturally contains small amounts of potassium and magnesium. These quantities are modest, this is not an electrolyte tablet, but combined with the carbonation and the gentle warmth of the spice, a ginger fizz tends to feel more satisfying and "complete" than plain water on a humid day. Ginger's long-standing reputation for settling the stomach also makes it a friendly choice when heat has left you queasy.
-
-## When fizz fits, and when it does not
-
-Honesty matters here, so let us draw a clear line:
-
-• **Everyday warm-weather sipping or a relaxed afternoon**, a chilled bottle is a genuinely pleasant way to keep your fluid intake up.
-• **Heavy, prolonged sweating**, long runs, a full session of hot yoga, a day of manual labour outdoors, calls for meaningful sodium replacement. That is a job for water plus salty food, or a proper oral-rehydration solution, not a soda.
-
-In short: use it to drink *more*, not as a medical rehydration drink.
-
-> Our take: keep a few bottles chilled, enjoy them through the day and after light activity, and never lean on any flavoured drink as a substitute for plain water and electrolytes when you are seriously dehydrated. Used wisely, GingerBros simply makes the ordinary, important habit of drinking enough a lot more interesting.`,
-    references: [
-      {
-        label: 'Water, hydration and health, palatability, thirst, and voluntary fluid intake',
-        source: 'Nutrition Reviews (2010), PMC',
-        url: 'https://pmc.ncbi.nlm.nih.gov/articles/PMC2908954/',
-      },
-    ],
-  },
-  {
-    ...seoFor('storing-living-fizz'),
-    category: 'Guide',
-    readTime: '6 min',
-    icon: Leaf,
-    tags: ['storage', 'tips', 'fermentation'],
-    content: `Our ginger fizz is, quite literally, alive. Inside that sealed bottle the cultures keep slowly working, and that is a feature, not a flaw, because it is exactly what keeps the flavour bright and evolving. But a living drink behaves differently from a dead one in a can, so a handful of simple habits will keep every bottle perfect (and keep you from wearing it).
-
-## Why storage matters more than for normal soda
-
-A regular soda is force-carbonated and biologically inert: the bubbles are pumped in and nothing changes after bottling. Our fizz makes its own carbonation through fermentation, and the microbes responsible are still present. Give them warmth and the remaining sugar, and they get back to work, producing more CO₂ and building pressure. Understanding that one fact explains every rule below.
-
-## Keep it cold
-
-Cold is the off-switch. Yeast activity drops dramatically near refrigerator temperatures, so the fridge essentially puts the ferment on pause. Store living GingerBros in the fridge from the moment it arrives, and keep it there until you drink it. Leave it somewhere warm and the cultures wake up, eat more sugar, and steadily raise the internal pressure, which affects both taste and how lively the bottle is when you open it.
-
-## Open it slowly
-
-Always open a well-chilled bottle (cold liquid holds onto dissolved CO₂, so it is far calmer). Crack the cap slowly and let the pressure escape in stages, you want a series of gentle hisses, not one big release. If a bottle has been sitting out and warmed up, chill it for several hours first, and the very first time, open it over the sink just in case.
-
-## Drink it fresh
-
-• Best enjoyed within the date on the bottle, while flavour and fizz are at their peak.
-• Once opened, reseal and refrigerate; it will gradually lose carbonation over a day or two, like any live soda.
-• A little cloudiness or sediment at the bottom is completely normal, that is the living culture settling out, not spoilage. Tilt the bottle gently to rouse it rather than shaking it hard.
-
-## Reading your bottle
-
-A healthy bottle smells sharp, gingery and clean, and pours with a lively fizz. Trust your senses: if something ever smells genuinely off or the bottle seems wildly over-pressurised from heat exposure, do not chance it. With proper cold storage, that essentially never happens.
-
-## A quick safety note
-
-Never store living fizz in a warm car, on a sunny windowsill, or in the freezer. Heat builds pressure; freezing expands the liquid and can crack the glass. The fridge is the only home it wants.
-
-> Treat it like fresh food, not a canned drink, and it will reward you with bright, lively flavour every single time.`,
-  },
-  {
     ...seoFor('history-of-ginger-beer'),
     category: 'Culture',
     readTime: '7 min',
@@ -720,23 +549,23 @@ Never store living fizz in a warm car, on a sunny windowsill, or in the freezer.
 
 ## From medicine to merriment
 
-For most of its history, ginger was treated as medicine as much as flavour. Greek and Roman physicians prescribed it for the stomach; medieval European apothecaries used it for everything from plague to seasickness. That dual identity, delicious *and* good for you, is woven right into ginger's story, and it is part of why fermented ginger drinks felt so natural when they finally appeared.
+For most of its history, ginger was treated as medicine as much as flavour. Greek and Roman physicians prescribed it for the stomach; medieval European apothecaries used it for everything from plague to seasickness. That dual identity, delicious *and* good for you, is woven right into ginger's story, and it is part of why ginger drinks felt so natural when they finally appeared.
 
 ## Born in England
 
-Fermented ginger beer became hugely popular in 18th-century England, brewed from ginger, sugar, water and a starter culture much like our ginger bug, often a curious symbiotic mass nicknamed the "ginger beer plant." Households and pubs kept their own brews bubbling along for years, topping them up like a sourdough. By the Victorian era, ginger beer was a genuine street-corner staple, sold from heavy salt-glazed stoneware bottles built to contain its natural pressure. It was, in every sense, the craft soda of its day.
+Fermented ginger beer became hugely popular in 18th-century England, brewed from ginger, sugar, water and a starter culture, often a curious symbiotic mass nicknamed the "ginger beer plant." Households and pubs kept their own brews bubbling along for years, topping them up like a sourdough. By the Victorian era, ginger beer was a genuine street-corner staple, sold from heavy salt-glazed stoneware bottles built to contain its natural pressure. It was, in every sense, the craft soda of its day.
 
 ## A split in the family tree
 
-Here is a distinction worth knowing, because the two are constantly confused. "Ginger beer" and "ginger ale" parted ways over time. **Ginger beer** stayed true to its roots: fermented, cloudy, assertive and spicy. **Ginger ale** emerged in the 19th century as something different, the famous pale, "dry" style was perfected in Canada, and became a clearer, sweeter, simply carbonated soft drink with little or no fermentation. Ours sits firmly, proudly on the ginger-*beer* side of the family: fermented, alive, and unafraid of real heat.
+Here is a distinction worth knowing, because the two are constantly confused. "Ginger beer" and "ginger ale" parted ways over time. **Ginger beer** stayed true to its roots: fermented, cloudy, assertive and spicy. **Ginger ale** emerged in the 19th century as something different, the famous pale, "dry" style was perfected in Canada, and became a clearer, sweeter, simply carbonated soft drink with little or no fermentation. GingerBros takes the best of both and goes its own way: not fermented, made with fresh Thai ginger and real lime, low in sugar and unafraid of real heat.
 
 ## Spread across the world
 
-As trade and empire expanded, ginger beer travelled. In the Caribbean it picked up local spices and became central to rum drinks like the Dark 'n' Stormy. Across Asia and Africa it met cultures where fresh ginger was already woven into daily cooking and traditional medicine, so a spicy fermented ginger drink needed no introduction. Everywhere it landed, it adapted to local tastes, which is exactly what we are doing here.
+As trade and empire expanded, ginger beer travelled. In the Caribbean it picked up local spices and became central to rum drinks like the Dark 'n' Stormy. Across Asia and Africa it met cultures where fresh ginger was already woven into daily cooking and traditional medicine, so a spicy ginger drink needed no introduction. Everywhere it landed, it adapted to local tastes, which is exactly what we are doing here.
 
 ## A natural fit for Thailand
 
-Thailand has cooked with ginger and its aromatic cousins, galangal, turmeric, fingerroot, all members of the same plant family, for centuries. Ginger turns up in curries, soups, medicines and desserts across the country. So a bright, spicy, fermented ginger drink does not feel like a foreign import here; it feels like it has come home.
+Thailand has cooked with ginger and its aromatic cousins, galangal, turmeric, fingerroot, all members of the same plant family, for centuries. Ginger turns up in curries, soups, medicines and desserts across the country. So a bright, spicy ginger drink does not feel like a foreign import here; it feels like it has come home.
 
 > At GingerBros, we like to think of our fizz as the latest chapter in a very long, very delicious story, one that started on a Southeast-Asian hillside and, after a few thousand years of travel, came right back.`,
     references: [
@@ -775,7 +604,7 @@ We taste and blend across these depending on the season, chasing the same target
 
 ## Why freshness beats everything
 
-Here is the part most drinks brands quietly skip: those aromatic volatile oils are fragile, and they begin to fade the moment ginger is cut, dried or powdered. A spice jar of ground ginger is convenient, but it has lost much of the bright, living character that makes fresh ginger sing. We work with growers close to home so the rhizome reaches our Bangkok brewhouse within days, fresh and whole, never dried, never powdered, never shipped halfway around the world first. Freshness is the single biggest reason our fizz tastes alive instead of flat.
+Here is the part most drinks brands quietly skip: those aromatic volatile oils are fragile, and they begin to fade the moment ginger is cut, dried or powdered. A spice jar of ground ginger is convenient, but it has lost much of the bright, living character that makes fresh ginger sing. We work with growers close to home so the rhizome reaches our kitchen fresh and whole, never dried, never powdered, never shipped halfway around the world first. Freshness is the single biggest reason our drinks taste bright instead of flat.
 
 ## Heat with character
 
@@ -831,126 +660,6 @@ If you forget everything else, remember these two principles and you will rarely
 > When in doubt: cold glass, lots of ice, a squeeze of lime. That is never wrong, and it is the right answer nine times out of ten.`,
   },
   {
-    ...seoFor('meet-the-brewers'),
-    category: 'Culture',
-    readTime: '7 min',
-    icon: Mountain,
-    tags: ['team', 'behind the scenes', 'craft'],
-    content: `Behind every bottle of GingerBros is a small team that treats brewing as a craft, not a production line. There are no flavour scientists in white coats here, no giant automated vats running unattended overnight, just a handful of people, a brewhouse in Bangkok, and a stubborn belief that the best things are made slowly and tasted often.
-
-## Brewing by taste, not by formula
-
-Our founder, James, learned fermentation the slow, hands-on way, long before there was a single piece of stainless steel in the building. It started, as these things often do, with curiosity: jars of fermenting fruit and ginger bubbling away on a shaded shelf, a lot of failed experiments, and even more patience. Over time the failures turned into instinct, and the instinct turned into GingerBros.
-
-To this day, every batch is smelled, tasted and adjusted by hand before it earns a bottle. Instruments tell us a batch is *safe*, the right acidity, the right pressure, but they cannot tell us a batch is *good*. Only a person can do that.
-
-> Numbers tell us the batch is safe. Our tongues tell us the batch is good.
-
-![A glass of freshly poured GingerBros ginger fizz](/images/product-ginger-fizz-2.jpg)
-
-## A drink with a place
-
-Working out of Bangkok means we are surrounded by some of the best fresh ginger in the world, and we use that shamelessly. Our team shops the same morning markets the home cooks do, choosing rhizomes by snapping them to check for juiciness and smelling the cut ends for brightness, the kind of judgement no supplier spec sheet can replace.
-
-That daily ritual ties the brew to the season. A batch made in cool, dry January tastes subtly different from one made in the humid heat of April, because the ginger itself is different. Most large producers see that variation as a problem to engineer away. We see it as the signature of a real, agricultural product, and we let it show.
-
-## Why small stays small
-
-We could grow faster. We could pasteurize the entire range, automate the line, and standardise every drop until each bottle was identical and forgettable. We have chosen a different path: we offer a pasteurized line for the people who need shelf stability, but our raw line stays hand-balanced, and the brewing itself never becomes a hands-off machine process. The moment the brew stops being tasted and adjusted by a person, it stops being GingerBros.
-
-Staying small lets us keep making decisions by palate, pay our growers fairly, react to each season, and stand behind every single bottle with our own name. Some things are worth keeping small on purpose.`,
-  },
-  {
-    ...seoFor('ginger-bug-at-home'),
-    category: 'Brewing',
-    readTime: '8 min',
-    icon: FlaskConical,
-    tags: ['DIY', 'fermentation', 'tutorial'],
-    content: `Curious how the magic actually works? You can culture a simple ginger bug on your own kitchen counter with nothing more than ginger, sugar, water and a week of attention. It will not be GingerBros, that takes our specific cultures, our water and years of practice, but it is genuinely one of the most satisfying things you can grow at home, and it will teach you to respect the living process behind every fermented drink. Consider this your friendly, beginner-proof starting point.
-
-## A quick word on what you are doing
-
-A ginger bug is a wild starter culture: a community of yeasts and bacteria that naturally live on ginger skin. You are not adding anything magic, you are simply giving those microbes the conditions to wake up, multiply and start fermenting. Everything below is in service of that one goal.
-
-## What you need
-
-• A clean glass jar (a 1-litre mason jar is perfect)
-• Fresh, **organic** ginger, the wild yeast and bacteria live on the skin, so do not peel it, and avoid conventional ginger that may have been irradiated or treated
-• White sugar (the microbes prefer simple sugar to start)
-• Filtered, **non-chlorinated** water, chlorine and chloramine are literally designed to kill microbes, so tap water can sabotage your bug; leave tap water out overnight or filter it
-• A breathable cover: a cloth or coffee filter held with a rubber band, so gases escape but dust and insects cannot get in
-
-## The daily ritual (this is the whole secret)
-
-A ginger bug is not a recipe you finish, it is a culture you feed. Consistency over the first week is everything:
-
-• **Day 1**, Add 1 tbsp grated ginger, 1 tbsp sugar and 1 cup of water to the jar. Stir well and cover loosely.
-• **Days 2 to 5**, Each day, "feed" it another tablespoon each of grated ginger and sugar, and stir vigorously. Both steps matter: the **sugar** is fresh food for the microbes, and the **stirring** folds in oxygen that helps the yeast multiply while keeping mould from forming on the surface.
-• **Around day 5**, You should see bubbles rising when you stir and smell a bright, yeasty, gingery aroma. That fizz is the sign your wild yeast has woken up and the bug is alive and ready to use.
-
-Keep the jar somewhere warm-ish (20–26°C / 68–79°F is ideal) and out of direct sunlight throughout.
-
-## Troubleshooting
-
-• **No bubbles after 5–6 days?** Your water may be chlorinated or your kitchen too cold. Switch to filtered water and find a warmer spot.
-• **A thin film or yeasty smell?** Usually normal, stir it back in and keep feeding.
-• **Fuzzy, coloured, or slimy growth?** That is mould or contamination. Do not try to save it; start fresh (see safety, below).
-
-## Keeping it alive long-term
-
-Once active, treat your bug like a pet. To use it constantly, keep it at room temperature and feed it every day. To slow it down between projects, move it to the fridge and feed it about once a week, the cold nearly stops its metabolism, exactly the way we rest our mother culture between batches. To make a simple soda, strain off some of the liquid, mix it with sweetened juice or tea, bottle it, and let it carbonate for a day or two before refrigerating.
-
-## Safety first
-
-> If your bug ever smells rotten or putrid, grows fuzzy or coloured mould, or turns slimy and stringy, throw it out and start again, no exceptions. A healthy bug smells sharp, sweet and gingery, never foul. When in doubt, trust your nose.
-
-And respect the pressure when you bottle: use bottles built for carbonation, "burp" them daily to release gas, and never leave a sealed bottle at room temperature for long. This is the oldest soda technology on earth, and a little caution keeps it fun instead of messy.`,
-  },
-  {
-    ...seoFor('sustainability-bottle-to-soil'),
-    category: 'Brewing',
-    readTime: '6 min',
-    icon: FlaskConical,
-    tags: ['sustainability', 'glass', 'compost'],
-    content: `Making a living drink that is also kind to the planet is a moving target, and we want to be honest about where we actually stand. We are a small brewery, not a climate authority, so treat this as a candid progress report rather than a glossy sustainability brochure, including, especially, the parts we have not solved yet. Greenwashing is easy; real accounting is harder, and far more useful to you.
-
-## What we are genuinely proud of
-
-• **Recyclable glass instead of single-use plastic.** Glass is endlessly recyclable without any loss of quality, and unlike plastic it does not shed microplastics into a drink. We encourage refilling and returns wherever we can.
-• **Ginger pulp becomes compost, not landfill.** Brewing produces a large volume of fibrous ginger waste; rather than bin it, we send it to local farms as compost and animal feed, closing a small loop.
-• **Short supply chains.** We source ginger from growers close to the brewhouse, which cuts the considerable emissions of long-haul ingredient transport and keeps the ginger fresher.
-• **Small batches, little waste.** Brewing to demand means very little overproduction, spoilage or dumped stock.
-
-## What is genuinely hard
-
-Here is the part most brands leave out. We will not pretend it is all solved:
-
-• **Delivery.** Shipping orders nationwide uses real energy, and it is honestly the single biggest part of our footprint. We keep standard delivery as the default and offer cold-chain upgrades only when customers want them, so we are not adding unnecessary insulation and ice packs to every box.
-• **The weight of glass.** Glass is heavier than plastic, so it takes more energy to transport. Lifecycle studies, including a widely reported University of Southampton analysis, actually found glass bottles can carry a *larger* overall environmental impact than plastic when they are shipped long distances and used only once. The honest takeaway is that the "best" packaging genuinely depends on how far it travels and, above all, whether it is reused.
-
-We sit with that tension rather than hiding it: glass is better for *your* drink and endlessly recyclable, but only truly wins environmentally if it stays in circulation.
-
-## Where we are heading
-
-We are actively working on a few concrete things: lighter-weight bottles to cut transport emissions, denser regional shipping routes to reduce delivery mileage, and easier ways for customers to return and reuse packaging so glass does its best job.
-
-> We would rather make slow, real progress than greenwash. Every quarter we pick one concrete improvement and actually ship it, not a slogan, a change.
-
-Sustainability is not a finish line we will one day cross and celebrate. It is a brewing decision we make again, imperfectly and honestly, with every single batch.`,
-    references: [
-      {
-        label: 'Glass bottles among the most environmentally impactful drink packaging (lifecycle study)',
-        source: 'University of Southampton, Brock & Williams, Detritus (2020)',
-        url: 'https://www.southampton.ac.uk/news/2020/11/drink-bottles-environmental-impact.page',
-      },
-      {
-        label: 'Glass vs plastic bottles: the environmental trade-offs explained',
-        source: 'Earth.org (2020)',
-        url: 'https://earth.org/glass-bottles-environmental-impact/',
-      },
-    ],
-  },
-  {
     ...seoFor('ginger-fizz-bar-menu'),
     category: 'Drinks',
     readTime: '8 min',
@@ -958,7 +667,7 @@ Sustainability is not a finish line we will one day cross and celebrate. It is a
     tags: ['bar', 'menu', 'restaurants', 'cocktails'],
     content: `A good ginger fizz menu does not try to be everything. It picks a few strong ideas, executes them consistently, and gives guests a reason to order something they cannot make at home. For bars and restaurants, that is the difference between a dead list and one that sells.
 
-GingerBros works on a drinks menu because it brings three things at once: real ginger heat, natural effervescence, and a fermentation story that sounds interesting when a server describes it. Guests notice the difference between a flat ginger ale and something that actually bites back.
+GingerBros works on a drinks menu because it brings three things at once: real ginger heat, a lively sparkle, and a Thai-ginger story that sounds interesting when a server describes it. Guests notice the difference between a flat ginger ale and something that actually bites back.
 
 ## Start with three house serves
 
@@ -972,7 +681,7 @@ You do not need twenty cocktails. Most successful ginger fizz menus are built ar
 
 The easiest way to own a drink is to control the garnish and the glass. A chilled copper mug for the mule, a tall collins for the dark serve, and a rocks glass with a salted rim for the margarita-style serve instantly separate your version from a standard recipe.
 
-Train staff to mention one detail: "We use a naturally fermented Thai ginger fizz." That single line justifies the price and gives guests a reason to choose it over a generic mixer.
+Train staff to mention one detail: "It's a Thai ginger fizz made with fresh ginger and real lime." That single line justifies the price and gives guests a reason to choose it over a generic mixer.
 
 > A focused menu sells more than a long one. Three well-made ginger fizz drinks will outperform fifteen mediocre ones every time.
 
@@ -1084,7 +793,7 @@ A strong zero-proof section makes your whole drinks program look more thoughtful
 
 ];
 
-const ALL_CATEGORIES: ('All' | Category)[] = ['All', 'Recipe', 'Drinks', 'Health', 'Brewing', 'Guide', 'Culture'];
+const ALL_CATEGORIES: ('All' | Category)[] = ['All', 'Guide', 'Recipe', 'Drinks', 'Culture'];
 
 function formatDate(iso: string) {
   return new Date(iso).toLocaleDateString('en-US', {
@@ -1096,7 +805,7 @@ function formatDate(iso: string) {
 
 /**
  * Render inline markdown inside a single block: **bold**, *italic*, and
- * [label](url) links. Links open in a new tab.
+ * [label](url) links. External links open in a new tab; /internal ones don't.
  */
 function renderInline(text: string, keyPrefix = ''): ReactNode[] {
   const nodes: ReactNode[] = [];
@@ -1114,6 +823,17 @@ function renderInline(text: string, keyPrefix = ''): ReactNode[] {
       );
     } else if (match[2] !== undefined) {
       nodes.push(<em key={`${keyPrefix}i${k}`}>{match[2]}</em>);
+    } else if (match[4].startsWith('/')) {
+      // Internal links stay in the app (and in the same tab).
+      nodes.push(
+        <Link
+          key={`${keyPrefix}a${k}`}
+          to={match[4]}
+          className="text-rust font-semibold underline decoration-amber/60 underline-offset-2 hover:text-deep-brown transition-colors"
+        >
+          {match[3]}
+        </Link>
+      );
     } else {
       nodes.push(
         <a
@@ -1178,7 +898,7 @@ function renderContent(content: string) {
             className="w-full rounded-2xl border border-soft-peach/60 shadow-sm object-cover max-h-[420px]"
           />
           {alt && (
-            <figcaption className="mt-2 text-center font-body text-[13px] text-earth/60 italic">
+            <figcaption className="mt-2 text-center font-body text-[13px] text-earth/80 italic">
               {alt}
             </figcaption>
           )}
@@ -1214,7 +934,7 @@ function PostCard({ post }: { post: Post }) {
   const Icon = post.icon;
   return (
     <Link
-      to={`/blog/${post.slug}`}
+      to={`/guide/${post.slug}`}
       data-testid={`blog-post-${post.slug}`}
       className="group blog-card flex flex-col text-left bg-warm-white rounded-3xl overflow-hidden border border-soft-peach/60 hover:border-amber/60 hover:shadow-xl hover:-translate-y-1 transition-all duration-300"
     >
@@ -1237,7 +957,7 @@ function PostCard({ post }: { post: Post }) {
         </span>
       </div>
       <div className="flex flex-col flex-1 p-5">
-        <div className="flex items-center gap-3 mb-2 text-earth/50">
+        <div className="flex items-center gap-3 mb-2 text-earth/80">
           <span className="inline-flex items-center gap-1 font-body text-[12px]">
             <Calendar className="w-3 h-3" /> {formatDate(post.date)}
           </span>
@@ -1269,11 +989,11 @@ export default function BlogPage() {
 
   const activePost = slug ? POSTS.find((p) => p.slug === slug) ?? null : null;
 
-  const closePost = () => navigate('/blog');
+  const closePost = () => navigate('/guide');
 
   // A slug that matches no post should fall back to the journal index.
   useEffect(() => {
-    if (slug && !activePost) navigate('/blog', { replace: true });
+    if (slug && !activePost) navigate('/guide', { replace: true });
   }, [slug, activePost, navigate]);
 
   // Scroll to the top whenever we switch between the index and an article,
@@ -1313,17 +1033,17 @@ export default function BlogPage() {
   const blogListSchema = {
     '@context': 'https://schema.org',
     '@type': 'Blog',
-    name: 'The GingerBros Brew Journal',
-    url: 'https://gingerbrosshop.com/blog',
+    name: 'The Ginger Guide by GingerBros',
+    url: 'https://gingerbrosshop.com/guide',
     description:
-      'Ginger fizz recipes, gut health science, brewing stories, and wellness guides from GingerBros Thailand.',
+      'How to serve, mix and pair ginger drinks: recipes, mocktails, Thai food pairings and Thai ginger know-how from GingerBros.',
     blogPost: POSTS.map((p) => ({
       '@type': 'BlogPosting',
       headline: p.title,
       description: p.excerpt,
       datePublished: p.date,
       author: { '@type': 'Organization', name: p.author },
-      url: `https://gingerbrosshop.com/blog/${p.slug}`,
+      url: `https://gingerbrosshop.com/guide/${p.slug}`,
     })),
   };
 
@@ -1336,14 +1056,14 @@ export default function BlogPage() {
         articleBody: activePost.content,
         datePublished: activePost.date,
         keywords: activePost.tags.join(', '),
-        url: `https://gingerbrosshop.com/blog/${activePost.slug}`,
+        url: `https://gingerbrosshop.com/guide/${activePost.slug}`,
         author: { '@type': 'Organization', name: activePost.author },
         publisher: {
           '@type': 'Organization',
           name: 'GingerBros',
           logo: {
             '@type': 'ImageObject',
-            url: 'https://gingerbrosshop.com/images/ginger-fizz-new.png',
+            url: 'https://gingerbrosshop.com/icon-512.png',
           },
         },
       }
@@ -1353,18 +1073,18 @@ export default function BlogPage() {
     <div className="min-h-screen bg-warm-white">
       {activePost ? (
         <SEO
-          title={`${activePost.title} | GingerBros Brew Journal`}
+          title={`${activePost.title} | The Ginger Guide`}
           description={activePost.excerpt}
-          path={`/blog/${activePost.slug}`}
+          path={`/guide/${activePost.slug}`}
           type="article"
           image={activePost.image ? `https://gingerbrosshop.com${activePost.image}` : undefined}
           jsonLd={activePostSchema ? [activePostSchema] : undefined}
         />
       ) : (
         <SEO
-          title="The Brew Journal, Ginger Fizz Recipes, Gut Health & Brewing Stories | GingerBros"
-          description="Explore the GingerBros Brew Journal: ginger fizz cocktail recipes, probiotic gut-health science, brewing deep-dives, and low-sugar wellness guides from Thailand."
-          path="/blog"
+          title="The Ginger Guide: Serves, Mocktails & Thai Food Pairings | GingerBros"
+          description="How to serve Ginger Fizz and Ginger Tea, ginger mocktails and cocktails, Thai food pairings and everything worth knowing about Thai ginger."
+          path="/guide"
           jsonLd={[blogListSchema]}
         />
       )}
@@ -1395,29 +1115,29 @@ export default function BlogPage() {
             <div className="absolute -bottom-24 -left-16 w-72 h-72 rounded-full bg-accent-green/15 blur-3xl" />
 
             <div className="relative max-w-[1280px] mx-auto px-6 pt-16 pb-12 text-center">
-              <h1 className="font-display font-bold text-deep-brown text-4xl md:text-5xl lg:text-6xl mb-4 leading-tight">
-                The Brew Journal
+              <h1 className="font-poster text-deep-brown text-[clamp(3rem,9vw,6.5rem)] mb-4">
+                The Ginger Guide
               </h1>
               <p className="font-body text-earth text-base md:text-lg max-w-[620px] mx-auto mb-8">
-                Living-culture recipes, gut-health science, brewing deep-dives, and the people and places behind
-                every bottle of GingerBros.
+                How to serve it, what to mix it with, what to eat with it, and everything worth knowing about
+                Thai ginger.
               </p>
 
               {/* Search */}
               <div className="max-w-[480px] mx-auto relative">
-                <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-earth/50" />
+                <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-earth/80" />
                 <input
                   type="text"
                   value={query}
                   onChange={(e) => setQuery(e.target.value)}
-                  placeholder="Search recipes, gut health, brewing…"
-                  className="w-full bg-warm-white border border-soft-peach rounded-full pl-11 pr-10 py-3 font-body text-deep-brown placeholder:text-earth/50 focus:outline-none focus:ring-2 focus:ring-rust/30 shadow-sm"
+                  placeholder="Search serves, recipes, pairings…"
+                  className="w-full bg-warm-white border border-soft-peach rounded-full pl-11 pr-10 py-3 font-body text-deep-brown placeholder:text-earth/80 focus:outline-none focus:ring-2 focus:ring-rust/30 shadow-sm"
                 />
                 {query && (
                   <button
                     onClick={() => setQuery('')}
                     aria-label="Clear search"
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-earth/50 hover:text-rust transition-colors"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-earth/80 hover:text-rust transition-colors"
                   >
                     <X className="w-4 h-4" />
                   </button>
@@ -1434,7 +1154,7 @@ export default function BlogPage() {
                   Featured
                 </h2>
                 <Link
-                  to={`/blog/${featured.slug}`}
+                  to={`/guide/${featured.slug}`}
                   data-testid={`blog-featured-${featured.slug}`}
                   className="group grid grid-cols-1 lg:grid-cols-2 gap-0 w-full text-left bg-warm-white rounded-3xl overflow-hidden border border-soft-peach/60 hover:border-amber/60 hover:shadow-2xl transition-all duration-300"
                 >
@@ -1456,7 +1176,7 @@ export default function BlogPage() {
                       <span className="inline-flex items-center gap-1.5 font-body font-semibold text-[11px] uppercase tracking-wider px-3 py-1 rounded-full bg-amber/20 text-rust">
                         <featured.icon className="w-3 h-3" /> {featured.category}
                       </span>
-                      <span className="inline-flex items-center gap-1 font-body text-[12px] text-earth/50">
+                      <span className="inline-flex items-center gap-1 font-body text-[12px] text-earth/80">
                         <Clock className="w-3 h-3" /> {featured.readTime} read
                       </span>
                     </div>
@@ -1500,7 +1220,7 @@ export default function BlogPage() {
 
             {/* Results meta */}
             {(query || filter !== 'All') && (
-              <p className="font-body text-sm text-earth/60 mb-6" aria-live="polite">
+              <p className="font-body text-sm text-earth/80 mb-6" aria-live="polite">
                 {filteredPosts.length} {filteredPosts.length === 1 ? 'article' : 'articles'}
                 {query && (
                   <>
@@ -1566,7 +1286,7 @@ export default function BlogPage() {
                 </span>
                 <span
                   className={`inline-flex items-center gap-1 font-body text-[12px] ${
-                    activePost.image ? 'text-cream/80' : 'text-earth/60'
+                    activePost.image ? 'text-cream/80' : 'text-earth/80'
                   }`}
                 >
                   <Clock className="w-3 h-3" /> {activePost.readTime} read
@@ -1581,7 +1301,7 @@ export default function BlogPage() {
               </h1>
               <div
                 className={`flex flex-wrap items-center gap-x-4 gap-y-1 font-body text-sm ${
-                  activePost.image ? 'text-cream/80' : 'text-earth/70'
+                  activePost.image ? 'text-cream/80' : 'text-earth/80'
                 }`}
               >
                 <span>By {activePost.author}</span>
@@ -1619,12 +1339,12 @@ export default function BlogPage() {
                           {ref.label}
                           <ExternalLink className="w-3 h-3 mt-1 flex-shrink-0" />
                         </a>
-                        <span className="block text-earth/60 text-[13px] italic">{ref.source}</span>
+                        <span className="block text-earth/80 text-[13px] italic">{ref.source}</span>
                       </span>
                     </li>
                   ))}
                 </ol>
-                <p className="mt-4 font-body text-[12px] text-earth/50 italic">
+                <p className="mt-4 font-body text-[12px] text-earth/80 italic">
                   Sources are provided for general education. This article is not medical advice; consult a
                   healthcare professional for personal guidance.
                 </p>
@@ -1633,7 +1353,7 @@ export default function BlogPage() {
 
             {/* Tags */}
             <div className="flex flex-wrap items-center gap-2 mt-10 pt-8 border-t border-soft-peach">
-              <TagIcon className="w-4 h-4 text-earth/50" />
+              <TagIcon className="w-4 h-4 text-earth/80" />
               {activePost.tags.map((tag) => (
                 <span
                   key={tag}
@@ -1648,7 +1368,7 @@ export default function BlogPage() {
             <div className="mt-12 bg-gradient-to-br from-amber/20 to-soft-peach/30 rounded-3xl p-8 text-center border border-soft-peach/60">
               <h3 className="font-display font-bold text-deep-brown text-2xl mb-2">Taste the difference</h3>
               <p className="font-body text-earth mb-6 max-w-[420px] mx-auto">
-                Real ginger, natural fermentation, live cultures. Get a bottle of GingerBros and try it for yourself.
+                Fresh Thai ginger, real lime, low sugar. Grab a bottle and try it for yourself.
               </p>
               <button
                 onClick={() => navigate('/')}

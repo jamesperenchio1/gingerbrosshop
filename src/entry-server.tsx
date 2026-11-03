@@ -5,6 +5,9 @@ import { prerender } from 'react-dom/static';
 import App from './App';
 import { seedCatalog, type CatalogProduct } from '@/lib/catalog';
 import { BLOG_SLUGS } from '@/pages/BlogPage';
+import { localeFromPath, basenameFor } from '@/lib/locale';
+
+export { TH_PATHS } from '@/lib/locale';
 
 export { BLOG_SLUGS };
 
@@ -22,7 +25,7 @@ export async function render(url: string, catalog: CatalogProduct[] | null): Pro
   const helmetContext: { helmet?: HelmetServerState } = {};
   const { prelude } = await prerender(
     <HelmetProvider context={helmetContext}>
-      <StaticRouter location={url}>
+      <StaticRouter location={url} basename={basenameFor(localeFromPath(url))}>
         <App />
       </StaticRouter>
     </HelmetProvider>,

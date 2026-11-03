@@ -28,7 +28,7 @@
 
   body {
     @apply bg-background text-foreground;
-    font-family: 'Inter', sans-serif;
+    font-family: 'Inter Variable', 'Anuphan Variable', system-ui, sans-serif;
     /* `clip` instead of `hidden`: overflow-x: hidden turns the body into a
        scroll container, which silently breaks `position: sticky` descendants
        and confuses scroll measurement. `clip` crops without that side effect. */
@@ -36,7 +36,13 @@
   }
 
   h1, h2, h3, h4, h5, h6 {
-    font-family: 'Playfair Display', serif;
+    font-family: 'Bricolage Grotesque Variable', 'Anuphan Variable', system-ui, sans-serif;
+    letter-spacing: -0.02em;
+  }
+
+  :lang(th) h1, :lang(th) h2, :lang(th) h3 {
+    letter-spacing: 0;
+    line-height: 1.25;
   }
 
   /* Respect the OS "reduce motion" setting for anything CSS-driven. GSAP
@@ -55,10 +61,34 @@
 
 @layer components {
   .font-display {
-    font-family: 'Playfair Display', serif;
+    font-family: 'Bricolage Grotesque Variable', 'Anuphan Variable', system-ui, sans-serif;
   }
 
   .font-body {
-    font-family: 'Inter', sans-serif;
+    font-family: 'Inter Variable', 'Anuphan Variable', system-ui, sans-serif;
   }
+
+  /* Big shouty brand type: tight, heavy, uppercase. */
+  .font-poster {
+    font-family: 'Bricolage Grotesque Variable', 'Anuphan Variable', system-ui, sans-serif;
+    font-weight: 800;
+    font-variation-settings: 'wdth' 75, 'opsz' 96;
+    letter-spacing: -0.035em;
+    line-height: 0.9;
+    text-transform: uppercase;
+  }
+  :lang(th) .font-poster { letter-spacing: 0; line-height: 1.1; }
+
+  .skip-link {
+    position: absolute;
+    left: 1rem;
+    top: -4rem;
+    z-index: 100;
+    padding: 0.75rem 1.25rem;
+    border-radius: 9999px;
+    background: #1E1A17;
+    color: #F5E6C8;
+    font-weight: 600;
+  }
+  .skip-link:focus { top: 1rem; }
 }

@@ -109,7 +109,7 @@ export function cartReducer(state: CartState, action: CartAction): CartState {
 
 interface CartContextType {
   state: CartState;
-  addItem: (item: CartItem) => void;
+  addItem: (item: CartItem, opts?: { silent?: boolean }) => void;
   removeItem: (id: string) => void;
   updateQuantity: (id: string, quantity: number) => void;
   decrementOrRemove: (id: string) => void;
@@ -151,10 +151,12 @@ export function CartProvider({ children }: { children: ReactNode }) {
     return () => window.clearTimeout(id);
   }, [state.items]);
 
-  const addItem = useCallback((item: CartItem) => {
+  const addItem = useCallback((item: CartItem, opts?: { silent?: boolean }) => {
     dispatch({ type: 'ADD_ITEM', payload: item });
+    if (opts?.silent) return;
     trackPixelEvent('AddToCart', {
       content_ids: [item.productId ?? item.id],
+      contents: [{ id: item.productId ?? item.id, quantity: item.quantity, item_price: item.price, name: item.name }],
       content_type: 'product',
       content_name: item.name,
       value: item.price * item.quantity,

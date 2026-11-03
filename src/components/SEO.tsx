@@ -6,6 +6,8 @@ import {
   DEFAULT_OG_IMAGE_WIDTH,
   DEFAULT_OG_IMAGE_HEIGHT,
 } from '@/constants/site';
+import { useI18n } from '@/context/I18nContext';
+import { hasThai, localizedPath } from '@/lib/locale';
 
 interface SEOProps {
   title: string;
@@ -31,7 +33,18 @@ export default function SEO({
   imageWidth,
   imageHeight,
 }: SEOProps) {
-  const canonical = `${SITE_URL}${path}`;
+  const { locale } = useI18n();
+  const routePath = path || '/';
+  // Only pages with a real Thai version get a /th canonical; everything else
+  // (product pages, guide…) is canonical in English even when browsed under /th.
+  const canonical = `${SITE_URL}${localizedPath(routePath, hasThai(routePath) ? locale : 'en')}`.replace(/\/$/, '') || SITE_URL;
+  const alternates = hasThai(routePath)
+    ? [
+        { lang: 'en', href: `${SITE_URL}${routePath === '/' ? '' : routePath}` },
+        { lang: 'th', href: `${SITE_URL}${localizedPath(routePath, 'th')}` },
+        { lang: 'x-default', href: `${SITE_URL}${routePath === '/' ? '' : routePath}` },
+      ]
+    : [];
   const fullTitle = title.includes(SITE_NAME) ? title : `${title} | ${SITE_NAME}`;
 
   // Only declare dimensions we actually know. Previously every page claimed
@@ -50,7 +63,8 @@ export default function SEO({
       ) : (
         <meta name="robots" content="index,follow,max-snippet:-1,max-image-preview:large,max-video-preview:-1" />
       )}
-      <link rel="canonical" href={canonical} />
+      {!noindex && <link rel="canonical" href={canonical} />}
+      {!noindex && alternates.map((a) => <link key={a.lang} rel="alternate" hrefLang={a.lang} href={a.href} />)}
 
       {/* Open Graph */}
       <meta property="og:site_name" content={SITE_NAME} />
@@ -62,7 +76,8 @@ export default function SEO({
       {ogWidth && <meta property="og:image:width" content={String(ogWidth)} />}
       {ogHeight && <meta property="og:image:height" content={String(ogHeight)} />}
       <meta property="og:image:alt" content={fullTitle} />
-      <meta property="og:locale" content="en_US" />
+      <meta property="og:locale" content={locale === 'th' ? 'th_TH' : 'en_US'} />
+      {alternates.length > 0 && <meta property="og:locale:alternate" content={locale === 'th' ? 'en_US' : 'th_TH'} />}
 
       {/* Twitter Card */}
       <meta name="twitter:card" content="summary_large_image" />

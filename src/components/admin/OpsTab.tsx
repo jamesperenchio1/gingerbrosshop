@@ -56,7 +56,7 @@ export default function OpsTab() {
 }
 
 function statusBadgeClass(status: string): string {
-  if (['won', 'paid', 'succeeded'].includes(status)) return 'bg-accent-green/15 text-accent-green';
+  if (['won', 'paid', 'succeeded'].includes(status)) return 'bg-accent-green/15 text-green-ink';
   if (['lost', 'failed', 'canceled'].includes(status)) return 'bg-rust/15 text-rust';
   return 'bg-earth/15 text-earth';
 }
@@ -292,7 +292,7 @@ function DisputeDetailPanel({
         ) : (
           <div className="px-5 py-5 space-y-5">
             {error && <p className="font-body text-[13px] text-rust">{error}</p>}
-            {message && <p className="font-body text-[13px] text-accent-green">{message}</p>}
+            {message && <p className="font-body text-[13px] text-green-ink">{message}</p>}
 
             <section className="bg-cream rounded-2xl p-4 space-y-2">
               <div className="flex items-center justify-between">
@@ -427,13 +427,13 @@ function PayoutsSection() {
       {balance && (
         <div className="grid grid-cols-2 gap-3 mb-4">
           <div className="bg-cream rounded-2xl p-4">
-            <div className="font-body text-[13px] text-earth/70">Available</div>
+            <div className="font-body text-[13px] text-earth/80">Available</div>
             <div className="font-display text-lg text-deep-brown">
               {balance.available.map((b) => baht(b.amount)).join(', ') || baht(0)}
             </div>
           </div>
           <div className="bg-cream rounded-2xl p-4">
-            <div className="font-body text-[13px] text-earth/70">Pending</div>
+            <div className="font-body text-[13px] text-earth/80">Pending</div>
             <div className="font-display text-lg text-deep-brown">
               {balance.pending.map((b) => baht(b.amount)).join(', ') || baht(0)}
             </div>
@@ -865,7 +865,7 @@ function EventDetailPanel({ id, onClose }: { id: string; onClose: () => void }) 
 function Row({ label, value, copy }: { label: string; value: string; copy?: boolean }) {
   return (
     <div className="flex items-start justify-between gap-4">
-      <span className="font-body text-[13px] text-earth/70 shrink-0">{label}</span>
+      <span className="font-body text-[13px] text-earth/80 shrink-0">{label}</span>
       <span className="font-body text-[13px] text-deep-brown text-right break-all">{value}</span>
       {copy && <CopyButton value={value} />}
     </div>

@@ -12,6 +12,7 @@ import ReferralCard from '@/components/ReferralCard';
 import ReorderButton from '@/components/ReorderButton';
 
 interface OrderItem {
+  productId?: string | null;
   description: string;
   quantity: number;
   amountTotal: number;
@@ -76,14 +77,14 @@ function OrderTimeline({ shipped }: { shipped: boolean }) {
                     ? 'bg-accent-green text-white'
                     : i === currentIdx
                     ? 'bg-amber text-deep-brown'
-                    : 'bg-soft-peach/60 text-earth/50'
+                    : 'bg-soft-peach/60 text-earth/80'
                 }`}
               >
                 <step.icon className="w-4 h-4" />
               </div>
               <span
                 className={`mt-2 font-body text-[11px] sm:text-[12px] text-center ${
-                  active ? 'text-deep-brown font-medium' : 'text-earth/50'
+                  active ? 'text-deep-brown font-medium' : 'text-earth/80'
                 }`}
               >
                 {step.label}
@@ -160,10 +161,16 @@ export default function OrderSuccess() {
         setOrder(data);
         setLoading(false);
         const value = (data.amountTotal ?? 0) / 100;
-        const contentIds = data.items.map((item) => item.description);
+        const contentIds = data.items.map((item) => item.productId ?? item.description);
+        const contents = data.items.map((item) => ({
+          id: item.productId ?? item.description,
+          quantity: item.quantity,
+          item_price: item.unitAmount / 100,
+          name: item.description,
+        }));
         trackPixelEvent(
           'Purchase',
-          { content_ids: contentIds, content_type: 'product', value, currency: data.currency },
+          { content_ids: contentIds, contents, content_type: 'product', value, currency: data.currency },
           `${data.sessionId}-purchase`,
         );
         if (data.isSubscription) {
@@ -300,7 +307,7 @@ export default function OrderSuccess() {
                 <span>{baht(order.amountSubtotal)}</span>
               </div>
               {order.amountDiscount > 0 && (
-                <div className="flex justify-between text-accent-green">
+                <div className="flex justify-between text-green-ink">
                   <span>Discount</span>
                   <span>−{baht(order.amountDiscount)}</span>
                 </div>
@@ -364,7 +371,7 @@ export default function OrderSuccess() {
               <h3 className="font-display font-semibold text-deep-brown">What's Next?</h3>
             </div>
             <p className="font-body text-earth">
-              We're preparing your order with care. You'll get an email with tracking details the moment it ships. It's a living brew, so pop it in the fridge on arrival.
+              We're preparing your order with care. You'll get an email with tracking details the moment it ships. Pop the bottles in the fridge as soon as they arrive: GingerBros is best ice-cold.
             </p>
             {order.customerEmail && (
               <a

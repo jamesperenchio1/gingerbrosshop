@@ -39,7 +39,7 @@ export default function ReturnsPage() {
 
         <div className="bg-cream rounded-2xl p-8 mb-8">
           <div className="flex items-start gap-4">
-            <ShieldCheck className="w-6 h-6 text-accent-green flex-shrink-0 mt-1" />
+            <ShieldCheck className="w-6 h-6 text-green-ink flex-shrink-0 mt-1" />
             <div>
               <h2 className="font-display font-semibold text-deep-brown text-lg mb-2">Damaged or Incorrect Orders</h2>
               <p className="font-body text-earth leading-relaxed mb-4">

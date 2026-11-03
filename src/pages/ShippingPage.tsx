@@ -18,7 +18,7 @@ export default function ShippingPage() {
         path="/shipping"
         jsonLd={jsonLd}
       />
-      <main className="pt-28 pb-20">
+      <div className="pt-28 pb-20">
         <div className="max-w-[900px] mx-auto px-6">
           <div className="text-center mb-16">
             <span className="font-body font-medium text-[13px] uppercase tracking-[0.08em] text-rust mb-3 block">
@@ -98,7 +98,7 @@ export default function ShippingPage() {
                 </div>
               ))}
             </div>
-            <p className="font-body text-[13px] text-earth/70 mt-4">
+            <p className="font-body text-[13px] text-earth/80 mt-4">
               Transit times are estimates and may vary during holidays or peak periods, and remote areas may take longer.
             </p>
           </div>
@@ -139,7 +139,7 @@ export default function ShippingPage() {
               </div>
             </div>
             <div className="flex items-start gap-4 bg-cream rounded-2xl p-8">
-              <ShieldCheck className="w-8 h-8 text-accent-green flex-shrink-0" />
+              <ShieldCheck className="w-8 h-8 text-green-ink flex-shrink-0" />
               <div>
                 <h3 className="font-display font-semibold text-deep-brown text-[1.1rem] mb-2">Delivery Guarantee</h3>
                 <p className="font-body text-[14px] text-earth leading-relaxed">
@@ -178,7 +178,7 @@ export default function ShippingPage() {
             </div>
           </div>
         </div>
-      </main>
+      </div>
     </div>
   );
 }

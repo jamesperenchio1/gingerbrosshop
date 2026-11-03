@@ -11,6 +11,15 @@
       "port": 3000
     },
     {
+      "name": "dev-live-api",
+      "runtimeExecutable": "sh",
+      "runtimeArgs": [
+        "-c",
+        "API_PROXY=https://gingerbrosshop.com npx vite --port 3001 --strictPort"
+      ],
+      "port": 3001
+    },
+    {
       "name": "preview",
       "runtimeExecutable": "npx",
       "runtimeArgs": [
@@ -26,7 +35,7 @@
       "name": "vercel-like",
       "runtimeExecutable": "node",
       "runtimeArgs": [
-        "/private/tmp/claude-501/-Users-jamesperenchio-Desktop-AI-Coding-Projects-gingerbrosshop-vite--claude-worktrees-site-perf-checkout-19364c/292e8765-4ceb-4d4b-afb1-d1729f275e32/scratchpad/serve.mjs",
+        "/private/tmp/claude-501/-Users-jamesperenchio-Desktop-AI-Coding-Projects-gingerbrosshop-vite--claude-worktrees-gingerbros-pricing-positioning-c1b4ad/f9277640-cc1a-4ca5-8e4d-1dddfacd865a/scratchpad/tools/serve.mjs",
         "dist",
         "4174"
       ],
