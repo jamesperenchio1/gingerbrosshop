@@ -3,6 +3,7 @@ import Stripe from 'stripe';
 import { Redis } from '@upstash/redis';
 import { getStripe, type SessionWithShipping } from './_lib/stripe.js';
 import { saveOrder } from './_lib/orders.js';
+import { markCartRecovered } from './_lib/carts.js';
 import {
   getResend,
   MAIL_FROM,
@@ -149,6 +150,11 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     };
 
     await saveOrder(order);
+
+    // They bought: never send this customer an abandoned-cart reminder.
+    if (order.customerEmail) {
+      try { await markCartRecovered(order.customerEmail); } catch (err) { console.error('markCartRecovered failed:', err); }
+    }
 
     // Fire-and-forget: mirrors the client-side Purchase/Subscribe pixel events
     // fired from OrderSuccess.tsx, deduplicated by event_id, for delivery that

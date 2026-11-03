@@ -8,7 +8,7 @@ import { ChevronLeft, ChevronRight } from 'lucide-react';
 import SEO from '@/components/SEO';
 import NotFound from '@/pages/NotFound';
 import { useCatalog, defaultPrice, bottleCounts, intervalLabel, oneTimePrice, savingsPercent, stockStatus, hasVariantPrices, type CatalogProduct } from '@/lib/catalog';
-import { getDeliveryEstimateMessage } from '@/constants/store';
+import { getDeliveryEstimateMessage, FREE_SHIPPING_THRESHOLD } from '@/constants/store';
 import { startCheckout, trackInitiateCheckout } from '@/lib/checkout';
 import type { CartItem } from '@/types/cart';
 import { useRecentlyViewed, getRecentlyViewed } from '@/hooks/use-recently-viewed';
@@ -870,6 +870,15 @@ export default function ProductDetail() {
               <p className="font-body text-[13px] text-green-ink mb-6 min-h-[1.25rem]">
                 {deliveryEstimate}
               </p>
+            )}
+
+            {/* Buying reassurance (drinks) */}
+            {!isEquipment && (
+              <ul className="mb-6 space-y-1.5 font-body text-[13px] text-earth">
+                <li>Free shipping over ฿{FREE_SHIPPING_THRESHOLD}, otherwise ฿100 flat. Dispatched Monday to Thursday.</li>
+                <li>Pay by card or PromptPay. Cold-chain delivery (insulated box with ice packs) is available at checkout.</li>
+                <li>Arrived damaged or wrong? Tell us within 24 hours and we will replace it or refund you.</li>
+              </ul>
             )}
 
             {/* Ingredients (drinks) */}

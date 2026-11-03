@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Store, Truck, BadgeCheck, Mail, CheckCircle, Package, TrendingDown, Clock } from 'lucide-react';
 import SEO from '@/components/SEO';
+import { trackPixelEvent } from '@/lib/metaPixel';
 
 function WholesaleForm() {
   const [businessName, setBusinessName] = useState('');
@@ -35,6 +36,7 @@ function WholesaleForm() {
       });
       const data = await res.json().catch(() => ({}));
       if (!res.ok) throw new Error(data.error ?? 'Something went wrong. Please try again.');
+      trackPixelEvent('Lead', { content_name: 'wholesale_quote' });
       setSent(true);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to send inquiry.');
@@ -171,10 +173,9 @@ function WholesaleForm() {
       <label htmlFor="wholesale-message" className="sr-only">Message</label>
       <textarea
         id="wholesale-message"
-        required
         value={message}
         onChange={(e) => setMessage(e.target.value)}
-        placeholder="Tell us about your venue, estimated volume, and any specific requirements"
+        placeholder="Anything else? Your venue, estimated volume, special requirements (optional)"
         rows={4}
         className="w-full bg-cream border border-soft-peach rounded-xl px-4 py-3 font-body text-deep-brown placeholder:text-earth/80 focus:outline-none focus:ring-2 focus:ring-amber/40 resize-none"
       />
@@ -290,6 +291,12 @@ export default function WholesalePage() {
             <p className="font-body text-earth text-lg max-w-[600px] mx-auto leading-relaxed">
               Modern ginger drinks your guests haven&apos;t seen before. Great margins, reliable supply, and a drink people ask about by name.
             </p>
+            <a
+              href="#quote"
+              className="mt-6 inline-block rounded-full bg-charcoal px-8 py-4 font-body text-[13px] font-bold uppercase tracking-[0.1em] text-cream hover:bg-deep-brown"
+            >
+              Request a quote →
+            </a>
           </div>
 
           {/* Signature Serve programme */}
@@ -378,7 +385,7 @@ export default function WholesalePage() {
           </div>
 
           {/* How to Order */}
-          <div className="bg-deep-brown rounded-xxl p-8 md:p-10 text-cream">
+          <div id="quote" className="scroll-mt-24 bg-deep-brown rounded-xxl p-8 md:p-10 text-cream">
             <h2 className="font-display font-semibold text-[1.35rem] mb-4">
               Request a Quote
             </h2>

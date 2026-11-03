@@ -13,6 +13,10 @@ vi.mock('../../api/_lib/orders.js', () => ({
   saveOrder: vi.fn(),
 }));
 
+vi.mock('../../api/_lib/carts.js', () => ({
+  markCartRecovered: vi.fn(),
+}));
+
 const constructEventMock = vi.fn();
 vi.mock('stripe', () => ({
   default: vi.fn().mockImplementation(function () {

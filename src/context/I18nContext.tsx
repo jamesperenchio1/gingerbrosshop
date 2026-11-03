@@ -45,6 +45,7 @@ const translations: Record<Locale, Record<string, string>> = {
     startShopping: 'Start shopping',
     freeShippingOver: 'Free shipping on orders over ฿500',
     freeShippingUnlocked: 'You unlocked free shipping',
+    freeShippingAddMore: 'Add {n} more for free shipping',
 
     // Product status
     inStock: 'In Stock',
@@ -86,6 +87,7 @@ const translations: Record<Locale, Record<string, string>> = {
     heroTrust1: 'Fresh Thai ginger',
     heroTrust2: 'Real lime',
     heroTrust3: 'Low sugar',
+    heroPerks: 'Free shipping over ฿500 · Cards & PromptPay · Delivered across Thailand',
     tickerExtra1: 'Made in Thailand',
     tickerExtra2: 'Best served ice cold',
     tickerExtra3: "Not your grandma's ginger drink",
@@ -221,6 +223,7 @@ const translations: Record<Locale, Record<string, string>> = {
     startShopping: 'เริ่มช้อปปิ้ง',
     freeShippingOver: 'จัดส่งฟรีสำหรับคำสั่งซื้อเกิน ฿500',
     freeShippingUnlocked: 'คุณได้รับสิทธิ์จัดส่งฟรี',
+    freeShippingAddMore: 'เพิ่มอีก {n} เพื่อรับสิทธิ์จัดส่งฟรี',
 
     // Product status
     inStock: 'มีสินค้า',
@@ -262,6 +265,7 @@ const translations: Record<Locale, Record<string, string>> = {
     heroTrust1: 'ขิงไทยสด',
     heroTrust2: 'มะนาวแท้',
     heroTrust3: 'หวานน้อย',
+    heroPerks: 'จัดส่งฟรีเมื่อซื้อเกิน ฿500 · รับบัตรและพร้อมเพย์ · ส่งทั่วไทย',
     tickerExtra1: 'ผลิตในประเทศไทย',
     tickerExtra2: 'อร่อยสุดตอนเย็นจัด',
     tickerExtra3: 'ไม่ใช่น้ำขิงแบบที่บ้านยาย',

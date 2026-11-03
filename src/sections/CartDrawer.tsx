@@ -390,7 +390,9 @@ export default function CartDrawer() {
             {dealSubtotal < FREE_SHIPPING_THRESHOLD && (
               <div className="bg-cream rounded-xl px-4 py-3">
                 <p className="font-body text-[13px] text-earth mb-2">
-                  Add <span className="font-semibold text-deep-brown">{CURRENCY_SYMBOL}{FREE_SHIPPING_THRESHOLD - dealSubtotal}</span> more for {t('freeShippingOver').replace(/.*฿\d+/, 'free shipping')}
+                  {t('freeShippingAddMore').split('{n}').flatMap((part, i) => i === 0
+                    ? [part]
+                    : [<span key="n" className="font-semibold text-deep-brown">{CURRENCY_SYMBOL}{FREE_SHIPPING_THRESHOLD - dealSubtotal}</span>, part])}
                 </p>
                 <div className="h-2 bg-soft-peach rounded-full overflow-hidden">
                   <div
