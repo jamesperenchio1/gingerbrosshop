@@ -61,10 +61,10 @@ export default function HomePage() {
       <SEO
         title={locale === 'th'
           ? 'GingerBros | น้ำขิงซ่า & ชาขิง เครื่องดื่มขิงยุคใหม่ ผลิตในไทย'
-          : 'GingerBros | Ginger Fizz & Ginger Tea, Modern Ginger Drinks from Thailand'}
+          : 'GingerBros | Ginger Fizz & Ginger Tea from Thailand'}
         description={locale === 'th'
           ? 'คิดแบบขิง ดื่มให้แตกต่าง น้ำขิงซ่าและชาขิงจากขิงไทยสด มะนาวแท้ หวานน้อย สั่งออนไลน์ส่งทั่วไทย'
-          : 'Think Ginger. Drink Different. Ginger Fizz and Ginger Tea made in Thailand with fresh Thai ginger, real lime and low sugar. Delivered cold, nationwide.'}
+          : 'Modern ginger drinks made in Thailand. Ginger Fizz and Ginger Tea with fresh Thai ginger, real lime and low sugar. Order online, delivered nationwide.'}
         path="/"
         jsonLd={[organizationSchema, websiteSchema, productListSchema]}
       />

@@ -5,16 +5,16 @@ export default function ShippingPage() {
   const jsonLd = {
     '@context': 'https://schema.org',
     '@type': 'WebPage',
-    name: 'Shipping Information | GingerBros',
-    description: 'Nationwide shipping for GingerBros ginger fizz. Standard delivery across Thailand with an optional cold-chain upgrade.',
+    name: 'Delivery in Thailand: Shipping & Cold-Chain | GingerBros',
+    description: 'Delivery across Thailand for Ginger Fizz and Ginger Tea. ฿100 shipping, free over ฿500, dispatched Mon–Thu, with an optional cold-chain upgrade.',
     url: 'https://gingerbrosshop.com/shipping',
   };
 
   return (
     <div className="min-h-screen bg-warm-white">
       <SEO
-        title="Shipping Information | GingerBros"
-        description="Nationwide shipping for GingerBros ginger fizz. Standard delivery across Thailand with an optional cold-chain upgrade."
+        title="Delivery in Thailand: Shipping & Cold-Chain"
+        description="Delivery across Thailand for Ginger Fizz and Ginger Tea. ฿100 shipping, free over ฿500, dispatched Mon–Thu, with an optional cold-chain upgrade."
         path="/shipping"
         jsonLd={jsonLd}
       />

@@ -10,6 +10,7 @@ import { BLOG_SEO_META } from './src/lib/blogSeoMeta';
 import { SITE_URL, DEFAULT_OG_IMAGE, LOGO_URL, SOCIAL_LINKS } from './src/constants/site';
 import { OG_IMAGES } from './src/lib/ogImages';
 import { TH_PATHS } from './src/lib/locale';
+import { drinkSeo } from './src/lib/seoMeta';
 
 interface RouteMeta {
   title: string;
@@ -24,9 +25,9 @@ const FALLBACK_IMAGE = DEFAULT_OG_IMAGE;
 
 const KNOWN_ROUTES: Record<string, RouteMeta> = {
   '/': {
-    title: 'GingerBros | Ginger Fizz & Ginger Tea, Modern Ginger Drinks from Thailand',
+    title: 'GingerBros | Ginger Fizz & Ginger Tea from Thailand',
     description:
-      'Think Ginger. Drink Different. Ginger Fizz and Ginger Tea made in Thailand with fresh Thai ginger, real lime and low sugar. Delivered cold, nationwide.',
+      'Modern ginger drinks made in Thailand. Ginger Fizz and Ginger Tea with fresh Thai ginger, real lime and low sugar. Order online, delivered nationwide.',
     image: FALLBACK_IMAGE,
     type: 'website',
     jsonLd: {
@@ -56,29 +57,29 @@ const KNOWN_ROUTES: Record<string, RouteMeta> = {
     type: 'website',
   },
   '/guide': {
-    title: 'The Ginger Guide: Serves, Mocktails & Food Pairings | GingerBros',
+    title: 'Ginger Guide: Mocktails & Thai Food Pairings | GingerBros',
     description: 'How to serve Ginger Fizz and Ginger Tea, ginger mocktails and cocktails, Thai food pairings and everything worth knowing about Thai ginger.',
     image: FALLBACK_IMAGE,
     type: 'website',
   },
   '/faq': {
-    title: 'Frequently Asked Questions | GingerBros',
+    title: 'FAQ: Delivery, Subscriptions & Storage | GingerBros',
     description:
-      'Find answers about GingerBros delivery, subscriptions, storage, wholesale, and payments.',
+      'Answers on GingerBros delivery, cold-chain shipping, subscriptions, storage, payments and wholesale. Ginger Fizz and Ginger Tea, made in Thailand.',
     image: FALLBACK_IMAGE,
     type: 'website',
   },
   '/business': {
-    title: 'GingerBros for Cafés, Bars & Restaurants | Wholesale & Signature Serve',
+    title: 'Wholesale Ginger Drinks for Cafés & Bars | GingerBros',
     description:
-      'Put GingerBros on your menu. Free samples, recipe cards, menu copy and wholesale pricing for cafés, bars, restaurants and hotels in Thailand.',
+      'Wholesale ginger drinks for cafés, bars, restaurants and hotels in Thailand. Free samples, recipe cards, menu copy and trade pricing. Request a quote.',
     image: FALLBACK_IMAGE,
     type: 'website',
   },
   '/shipping': {
-    title: 'Shipping Information | GingerBros',
+    title: 'Delivery in Thailand: Shipping & Cold-Chain | GingerBros',
     description:
-      'Shipping rates and delivery information for GingerBros ginger drinks. Standard nationwide delivery across Thailand with optional cold-chain upgrade.',
+      'Delivery across Thailand for Ginger Fizz and Ginger Tea. ฿100 shipping, free over ฿500, dispatched Mon–Thu, with an optional cold-chain upgrade.',
     image: FALLBACK_IMAGE,
     type: 'website',
   },
@@ -206,12 +207,13 @@ async function fetchCatalogProduct(origin: string, id: string): Promise<CatalogP
 
 function productRouteMeta(product: CatalogProduct, pathname: string): RouteMeta {
   const image = OG_IMAGES.has(product.id) ? `${SITE_URL}/images/og/${product.id}.jpg` : product.images[0] ?? FALLBACK_IMAGE;
+  const seo = drinkSeo(product.id, product.name);
   const description =
-    product.metadata.short_description ?? product.description ?? `${product.name} from GingerBros.`;
+    seo?.description ?? product.metadata.short_description ?? product.description ?? `${product.name} from GingerBros.`;
   const price = product.prices.find((p) => !p.recurring) ?? product.prices[0];
 
   return {
-    title: `${product.name} | GingerBros`,
+    title: `${seo?.title ?? product.name} | GingerBros`,
     description,
     image,
     type: 'product',
@@ -247,7 +249,7 @@ function blogPostMeta(slug: string): RouteMeta | null {
   const url = `${SITE_URL}/guide/${slug}`;
   const image = post.image ? `${SITE_URL}${post.image}` : FALLBACK_IMAGE;
   return {
-    title: `${post.title} | The Ginger Guide`,
+    title: post.title.includes('GingerBros') ? post.title : `${post.title} | GingerBros`,
     description: post.excerpt,
     image,
     type: 'article',
@@ -257,6 +259,8 @@ function blogPostMeta(slug: string): RouteMeta | null {
       headline: post.title,
       description: post.excerpt,
       datePublished: post.date,
+      dateModified: post.date,
+      mainEntityOfPage: { '@type': 'WebPage', '@id': url },
       image,
       url,
       author: { '@type': 'Organization', name: post.author },

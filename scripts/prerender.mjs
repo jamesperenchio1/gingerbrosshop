@@ -106,10 +106,16 @@ function hoistHead(html) {
 
 const xml = (s) => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&apos;');
 
+const FALLBACK_DRINK_IDS = [
+  'ginger-fizz', 'ginger-tea', 'ginger-fizz-2pack', 'ginger-fizz-3pack', 'ginger-fizz-6pack',
+  'ginger-tea-2pack', 'ginger-tea-3pack', 'ginger-tea-6pack', 'fizz-tea-duo', 'fizz-tea-4pack',
+];
+
 function sitemapXml(entries) {
-  const urls = entries.map(({ loc, alternates = [], images = [] }) => [
+  const urls = entries.map(({ loc, lastmod, alternates = [], images = [] }) => [
     '  <url>',
     `    <loc>${xml(loc)}</loc>`,
+    ...(lastmod ? [`    <lastmod>${xml(lastmod)}</lastmod>`] : []),
     ...alternates.map((a) => `    <xhtml:link rel="alternate" hreflang="${xml(a.lang)}" href="${xml(a.href)}"/>`),
     ...images.map((img) => `    <image:image><image:loc>${xml(img)}</image:loc></image:image>`),
     '  </url>',
@@ -123,7 +129,7 @@ ${urls.join('\n')}
 
 async function main() {
   const template = await readFile(path.join(dist, 'index.html'), 'utf8');
-  const { render, BLOG_SLUGS, TH_PATHS } = await import(pathToFileURL(path.join(root, 'dist-ssr', 'entry-server.js')).href);
+  const { render, BLOG_SLUGS, BLOG_SEO_META, TH_PATHS } = await import(pathToFileURL(path.join(root, 'dist-ssr', 'entry-server.js')).href);
   // Untouched copy of the SPA shell: served for every route that isn't
   // prerendered (see the rewrite in vercel.json and middleware.ts).
   await writeFile(path.join(dist, 'shell.html'), template);
@@ -167,11 +173,18 @@ async function main() {
       const alternates = th
         ? [{ lang: 'en', href: loc }, { lang: 'th', href: `${SITE}/th${r === '/' ? '' : r}` }, { lang: 'x-default', href: loc }]
         : [];
+      const slug = r.match(/^\/guide\/(.+)$/)?.[1];
+      const lastmod = slug ? BLOG_SEO_META.find((p) => p.slug === slug)?.date : undefined;
       const id = r.match(/^\/product\/(.+)$/)?.[1];
       const product = id && catalog?.find((p) => p.id === id);
       const images = product ? (product.category === 'drinks' ? [genImage(id)] : product.images.slice(0, 1)) : [];
-      return { loc, alternates, images };
+      return { loc, lastmod, alternates, images };
     });
+  // If the live catalog couldn't be fetched, keep the drink product pages in
+  // the sitemap anyway so a transient Stripe/API outage doesn't drop them.
+  if (!catalog) {
+    for (const id of FALLBACK_DRINK_IDS) entries.push({ loc: `${SITE}/product/${id}`, images: [`${SITE}/images/gen/${id}.jpg`] });
+  }
   for (const r of TH_PATHS) {
     const en = r === '/' ? SITE : `${SITE}${r}`;
     const loc = `${SITE}/th${r === '/' ? '' : r}`;

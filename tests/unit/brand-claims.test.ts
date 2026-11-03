@@ -16,6 +16,7 @@ const root = path.resolve(__dirname, '../..');
 const BANNED: RegExp[] = [
   /ferment/i, /prebiotic/i, /probiotic/i, /ginger bug/i, /live[- ]cultures?/i, /living (brew|fizz|culture)/i,
   /\bgut\b/i, /immun/i, /blood sugar/i, /inflammat/i, /detox/i, /naturally brewed/i,
+  /antioxidant/i, /remedy/i, /wellness/i, /\bhealth/i, /digest/i, /nausea/i, /vitamin/i,
   /หมัก/, /พรีไบโอติก/, /โพรไบโอติก/, /จุลินทรีย์/, /ลำไส้/, /ภูมิคุ้มกัน/,
 ];
 
@@ -26,6 +27,11 @@ const ALLOWED: RegExp[] = [
   /Fermented ginger beer became hugely popular in 18th-century England/, // history post, about ginger beer in general
   /\*\*Ginger beer\*\* stayed true to its roots: fermented/,
   /ginger ale.*little or no fermentation/i,
+  /not here to sell you a remedy|like a (home )?remedy/i, // saying we are NOT a remedy is the point
+  /healthcare professional for personal guidance/i, // disclaimer
+  /\.digest\('hex'\)/, // crypto hash, not a claim
+  /Gym \/ Wellness/, // wholesale venue type, not a claim
+  /not medical advice/i,
   /\/blog\/(gut-health|probiotics-prebiotics|ginger-immunity|ginger-bug-at-home)/, // 301 redirects
 ];
 
@@ -52,6 +58,9 @@ const TARGETS = [
   path.join(root, 'public/site.webmanifest'),
   path.join(root, 'public/llms.txt'),
   path.join(root, 'api/_lib/linkpageSchema.ts'),
+  path.join(root, 'api/_lib/email.ts'),
+  ...files(path.join(root, 'api/_lib/handlers'), ['.ts']),
+  path.join(root, 'scripts/update-drink-listings.js'),
 ];
 
 describe('brand claims', () => {

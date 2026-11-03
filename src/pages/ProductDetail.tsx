@@ -1,3 +1,4 @@
+import { drinkSeo } from '@/lib/seoMeta';
 import { useState, useRef, useEffect, useMemo } from 'react';
 import { useParams, useSearchParams, useNavigate, useLocation, Link } from 'react-router';
 import { useCart } from '@/context/CartContext';
@@ -516,8 +517,6 @@ export default function ProductDetail() {
         applicableCountry: 'TH',
         returnPolicyCategory: 'https://schema.org/MerchantReturnFiniteReturnWindow',
         merchantReturnDays: 1,
-        returnMethod: 'https://schema.org/ReturnByMail',
-        returnFees: 'https://schema.org/FreeReturn',
       },
     },
   };
@@ -536,8 +535,8 @@ export default function ProductDetail() {
   return (
     <div className="min-h-screen bg-warm-white">
       <SEO
-        title={`${product.name}${isEquipment ? '' : kind === 'tea' ? ' | Ginger Drink Made in Thailand' : kind === 'fizz' ? ' | Ginger Soda Made in Thailand' : ' | Ginger Fizz & Tea Bundle'} | GingerBros`}
-        description={(content.headline ?? description).slice(0, 300)}
+        title={drinkSeo(product.id, product.name)?.title ?? product.name}
+        description={(drinkSeo(product.id, product.name)?.description ?? content.headline ?? description).slice(0, 300)}
         path={`/product/${product.id}`}
         image={ogCard ?? absImages[0] ?? undefined}
         imageWidth={ogCard ? 1200 : undefined}

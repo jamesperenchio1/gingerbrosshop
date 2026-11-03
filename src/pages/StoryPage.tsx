@@ -11,7 +11,9 @@ export default function StoryPage() {
     <>
       <SEO
         title={locale === 'th' ? 'เรื่องราวของเรา | GingerBros' : 'Our Story: Rooted in Ginger, Made for Today | GingerBros'}
-        description="Why GingerBros exists: to make Thai ginger the drink you actually want to reach for. Fresh Thai ginger, real lime, low sugar, made in Thailand."
+        description={locale === 'th'
+          ? 'ทำไม GingerBros ถึงเกิดขึ้น: ทำให้ขิงไทยเป็นเครื่องดื่มที่คุณอยากหยิบ ขิงไทยสด มะนาวแท้ หวานน้อย ผลิตในประเทศไทย'
+          : 'Why GingerBros exists: to make Thai ginger the drink you actually want to reach for. Fresh Thai ginger, real lime, low sugar, made in Thailand.'}
         path="/story"
         jsonLd={{
           '@context': 'https://schema.org',

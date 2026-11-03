@@ -1047,6 +1047,18 @@ export default function BlogPage() {
     })),
   };
 
+  const activePostBreadcrumb = activePost
+    ? {
+        '@context': 'https://schema.org',
+        '@type': 'BreadcrumbList',
+        itemListElement: [
+          { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://gingerbrosshop.com' },
+          { '@type': 'ListItem', position: 2, name: 'Ginger Guide', item: 'https://gingerbrosshop.com/guide' },
+          { '@type': 'ListItem', position: 3, name: activePost.title, item: `https://gingerbrosshop.com/guide/${activePost.slug}` },
+        ],
+      }
+    : null;
+
   const activePostSchema = activePost
     ? {
         '@context': 'https://schema.org',
@@ -1055,8 +1067,11 @@ export default function BlogPage() {
         description: activePost.excerpt,
         articleBody: activePost.content,
         datePublished: activePost.date,
+        dateModified: activePost.date,
         keywords: activePost.tags.join(', '),
         url: `https://gingerbrosshop.com/guide/${activePost.slug}`,
+        mainEntityOfPage: { '@type': 'WebPage', '@id': `https://gingerbrosshop.com/guide/${activePost.slug}` },
+        ...(activePost.image ? { image: `https://gingerbrosshop.com${activePost.image}` } : {}),
         author: { '@type': 'Organization', name: activePost.author },
         publisher: {
           '@type': 'Organization',
@@ -1073,16 +1088,16 @@ export default function BlogPage() {
     <div className="min-h-screen bg-warm-white">
       {activePost ? (
         <SEO
-          title={`${activePost.title} | The Ginger Guide`}
+          title={activePost.title}
           description={activePost.excerpt}
           path={`/guide/${activePost.slug}`}
           type="article"
           image={activePost.image ? `https://gingerbrosshop.com${activePost.image}` : undefined}
-          jsonLd={activePostSchema ? [activePostSchema] : undefined}
+          jsonLd={activePostSchema && activePostBreadcrumb ? [activePostSchema, activePostBreadcrumb] : undefined}
         />
       ) : (
         <SEO
-          title="The Ginger Guide: Serves, Mocktails & Thai Food Pairings | GingerBros"
+          title="Ginger Guide: Mocktails & Thai Food Pairings"
           description="How to serve Ginger Fizz and Ginger Tea, ginger mocktails and cocktails, Thai food pairings and everything worth knowing about Thai ginger."
           path="/guide"
           jsonLd={[blogListSchema]}

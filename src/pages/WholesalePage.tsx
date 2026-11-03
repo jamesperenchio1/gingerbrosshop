@@ -272,8 +272,8 @@ export default function WholesalePage() {
   return (
     <div className="min-h-screen bg-warm-white">
       <SEO
-        title="GingerBros for Cafés, Bars & Restaurants | Wholesale & Signature Serve"
-        description="Put GingerBros on your menu. Free samples, recipe cards, menu copy and wholesale pricing for cafés, bars, restaurants and hotels in Thailand."
+        title="Wholesale Ginger Drinks for Cafés & Bars"
+        description="Wholesale ginger drinks for cafés, bars, restaurants and hotels in Thailand. Free samples, recipe cards, menu copy and trade pricing. Request a quote."
         path="/business"
         jsonLd={jsonLd}
       />
