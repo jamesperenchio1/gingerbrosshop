@@ -59,7 +59,7 @@ export const BLOG_SEO_META: BlogSeoMeta[] = [
   },
   {
     slug: 'moscow-mule',
-    title: 'The Perfect Moscow Mule with GingerBros',
+    title: 'Ginger Beer Moscow Mule: The Perfect Recipe',
     excerpt: 'Why fresh Thai ginger fizz makes the best Moscow Mule you have ever tasted, and the copper-mug ritual that goes with it.',
     date: '2026-05-28',
     author: 'The GingerBros Kitchen',
@@ -67,7 +67,7 @@ export const BLOG_SEO_META: BlogSeoMeta[] = [
   },
   {
     slug: 'dark-and-stormy',
-    title: 'Dark ’n’ Stormy with a Thai Ginger Kick',
+    title: 'Dark ’n’ Stormy Recipe with Thai Ginger',
     excerpt: 'A rum-forward classic gets brighter with fresh, fiery Thai ginger fizz.',
     date: '2026-05-20',
     author: 'The GingerBros Kitchen',
@@ -75,7 +75,7 @@ export const BLOG_SEO_META: BlogSeoMeta[] = [
   },
   {
     slug: 'ginger-margarita',
-    title: 'Ginger Fizz Margarita',
+    title: 'Ginger Margarita Recipe with Ginger Fizz',
     excerpt: 'Tequila, lime, and fiery ginger fizz come together in a refreshingly different margarita.',
     date: '2026-05-12',
     author: 'The GingerBros Kitchen',
@@ -83,7 +83,7 @@ export const BLOG_SEO_META: BlogSeoMeta[] = [
   },
   {
     slug: 'spicy-ginger-lemonade',
-    title: 'Spicy Ginger Lemonade (Zero-Proof)',
+    title: 'Spicy Ginger Lemonade Recipe (Zero-Proof)',
     excerpt: 'A bright, alcohol-free refresher that still feels like a special occasion.',
     date: '2026-05-05',
     author: 'The GingerBros Kitchen',
@@ -91,7 +91,7 @@ export const BLOG_SEO_META: BlogSeoMeta[] = [
   },
   {
     slug: 'ginger-glazed-chicken',
-    title: 'Ginger Fizz Glazed Chicken Wings',
+    title: 'Ginger Glazed Chicken Wings Recipe',
     excerpt: 'Reduce GingerBros into a sticky, spicy glaze for oven or grill.',
     date: '2026-04-26',
     author: 'The GingerBros Kitchen',
@@ -99,7 +99,7 @@ export const BLOG_SEO_META: BlogSeoMeta[] = [
   },
   {
     slug: 'ginger-affogato-float',
-    title: 'Ginger Fizz Affogato Float',
+    title: 'Ginger Affogato Float: A Ginger Ice Cream Soda',
     excerpt: 'A grown-up dessert: cold ginger fizz poured over vanilla ice cream and a shot of espresso.',
     date: '2026-04-18',
     author: 'The GingerBros Kitchen',
@@ -123,7 +123,7 @@ export const BLOG_SEO_META: BlogSeoMeta[] = [
   },
   {
     slug: 'flavor-pairing-guide',
-    title: 'The GingerBros Flavor Pairing Guide',
+    title: 'What to Eat with Ginger Soda: A Pairing Guide',
     excerpt: 'What to eat, mix, and serve alongside ginger fizz for maximum deliciousness.',
     date: '2026-03-28',
     author: 'The GingerBros Kitchen',

@@ -377,7 +377,8 @@ export function trackingInfoEmailHtml(order: Order): string {
     }
     ${itemsTable(plainRows(order.items))}
     ${button('Track your order', `${SITE_URL}/track`)}
-    ${small(`On the tracking page, enter your email and order number ${orderId}.`)}`,
+    ${small(`On the tracking page, enter your email and order number ${orderId}.`)}
+    ${hasTracking ? small(`<br />Once it arrives and you have tried it, we would love a review: <a href="${SITE_URL}/product/ginger-fizz#reviews" style="color:${BRAND.brown};">leave a review</a>.`) : ''}`,
     `Order #${orderId} status`,
     `Order #${orderId} status`
   );

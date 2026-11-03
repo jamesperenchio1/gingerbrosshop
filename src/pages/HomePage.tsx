@@ -2,7 +2,10 @@ import { useEffect } from 'react';
 import Hero from '@/sections/Hero';
 import Ticker from '@/sections/home/Ticker';
 import Shop from '@/sections/Shop';
+import Compare from '@/sections/home/Compare';
+import HomeFaq from '@/sections/home/HomeFaq';
 import Manifesto from '@/sections/home/Manifesto';
+import { HOME_FAQ } from '@/lib/homeContent';
 import GingerWay from '@/sections/home/GingerWay';
 import BusinessTeaser from '@/sections/home/BusinessTeaser';
 import Newsletter from '@/components/Newsletter';
@@ -56,6 +59,12 @@ export default function HomePage() {
     })),
   };
 
+  const faqSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: HOME_FAQ[locale].map((f) => ({ '@type': 'Question', name: f.q, acceptedAnswer: { '@type': 'Answer', text: f.a } })),
+  };
+
   return (
     <div className="min-h-screen bg-warm-white">
       <SEO
@@ -66,13 +75,15 @@ export default function HomePage() {
           ? 'คิดแบบขิง ดื่มให้แตกต่าง น้ำขิงซ่าและชาขิงจากขิงไทยสด มะนาวแท้ หวานน้อย สั่งออนไลน์ส่งทั่วไทย'
           : 'Modern ginger drinks made in Thailand. Ginger Fizz and Ginger Tea with fresh Thai ginger, real lime and low sugar. Order online, delivered nationwide.'}
         path="/"
-        jsonLd={[organizationSchema, websiteSchema, productListSchema]}
+        jsonLd={[organizationSchema, websiteSchema, productListSchema, faqSchema]}
       />
       <Hero />
       <Ticker />
       <Shop variant="home" />
+      <Compare />
       <Manifesto />
       <GingerWay />
+      <HomeFaq />
       <BusinessTeaser />
       <Newsletter />
       <LineWidget />

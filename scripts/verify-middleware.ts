@@ -12,7 +12,7 @@ const cases = [
   { path: '/shipping', expectStatus: 200, title: 'Delivery in Thailand: Shipping & Cold-Chain | GingerBros' },
   { path: '/business', expectStatus: 200, title: 'Wholesale Ginger Drinks for Cafés & Bars' },
   { path: '/guide', expectStatus: 200, title: 'Ginger Guide: Mocktails' },
-  { path: '/guide/moscow-mule', expectStatus: 200, title: 'The Perfect Moscow Mule with GingerBros' },
+  { path: '/guide/moscow-mule', expectStatus: 200, title: 'Ginger Beer Moscow Mule: The Perfect Recipe' },
   { path: '/guide/not-a-real-article', expectStatus: 404, title: 'Page Not Found | GingerBros' },
   { path: '/track', expectStatus: 200, title: 'Track Your Order | GingerBros' },
   { path: '/admin/orders', expectStatus: 200, title: 'Admin Orders | GingerBros' },

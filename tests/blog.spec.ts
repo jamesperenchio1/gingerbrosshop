@@ -24,7 +24,7 @@ test('category filters work', async ({ page }) => {
 
 test('clicking a post opens the article view', async ({ page }) => {
   await page.getByTestId('blog-post-moscow-mule').click();
-  await expect(page.getByRole('heading', { name: /The Perfect Moscow Mule/i })).toBeVisible();
+  await expect(page.getByRole('heading', { name: /Moscow Mule/i })).toBeVisible();
   await expect(page.getByTestId('blog-article-content')).toContainText('60ml vodka');
 });
 

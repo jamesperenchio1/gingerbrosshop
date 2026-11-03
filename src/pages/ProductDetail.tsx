@@ -880,6 +880,24 @@ export default function ProductDetail() {
                 <li>Arrived damaged or wrong? Tell us within 24 hours and we will replace it or refund you.</li>
               </ul>
             )}
+            {!isEquipment && (
+              <div className="mb-6 divide-y divide-charcoal/10 rounded-2xl bg-cream font-body text-[14px] text-earth">
+                <details className="group px-4 py-3">
+                  <summary className="cursor-pointer list-none font-semibold text-deep-brown">How delivery and cold-chain work</summary>
+                  <p className="mt-2 leading-relaxed">
+                    Orders ship by courier Monday to Thursday and usually arrive in 2–4 business days. Keep the bottles in the fridge and drink before the best-before date on the label. On hot days or longer routes, choose cold-chain at checkout (+฿100): your order travels in an insulated box with ice packs.
+                  </p>
+                </details>
+                {kind === 'fizz' && (
+                  <details className="group px-4 py-3">
+                    <summary className="cursor-pointer list-none font-semibold text-deep-brown">How subscribing works</summary>
+                    <p className="mt-2 leading-relaxed">
+                      Pick weekly, every 2 weeks or monthly and a lower price is locked in. You are charged each time a delivery goes out. Pause for a month, change plan or cancel any time from Manage Subscription in the site footer (you get a login code by email). No cancellation fees.
+                    </p>
+                  </details>
+                )}
+              </div>
+            )}
 
             {/* Ingredients (drinks) */}
             {!isEquipment && (content.ingredients?.length ?? 0) > 0 && (
