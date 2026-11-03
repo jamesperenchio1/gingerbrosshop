@@ -40,7 +40,7 @@ export default function StoryPage() {
           </div>
           <div className="grid grid-cols-2 gap-4">
             <ResponsiveImage name="life-stoop" alt="Two friends sharing GingerBros on a Bangkok stoop" sizes="(min-width: 768px) 280px, 50vw" className="aspect-[4/5] w-full rounded-[24px] object-cover" />
-            <ResponsiveImage name="life-pair-mango" alt="GingerBros next to mango sticky rice" sizes="(min-width: 768px) 280px, 50vw" className="mt-12 aspect-[4/5] w-full rounded-[24px] object-cover" />
+            <ResponsiveImage name="life-ice-stool" alt="GingerBros bottle and an iced glass on a yellow plastic stool" sizes="(min-width: 768px) 280px, 50vw" className="mt-12 aspect-[4/5] w-full rounded-[24px] object-cover" />
           </div>
         </div>
       </section>

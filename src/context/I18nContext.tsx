@@ -367,6 +367,17 @@ const I18nContext = createContext<I18nContextType | null>(null);
 const LOCALE_KEY = 'gingerbros-locale';
 
 /**
+ * Swap language in place: push the new URL in the shape React Router's history
+ * uses, then fire popstate so the router and the basename in main.tsx both
+ * pick it up. No reload, so scroll position and cart state stay put.
+ */
+function pushUrl(url: string) {
+  const state = { usr: null, key: Math.random().toString(36).slice(2, 10), idx: (window.history.state?.idx ?? 0) + 1 };
+  window.history.pushState(state, '', url);
+  window.dispatchEvent(new PopStateEvent('popstate', { state }));
+}
+
+/**
  * The locale comes from the URL (see src/lib/locale.ts), so server and client
  * always agree and Thai pages are crawlable. Switching language moves to the
  * other URL; the choice is remembered so a Thai visitor landing on an English
@@ -395,12 +406,13 @@ export function I18nProvider({ children, locale }: { children: ReactNode; locale
     const target = hasThai(routerPath.replace(/\/$/, '') || '/') ? localizedPath(routerPath, l) : routerPath;
     if (l === 'th' && target === routerPath) {
       // No Thai version of this page yet: go to the Thai homepage instead.
-      window.location.href = '/th';
+      pushUrl('/th');
       return;
     }
     // Final guard: only ever navigate within this origin.
     const url = new URL(`/${target.replace(/^[/\\]+/, '')}${window.location.search}`, window.location.origin);
-    window.location.href = url.origin === window.location.origin ? url.href : '/';
+    if (url.origin !== window.location.origin) { window.location.href = '/'; return; }
+    pushUrl(url.pathname + url.search);
   }, [locale]);
 
   const toggleLocale = useCallback(() => {
