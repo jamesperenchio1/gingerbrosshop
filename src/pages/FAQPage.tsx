@@ -6,6 +6,8 @@ import {
 } from 'lucide-react';
 import { Link } from 'react-router';
 import SEO from '@/components/SEO';
+import { useI18n } from '@/context/I18nContext';
+import { FAQ_TH, FAQ_UI_TH } from '@/lib/faqTh';
 
 type Category = 'all' | 'shipping' | 'product' | 'orders' | 'subscription' | 'wholesale';
 
@@ -136,22 +138,44 @@ const FAQS: FAQItem[] = [
 ];
 
 export default function FAQPage() {
+  const { locale } = useI18n();
+  const th = locale === 'th';
+  const labels = th ? FAQ_UI_TH.categories : CATEGORY_LABELS;
   const [activeCategory, setActiveCategory] = useState<Category>('all');
   const [searchQuery, setSearchQuery] = useState('');
 
+  const faqs = useMemo<FAQItem[]>(() => (th
+    ? FAQS.map((f, i) => ({
+        ...f,
+        q: FAQ_TH[i].q,
+        aText: i === 9
+          ? `${FAQ_TH[i].a} (/business, gingerbros.brew@gmail.com)`
+          : FAQ_TH[i].a,
+        a: i === 9 ? (
+          <>
+            {FAQ_UI_TH.wholesaleA1}{' '}
+            <Link to="/business" className="text-rust font-semibold underline underline-offset-2 hover:text-amber transition-colors">{FAQ_UI_TH.wholesaleLink}</Link>{' '}
+            {FAQ_UI_TH.wholesaleA2}{' '}
+            <a href="mailto:gingerbros.brew@gmail.com" className="text-rust font-semibold underline underline-offset-2 hover:text-amber transition-colors">gingerbros.brew@gmail.com</a>{' '}
+            {FAQ_UI_TH.wholesaleA3}
+          </>
+        ) : FAQ_TH[i].a,
+      }))
+    : FAQS), [th]);
+
   const filteredFaqs = useMemo(() => {
-    let items = activeCategory === 'all' ? FAQS : FAQS.filter((f) => f.category === activeCategory);
+    let items = activeCategory === 'all' ? faqs : faqs.filter((f) => f.category === activeCategory);
     if (searchQuery.trim()) {
       const q = searchQuery.toLowerCase();
       items = items.filter((f) => f.q.toLowerCase().includes(q) || (f.aText ?? String(f.a)).toLowerCase().includes(q));
     }
     return items;
-  }, [activeCategory, searchQuery]);
+  }, [activeCategory, searchQuery, faqs]);
 
   const faqSchema = {
     '@context': 'https://schema.org',
     '@type': 'FAQPage',
-    mainEntity: FAQS.map((f) => ({
+    mainEntity: faqs.map((f) => ({
       '@type': 'Question',
       name: f.q,
       acceptedAnswer: { '@type': 'Answer', text: f.aText ?? f.a },
@@ -161,8 +185,8 @@ export default function FAQPage() {
   return (
     <div className="min-h-screen bg-warm-white">
       <SEO
-        title="FAQ: Delivery, Subscriptions & Storage"
-        description="Answers on GingerBros delivery, cold-chain shipping, subscriptions, storage, payments and wholesale. Ginger Fizz and Ginger Tea, made in Thailand."
+        title={th ? FAQ_UI_TH.seoTitle : 'FAQ: Delivery, Subscriptions & Storage'}
+        description={th ? FAQ_UI_TH.seoDesc : 'Answers on GingerBros delivery, cold-chain shipping, subscriptions, storage, payments and wholesale. Ginger Fizz and Ginger Tea, made in Thailand.'}
         path="/faq"
         jsonLd={faqSchema}
       />
@@ -171,13 +195,13 @@ export default function FAQPage() {
           {/* Header */}
           <div className="text-center mb-10">
             <span className="font-body font-medium text-[13px] uppercase tracking-[0.08em] text-rust mb-3 block">
-              SUPPORT
+              {th ? FAQ_UI_TH.support : 'SUPPORT'}
             </span>
             <h1 className="font-display font-bold text-deep-brown text-[clamp(2rem,4vw,3rem)] mb-4">
-              Frequently Asked Questions
+              {th ? FAQ_UI_TH.title : 'Frequently Asked Questions'}
             </h1>
             <p className="font-body text-earth text-lg max-w-[600px] mx-auto">
-              Everything you need to know about GingerBros ginger fizz.
+              {th ? FAQ_UI_TH.sub : 'Everything you need to know about GingerBros ginger fizz.'}
             </p>
           </div>
 
@@ -191,7 +215,7 @@ export default function FAQPage() {
                 type="text"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Search questions..."
+                placeholder={th ? FAQ_UI_TH.search : 'Search questions...'}
                 className="w-full pl-10 pr-4 py-3 bg-cream rounded-full font-body text-sm text-deep-brown placeholder:text-earth/80 focus:outline-none focus:ring-2 focus:ring-amber/50"
               />
             </div>
@@ -213,7 +237,7 @@ export default function FAQPage() {
                   }`}
                 >
                   {CATEGORY_ICONS[cat]}
-                  {CATEGORY_LABELS[cat]}
+                  {labels[cat]}
                 </button>
               ))}
             </div>
@@ -224,7 +248,7 @@ export default function FAQPage() {
             <aside className="hidden lg:block w-[260px] flex-shrink-0">
               <div className="sticky top-24 space-y-1">
                 <p className="font-body font-semibold text-[13px] uppercase tracking-[0.08em] text-rust mb-3 px-3">
-                  Categories
+                  {th ? FAQ_UI_TH.categoriesLabel : 'Categories'}
                 </p>
                 {(Object.keys(CATEGORY_LABELS) as Category[]).map((cat) => (
                   <button
@@ -237,7 +261,7 @@ export default function FAQPage() {
                     }`}
                   >
                     {CATEGORY_ICONS[cat]}
-                    {CATEGORY_LABELS[cat]}
+                    {labels[cat]}
                   </button>
                 ))}
               </div>
@@ -267,27 +291,27 @@ export default function FAQPage() {
                 ))}
                 {filteredFaqs.length === 0 && (
                   <div className="text-center py-12">
-                    <p className="font-body text-earth text-lg">No questions found.</p>
+                    <p className="font-body text-earth text-lg">{th ? FAQ_UI_TH.none : 'No questions found.'}</p>
                     <button
                       onClick={() => { setActiveCategory('all'); setSearchQuery(''); }}
                       className="mt-2 text-rust font-body font-medium hover:underline"
                     >
-                      Clear filters
+                      {th ? FAQ_UI_TH.clear : 'Clear filters'}
                     </button>
                   </div>
                 )}
               </div>
 
               <div className="mt-12 bg-deep-brown rounded-2xl p-8 text-cream text-center">
-                <h3 className="font-display font-semibold text-[1.1rem] mb-2">Still have questions?</h3>
+                <h3 className="font-display font-semibold text-[1.1rem] mb-2">{th ? FAQ_UI_TH.stillTitle : 'Still have questions?'}</h3>
                 <p className="font-body text-cream/80 text-[14px] mb-4 max-w-[480px] mx-auto">
-                  We are happy to help with anything not covered here. Drop us a line and we will get back to you within 24 hours.
+                  {th ? FAQ_UI_TH.stillBody : 'We are happy to help with anything not covered here. Drop us a line and we will get back to you within 24 hours.'}
                 </p>
                 <a
                   href="mailto:gingerbros.brew@gmail.com"
                   className="inline-flex items-center gap-2 bg-amber text-deep-brown font-body font-medium text-sm uppercase tracking-[0.08em] px-7 py-3 rounded-full hover:bg-warm-gold transition-colors"
                 >
-                  Email Us
+                  {th ? FAQ_UI_TH.email : 'Email Us'}
                 </a>
               </div>
             </div>
