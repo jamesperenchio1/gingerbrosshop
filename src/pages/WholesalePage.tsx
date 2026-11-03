@@ -185,7 +185,7 @@ export default function WholesalePage() {
     {
       icon: <Truck className="w-8 h-8 text-amber" />,
       title: 'Reliable Delivery',
-      description: 'Scheduled wholesale deliveries across Thailand. Standard or cold-chain options to keep every bottle fresh.',
+      description: 'Scheduled wholesale deliveries across Thailand by standard courier. No cold chain needed, and cold-chain delivery is available on request.',
     },
     {
       icon: <BadgeCheck className="w-8 h-8 text-amber" />,
@@ -253,7 +253,7 @@ export default function WholesalePage() {
     <div className="min-h-screen bg-warm-white">
       <SEO
         title="GingerBros for Cafés, Bars & Restaurants | Wholesale & Signature Serve"
-        description="Put GingerBros on your menu. Free samples, recipe cards, menu copy and wholesale pricing for cafés, bars, restaurants and hotels in Thailand."
+        description="Put GingerBros on your menu. Free samples (you cover shipping), recipe cards, menu copy and wholesale pricing for cafés, bars, restaurants and hotels in Thailand."
         path="/business"
         jsonLd={jsonLd}
       />
@@ -278,7 +278,7 @@ export default function WholesalePage() {
             <h2 className="font-poster text-[clamp(2rem,5vw,3.2rem)] mt-3 mb-6">Everything you need to sell it.</h2>
             <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
               {[
-                ['Free samples', 'Taste Fizz and Tea with your team before you commit.'],
+                ['Free samples', 'Taste Fizz and Tea with your team before you commit. Samples are free; you cover the shipping.'],
                 ['Recipe card', 'Three signature serves your staff can make in seconds.'],
                 ['Menu copy', 'Ready-to-use descriptions in Thai and English.'],
                 ['Tabletop display', 'A small branded stand so guests notice it.'],
