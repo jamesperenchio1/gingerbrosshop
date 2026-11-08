@@ -13,9 +13,7 @@ export default function FindUsPage() {
   return (
     <>
       <SEO
-        title="Where to Buy GingerBros | Online, LINE, Shopee & Stockists"
-        description="Order GingerBros online with nationwide delivery in Thailand, or find us on LINE, Shopee, at markets and at our stockists."
-        path="/find-us"
+        route="/find-us"
         jsonLd={{ '@context': 'https://schema.org', '@type': 'WebPage', name: 'Find GingerBros', url: `${SITE_URL}/find-us` }}
       />
       <section className="bg-warm-white pb-20 pt-32 md:pt-40">

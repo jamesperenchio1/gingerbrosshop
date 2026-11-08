@@ -185,9 +185,7 @@ export default function FAQPage() {
   return (
     <div className="min-h-screen bg-warm-white">
       <SEO
-        title={th ? FAQ_UI_TH.seoTitle : 'FAQ: Delivery, Subscriptions & Storage'}
-        description={th ? FAQ_UI_TH.seoDesc : 'Answers on GingerBros delivery, cold-chain shipping, subscriptions, storage, payments and wholesale. Ginger Fizz and Ginger Tea, made in Thailand.'}
-        path="/faq"
+        route="/faq"
         jsonLd={faqSchema}
       />
       <div className="pt-28 pb-20">

@@ -4,8 +4,16 @@
 // first byte the browser gets is a fully painted page instead of an empty
 // <div id="root">. The client then hydrates it (src/main.tsx).
 //
-// Safety: if anything about a route fails, that route is skipped and keeps
-// serving the ordinary SPA shell (vercel.json rewrite), i.e. today's behaviour.
+// The route list, Thai pages and sitemap rules come from src/seo/routes.ts via
+// the SSR bundle, so adding a page there is the only step.
+//
+// Failure policy:
+//   - Local/preview builds: a route that fails keeps serving the SPA shell.
+//   - Strict builds (Vercel production, or SEO_STRICT=1): any failed route or a
+//     missing catalog fails the build, so SEO can never regress silently.
+//   - Catalog: live API first, then scripts/catalog.snapshot.json (refresh with
+//     `node scripts/snapshot-catalog.mjs`), so a transient API blip does not
+//     drop product pages.
 import { readFile, writeFile, mkdir } from 'node:fs/promises';
 import path from 'node:path';
 import { pathToFileURL } from 'node:url';
@@ -13,23 +21,31 @@ import { pathToFileURL } from 'node:url';
 const root = process.cwd();
 const dist = path.join(root, 'dist');
 const CATALOG_URL = process.env.CATALOG_URL || 'https://gingerbrosshop.com/api/products';
+const STRICT = process.env.VERCEL_ENV === 'production' || process.env.SEO_STRICT === '1';
 
 const SITE = 'https://gingerbrosshop.com';
-const STATIC_ROUTES = ['/', '/shop', '/story', '/find-us', '/business', '/guide', '/faq', '/shipping', '/returns', '/privacy', '/terms', '/track', '/orders'];
-// Never listed in the sitemap.
-const PRIVATE_ROUTES = new Set(['/track', '/orders']);
 
-async function fetchCatalog() {
+async function loadCatalog() {
   try {
     // Unique query string bypasses the edge cache so a rebuild sees fresh data.
     const res = await fetch(`${CATALOG_URL}?build=${Date.now()}`, { signal: AbortSignal.timeout(20000) });
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     const data = await res.json();
-    return Array.isArray(data.products) ? data.products : null;
+    if (!Array.isArray(data.products) || data.products.length === 0) throw new Error('empty catalog');
+    return { products: data.products, source: 'live' };
   } catch (e) {
-    console.warn(`[prerender] catalog unavailable (${e.message}); product data will load client-side`);
-    return null;
+    console.warn(`[prerender] live catalog unavailable (${e.message}); trying scripts/catalog.snapshot.json`);
   }
+  try {
+    const data = JSON.parse(await readFile(path.join(root, 'scripts', 'catalog.snapshot.json'), 'utf8'));
+    if (Array.isArray(data.products) && data.products.length > 0) {
+      console.warn('[prerender] WARNING: using the committed catalog snapshot; prices in prerendered HTML may be stale');
+      return { products: data.products, source: 'snapshot' };
+    }
+  } catch (e) {
+    console.warn(`[prerender] snapshot unavailable (${e.message})`);
+  }
+  return null;
 }
 
 // Tags Helmet re-emits per page; drop the shell's generic copies first so the
@@ -38,6 +54,7 @@ function stripShellSeo(html) {
   return html
     .replace(/<title>[\s\S]*?<\/title>/i, '')
     .replace(/<meta\s+name="description"[^>]*>/gi, '')
+    .replace(/<meta\s+name="keywords"[^>]*>/gi, '')
     .replace(/<meta\s+property="og:[^"]*"[^>]*>/gi, '')
     .replace(/<meta\s+name="twitter:[^"]*"[^>]*>/gi, '')
     .replace(/<link\s+rel="canonical"[^>]*>/gi, '');
@@ -106,11 +123,6 @@ function hoistHead(html) {
 
 const xml = (s) => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&apos;');
 
-const FALLBACK_DRINK_IDS = [
-  'ginger-fizz', 'ginger-tea', 'ginger-fizz-2pack', 'ginger-fizz-3pack', 'ginger-fizz-6pack',
-  'ginger-tea-2pack', 'ginger-tea-3pack', 'ginger-tea-6pack', 'fizz-tea-duo', 'fizz-tea-4pack',
-];
-
 function sitemapXml(entries) {
   const urls = entries.map(({ loc, lastmod, alternates = [], images = [] }) => [
     '  <url>',
@@ -127,21 +139,59 @@ ${urls.join('\n')}
 `;
 }
 
+const baht = (n) => `฿${n}`;
+const oneTimePrice = (p) => p?.prices?.find((x) => !x.recurring && x.unitAmount != null)?.unitAmount;
+
+/** llms.txt, generated from the catalog and the guide metadata so it cannot drift. */
+function llmsTxt(catalog, posts) {
+  const drinks = (catalog ?? []).filter((p) => p.category === 'drinks');
+  const byId = Object.fromEntries(drinks.map((p) => [p.id, p]));
+  const fizz = oneTimePrice(byId['ginger-fizz']);
+  const tea = oneTimePrice(byId['ginger-tea']);
+  const lines = [
+    '# GingerBros',
+    '',
+    `> GingerBros makes modern ginger drinks in Thailand. Tagline: "Think Ginger. Drink Different." Two drinks: Ginger Fizz (sparkling, fresh Thai ginger and real lime, low sugar${fizz ? `, ${baht(fizz)} per 330ml bottle` : ''}) and Ginger Tea · Thai Spice (still, real ginger slowly simmered with lemongrass, lime and spices, no artificial colours or flavours${tea ? `, ${baht(tea)} per 330ml bottle` : ''}). The drinks are not fermented. Sold online at gingerbrosshop.com with delivery across Thailand, plus LINE and Shopee.`,
+    '',
+    '## Shop',
+    `- [Shop all drinks](${SITE}/shop): singles, 2/3/6-packs, Fizz & Tea mixed bundles, subscriptions. Multi-buy deals apply automatically in the cart.`,
+    ...drinks.map((p) => {
+      const price = oneTimePrice(p);
+      return `- [${p.name}](${SITE}/product/${p.id})${price ? `: ${baht(price)}` : ''}${p.description ? `. ${p.description.replace(/\s+/g, ' ').trim()}` : ''}`;
+    }),
+    '',
+    '## Learn',
+    ...posts.map((post) => `- [${post.title}](${SITE}/guide/${post.slug}): ${post.excerpt}`),
+    `- [The Ginger Guide](${SITE}/guide) · [Our Story](${SITE}/story)`,
+    `- [FAQ](${SITE}/faq) · [Shipping](${SITE}/shipping) · [Returns](${SITE}/returns)`,
+    '',
+    '## Business',
+    `- [For cafés, bars & restaurants](${SITE}/business): wholesale pricing and the Signature Serve programme.`,
+    '- Contact: gingerbros.brew@gmail.com',
+    '',
+  ];
+  return lines.join('\n');
+}
+
 async function main() {
   const template = await readFile(path.join(dist, 'index.html'), 'utf8');
-  const { render, BLOG_SLUGS, BLOG_SEO_META, TH_PATHS } = await import(pathToFileURL(path.join(root, 'dist-ssr', 'entry-server.js')).href);
+  const ssr = await import(pathToFileURL(path.join(root, 'dist-ssr', 'entry-server.js')).href);
+  const { render, BLOG_SLUGS, BLOG_SEO_META, TH_PATHS, PRERENDER_PATHS, SITEMAP_PATHS } = ssr;
   // Untouched copy of the SPA shell: served for every route that isn't
   // prerendered (see the rewrite in vercel.json and middleware.ts).
   await writeFile(path.join(dist, 'shell.html'), template);
-  const catalog = await fetchCatalog();
+  const loaded = await loadCatalog();
+  if (!loaded && STRICT) throw new Error('no catalog (live or snapshot) in a strict build');
+  const catalog = loaded?.products ?? null;
   const manifest = JSON.parse(await readFile(path.join(dist, '.vite', 'manifest.json'), 'utf8'));
 
-  const routes = [...STATIC_ROUTES, ...BLOG_SLUGS.map((s) => `/guide/${s}`)];
+  const routes = [...PRERENDER_PATHS, ...BLOG_SLUGS.map((s) => `/guide/${s}`)];
   if (catalog) routes.push(...catalog.map((p) => `/product/${p.id}`));
   const thRoutes = TH_PATHS.map((p) => (p === '/' ? '/th' : `/th${p}`));
   routes.push(...thRoutes);
 
   const catalogTag = catalog ? `<script id="__catalog__" type="application/json">${escapeJson(catalog)}</script>` : '';
+  const failures = [];
   let ok = 0;
   for (const route of routes) {
     try {
@@ -158,15 +208,18 @@ async function main() {
       await writeFile(out, page);
       ok++;
     } catch (e) {
+      failures.push(route);
       console.warn(`[prerender] skipped ${route}: ${e.message}`);
     }
   }
-  console.log(`[prerender] wrote ${ok}/${routes.length} routes`);
+  console.log(`[prerender] wrote ${ok}/${routes.length} routes (catalog: ${loaded?.source ?? 'none'})`);
+  if (STRICT && failures.length) throw new Error(`strict build: ${failures.length} route(s) failed to prerender: ${failures.join(', ')}`);
 
-  // sitemap.xml: every public route, Thai alternates, product images.
+  // sitemap.xml: every indexable route, Thai alternates, product images.
   const genImage = (id) => `${SITE}/images/gen/${id}.jpg`;
+  const indexable = new Set(SITEMAP_PATHS);
   const entries = routes
-    .filter((r) => !PRIVATE_ROUTES.has(r) && !r.startsWith('/th'))
+    .filter((r) => !r.startsWith('/th') && (indexable.has(r) || r.startsWith('/guide/') || r.startsWith('/product/')))
     .map((r) => {
       const loc = r === '/' ? SITE : `${SITE}${r}`;
       const th = TH_PATHS.includes(r);
@@ -180,11 +233,6 @@ async function main() {
       const images = product ? (product.category === 'drinks' ? [genImage(id)] : product.images.slice(0, 1)) : [];
       return { loc, lastmod, alternates, images };
     });
-  // If the live catalog couldn't be fetched, keep the drink product pages in
-  // the sitemap anyway so a transient Stripe/API outage doesn't drop them.
-  if (!catalog) {
-    for (const id of FALLBACK_DRINK_IDS) entries.push({ loc: `${SITE}/product/${id}`, images: [`${SITE}/images/gen/${id}.jpg`] });
-  }
   for (const r of TH_PATHS) {
     const en = r === '/' ? SITE : `${SITE}${r}`;
     const loc = `${SITE}/th${r === '/' ? '' : r}`;
@@ -192,9 +240,16 @@ async function main() {
   }
   await writeFile(path.join(dist, 'sitemap.xml'), sitemapXml(entries));
   console.log(`[prerender] sitemap.xml: ${entries.length} urls`);
+
+  await writeFile(path.join(dist, 'llms.txt'), llmsTxt(catalog, BLOG_SEO_META));
+  console.log('[prerender] llms.txt generated from the catalog');
 }
 
 main().catch((e) => {
-  // Never fail the deploy over prerendering: the SPA shell still works.
+  if (STRICT) {
+    console.error('[prerender] FAILED (strict build):', e);
+    process.exit(1);
+  }
+  // Local/preview builds never fail over prerendering: the SPA shell still works.
   console.warn('[prerender] failed, shipping SPA shell only:', e);
 });

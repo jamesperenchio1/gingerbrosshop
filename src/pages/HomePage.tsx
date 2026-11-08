@@ -13,34 +13,9 @@ import LineWidget from '@/components/LineWidget';
 import SEO from '@/components/SEO';
 import { prefetchProductDetailWhenIdle } from '@/lib/prefetch';
 import { useCatalog } from '@/lib/catalog';
-import { SITE_URL, SITE_NAME, SOCIAL_LINKS, LOGO_URL } from '@/constants/site';
+import { SITE_URL } from '@/constants/site';
+import { siteGraph } from '@/seo/schema';
 import { useI18n } from '@/context/I18nContext';
-
-const organizationSchema = {
-  '@context': 'https://schema.org',
-  '@type': 'Organization',
-  name: SITE_NAME,
-  url: SITE_URL,
-  logo: LOGO_URL,
-  slogan: 'Think Ginger. Drink Different.',
-  description: 'GingerBros makes modern ginger drinks in Thailand: Ginger Fizz and Ginger Tea, made with fresh Thai ginger.',
-  sameAs: SOCIAL_LINKS,
-  contactPoint: {
-    '@type': 'ContactPoint',
-    contactType: 'customer support',
-    email: 'gingerbros.brew@gmail.com',
-    availableLanguage: ['English', 'Thai'],
-  },
-};
-
-const websiteSchema = {
-  '@context': 'https://schema.org',
-  '@type': 'WebSite',
-  name: SITE_NAME,
-  alternateName: ['Ginger Bros', 'จินเจอร์บรอส'],
-  url: SITE_URL,
-  inLanguage: ['en', 'th'],
-};
 
 export default function HomePage() {
   useEffect(() => prefetchProductDetailWhenIdle(), []);
@@ -67,16 +42,7 @@ export default function HomePage() {
 
   return (
     <div className="min-h-screen bg-warm-white">
-      <SEO
-        title={locale === 'th'
-          ? 'GingerBros | น้ำขิงซ่า & ชาขิง เครื่องดื่มขิงยุคใหม่ ผลิตในไทย'
-          : 'GingerBros | Ginger Fizz & Ginger Tea from Thailand'}
-        description={locale === 'th'
-          ? 'คิดแบบขิง ดื่มให้แตกต่าง น้ำขิงซ่าและชาขิงจากขิงไทยสด มะนาวแท้ หวานน้อย สั่งออนไลน์ส่งทั่วไทย'
-          : 'Modern ginger drinks made in Thailand. Ginger Fizz and Ginger Tea with fresh Thai ginger, real lime and low sugar. Order online, delivered nationwide.'}
-        path="/"
-        jsonLd={[organizationSchema, websiteSchema, productListSchema, faqSchema]}
-      />
+      <SEO route="/" jsonLd={[siteGraph(), productListSchema, faqSchema]} />
       <Hero />
       <Ticker />
       <Shop variant="home" />

@@ -17,9 +17,7 @@ export default function ShippingPage() {
   return (
     <div className="min-h-screen bg-warm-white">
       <SEO
-        title={L('Delivery in Thailand: Shipping & Cold-Chain', 'จัดส่งทั่วไทย: ค่าส่งและ Cold-chain')}
-        description={L('Delivery across Thailand for Ginger Fizz and Ginger Tea. ฿100 shipping, free over ฿500, dispatched Mon–Thu, with an optional cold-chain upgrade.', 'จัดส่ง Ginger Fizz และ Ginger Tea ทั่วประเทศไทย ค่าส่ง ฿100 ฟรีเมื่อสั่งเกิน ฿500 ส่งออกวันจันทร์–พฤหัสบดี พร้อมตัวเลือก Cold-chain')}
-        path="/shipping"
+        route="/shipping"
         jsonLd={jsonLd}
       />
       <div className="pt-28 pb-20">

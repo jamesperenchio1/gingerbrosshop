@@ -99,9 +99,7 @@ Our total liability to you for any claim arising from your purchase shall not ex
   return (
     <div className="min-h-screen bg-warm-white">
       <SEO
-        title="Terms of Service | GingerBros"
-        description="GingerBros terms of service, your rights and obligations when purchasing craft ginger fizz from gingerbrosshop.com."
-        path="/terms"
+        route="/terms"
       />
       <div className="sticky top-0 z-50 bg-warm-white/95 backdrop-blur-xl border-b border-soft-peach/50">
         <div className="max-w-[1280px] mx-auto px-6 h-14 flex items-center justify-between">

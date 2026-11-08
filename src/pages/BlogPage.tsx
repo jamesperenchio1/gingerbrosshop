@@ -1065,7 +1065,7 @@ export default function BlogPage() {
         '@type': 'BlogPosting',
         headline: activePost.title,
         description: activePost.excerpt,
-        articleBody: activePost.content,
+        inLanguage: 'en',
         datePublished: activePost.date,
         dateModified: activePost.date,
         keywords: activePost.tags.join(', '),
@@ -1096,12 +1096,7 @@ export default function BlogPage() {
           jsonLd={activePostSchema && activePostBreadcrumb ? [activePostSchema, activePostBreadcrumb] : undefined}
         />
       ) : (
-        <SEO
-          title="Ginger Guide: Mocktails & Thai Food Pairings"
-          description="How to serve Ginger Fizz and Ginger Tea, ginger mocktails and cocktails, Thai food pairings and everything worth knowing about Thai ginger."
-          path="/guide"
-          jsonLd={[blogListSchema]}
-        />
+        <SEO route="/guide" jsonLd={[blogListSchema]} />
       )}
 
       {/* Sticky top bar */}

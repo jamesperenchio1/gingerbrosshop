@@ -273,9 +273,7 @@ export default function WholesalePage() {
   return (
     <div className="min-h-screen bg-warm-white">
       <SEO
-        title="Wholesale Ginger Drinks for Cafés & Bars"
-        description="Wholesale ginger drinks for cafés, bars, restaurants and hotels in Thailand. Free samples, recipe cards, menu copy and trade pricing. Request a quote."
-        path="/business"
+        route="/business"
         jsonLd={jsonLd}
       />
 

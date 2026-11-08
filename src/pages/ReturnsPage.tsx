@@ -7,9 +7,7 @@ export default function ReturnsPage() {
   return (
     <div className="min-h-screen bg-warm-white">
       <SEO
-        title="Returns & Refund Policy | GingerBros"
-        description="GingerBros return policy for craft ginger fizz. Damaged or incorrect orders? Contact us within 24 hours with photos for a replacement or full refund."
-        path="/returns"
+        route="/returns"
       />
       <div className="sticky top-0 z-50 bg-warm-white/95 backdrop-blur-xl border-b border-soft-peach/50">
         <div className="max-w-[1280px] mx-auto px-6 h-14 flex items-center justify-between">

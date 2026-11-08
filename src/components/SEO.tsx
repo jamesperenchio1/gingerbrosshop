@@ -8,10 +8,17 @@ import {
 } from '@/constants/site';
 import { useI18n } from '@/context/I18nContext';
 import { hasThai, localizedPath } from '@/lib/locale';
+import { routeSeo } from '@/seo/routes';
 
 interface SEOProps {
-  title: string;
-  description: string;
+  /**
+   * Static routes: pass `route` and the title, description, image and noindex
+   * flag come from src/seo/routes.ts (the single source of truth, also used by
+   * the edge middleware and the sitemap). Dynamic pages pass title/description.
+   */
+  route?: string;
+  title?: string;
+  description?: string;
   path?: string;
   image?: string;
   type?: 'website' | 'article' | 'product';
@@ -23,18 +30,25 @@ interface SEOProps {
 }
 
 export default function SEO({
-  title,
-  description,
-  path = '',
-  image = DEFAULT_OG_IMAGE,
+  route,
+  title: titleProp,
+  description: descriptionProp,
+  path: pathProp,
+  image: imageProp,
   type = 'website',
-  noindex = false,
+  noindex: noindexProp,
   jsonLd,
   imageWidth,
   imageHeight,
 }: SEOProps) {
   const { locale } = useI18n();
-  const routePath = path || '/';
+  const registry = route ? routeSeo(route, locale) : undefined;
+  if (route && !registry) throw new Error(`SEO: unknown route "${route}" (add it to src/seo/routes.ts)`);
+  const title = titleProp ?? registry?.title ?? '';
+  const description = descriptionProp ?? registry?.description ?? '';
+  const image = imageProp ?? registry?.image ?? DEFAULT_OG_IMAGE;
+  const noindex = noindexProp ?? (registry ? !registry.indexable : false);
+  const routePath = pathProp || route || '/';
   // Only pages with a real Thai version get a /th canonical; everything else
   // (product pages, guide…) is canonical in English even when browsed under /th.
   const canonical = `${SITE_URL}${localizedPath(routePath, hasThai(routePath) ? locale : 'en')}`.replace(/\/$/, '') || SITE_URL;

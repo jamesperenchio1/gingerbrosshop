@@ -163,9 +163,7 @@ For significant changes that materially affect your rights, we will notify you v
   return (
     <div className="min-h-screen bg-warm-white">
       <SEO
-        title="Privacy Policy | GingerBros"
-        description="GingerBros privacy policy: how we collect, use, and protect your personal information when you shop at gingerbrosshop.com."
-        path="/privacy"
+        route="/privacy"
       />
       <div className="sticky top-0 z-50 bg-warm-white/95 backdrop-blur-xl border-b border-soft-peach/50">
         <div className="max-w-[1280px] mx-auto px-6 h-14 flex items-center justify-between">

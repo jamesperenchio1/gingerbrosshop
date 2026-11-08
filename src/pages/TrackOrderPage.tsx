@@ -75,10 +75,7 @@ export default function TrackOrderPage() {
   return (
     <div className="min-h-screen bg-warm-white">
       <SEO
-        title="Track Your Order | GingerBros"
-        description="Track your GingerBros craft ginger fizz order status. Enter your email and order number to see shipping updates."
-        path="/track"
-        noindex
+        route="/track"
       />
       <div className="sticky top-0 z-50 bg-warm-white/95 backdrop-blur-xl border-b border-soft-peach/50">
         <div className="max-w-[1280px] mx-auto px-6 h-14 flex items-center justify-between">

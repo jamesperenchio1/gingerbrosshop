@@ -124,10 +124,7 @@ export default function OrdersPage() {
   return (
     <div className="min-h-screen bg-warm-white">
       <SEO
-        title="My Orders | GingerBros"
-        description="Look up your past GingerBros orders by email address."
-        path="/orders"
-        noindex
+        route="/orders"
       />
       <div className="sticky top-0 z-50 bg-warm-white/95 backdrop-blur-xl border-b border-soft-peach/50">
         <div className="max-w-[1280px] mx-auto px-6 h-14 flex items-center justify-between">

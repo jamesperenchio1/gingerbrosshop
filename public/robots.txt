@@ -1,12 +1,34 @@
+# GingerBros welcomes search engines and AI answer engines.
+# One group shared by every crawler below (a crawler that matches a named group
+# ignores the "*" group, so the rules must live in one place).
 User-agent: *
+User-agent: Googlebot
+User-agent: Bingbot
+User-agent: OAI-SearchBot
+User-agent: ChatGPT-User
+User-agent: GPTBot
+User-agent: PerplexityBot
+User-agent: Perplexity-User
+User-agent: ClaudeBot
+User-agent: Claude-SearchBot
+User-agent: Claude-User
+User-agent: Google-Extended
+User-agent: Applebot
+User-agent: Applebot-Extended
+User-agent: DuckAssistBot
+User-agent: CCBot
+User-agent: Amazonbot
+User-agent: meta-externalagent
+User-agent: cohere-ai
+User-agent: YouBot
 Allow: /
 
-# Block admin and private pages
+# Private areas. Pages that are noindex (/track, /orders, /order/success) are
+# deliberately NOT disallowed here: a crawler must be able to fetch a page to
+# see its noindex tag.
 Disallow: /admin/
-Disallow: /order/success
-Disallow: /track
 
-# Block query strings with session/checkout params
+# Checkout and session URLs
 Disallow: /*?*session_id=
 Disallow: /*?*payment_intent=
 

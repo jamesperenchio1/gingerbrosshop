@@ -7,9 +7,10 @@
  */
 
 import { BLOG_SEO_META } from './src/lib/blogSeoMeta';
-import { SITE_URL, DEFAULT_OG_IMAGE, LOGO_URL, SOCIAL_LINKS } from './src/constants/site';
+import { SITE_URL, DEFAULT_OG_IMAGE, LOGO_URL } from './src/constants/site';
 import { OG_IMAGES } from './src/lib/ogImages';
-import { TH_PATHS } from './src/lib/locale';
+import { ROUTE_SEO, THAI_PATHS, routeSeo } from './src/seo/routes';
+import { siteGraph } from './src/seo/schema';
 import { drinkSeo } from './src/lib/seoMeta';
 
 interface RouteMeta {
@@ -22,156 +23,28 @@ interface RouteMeta {
 }
 
 const FALLBACK_IMAGE = DEFAULT_OG_IMAGE;
+const TH_PATHS = THAI_PATHS;
 
-const KNOWN_ROUTES: Record<string, RouteMeta> = {
-  '/': {
-    title: 'GingerBros | Ginger Fizz & Ginger Tea from Thailand',
-    description:
-      'Modern ginger drinks made in Thailand. Ginger Fizz and Ginger Tea with fresh Thai ginger, real lime and low sugar. Order online, delivered nationwide.',
-    image: FALLBACK_IMAGE,
+/**
+ * Static-route meta comes from src/seo/routes.ts, the same table the React pages
+ * (<SEO route="…">), the sitemap and the audit read, so nothing is repeated here.
+ */
+function metaFor(path: string, locale: 'en' | 'th'): RouteMeta {
+  const m = routeSeo(path, locale)!;
+  return {
+    title: m.title,
+    description: m.description,
+    image: m.image,
     type: 'website',
-    jsonLd: {
-      '@context': 'https://schema.org',
-      '@graph': [
-        { '@type': 'Organization', name: 'GingerBros', url: SITE_URL, logo: LOGO_URL, slogan: 'Think Ginger. Drink Different.', sameAs: SOCIAL_LINKS },
-        { '@type': 'WebSite', name: 'GingerBros', url: SITE_URL, inLanguage: ['en', 'th'] },
-      ],
-    },
-  },
-  '/shop': {
-    title: 'Shop Ginger Fizz, Ginger Tea & Multi-Buy Packs | GingerBros',
-    description: 'Buy Ginger Fizz and Ginger Tea online in Thailand. Singles, 2, 3 and 6-packs, mix-and-match bundles and subscriptions. Deals apply automatically.',
-    image: FALLBACK_IMAGE,
-    type: 'website',
-  },
-  '/story': {
-    title: 'Our Story: Rooted in Ginger, Made for Today | GingerBros',
-    description: 'Why GingerBros exists: to make Thai ginger the drink you actually want to reach for. Fresh Thai ginger, real lime, low sugar, made in Thailand.',
-    image: FALLBACK_IMAGE,
-    type: 'website',
-  },
-  '/find-us': {
-    title: 'Where to Buy GingerBros | Online, LINE, Shopee & Stockists',
-    description: 'Order GingerBros online with nationwide delivery in Thailand, or find us on LINE, Shopee and at our stockists.',
-    image: FALLBACK_IMAGE,
-    type: 'website',
-  },
-  '/guide': {
-    title: 'Ginger Guide: Mocktails & Thai Food Pairings | GingerBros',
-    description: 'How to serve Ginger Fizz and Ginger Tea, ginger mocktails and cocktails, Thai food pairings and everything worth knowing about Thai ginger.',
-    image: FALLBACK_IMAGE,
-    type: 'website',
-  },
-  '/faq': {
-    title: 'FAQ: Delivery, Subscriptions & Storage | GingerBros',
-    description:
-      'Answers on GingerBros delivery, cold-chain shipping, subscriptions, storage, payments and wholesale. Ginger Fizz and Ginger Tea, made in Thailand.',
-    image: FALLBACK_IMAGE,
-    type: 'website',
-  },
-  '/business': {
-    title: 'Wholesale Ginger Drinks for Cafés & Bars | GingerBros',
-    description:
-      'Wholesale ginger drinks for cafés, bars, restaurants and hotels in Thailand. Free samples, recipe cards, menu copy and trade pricing. Request a quote.',
-    image: FALLBACK_IMAGE,
-    type: 'website',
-  },
-  '/shipping': {
-    title: 'Delivery in Thailand: Shipping & Cold-Chain | GingerBros',
-    description:
-      'Delivery across Thailand for Ginger Fizz and Ginger Tea. ฿100 shipping, free over ฿500, dispatched Mon–Thu, with an optional cold-chain upgrade.',
-    image: FALLBACK_IMAGE,
-    type: 'website',
-  },
-  '/track': {
-    title: 'Track Your Order | GingerBros',
-    description: 'Track your GingerBros order status with your email and order reference.',
-    image: FALLBACK_IMAGE,
-    type: 'website',
-    noindex: true,
-  },
-  '/orders': {
-    title: 'My Orders | GingerBros',
-    description: 'Look up your GingerBros orders.',
-    image: FALLBACK_IMAGE,
-    type: 'website',
-    noindex: true,
-  },
-  '/order/success': {
-    title: 'Thank You for Your Order | GingerBros',
-    description: 'Your GingerBros order has been received.',
-    image: FALLBACK_IMAGE,
-    type: 'website',
-    noindex: true,
-  },
-  '/links': {
-    title: 'GingerBros | Links',
-    description: 'Think Ginger. Drink Different. Shop Ginger Fizz and Ginger Tea, or find us on LINE, Grab, Shopee, Instagram, TikTok and Facebook.',
-    image: `${SITE_URL}/linkpage/avatar.png`,
-    type: 'website',
-  },
-  '/admin/login': {
-    title: 'Admin Login | GingerBros',
-    description: 'GingerBros admin login.',
-    image: FALLBACK_IMAGE,
-    type: 'website',
-    noindex: true,
-  },
-  '/admin/links': {
-    title: 'Admin Links | GingerBros',
-    description: 'GingerBros link-in-bio editor.',
-    image: FALLBACK_IMAGE,
-    type: 'website',
-    noindex: true,
-  },
-  '/admin/orders': {
-    title: 'Admin Orders | GingerBros',
-    description: 'GingerBros order management dashboard.',
-    image: FALLBACK_IMAGE,
-    type: 'website',
-    noindex: true,
-  },
-  '/privacy': {
-    title: 'Privacy Policy | GingerBros',
-    description: 'GingerBros privacy policy and data practices.',
-    image: FALLBACK_IMAGE,
-    type: 'website',
-  },
-  '/terms': {
-    title: 'Terms of Service | GingerBros',
-    description: 'GingerBros terms of service.',
-    image: FALLBACK_IMAGE,
-    type: 'website',
-  },
-  '/returns': {
-    title: 'Returns & Refunds | GingerBros',
-    description: 'GingerBros returns, refunds, and replacement policy.',
-    image: FALLBACK_IMAGE,
-    type: 'website',
-  },
-};
+    noindex: !m.indexable,
+    ...(path === '/' ? { jsonLd: siteGraph() } : {}),
+  };
+}
 
-/** Thai meta for the pages that have a Thai version (src/lib/locale.ts TH_PATHS). */
-const TH_KNOWN_ROUTES: Record<string, RouteMeta> = {
-  '/': {
-    title: 'GingerBros | น้ำขิงซ่า & ชาขิง เครื่องดื่มขิงยุคใหม่ ผลิตในไทย',
-    description: 'คิดแบบขิง ดื่มให้แตกต่าง น้ำขิงซ่าและชาขิงจากขิงไทยสด มะนาวแท้ หวานน้อย สั่งออนไลน์ส่งทั่วไทย',
-    image: FALLBACK_IMAGE,
-    type: 'website',
-  },
-  '/shop': {
-    title: 'ช้อปน้ำขิงซ่า ชาขิง และแพ็กสุดคุ้ม | GingerBros',
-    description: 'สั่งน้ำขิงซ่าและชาขิงออนไลน์ ส่งทั่วไทย ขวดเดี่ยว แพ็ก 2, 3 และ 6 ขวด ผสมได้ตามใจ ส่วนลดคิดอัตโนมัติ',
-    image: FALLBACK_IMAGE,
-    type: 'website',
-  },
-  '/story': {
-    title: 'เรื่องราวของเรา | GingerBros',
-    description: 'GingerBros อยากให้ขิงไทยเป็นเครื่องดื่มที่คุณอยากหยิบจริง ๆ ขิงไทยสด มะนาวแท้ หวานน้อย ผลิตในประเทศไทย',
-    image: FALLBACK_IMAGE,
-    type: 'website',
-  },
-};
+const KNOWN_ROUTES: Record<string, RouteMeta> = Object.fromEntries(Object.keys(ROUTE_SEO).map((p) => [p, metaFor(p, 'en')]));
+
+/** Thai meta for the pages that have a Thai version. */
+const TH_KNOWN_ROUTES: Record<string, RouteMeta> = Object.fromEntries(THAI_PATHS.map((p) => [p, metaFor(p, 'th')]));
 
 interface CatalogPrice {
   unitAmount: number | null;

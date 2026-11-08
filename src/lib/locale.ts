@@ -4,11 +4,12 @@
  * language without knowing about it.
  */
 import type { Locale } from '@/context/I18nContext';
+import { THAI_PATHS } from '../seo/routes';
 
 export const TH_PREFIX = '/th';
 
-/** Pages that have real Thai content (prerendered under /th, get hreflang). */
-export const TH_PATHS = ['/', '/shop', '/story', '/faq', '/shipping'];
+/** Pages that have real Thai content (prerendered under /th, get hreflang). Derived from src/seo/routes.ts. */
+export const TH_PATHS = THAI_PATHS;
 
 export function localeFromPath(pathname: string): Locale {
   return pathname === TH_PREFIX || pathname.startsWith(`${TH_PREFIX}/`) ? 'th' : 'en';
