@@ -10,6 +10,10 @@ Shopping and research agents acting for a customer of GingerBros, a Thai ginger-
 
 None. GingerBros does not offer agent registration, API keys or OAuth. There is no `/agent/auth` endpoint, and no credentials are issued to agents.
 
+## Discovery
+
+OAuth Protected Resource Metadata: <https://gingerbrosshop.com/.well-known/oauth-protected-resource>. It lists no authorization servers and no scopes because the public API needs no credentials.
+
 ## Public endpoints (no credentials)
 
 | Endpoint | Purpose |

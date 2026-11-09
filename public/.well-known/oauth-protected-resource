@@ -1,0 +1,9 @@
+{
+  "resource": "https://gingerbrosshop.com",
+  "scopes_supported": [],
+  "bearer_methods_supported": [
+    "header"
+  ],
+  "resource_name": "GingerBros public API",
+  "resource_documentation": "https://gingerbrosshop.com/auth.md"
+}

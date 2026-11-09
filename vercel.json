@@ -78,6 +78,14 @@
   ],
   "rewrites": [
     {
+      "source": "/api",
+      "destination": "/api/x402"
+    },
+    {
+      "source": "/api/v1",
+      "destination": "/api/x402"
+    },
+    {
       "source": "/q/:slug",
       "destination": "/api/links?qr=:slug"
     },
@@ -240,6 +248,23 @@
         {
           "key": "Content-Type",
           "value": "text/markdown; charset=utf-8"
+        },
+        {
+          "key": "Access-Control-Allow-Origin",
+          "value": "*"
+        },
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=3600"
+        }
+      ]
+    },
+    {
+      "source": "/.well-known/oauth-protected-resource",
+      "headers": [
+        {
+          "key": "Content-Type",
+          "value": "application/json"
         },
         {
           "key": "Access-Control-Allow-Origin",
