@@ -23,6 +23,10 @@ User-agent: cohere-ai
 User-agent: YouBot
 Allow: /
 
+# Content Signals (https://contentsignals.org/): search and answering questions from our
+# pages is welcome; training AI models on them is not.
+Content-Signal: search=yes, ai-input=yes, ai-train=no
+
 # Private areas. Pages that are noindex (/track, /orders, /order/success) are
 # deliberately NOT disallowed here: a crawler must be able to fetch a page to
 # see its noindex tag.

@@ -1,0 +1,24 @@
+{
+  "protocol_version": "2026-01-11",
+  "merchant": { "name": "GingerBros", "url": "https://gingerbrosshop.com", "country": "TH", "currency": "THB" },
+  "services": {
+    "shopping": {
+      "version": "2026-01-11",
+      "spec": "https://ucp.dev/specification/overview/",
+      "rest": { "schema": "https://gingerbrosshop.com/openapi.json", "endpoint": "https://gingerbrosshop.com/api" }
+    }
+  },
+  "capabilities": [
+    { "name": "catalog", "description": "Live product and price list", "operations": ["GET /api/products"] },
+    { "name": "shipping_estimate", "description": "Delivery fee by province", "operations": ["GET /api/shipping-rate"] },
+    { "name": "checkout", "description": "Creates a Stripe-hosted checkout URL the buyer completes themselves (no delegated agent payment)", "operations": ["POST /api/checkout"] }
+  ],
+  "endpoints": {
+    "catalog": "https://gingerbrosshop.com/api/products",
+    "shipping": "https://gingerbrosshop.com/api/shipping-rate",
+    "checkout": "https://gingerbrosshop.com/api/checkout",
+    "openapi": "https://gingerbrosshop.com/openapi.json",
+    "docs": "https://gingerbrosshop.com/docs/api.md"
+  },
+  "payment_handlers": [{ "id": "stripe_hosted_checkout", "delegated": false }]
+}

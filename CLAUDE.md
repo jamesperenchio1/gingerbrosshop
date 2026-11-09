@@ -67,6 +67,10 @@ Rules for keeping pages hydration-safe (first client render must equal the serve
 - Run `node scripts/check-hydration.mjs <base-url>` against a static server of `dist/` to catch React hydration errors on every prerendered route.
 - After changing products in Stripe the prerendered pages refresh on the next deploy. Set `VERCEL_DEPLOY_HOOK_URL` and subscribe the Stripe webhook to `product.*`/`price.*` events to rebuild automatically (debounced 2 min); the client also revalidates the catalog on load.
 
+## Agent Discovery
+
+Static files in `public/` (content types set in `vercel.json`): `.well-known/api-catalog`, `.well-known/acp.json`, `.well-known/ucp`, `openapi.json`, `auth.md`, `docs/api.md`; `robots.txt` carries a `Content-Signal` line (search + ai-input yes, ai-train no). `middleware.ts` adds the homepage `Link` header and returns markdown for `Accept: text/markdown` (`src/seo/htmlToMarkdown.ts`). Not implemented on purpose: x402 (needs a wallet address + facilitator) and AP2 (needs an A2A agent). Checkout is live-mode, so these documents only describe the existing hosted Stripe Checkout flow.
+
 ## Image Assets
 
 Sources live in `assets-src/` (transparent bottle cutouts, real Fizz photos, text-free lifestyle shots). Generated output is committed:

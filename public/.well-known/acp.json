@@ -1,0 +1,22 @@
+{
+  "protocol": { "name": "acp", "version": "2026-01-30" },
+  "api_base_url": "https://gingerbrosshop.com/api",
+  "transports": ["rest"],
+  "capabilities": {
+    "services": ["product_catalog", "shipping_estimate", "hosted_checkout"],
+    "payment": {
+      "handlers": ["stripe_hosted_checkout"],
+      "delegated_payment": false,
+      "note": "Checkout returns a Stripe-hosted URL for the buyer to complete payment. Agents cannot pay on the buyer's behalf."
+    }
+  },
+  "merchant": {
+    "name": "GingerBros",
+    "url": "https://gingerbrosshop.com",
+    "country": "TH",
+    "currency": "THB",
+    "support_email": "gingerbros.brew@gmail.com"
+  },
+  "documentation": "https://gingerbrosshop.com/docs/api.md",
+  "openapi": "https://gingerbrosshop.com/openapi.json"
+}
