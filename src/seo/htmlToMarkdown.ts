@@ -21,7 +21,7 @@ export function htmlToMarkdown(html: string, baseUrl: string): string {
   const description = decode(html.match(/<meta\s+name="description"\s+content="([^"]*)"/i)?.[1] ?? '');
 
   let body = html.match(/<body[^>]*>([\s\S]*)<\/body>/i)?.[1] ?? html;
-  body = body.replace(/<(script|style|svg|noscript|template|iframe|button|form|nav|footer|header)\b[\s\S]*?<\/\1>/gi, '');
+  body = body.replace(/<(script|style|svg|noscript|template|iframe|form|nav|footer|header)\b[\s\S]*?<\/\1>/gi, '');
   body = body.replace(/<!--[\s\S]*?-->/g, '');
 
   const abs = (href: string) => {
@@ -58,19 +58,23 @@ export function htmlToMarkdown(html: string, baseUrl: string): string {
   return `${head}${deduped}\n`;
 }
 
-/** True when the client asks for markdown and ranks it at least as high as HTML. */
+/** True when the client asks for markdown and ranks it strictly above HTML (exact types override wildcards). */
 export function prefersMarkdown(accept: string | null): boolean {
   if (!accept) return false;
+  const ranges = accept.split(',').map((part) => {
+    const [t, ...params] = part.trim().split(';');
+    const qp = params.find((p) => p.trim().startsWith('q='));
+    return { type: t.trim().toLowerCase(), q: qp ? Number(qp.trim().slice(2)) : 1 };
+  });
+  // Most specific matching range wins: exact, then type/*, then */*.
   const q = (type: string) => {
-    let best = -1;
-    for (const part of accept.split(',')) {
-      const [t, ...params] = part.trim().split(';');
-      if (t.trim().toLowerCase() !== type) continue;
-      const qp = params.find((p) => p.trim().startsWith('q='));
-      best = Math.max(best, qp ? Number(qp.trim().slice(2)) : 1);
+    const group = type.split('/')[0];
+    for (const m of [type, `${group}/*`, '*/*']) {
+      const hit = ranges.filter((r) => r.type === m);
+      if (hit.length) return Math.max(...hit.map((r) => r.q));
     }
-    return best;
+    return 0;
   };
   const md = q('text/markdown');
-  return md > 0 && md >= q('text/html');
+  return md > q("text/html");
 }
