@@ -52,7 +52,27 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   const header = req.headers['x-payment'];
   const payment = Array.isArray(header) ? header[0] : header;
 
+  // x402 v2 clients read the same terms from a base64 PAYMENT-REQUIRED header
+  // (CAIP-2 network id, `amount`); the v1 body below stays for v1 clients.
+  const v2 = (error: string) => ({
+    x402Version: 2,
+    error,
+    resource: { url: resource, description: accepts.description, mimeType: accepts.mimeType },
+    accepts: [
+      {
+        scheme: accepts.scheme,
+        network: 'eip155:84532',
+        amount: accepts.maxAmountRequired,
+        asset: accepts.asset,
+        payTo: accepts.payTo,
+        maxTimeoutSeconds: accepts.maxTimeoutSeconds,
+        extra: accepts.extra,
+      },
+    ],
+  });
+
   const challenge = (error: string) => {
+    res.setHeader('PAYMENT-REQUIRED', Buffer.from(JSON.stringify(v2(error))).toString('base64'));
     res.setHeader('Cache-Control', 'no-store');
     res.status(402).json({ x402Version: 1, error, accepts: [accepts] });
   };
