@@ -1,0 +1,139 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "GingerBros Shop API",
+    "version": "1.0.0",
+    "description": "Public storefront API for GingerBros (ginger drinks, Thailand). Read the catalog, estimate shipping, and create a hosted Stripe Checkout session. Payment is completed by the buyer on the returned Stripe-hosted page; no card details are ever sent to this API.",
+    "contact": { "email": "gingerbros.brew@gmail.com", "url": "https://gingerbrosshop.com/faq" }
+  },
+  "servers": [{ "url": "https://gingerbrosshop.com" }],
+  "x-service-info": {
+    "categories": ["commerce", "food-and-beverage"],
+    "documentation": "https://gingerbrosshop.com/docs/api.md"
+  },
+  "paths": {
+    "/api/products": {
+      "get": {
+        "operationId": "listProducts",
+        "summary": "List the live product catalog (prices in major currency units, THB).",
+        "responses": {
+          "200": {
+            "description": "Catalog from Stripe, cached at the edge for about 5 minutes.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "products": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": { "type": "string", "description": "App-level product id, e.g. ginger-fizz" },
+                          "name": { "type": "string" },
+                          "description": { "type": ["string", "null"] },
+                          "images": { "type": "array", "items": { "type": "string" } },
+                          "category": { "type": ["string", "null"] },
+                          "prices": {
+                            "type": "array",
+                            "items": {
+                              "type": "object",
+                              "properties": {
+                                "priceId": { "type": "string" },
+                                "unitAmount": { "type": ["number", "null"] },
+                                "currency": { "type": "string" },
+                                "recurring": { "type": ["object", "null"] }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/shipping-rate": {
+      "get": {
+        "operationId": "getShippingRate",
+        "summary": "Estimate the delivery fee for a Thai province and cart subtotal.",
+        "parameters": [
+          { "name": "province", "in": "query", "schema": { "type": "string" }, "description": "Thai province name, English." },
+          { "name": "subtotal", "in": "query", "schema": { "type": "number" }, "description": "Cart subtotal in THB. Free shipping from 500." }
+        ],
+        "responses": {
+          "200": {
+            "description": "Shipping estimate.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "rate": { "type": "number" },
+                    "free": { "type": "boolean" },
+                    "estimatedDays": { "type": "string" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/checkout": {
+      "post": {
+        "operationId": "createCheckoutSession",
+        "summary": "Create a hosted Stripe Checkout session for a cart and return its URL.",
+        "description": "Real, live-mode payment. The response is a Stripe Checkout URL that the buyer must open and pay on; this call itself does not move money. The amount depends on the cart (the figure in x-payment-info is the price of the cheapest single bottle, in satang).",
+        "x-payment-info": {
+          "intent": "charge",
+          "method": "stripe",
+          "amount": "11900",
+          "currency": "THB",
+          "description": "Minimum order value (one Ginger Tea bottle, THB 119.00, shipping extra). Actual amount depends on cart contents."
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["items"],
+                "properties": {
+                  "items": {
+                    "type": "array",
+                    "maxItems": 50,
+                    "items": {
+                      "type": "object",
+                      "required": ["priceId", "quantity"],
+                      "properties": {
+                        "priceId": { "type": "string", "description": "Stripe price id from /api/products" },
+                        "quantity": { "type": "integer", "minimum": 1 },
+                        "productId": { "type": "string" }
+                      }
+                    }
+                  },
+                  "email": { "type": "string", "format": "email" },
+                  "promoCode": { "type": "string" },
+                  "orderNote": { "type": "string", "maxLength": 500 }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Checkout session created.",
+            "content": { "application/json": { "schema": { "type": "object", "properties": { "url": { "type": "string", "format": "uri" } } } } }
+          },
+          "400": { "description": "Invalid cart." },
+          "429": { "description": "Rate limited (10 requests per minute per IP)." }
+        }
+      }
+    }
+  }
+}

@@ -12,6 +12,7 @@ import { OG_IMAGES } from './src/lib/ogImages';
 import { ROUTE_SEO, THAI_PATHS, routeSeo } from './src/seo/routes';
 import { siteGraph } from './src/seo/schema';
 import { drinkSeo } from './src/lib/seoMeta';
+import { htmlToMarkdown, prefersMarkdown } from './src/seo/htmlToMarkdown';
 
 interface RouteMeta {
   title: string;
@@ -239,10 +240,10 @@ export const config = {
   // Skip API routes, the /q/ QR redirects, built assets, and anything that looks
   // like a file (has an extension) — public/ files such as /analytics.js must be
   // served as-is, not replaced with the SPA shell.
-  matcher: ['/((?!api/|q/|assets/|images/|.*\\.[a-zA-Z0-9]+$).*)'],
+  matcher: ['/((?!api/|q/|assets/|images/|\\.well-known/|.*\\.[a-zA-Z0-9]+$).*)'],
 };
 
-export default async function middleware(request: Request): Promise<Response> {
+async function handle(request: Request): Promise<Response> {
   const url = new URL(request.url);
   const pathname = url.pathname.replace(/\/$/, '') || '/';
 
@@ -383,4 +384,36 @@ export default async function middleware(request: Request): Promise<Response> {
     status,
     headers: { 'Content-Type': 'text/html; charset=utf-8' },
   });
+}
+
+/** Agent-discovery links advertised on the homepage (RFC 8288 / RFC 9727). */
+const HOME_LINKS = [
+  '</.well-known/api-catalog>; rel="api-catalog"',
+  '</openapi.json>; rel="service-desc"; type="application/vnd.oai.openapi+json"',
+  '</docs/api.md>; rel="service-doc"; type="text/markdown"',
+  '</llms.txt>; rel="describedby"; type="text/plain"',
+].join(', ');
+
+/**
+ * Wraps every page response: advertises Link headers on the homepage and, for
+ * clients sending `Accept: text/markdown`, returns a markdown version of the
+ * same page. HTML stays the default; `Vary: Accept` keeps caches honest.
+ */
+export default async function middleware(request: Request): Promise<Response> {
+  const res = await handle(request);
+  const type = res.headers.get('Content-Type') ?? '';
+  if (!type.includes('text/html')) return res;
+
+  const url = new URL(request.url);
+  const headers = new Headers(res.headers);
+  headers.append('Vary', 'Accept');
+  if (url.pathname === '/' || url.pathname === '/th' || url.pathname === '/th/') headers.set('Link', HOME_LINKS);
+
+  if (request.method === 'GET' && res.status === 200 && prefersMarkdown(request.headers.get('Accept'))) {
+    const md = htmlToMarkdown(await res.text(), `${url.origin}${url.pathname}`);
+    headers.set('Content-Type', 'text/markdown; charset=utf-8');
+    headers.set('x-markdown-tokens', String(Math.ceil(md.length / 4)));
+    return new Response(md, { status: 200, headers });
+  }
+  return new Response(res.body, { status: res.status, statusText: res.statusText, headers });
 }
