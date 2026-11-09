@@ -240,7 +240,7 @@ export const config = {
   // Skip API routes, the /q/ QR redirects, built assets, and anything that looks
   // like a file (has an extension) — public/ files such as /analytics.js must be
   // served as-is, not replaced with the SPA shell.
-  matcher: ['/((?!api/|q/|assets/|images/|\\.well-known/|.*\\.[a-zA-Z0-9]+$).*)'],
+  matcher: ['/((?!api(?:/|$)|q/|assets/|images/|\\.well-known/|.*\\.[a-zA-Z0-9]+$).*)'],
 };
 
 async function handle(request: Request): Promise<Response> {
