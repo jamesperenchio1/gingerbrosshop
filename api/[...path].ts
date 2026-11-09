@@ -32,6 +32,7 @@ const routes: Record<string, Loader> = {
   'links': () => import('./_lib/handlers/links.js'),
   'links-admin': () => import('./_lib/handlers/links-admin.js'),
   'auth': () => import('./_lib/handlers/auth.js'),
+  'x402': () => import('./_lib/handlers/x402.js'),
   'promo': () => import('./_lib/handlers/promo.js'),
   // /q/<slug> QR short links are rewritten here (see vercel.json)
   'q': () => import('./_lib/handlers/links.js'),

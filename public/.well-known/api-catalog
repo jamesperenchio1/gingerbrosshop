@@ -2,18 +2,63 @@
   "linkset": [
     {
       "anchor": "https://gingerbrosshop.com/api/products",
-      "service-desc": [{ "href": "https://gingerbrosshop.com/openapi.json", "type": "application/vnd.oai.openapi+json" }],
-      "service-doc": [{ "href": "https://gingerbrosshop.com/docs/api.md", "type": "text/markdown" }]
+      "service-desc": [
+        {
+          "href": "https://gingerbrosshop.com/openapi.json",
+          "type": "application/vnd.oai.openapi+json"
+        }
+      ],
+      "service-doc": [
+        {
+          "href": "https://gingerbrosshop.com/docs/api.md",
+          "type": "text/markdown"
+        }
+      ]
     },
     {
       "anchor": "https://gingerbrosshop.com/api/shipping-rate",
-      "service-desc": [{ "href": "https://gingerbrosshop.com/openapi.json", "type": "application/vnd.oai.openapi+json" }],
-      "service-doc": [{ "href": "https://gingerbrosshop.com/docs/api.md", "type": "text/markdown" }]
+      "service-desc": [
+        {
+          "href": "https://gingerbrosshop.com/openapi.json",
+          "type": "application/vnd.oai.openapi+json"
+        }
+      ],
+      "service-doc": [
+        {
+          "href": "https://gingerbrosshop.com/docs/api.md",
+          "type": "text/markdown"
+        }
+      ]
     },
     {
       "anchor": "https://gingerbrosshop.com/api/checkout",
-      "service-desc": [{ "href": "https://gingerbrosshop.com/openapi.json", "type": "application/vnd.oai.openapi+json" }],
-      "service-doc": [{ "href": "https://gingerbrosshop.com/docs/api.md", "type": "text/markdown" }]
+      "service-desc": [
+        {
+          "href": "https://gingerbrosshop.com/openapi.json",
+          "type": "application/vnd.oai.openapi+json"
+        }
+      ],
+      "service-doc": [
+        {
+          "href": "https://gingerbrosshop.com/docs/api.md",
+          "type": "text/markdown"
+        }
+      ]
+    },
+    {
+      "anchor": "https://gingerbrosshop.com/api/x402",
+      "service-desc": [
+        {
+          "href": "https://gingerbrosshop.com/openapi.json",
+          "type": "application/vnd.oai.openapi+json"
+        }
+      ],
+      "service-doc": [
+        {
+          "href": "https://gingerbrosshop.com/docs/api.md",
+          "type": "text/markdown"
+        }
+      ]
     }
   ]
 }

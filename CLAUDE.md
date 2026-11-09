@@ -69,7 +69,7 @@ Rules for keeping pages hydration-safe (first client render must equal the serve
 
 ## Agent Discovery
 
-Static files in `public/` (content types set in `vercel.json`): `.well-known/api-catalog`, `.well-known/acp.json`, `.well-known/ucp`, `openapi.json`, `auth.md`, `docs/api.md`; `robots.txt` carries a `Content-Signal` line (search + ai-input yes, ai-train no). `middleware.ts` adds the homepage `Link` header and returns markdown for `Accept: text/markdown` (`src/seo/htmlToMarkdown.ts`). Not implemented on purpose: x402 (needs a wallet address + facilitator) and AP2 (needs an A2A agent). Checkout is live-mode, so these documents only describe the existing hosted Stripe Checkout flow.
+Static files in `public/` (content types set in `vercel.json`): `.well-known/api-catalog`, `.well-known/acp.json`, `.well-known/ucp`, `openapi.json`, `auth.md`, `docs/api.md`; `robots.txt` carries a `Content-Signal` line (search + ai-input yes, ai-train no). `middleware.ts` adds the homepage `Link` header and returns markdown for `Accept: text/markdown` (`src/seo/htmlToMarkdown.ts`). x402: `/api/x402` (`api/_lib/handlers/x402.ts`), Base Sepolia testnet USDC via the x402.org facilitator, pays to the shop's Rabby wallet; mainnet needs a CDP facilitator. Not implemented on purpose: AP2 (needs an A2A agent). Checkout is live-mode, so these documents only describe the existing hosted Stripe Checkout flow.
 
 ## Image Assets
 
