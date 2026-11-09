@@ -238,23 +238,100 @@
         }
       }
     },
-    "/api/x402": {
-      "get": {
-        "summary": "x402 paid demo resource (testnet)",
-        "description": "Returns HTTP 402 with x402 payment requirements (exact scheme, 0.01 USDC on Base Sepolia testnet, payTo 0x941eb61c0052da28d09e39f7ddc946a9631a5eeb). Retry with a base64 X-PAYMENT header to receive a Ginger Fizz serving card. Testnet only; no real money.",
-        "responses": {
-          "200": {
-            "description": "Serving card after payment.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object"
+    "/api/x402/order": {
+      "post": {
+        "summary": "Order drinks and pay in USDC (x402, Base mainnet)",
+        "description": "Real money, real delivery in Thailand. Send items (Stripe priceId + quantity, from /api/products), email, name, phone and a Thai address. Without an X-PAYMENT header the response is HTTP 402 with the exact USDC price (x402, exact scheme, network base, asset USDC, payTo 0x941eb61c0052da28d09e39f7ddc946a9631a5eeb). Sign the payment and repeat the same request with the base64 X-PAYMENT header. Orders are limited to THB 3000. The buyer must have confirmed the purchase; never place test orders.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "items",
+                  "email",
+                  "name",
+                  "phone",
+                  "address"
+                ],
+                "properties": {
+                  "items": {
+                    "type": "array",
+                    "maxItems": 20,
+                    "items": {
+                      "type": "object",
+                      "required": [
+                        "priceId",
+                        "quantity"
+                      ],
+                      "properties": {
+                        "priceId": {
+                          "type": "string"
+                        },
+                        "quantity": {
+                          "type": "integer",
+                          "minimum": 1,
+                          "maximum": 24
+                        }
+                      }
+                    }
+                  },
+                  "email": {
+                    "type": "string"
+                  },
+                  "name": {
+                    "type": "string"
+                  },
+                  "phone": {
+                    "type": "string"
+                  },
+                  "address": {
+                    "type": "object",
+                    "required": [
+                      "line1",
+                      "province",
+                      "postalCode"
+                    ],
+                    "properties": {
+                      "line1": {
+                        "type": "string"
+                      },
+                      "line2": {
+                        "type": "string"
+                      },
+                      "district": {
+                        "type": "string"
+                      },
+                      "province": {
+                        "type": "string"
+                      },
+                      "postalCode": {
+                        "type": "string",
+                        "description": "5-digit Thai postcode"
+                      }
+                    }
+                  },
+                  "coldChain": {
+                    "type": "boolean"
+                  },
+                  "note": {
+                    "type": "string"
+                  }
                 }
               }
             }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Paid. Returns orderId, transaction, totalThb, paidUsdc."
+          },
+          "400": {
+            "description": "Invalid order."
           },
           "402": {
-            "description": "Payment required; body is an x402 v1 PaymentRequired object."
+            "description": "Payment required; x402 PaymentRequired body and PAYMENT-REQUIRED header."
           }
         }
       }

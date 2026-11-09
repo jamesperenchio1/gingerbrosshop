@@ -46,7 +46,7 @@
       ]
     },
     {
-      "anchor": "https://gingerbrosshop.com/api/x402",
+      "anchor": "https://gingerbrosshop.com/api/x402/order",
       "service-desc": [
         {
           "href": "https://gingerbrosshop.com/openapi.json",
