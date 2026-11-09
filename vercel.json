@@ -1,6 +1,12 @@
 {
   "redirects": [
     {
+      "source": "/(.*)",
+      "has": [{ "type": "host", "value": "www.gingerbrosshop.com" }],
+      "destination": "https://gingerbrosshop.com/$1",
+      "permanent": true
+    },
+    {
       "source": "/product/unpasteurized",
       "destination": "/product/ginger-fizz",
       "permanent": true
