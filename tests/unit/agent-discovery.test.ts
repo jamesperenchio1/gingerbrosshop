@@ -63,6 +63,8 @@ describe('discovery documents', () => {
     expect(acp.transports.length).toBeGreaterThan(0);
     expect(acp.capabilities.services.length).toBeGreaterThan(0);
     const ucp = json('.well-known/ucp');
+    expect(ucp.ucp.version).toBeTruthy();
+    expect(json('.well-known/oauth-protected-resource').resource).toMatch(/^https:\/\//);
     for (const k of ['protocol_version', 'services', 'capabilities', 'endpoints']) expect(ucp[k]).toBeTruthy();
   });
   it('auth.md has an h1 with auth.md; robots.txt has Content-Signal', () => {
