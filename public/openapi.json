@@ -4,11 +4,21 @@
     "title": "GingerBros Shop API",
     "version": "1.0.0",
     "description": "Public storefront API for GingerBros (ginger drinks, Thailand). Read the catalog, estimate shipping, and create a hosted Stripe Checkout session. Payment is completed by the buyer on the returned Stripe-hosted page; no card details are ever sent to this API.",
-    "contact": { "email": "gingerbros.brew@gmail.com", "url": "https://gingerbrosshop.com/faq" }
+    "contact": {
+      "email": "gingerbros.brew@gmail.com",
+      "url": "https://gingerbrosshop.com/faq"
+    }
   },
-  "servers": [{ "url": "https://gingerbrosshop.com" }],
+  "servers": [
+    {
+      "url": "https://gingerbrosshop.com"
+    }
+  ],
   "x-service-info": {
-    "categories": ["commerce", "food-and-beverage"],
+    "categories": [
+      "commerce",
+      "food-and-beverage"
+    ],
     "documentation": "https://gingerbrosshop.com/docs/api.md"
   },
   "paths": {
@@ -29,20 +39,54 @@
                       "items": {
                         "type": "object",
                         "properties": {
-                          "id": { "type": "string", "description": "App-level product id, e.g. ginger-fizz" },
-                          "name": { "type": "string" },
-                          "description": { "type": ["string", "null"] },
-                          "images": { "type": "array", "items": { "type": "string" } },
-                          "category": { "type": ["string", "null"] },
+                          "id": {
+                            "type": "string",
+                            "description": "App-level product id, e.g. ginger-fizz"
+                          },
+                          "name": {
+                            "type": "string"
+                          },
+                          "description": {
+                            "type": [
+                              "string",
+                              "null"
+                            ]
+                          },
+                          "images": {
+                            "type": "array",
+                            "items": {
+                              "type": "string"
+                            }
+                          },
+                          "category": {
+                            "type": [
+                              "string",
+                              "null"
+                            ]
+                          },
                           "prices": {
                             "type": "array",
                             "items": {
                               "type": "object",
                               "properties": {
-                                "priceId": { "type": "string" },
-                                "unitAmount": { "type": ["number", "null"] },
-                                "currency": { "type": "string" },
-                                "recurring": { "type": ["object", "null"] }
+                                "priceId": {
+                                  "type": "string"
+                                },
+                                "unitAmount": {
+                                  "type": [
+                                    "number",
+                                    "null"
+                                  ]
+                                },
+                                "currency": {
+                                  "type": "string"
+                                },
+                                "recurring": {
+                                  "type": [
+                                    "object",
+                                    "null"
+                                  ]
+                                }
                               }
                             }
                           }
@@ -62,8 +106,22 @@
         "operationId": "getShippingRate",
         "summary": "Estimate the delivery fee for a Thai province and cart subtotal.",
         "parameters": [
-          { "name": "province", "in": "query", "schema": { "type": "string" }, "description": "Thai province name, English." },
-          { "name": "subtotal", "in": "query", "schema": { "type": "number" }, "description": "Cart subtotal in THB. Free shipping from 500." }
+          {
+            "name": "province",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            },
+            "description": "Thai province name, English."
+          },
+          {
+            "name": "subtotal",
+            "in": "query",
+            "schema": {
+              "type": "number"
+            },
+            "description": "Cart subtotal in THB. Free shipping from 500."
+          }
         ],
         "responses": {
           "200": {
@@ -73,9 +131,15 @@
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "rate": { "type": "number" },
-                    "free": { "type": "boolean" },
-                    "estimatedDays": { "type": "string" }
+                    "rate": {
+                      "type": "number"
+                    },
+                    "free": {
+                      "type": "boolean"
+                    },
+                    "estimatedDays": {
+                      "type": "string"
+                    }
                   }
                 }
               }
@@ -102,24 +166,47 @@
             "application/json": {
               "schema": {
                 "type": "object",
-                "required": ["items"],
+                "required": [
+                  "items"
+                ],
                 "properties": {
                   "items": {
                     "type": "array",
                     "maxItems": 50,
                     "items": {
                       "type": "object",
-                      "required": ["priceId", "quantity"],
+                      "required": [
+                        "priceId",
+                        "quantity"
+                      ],
                       "properties": {
-                        "priceId": { "type": "string", "description": "Stripe price id from /api/products" },
-                        "quantity": { "type": "integer", "minimum": 1, "maximum": 24, "description": "Maximum 24 units per item; checkout caps larger quantities at 24." },
-                        "productId": { "type": "string" }
+                        "priceId": {
+                          "type": "string",
+                          "description": "Stripe price id from /api/products"
+                        },
+                        "quantity": {
+                          "type": "integer",
+                          "minimum": 1,
+                          "maximum": 24,
+                          "description": "Maximum 24 units per item; checkout caps larger quantities at 24."
+                        },
+                        "productId": {
+                          "type": "string"
+                        }
                       }
                     }
                   },
-                  "email": { "type": "string", "format": "email" },
-                  "promoCode": { "type": "string" },
-                  "orderNote": { "type": "string", "maxLength": 500 }
+                  "email": {
+                    "type": "string",
+                    "format": "email"
+                  },
+                  "promoCode": {
+                    "type": "string"
+                  },
+                  "orderNote": {
+                    "type": "string",
+                    "maxLength": 500
+                  }
                 }
               }
             }
@@ -128,10 +215,47 @@
         "responses": {
           "200": {
             "description": "Checkout session created.",
-            "content": { "application/json": { "schema": { "type": "object", "properties": { "url": { "type": "string", "format": "uri" } } } } }
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "url": {
+                      "type": "string",
+                      "format": "uri"
+                    }
+                  }
+                }
+              }
+            }
           },
-          "400": { "description": "Invalid cart." },
-          "429": { "description": "Rate limited (10 requests per minute per IP)." }
+          "400": {
+            "description": "Invalid cart."
+          },
+          "429": {
+            "description": "Rate limited (10 requests per minute per IP)."
+          }
+        }
+      }
+    },
+    "/api/x402": {
+      "get": {
+        "summary": "x402 paid demo resource (testnet)",
+        "description": "Returns HTTP 402 with x402 payment requirements (exact scheme, 0.01 USDC on Base Sepolia testnet, payTo 0x941eb61c0052da28d09e39f7ddc946a9631a5eeb). Retry with a base64 X-PAYMENT header to receive a Ginger Fizz serving card. Testnet only; no real money.",
+        "responses": {
+          "200": {
+            "description": "Serving card after payment.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "402": {
+            "description": "Payment required; body is an x402 v1 PaymentRequired object."
+          }
         }
       }
     }

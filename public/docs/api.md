@@ -5,5 +5,6 @@ Base URL: `https://gingerbrosshop.com`. No authentication for the endpoints belo
 - `GET /api/products` returns `{ products: [...] }` with `id`, `name`, `description`, `images`, `category` and `prices[]` (`priceId`, `unitAmount` in THB, `recurring`). Cached about 5 minutes.
 - `GET /api/shipping-rate?province=bangkok&subtotal=300` returns `{ rate, free, estimatedDays }`. Free over THB 500.
 - `POST /api/checkout` with `{ "items": [{ "priceId": "price_...", "quantity": 1 }] }` returns `{ "url": "https://checkout.stripe.com/..." }`. Live payments: hand the URL to the buyer; never pay for them or test it.
+- `GET /api/x402` is an x402 paid demo: 402 with payment requirements (0.01 USDC, Base Sepolia testnet, pays to `0x941eb61c0052da28d09e39f7ddc946a9631a5eeb`), then retry with `X-PAYMENT` to get a serving card. Testnet only.
 
 Discovery: [/.well-known/api-catalog](/.well-known/api-catalog), [/.well-known/acp.json](/.well-known/acp.json), [/.well-known/ucp](/.well-known/ucp), [/llms.txt](/llms.txt).
