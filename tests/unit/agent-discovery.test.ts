@@ -13,6 +13,13 @@ describe('markdown negotiation', () => {
     expect(prefersMarkdown('text/html,application/xhtml+xml,*/*;q=0.8')).toBe(false);
     expect(prefersMarkdown('text/markdown;q=0.1, text/html')).toBe(false);
     expect(prefersMarkdown(null)).toBe(false);
+    expect(prefersMarkdown('text/markdown;q=0.1, text/*;q=0.9')).toBe(false);
+    expect(prefersMarkdown('text/markdown, */*;q=0.8')).toBe(true);
+    expect(prefersMarkdown('*/*')).toBe(false);
+  });
+  it('keeps text inside buttons (pack prices, stock notes)', () => {
+    const md = htmlToMarkdown('<html><body><button type="button"><span>6 bottles</span> <span>฿780</span></button></body></html>', 'https://gingerbrosshop.com/');
+    expect(md).toContain('6 bottles ฿780');
   });
   it('converts a page', () => {
     const md = htmlToMarkdown(

@@ -112,7 +112,7 @@
                       "required": ["priceId", "quantity"],
                       "properties": {
                         "priceId": { "type": "string", "description": "Stripe price id from /api/products" },
-                        "quantity": { "type": "integer", "minimum": 1 },
+                        "quantity": { "type": "integer", "minimum": 1, "maximum": 24, "description": "Maximum 24 units per item; checkout caps larger quantities at 24." },
                         "productId": { "type": "string" }
                       }
                     }
