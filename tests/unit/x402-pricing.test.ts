@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { thbToUsdcAtomic, shippingThb, validateDelivery, MAX_ORDER_THB } from '../../api/_lib/x402Pricing';
+import { resolveRate, FALLBACK_USD_PER_THB, thbToUsdcAtomic, shippingThb, validateDelivery, MAX_ORDER_THB } from '../../api/_lib/x402Pricing';
 
 describe('x402 pricing', () => {
   it('converts baht to USDC atomic units, rounded up with a buffer', () => {
@@ -26,5 +26,16 @@ describe('x402 pricing', () => {
     expect(validateDelivery({ ...good, address: { ...good.address, postalCode: '1011' } }).ok).toBe(false);
     expect(validateDelivery({ ...good, phone: '123' }).ok).toBe(false);
     expect(validateDelivery({ ...good, address: { province: 'Bangkok', postalCode: '10110' } }).ok).toBe(false);
+  });
+
+  it('uses the hour cache first, then live sources in order', async () => {
+    expect((await resolveRate({ cached: 0.03, sources: [], last: null })).tier).toBe('cached');
+    const r = await resolveRate({ cached: null, sources: [async () => { throw new Error('x'); }, async () => 0.0299], last: 0.02 });
+    expect(r).toEqual({ rate: 0.0299, tier: 'live' });
+  });
+  it('skips nonsense rates, then falls back to the last known rate, then the fixed one', async () => {
+    const bad = async () => 5;
+    expect(await resolveRate({ cached: null, sources: [bad], last: 0.0295 })).toEqual({ rate: 0.0295, tier: 'last' });
+    expect(await resolveRate({ cached: null, sources: [bad], last: null })).toEqual({ rate: FALLBACK_USD_PER_THB, tier: 'fallback' });
   });
 });

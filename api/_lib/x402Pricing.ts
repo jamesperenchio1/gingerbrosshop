@@ -59,3 +59,31 @@ export function validateDelivery(body: Record<string, any>):
     note: clean(body.note, 500),
   };
 }
+
+/** Last-resort USD per THB, deliberately a little above the market (about 0.0298) so a stale rate never underprices an order. */
+export const FALLBACK_USD_PER_THB = 0.031;
+
+const validRate = (r: unknown): r is number => typeof r === 'number' && r > 0.005 && r < 0.2;
+
+/**
+ * Pick the exchange rate: this hour's cached rate, else the first live source
+ * that answers sensibly, else the last rate we ever saw, else the fixed fallback.
+ * Returns the rate and which tier supplied it (so live rates can be remembered).
+ */
+export async function resolveRate(opts: {
+  cached: number | null;
+  sources: Array<() => Promise<number>>;
+  last: number | null;
+}): Promise<{ rate: number; tier: 'cached' | 'live' | 'last' | 'fallback' }> {
+  if (validRate(opts.cached)) return { rate: opts.cached, tier: 'cached' };
+  for (const get of opts.sources) {
+    try {
+      const r = await get();
+      if (validRate(r)) return { rate: r, tier: 'live' };
+    } catch {
+      /* try the next source */
+    }
+  }
+  if (validRate(opts.last)) return { rate: opts.last, tier: 'last' };
+  return { rate: FALLBACK_USD_PER_THB, tier: 'fallback' };
+}

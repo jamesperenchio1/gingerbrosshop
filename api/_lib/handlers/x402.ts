@@ -7,6 +7,7 @@ import { multiBuyDiscount, bottlesFromMetadata, type BottleLine } from '../multi
 import { saveOrder, type Order } from '../orders.js';
 import { getResend, MAIL_FROM, FROM_EMAIL, SELLER_EMAIL } from '../email.js';
 import {
+  resolveRate,
   USDC_BASE,
   MAX_ORDER_THB,
   shippingThb,
@@ -21,31 +22,63 @@ import {
 const PAY_TO = '0x941eb61c0052da28d09e39f7ddc946a9631a5eeb';
 const FACILITATOR = 'https://facilitator.payai.network';
 const ORDER_URL = 'https://gingerbrosshop.com/api/x402/order';
-const RATE_URL = 'https://api.frankfurter.dev/v1/latest?base=THB&symbols=USD';
 
 interface Line {
   priceId: string;
   quantity: number;
 }
 
-/** USD per THB, fixed for each UTC hour so a quote and its payment use the same rate. */
+const SELLER = SELLER_EMAIL || 'gingerbros.brew@gmail.com';
+
+const fromFrankfurter = async () => {
+  const r = await fetch('https://api.frankfurter.dev/v1/latest?base=THB&symbols=USD', { signal: AbortSignal.timeout(4000) });
+  return Number(((await r.json()) as any)?.rates?.USD);
+};
+const fromErApi = async () => {
+  const r = await fetch('https://open.er-api.com/v6/latest/THB', { signal: AbortSignal.timeout(4000) });
+  return Number(((await r.json()) as any)?.rates?.USD);
+};
+const fromFawaz = async () => {
+  const r = await fetch('https://cdn.jsdelivr.net/npm/@fawazahmed0/currency-api@latest/v1/currencies/thb.json', { signal: AbortSignal.timeout(4000) });
+  return Number(((await r.json()) as any)?.thb?.usd);
+};
+
+/**
+ * USD per THB, fixed for each UTC hour so a quote and its payment use the same
+ * rate. Falls back across three live sources, then the last rate seen, then a
+ * fixed conservative rate, so the endpoint keeps working if the feeds go down.
+ */
 async function usdPerThb(): Promise<number> {
   const redis = Redis.fromEnv();
   const key = `x402:rate:${new Date().toISOString().slice(0, 13)}`;
-  try {
-    const cached = await redis.get<number>(key);
-    if (cached && cached > 0) return Number(cached);
-  } catch {
-    /* fall through to a live fetch */
-  }
-  const r = await fetch(RATE_URL, { signal: AbortSignal.timeout(5000) });
-  if (!r.ok) throw new Error('Exchange rate unavailable');
-  const rate = Number(((await r.json()) as any)?.rates?.USD);
-  if (!(rate > 0) || rate > 1) throw new Error('Exchange rate unavailable');
-  try {
-    await redis.set(key, rate, { ex: 7200 });
-  } catch {
-    /* non-fatal */
+  const get = async (k: string) => {
+    try {
+      const v = await redis.get<number>(k);
+      return v ? Number(v) : null;
+    } catch {
+      return null;
+    }
+  };
+  const { rate, tier } = await resolveRate({
+    cached: await get(key),
+    sources: [fromFrankfurter, fromErApi, fromFawaz],
+    last: await get('x402:rate:last'),
+  });
+  if (tier === 'live') {
+    try {
+      await redis.set(key, rate, { ex: 7200 });
+      await redis.set('x402:rate:last', rate);
+    } catch {
+      /* non-fatal */
+    }
+  } else if (tier !== 'cached') {
+    // Pin the stale/fallback rate for the hour so quote and payment still match.
+    console.warn(`[x402] live rate unavailable, using ${tier} rate ${rate}`);
+    try {
+      await redis.set(key, rate, { ex: 3600 });
+    } catch {
+      /* non-fatal */
+    }
   }
   return rate;
 }
@@ -273,17 +306,17 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     const resend = getResend();
     const summary = `${priced.lines.map((l) => `${l.quantity}x ${esc(l.description)}`).join('<br>')}<br><br>Total: ฿${priced.totalThb} (${usdc} USDC)<br>Tx: ${esc(tx)}`;
     const ship = `${esc(delivery.name)}<br>${esc(delivery.address.line1)} ${esc(delivery.address.line2)}<br>${esc(delivery.address.city)} ${esc(delivery.address.state)} ${esc(delivery.address.postal_code)}<br>${esc(delivery.phone)} · ${esc(delivery.email)}`;
-    if (resend && SELLER_EMAIL) {
+    if (resend) {
       resend.emails
         .send({
           from: `GingerBros Orders <${FROM_EMAIL}>`,
-          to: SELLER_EMAIL,
+          to: SELLER,
           subject: `New x402 (USDC) order ${orderId.slice(-8).toUpperCase()}, ฿${priced.totalThb}`,
           html: `<p><strong>Paid in USDC on Base. Please fulfil.</strong>${coldChain ? ' Cold-chain delivery.' : ''}</p><p>${summary}</p><p><strong>Ship to</strong><br>${ship}</p>${delivery.note ? `<p>Note: ${esc(delivery.note)}</p>` : ''}`,
         })
         .catch((err) => console.error('x402 seller email failed:', err));
     } else {
-      console.warn('[x402] RESEND_API_KEY or SELLER_EMAIL missing — order', orderId, 'was paid but the seller was not emailed');
+      console.warn('[x402] RESEND_API_KEY missing — order', orderId, 'was paid but the seller was not emailed');
     }
     if (resend) {
       resend.emails
