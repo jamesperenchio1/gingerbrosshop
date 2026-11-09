@@ -33,6 +33,10 @@ const routes: Record<string, Loader> = {
   'links-admin': () => import('./_lib/handlers/links-admin.js'),
   'auth': () => import('./_lib/handlers/auth.js'),
   'x402': () => import('./_lib/handlers/x402.js'),
+  // Bare /api and /api/v1 (rewritten here by vercel.json) answer with the x402 challenge,
+  // the paths x402 scanners probe.
+  '': () => import('./_lib/handlers/x402.js'),
+  'v1': () => import('./_lib/handlers/x402.js'),
   'promo': () => import('./_lib/handlers/promo.js'),
   // /q/<slug> QR short links are rewritten here (see vercel.json)
   'q': () => import('./_lib/handlers/links.js'),
