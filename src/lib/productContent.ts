@@ -33,7 +33,7 @@ const FIZZ: ProductContent = {
     { title: 'Long & light', desc: 'Half Fizz, half soda water for an all-afternoon drink.' },
   ],
   pairings: ['Som tam', 'Gai yang', 'Pad kra pao', 'Moo ping', 'Anything off the grill'],
-  gallery: ['fizz-angle', 'fizz-back', 'life-pour-cold', 'life-pair-som-tam', 'life-night-market'],
+  gallery: ['fizz-angle', 'photo-fizz-studio', 'fizz-back', 'life-hand-fizz', 'life-limes-overhead', 'life-pour-cold', 'life-night-market', 'life-booth-serving'],
   ingredients: ['Fresh Thai ginger', 'Real lime', 'Full list on the bottle label'],
   specs: [
     { label: 'Volume', value: '330ml per bottle' },
@@ -60,7 +60,7 @@ const TEA: ProductContent = {
     { title: 'Lemongrass cooler', desc: 'Two parts Tea, one part soda water, a bruised lemongrass stalk.' },
   ],
   pairings: ['Khao man gai', 'Tom yum', 'Tom kha', 'Mango sticky rice (warm)', 'Lunch at your desk'],
-  gallery: ['life-pair-mango', 'life-stoop'],
+  gallery: ['photo-tea-studio', 'photo-tea-label', 'life-stoop'],
   ingredients: ['Ginger', 'Lemongrass', 'Lime', 'Spices'],
   specs: [
     { label: 'Volume', value: '330ml per bottle' },
@@ -524,7 +524,7 @@ export const PRODUCT_CONTENT: Record<string, ProductContent> = {
     tasting: 'One sparkling and bright, one still and warmly spiced. Taste both and pick a side (or don\'t).',
     serves: [...(FIZZ.serves ?? []).slice(0, 1), ...(TEA.serves ?? []).slice(0, 2)],
     pairings: ['Som tam + gai yang (Fizz)', 'Khao man gai (Tea, iced)', 'Night-market grills (Fizz)', 'Mango sticky rice (Tea, warm)'],
-    gallery: ['life-cheers', 'life-pair-som-tam'],
+    gallery: ['life-crate-duo', 'life-cheers'],
     headline: "Can't pick? One Ginger Fizz and one Ginger Tea for ฿240.",
     longDescription: 'The best way to meet GingerBros: one sparkling, lime-bright Ginger Fizz and one slow-simmered Ginger Tea · Thai Spice. Try them side by side and find your favourite.',
     relatedProducts: ['ginger-fizz', 'ginger-tea', 'fizz-tea-4pack'],
@@ -533,11 +533,31 @@ export const PRODUCT_CONTENT: Record<string, ProductContent> = {
     tasting: 'Two sparkling, two still. Enough to cover every dish on the table.',
     serves: [...(FIZZ.serves ?? []).slice(0, 2), ...(TEA.serves ?? []).slice(0, 1)],
     pairings: ['Som tam + gai yang (Fizz)', 'Khao man gai (Tea, iced)', 'Tom yum (Tea, iced)', 'Moo ping (Fizz)'],
-    gallery: ['life-pair-kra-pao', 'life-stoop'],
+    gallery: ['life-crate-duo', 'life-stoop'],
     headline: 'Two Ginger Fizz and two Ginger Tea for ฿460.',
     longDescription: 'Two of each: sparkling Ginger Fizz and slow-simmered Ginger Tea. Built for sharing, dinner parties and anyone who refuses to choose.',
     relatedProducts: ['fizz-tea-duo', 'ginger-fizz-6pack', 'ginger-tea-6pack'],
   },
+};
+
+/** Descriptive alt text for gallery images (keys in imageManifest). */
+export const IMAGE_ALT: Record<string, string> = {
+  'fizz-angle': 'Ginger Fizz amber bottle with its cream label, front angle',
+  'fizz-back': 'Back label of a GingerBros Ginger Fizz bottle',
+  'photo-fizz-studio': 'Ginger Fizz bottle photographed on a grey studio backdrop',
+  'photo-tea-studio': 'Ginger Tea Thai Spice bottle on a grey studio backdrop',
+  'photo-tea-label': 'Close-up of the Ginger Tea Thai Spice label, real ginger slowly simmered',
+  'life-hand-fizz': 'Holding a cold bottle of GingerBros Ginger Fizz outdoors in Bangkok',
+  'life-limes-overhead': 'Overhead view of Ginger Fizz bottles on ice with fresh limes and ginger',
+  'life-booth-serving': 'Serving GingerBros bottles at the Goods & Cheers market booth, Park Silom',
+  'life-booth-park-silom': 'The GingerBros booth at Goods & Cheers, Park Silom, Bangkok',
+  'life-crate-duo': 'Ginger Fizz and Ginger Tea bottles chilling in a crate with limes',
+  'life-pour-cold': 'Pouring cold Ginger Fizz over ice',
+  'life-night-market': 'Ginger Fizz at a Bangkok night market',
+  'life-cheers': 'Cheers with GingerBros bottles',
+  'life-stoop': 'Two friends sharing GingerBros on a Bangkok stoop',
+  'life-ice-stool': 'GingerBros bottle and an iced glass on a yellow plastic stool',
+  'fizz-six-lineup': 'Six Ginger Fizz bottles lined up',
 };
 
 export function getProductContent(appId: string | undefined): ProductContent {

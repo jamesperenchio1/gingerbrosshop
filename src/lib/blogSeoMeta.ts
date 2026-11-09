@@ -39,7 +39,7 @@ export const BLOG_SEO_META: BlogSeoMeta[] = [
     excerpt: 'Som tam, pad kra pao, khao man gai, tom yum: which GingerBros drink goes with which Thai dish, and why ginger works so well.',
     date: '2026-10-30',
     author: 'The GingerBros Kitchen',
-    image: '/images/gen/life-pair-som-tam.jpg',
+    image: '/images/gen/life-limes-overhead.jpg',
   },
   {
     slug: 'ginger-mocktails',
@@ -95,7 +95,7 @@ export const BLOG_SEO_META: BlogSeoMeta[] = [
     excerpt: 'Reduce GingerBros into a sticky, spicy glaze for oven or grill.',
     date: '2026-04-26',
     author: 'The GingerBros Kitchen',
-    image: '/images/gen/life-pair-som-tam.jpg',
+    image: '/images/gen/life-limes-overhead.jpg',
   },
   {
     slug: 'ginger-affogato-float',
@@ -103,7 +103,7 @@ export const BLOG_SEO_META: BlogSeoMeta[] = [
     excerpt: 'A grown-up dessert: cold ginger fizz poured over vanilla ice cream and a shot of espresso.',
     date: '2026-04-18',
     author: 'The GingerBros Kitchen',
-    image: '/images/gen/life-pair-mango.jpg',
+    image: '/images/gen/photo-tea-studio.jpg',
   },
   {
     slug: 'history-of-ginger-beer',
@@ -127,7 +127,7 @@ export const BLOG_SEO_META: BlogSeoMeta[] = [
     excerpt: 'What to eat, mix, and serve alongside ginger fizz for maximum deliciousness.',
     date: '2026-03-28',
     author: 'The GingerBros Kitchen',
-    image: '/images/gen/life-pair-kra-pao.jpg',
+    image: '/images/gen/life-crate-duo.jpg',
   },
   {
     slug: 'ginger-fizz-bar-menu',

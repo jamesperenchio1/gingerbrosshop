@@ -16,7 +16,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import ImageLightbox from '@/components/ImageLightbox';
 import StockAlertForm from '@/components/StockAlertForm';
 import ProductReviews from '@/components/ProductReviews';
-import { getProductContent } from '@/lib/productContent';
+import { getProductContent, IMAGE_ALT } from '@/lib/productContent';
 import { useReveal } from '@/lib/reveal';
 import { optimizedImageUrl } from '@/lib/image';
 import { trackPixelEvent } from '@/lib/metaPixel';
@@ -575,7 +575,7 @@ export default function ProductDetail() {
                     key={activeImage}
                     name={slides[activeImage]?.name}
                     src={slides[activeImage]?.src ?? slides[0]?.src}
-                    alt={activeImage === 0 ? product.name : `${product.name}, photo ${activeImage + 1}`}
+                    alt={activeImage === 0 ? product.name : (slides[activeImage]?.name && IMAGE_ALT[slides[activeImage].name!]) || `${product.name}, photo ${activeImage + 1}`}
                     priority={activeImage === 0}
                     sizes="(min-width: 1024px) 600px, 100vw"
                     className={`h-full w-full pointer-events-none ${slides[activeImage]?.name?.startsWith('life-') ? 'object-cover' : 'object-contain p-6 md:p-10'}`}

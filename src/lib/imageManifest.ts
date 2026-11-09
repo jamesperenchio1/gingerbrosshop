@@ -205,39 +205,42 @@ export const IMAGE_MANIFEST: Record<string, ImageEntry> = {
     ],
     "alpha": false
   },
-  "life-pair-som-tam": {
-    "w": 1080,
-    "h": 1350,
+  "photo-fizz-studio": {
+    "w": 1800,
+    "h": 2400,
     "widths": [
       160,
       320,
       480,
       800,
-      1080
+      1200,
+      1600
     ],
     "alpha": false
   },
-  "life-pair-kra-pao": {
-    "w": 1080,
-    "h": 1350,
+  "photo-tea-studio": {
+    "w": 1800,
+    "h": 2400,
     "widths": [
       160,
       320,
       480,
       800,
-      1080
+      1200,
+      1600
     ],
     "alpha": false
   },
-  "life-pair-mango": {
-    "w": 1080,
-    "h": 1350,
+  "photo-tea-label": {
+    "w": 1800,
+    "h": 2400,
     "widths": [
       160,
       320,
       480,
       800,
-      1080
+      1200,
+      1600
     ],
     "alpha": false
   },
@@ -298,6 +301,69 @@ export const IMAGE_MANIFEST: Record<string, ImageEntry> = {
       480,
       800,
       1080
+    ],
+    "alpha": false
+  },
+  "life-hand-fizz": {
+    "w": 1800,
+    "h": 2400,
+    "widths": [
+      160,
+      320,
+      480,
+      800,
+      1200,
+      1600
+    ],
+    "alpha": false
+  },
+  "life-booth-serving": {
+    "w": 1108,
+    "h": 1477,
+    "widths": [
+      160,
+      320,
+      480,
+      800,
+      1108
+    ],
+    "alpha": false
+  },
+  "life-crate-duo": {
+    "w": 1108,
+    "h": 1477,
+    "widths": [
+      160,
+      320,
+      480,
+      800,
+      1108
+    ],
+    "alpha": false
+  },
+  "life-limes-overhead": {
+    "w": 1800,
+    "h": 2400,
+    "widths": [
+      160,
+      320,
+      480,
+      800,
+      1200,
+      1600
+    ],
+    "alpha": false
+  },
+  "life-booth-park-silom": {
+    "w": 1800,
+    "h": 2400,
+    "widths": [
+      160,
+      320,
+      480,
+      800,
+      1200,
+      1600
     ],
     "alpha": false
   }

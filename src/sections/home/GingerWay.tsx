@@ -4,7 +4,7 @@ import ResponsiveImage from '@/components/ResponsiveImage';
 
 const TILES = [
   { n: 1, image: 'life-pour-cold', alt: 'A tall glass of ginger drink over ice next to a GingerBros bottle' },
-  { n: 2, image: 'life-pair-som-tam', alt: 'GingerBros Ginger Fizz with som tam and grilled chicken' },
+  { n: 2, image: 'life-limes-overhead', alt: 'Ginger Fizz bottles on ice with fresh limes and ginger' },
   { n: 3, image: 'life-ice-stool', alt: 'GingerBros bottle and an iced glass on a yellow plastic stool' },
   { n: 4, image: 'life-cheers', alt: 'Two friends clinking GingerBros bottles against a pink wall' },
 ];

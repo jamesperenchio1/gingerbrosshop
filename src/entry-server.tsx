@@ -12,6 +12,7 @@ export { ROUTE_SEO, PRERENDER_PATHS, SITEMAP_PATHS, THAI_PATHS } from '@/seo/rou
 
 export { BLOG_SLUGS };
 export { BLOG_SEO_META } from '@/lib/blogSeoMeta';
+export { getProductContent } from '@/lib/productContent';
 
 export interface RenderResult {
   html: string;

@@ -176,7 +176,7 @@ function llmsTxt(catalog, posts) {
 async function main() {
   const template = await readFile(path.join(dist, 'index.html'), 'utf8');
   const ssr = await import(pathToFileURL(path.join(root, 'dist-ssr', 'entry-server.js')).href);
-  const { render, BLOG_SLUGS, BLOG_SEO_META, TH_PATHS, PRERENDER_PATHS, SITEMAP_PATHS } = ssr;
+  const { render, BLOG_SLUGS, BLOG_SEO_META, TH_PATHS, PRERENDER_PATHS, SITEMAP_PATHS, getProductContent } = ssr;
   // Untouched copy of the SPA shell: served for every route that isn't
   // prerendered (see the rewrite in vercel.json and middleware.ts).
   await writeFile(path.join(dist, 'shell.html'), template);
@@ -230,8 +230,10 @@ async function main() {
       const lastmod = slug ? BLOG_SEO_META.find((p) => p.slug === slug)?.date : undefined;
       const id = r.match(/^\/product\/(.+)$/)?.[1];
       const product = id && catalog?.find((p) => p.id === id);
-      const images = product ? (product.category === 'drinks' ? [genImage(id)] : product.images.slice(0, 1)) : [];
-      return { loc, lastmod, alternates, images };
+      const gallery = product?.category === 'drinks' ? (getProductContent(id).gallery ?? []) : [];
+      const images = product ? (product.category === 'drinks' ? [genImage(id), ...gallery.map(genImage)] : product.images.slice(0, 1)) : [];
+      const pageImages = r === '/story' ? ['life-stoop', 'life-ice-stool'].map(genImage) : r === '/' ? ['life-booth-park-silom', 'life-hand-fizz'].map(genImage) : [];
+      return { loc, lastmod, alternates, images: [...new Set([...images, ...pageImages])] };
     });
   for (const r of TH_PATHS) {
     const en = r === '/' ? SITE : `${SITE}${r}`;

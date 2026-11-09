@@ -132,8 +132,9 @@ async function main() {
     await emit(`fizz-${n}`, buf);
   }
   await emit('fizz-six-lineup', path.join(SRC, 'photos', 'fizz-six-lineup.jpg'));
+  for (const n of ['fizz-studio', 'tea-studio', 'tea-label']) await emit(`photo-${n}`, path.join(SRC, 'photos', `${n}.jpg`));
 
-  for (const n of ['pair-som-tam', 'pair-kra-pao', 'pair-mango', 'night-market', 'cheers', 'pour-cold', 'ice-stool', 'stoop']) {
+  for (const n of ['night-market', 'cheers', 'pour-cold', 'ice-stool', 'stoop', 'hand-fizz', 'booth-serving', 'crate-duo', 'limes-overhead', 'booth-park-silom']) {
     await emit(`life-${n}`, path.join(SRC, 'lifestyle', `${n}.jpg`));
   }
 
