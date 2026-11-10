@@ -28,7 +28,7 @@ import { packOptions, mixOptions, drinkKind } from '@/lib/drinks';
 import { manifestJpg, thumbUrl } from '@/lib/productImages';
 import { OG_IMAGES } from '@/lib/ogImages';
 import { IMAGE_MANIFEST } from '@/lib/imageManifest';
-import { useReviewSummaries } from '@/lib/reviews';
+import { useProductReviews } from '@/lib/reviews';
 import { SITE_URL } from '@/constants/site';
 import { useI18n } from '@/context/I18nContext';
 import {
@@ -227,7 +227,8 @@ export default function ProductDetail() {
   const content = getProductContent(id);
   const navigate = useNavigate();
   const { t } = useI18n();
-  const reviewSummary = useReviewSummaries(useMemo(() => (id ? [id] : []), [id]))[id ?? ''];
+  const { reviews: productReviews, average: reviewAverage, count: reviewCount } = useProductReviews(id);
+  const reviewSummary = reviewCount > 0 ? { average: reviewAverage, count: reviewCount } : undefined;
 
   const [activeImage, setActiveImage] = useState(0);
   const [quantity, setQuantity] = useState(1);
@@ -492,7 +493,16 @@ export default function ProductDetail() {
     sku: product.id,
     category: isEquipment ? 'Homebrewing equipment' : 'Beverages > Ginger drinks',
     ...(reviewSummary && reviewSummary.count > 0
-      ? { aggregateRating: { '@type': 'AggregateRating', ratingValue: reviewSummary.average.toFixed(1), reviewCount: reviewSummary.count } }
+      ? {
+          aggregateRating: { '@type': 'AggregateRating', ratingValue: reviewSummary.average.toFixed(1), reviewCount: reviewSummary.count },
+          review: productReviews.slice(0, 10).map((r) => ({
+            '@type': 'Review',
+            author: { '@type': 'Person', name: r.name },
+            datePublished: r.createdAt.slice(0, 10),
+            reviewBody: r.text,
+            reviewRating: { '@type': 'Rating', ratingValue: r.rating, bestRating: 5, worstRating: 1 },
+          })),
+        }
       : {}),
     offers: {
       '@type': 'Offer',
