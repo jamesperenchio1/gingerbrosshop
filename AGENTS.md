@@ -98,7 +98,7 @@ const hasGingerFizzSub = recurringCount > 0 && items.some(i => i.productId === '
 ## Email (Resend)
 
 - **Service**: Resend
-- **From**: `orders@gingerbrosshop.com`
+- **From**: `order@gingerbrosshop.com`
 - **Key**: `RESEND_API_KEY` env var
 - **Templates**: `api/_lib/email.ts`
 

@@ -10,13 +10,13 @@ import type { CartSnapshot } from './carts.js';
 
 const resendApiKey = process.env.RESEND_API_KEY;
 
-export const FROM_EMAIL = process.env.FROM_EMAIL ?? 'orders@gingerbrosshop.com';
+export const FROM_EMAIL = process.env.FROM_EMAIL ?? 'order@gingerbrosshop.com';
 export const FROM_EMAIL_NEWSLETTER = 'hello@gingerbrosshop.com';
 export const SELLER_EMAIL = process.env.SELLER_EMAIL;
 
-// gingerbrosshop.com can't receive mail yet (Resend inbound is off, no MX
-// records), so customer replies to order emails are routed here instead.
-export const SUPPORT_REPLY_TO = process.env.SUPPORT_REPLY_TO ?? 'gingerbros.brew@gmail.com';
+// order@gingerbrosshop.com is delivered by Cloudflare Email Routing to the
+// GingerBros Gmail inbox, so customer replies to order emails land there.
+export const SUPPORT_REPLY_TO = process.env.SUPPORT_REPLY_TO ?? 'order@gingerbrosshop.com';
 
 let resendClient: Resend | null | undefined;
 

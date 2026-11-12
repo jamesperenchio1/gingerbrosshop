@@ -45,8 +45,8 @@ vi.mock('../../api/_lib/adminAuth.js', () => ({
 
 vi.mock('../../api/_lib/email.js', () => ({
   getResend: () => ({ emails: { send: vi.fn(async () => ({ error: null })) } }),
-  MAIL_FROM: 'GingerBros <orders@gingerbrosshop.com>',
-  SUPPORT_REPLY_TO: 'orders@gingerbrosshop.com',
+  MAIL_FROM: 'GingerBros <order@gingerbrosshop.com>',
+  SUPPORT_REPLY_TO: 'order@gingerbrosshop.com',
   shippingNotificationHtml: () => '<p>shipped</p>',
   boxReturnRewardHtml: () => '<p>reward</p>',
 }));

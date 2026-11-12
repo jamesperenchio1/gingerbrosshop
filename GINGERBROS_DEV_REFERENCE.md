@@ -210,7 +210,7 @@ Orders placed before this feature have no source. This is separate from the link
 ## Email (Resend)
 
 - **Service**: Resend
-- **From**: `orders@gingerbrosshop.com`
+- **From**: `order@gingerbrosshop.com`
 - **Key**: `RESEND_API_KEY` env var
 - **Templates**: `api/_lib/email.ts`
 

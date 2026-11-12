@@ -25,7 +25,7 @@ vi.mock('../../api/_lib/rateLimit.js', () => ({
 }));
 vi.mock('../../api/_lib/email.js', () => ({
   getResend: () => ({ emails: { send: sendEmail } }),
-  MAIL_FROM: 'GingerBros <orders@gingerbrosshop.com>',
+  MAIL_FROM: 'GingerBros <order@gingerbrosshop.com>',
   adminLoginHtml: (link: string) => `<a href="${link}">Log in</a>`,
 }));
 
