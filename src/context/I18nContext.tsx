@@ -123,6 +123,7 @@ const translations: Record<Locale, Record<string, string>> = {
     pillar3Title: 'Thai roots, modern pour',
     pillar3Desc: 'Fresh Thai ginger and local ingredients, made in Thailand for right now.',
     manifestoCta: 'Read our story',
+    manifestoSticker: 'Best served cold',
 
     // The GingerBros Way
     wayLabel: 'THE GINGERBROS WAY',
@@ -301,6 +302,7 @@ const translations: Record<Locale, Record<string, string>> = {
     pillar3Title: 'รากไทย สไตล์ใหม่',
     pillar3Desc: 'ขิงไทยสดและวัตถุดิบท้องถิ่น ผลิตในประเทศไทย สำหรับคนยุคนี้',
     manifestoCta: 'อ่านเรื่องราวของเรา',
+    manifestoSticker: 'เสิร์ฟเย็นอร่อยสุด',
 
     // The GingerBros Way
     wayLabel: 'สไตล์ GINGERBROS',

@@ -35,7 +35,7 @@ export default function Manifesto() {
             className="w-full rotate-[1.5deg] rounded-[28px] shadow-card"
           />
           <span className="absolute -bottom-5 -left-3 rotate-[-4deg] rounded-full bg-charcoal px-5 py-2.5 font-poster text-[1.3rem] text-ginger shadow-card">
-            Ginger has entered the chat.
+            {t('manifestoSticker')}
           </span>
         </div>
       </div>
