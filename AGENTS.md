@@ -1,154 +1,44 @@
-# GingerBros Shop — Coding Agent Reference
+# GingerBros Shop — Agent Notes
 
-> Read this before making any commerce/product/checkout changes.
+React 19 + Vite SPA, prerendered to static HTML, deployed on Vercel. Stripe Checkout is **LIVE**.
+Deeper docs: `CLAUDE.md` (brand/hydration rules), `GINGERBROS_DEV_REFERENCE.md` (all routes, endpoints, price IDs).
 
-## Stripe Setup
-
-- **Account**: `gingerbros.brew@gmail.com`
-- **Secret key**: `STRIPE_SECRET_KEY` env var
-- **Publishable key**: `STRIPE_PUBLISHABLE_KEY` env var
-- **Webhook secret**: `STRIPE_WEBHOOK_SECRET` env var
-- **Mode**: Live (production) — do NOT place test orders
-- **Currency**: THB (amounts in satang: 1 THB = 100 satang)
-
-## Products & Prices
-
-All products live in Stripe. The `/api/products` endpoint fetches active prices with expanded products automatically. Products are surfaced via `metadata.app_id`.
-
-### Drink Products
-
-| Product | Stripe Product ID | Price ID | Price | app_id | Category |
-|---------|-------------------|----------|-------|--------|----------|
-| Ginger Fizz (single) | `prod_Ui5xhllgZN1b7a` | `price_1Tj1Gj4xTvnGlHCDPTwOQhDd` | ฿140 | `ginger-fizz` | drinks |
-| Ginger Fizz 6-Pack | `prod_V2i9wXUip8ceFL` | `price_1U2clC4xTvnGlHCDTrZDeuLU` | **฿750** | `ginger-fizz-6pack` | drinks |
-| — Weekly Sub | same product | `price_1TjER74xTvnGlHCDel4GYtWi` | ฿119/wk | `unpasteurized-sub-week` | drinks |
-| — 2-Week Sub | same product | `price_1TjERe4xTvnGlHCDjakpfS8d` | ฿126/2wk | `unpasteurized-sub-2week` | drinks |
-| — Monthly Sub | same product | `price_1TlT9j4xTvnGlHCDwrgy2MEu` | ฿133/mo | `unpasteurized-sub-month` | drinks |
-
-### Delivery Fee Prices (Subscriptions only)
-
-| Key | Price ID | Amount |
-|-----|----------|--------|
-| `week_1` | `price_1TlT9f4xTvnGlHCDrZQrZ4kI` | ฿60 |
-| `week_2` | `price_1TlT9h4xTvnGlHCDBXJjknzd` | ฿60 |
-| `month_1` | `price_1TlT9j4xTvnGlHCDwrgy2MEu` | ฿60 |
-
-## Product Metadata Schema
-
-Every Stripe product must have these metadata fields:
-
-```
-app_id:            string   ← Required. Used for routing & content lookup
-badge:             string   ← Optional. Shown on product card
-badge_color:       string   ← Optional. Tailwind bg class, e.g. "bg-accent-green"
-category:          string   ← "drinks" or "brewing-equipment"
-short_description: string   ← Optional. Shown under product name in shop
-hidden:            "true"   ← Set to hide from catalog
-```
-
-## Editorial Content
-
-`src/lib/productContent.ts` contains enrichment content keyed by `app_id`:
-- `headline`, `longDescription`, `ingredients`, `specs`, `nutrition`, `features`, `compatibility`, `relatedProducts`
-- Products work fine without an entry — they just won't show extra detail sections.
-
-## Checkout Logic (`api/_lib/handlers/checkout.ts`)
-
-Key rules:
-- **No mixing one-time + subscription items** — Stripe Checkout limitation
-- **COD not available for subscriptions**
-- **Free shipping** at ฿500 subtotal (standard delivery)
-- **Cold-chain delivery** available when cart contains ginger fizz products (`ginger-fizz` or `ginger-fizz-6pack`)
-- **Subscription delivery fee** auto-added as recurring line item (Stripe doesn't support `shipping_options` in subscription mode)
-- **Store credit** (box-return) auto-applied via dynamic coupon if customer email has credit balance
-
-### Shipping Rates
-
-| Type | Threshold | Amount |
-|------|-----------|--------|
-| Standard | subtotal < ฿500 | ฿100 |
-| Standard | subtotal ≥ ฿500 | FREE |
-| Cold-chain | subtotal < ฿500 | ฿200 |
-| Cold-chain | subtotal ≥ ฿500 | ฿100 |
-
-### Adding a New Product to Checkout
-
-If the new product needs special checkout behavior, update `checkout.ts`:
-```ts
-const hasGingerFizz = items.some(i => i.productId === 'ginger-fizz' || i.productId === 'your-new-id');
-const hasGingerFizzSub = recurringCount > 0 && items.some(i => i.productId === 'ginger-fizz' || i.productId === 'your-new-id');
-```
-
-## Adding a New Product
-
-1. **Create in Stripe Dashboard** (do NOT use API for live products unless confirmed):
-   - Set `metadata.app_id` to a unique kebab-case ID
-   - Set `metadata.category` to `drinks` or `brewing-equipment`
-   - Upload product image(s)
-   - Create price(s)
-
-2. **Add editorial content** in `src/lib/productContent.ts`
-
-3. **Update checkout logic** if needed
-
-4. **Add image** to `public/images/` if not using a hosted URL
-
-5. **Build & deploy**
-
-## Email (Resend)
-
-- **Service**: Resend
-- **From**: `order@gingerbrosshop.com`
-- **Key**: `RESEND_API_KEY` env var
-- **Templates**: `api/_lib/email.ts`
-
-## Environment Variables
+## Commands
 
 ```bash
-STRIPE_SECRET_KEY=sk_live_...
-STRIPE_PUBLISHABLE_KEY=pk_live_...
-STRIPE_WEBHOOK_SECRET=whsec_...
-RESEND_API_KEY=re_...
+npm run dev            # vite on :3000 (playwright config expects this port)
+npm run lint           # eslint, ignores dist + .claude
+npx tsc -b             # typecheck (project refs; plain `tsc --noEmit` checks nothing useful)
+npm run test:unit      # vitest, jsdom, tests/unit/**
+npm run test:e2e       # playwright against localhost:3000 (auto-starts dev server)
+npm run build          # check:claims -> tsc -b -> vite build -> SSR build -> prerender -> seo-audit
 ```
 
-## Admin Console
+Single test: `npx vitest run tests/unit/brand-claims.test.ts`, `npx playwright test tests/cart.spec.ts`.
 
-The admin console lives at **`/admin/orders`** and is a full-screen app shell (no storefront nav) rendered for every `/admin/*` path via `src/App.tsx`. It is gated by `AdminGate` (passwordless email login, `ADMIN_EMAILS` env, 30-day `gb_admin` cookie).
+Build gotchas:
+- `npm run build` hits `https://gingerbrosshop.com/api/products` (override with `CATALOG_URL`) to prerender the catalog — it fails offline and prerenders whatever prod currently serves.
+- `check:claims` runs first and **fails the build** on health/fermentation claims. Run it after any copy change.
 
-- **Entry**: `src/pages/AdminOrders.tsx` → `AdminShell` + 8 tabs. Tab state is driven by the `?tab=` query param (validated against the tab list; `orders` clears it).
-- **Tabs**: `orders`, `subscriptions`, `customers`, `products`, `coupons`, `invoices`, `ops`, `activity`.
-- **Frontend**: `src/components/admin/` — `api.ts` (typed client), `AdminShell.tsx`, `ConfirmActionDialog.tsx`, and one `*Tab.tsx` per tab (`OrdersTab`, `SubscriptionsTab`, `CustomersTab`, `ProductsTab`, `CouponsTab`, `InvoicesTab`, `OpsTab`, `ActivityTab`) plus `OrderDetailPanel.tsx`.
-- **Backend**: `api/_lib/admin/` modules (`orders`, `subscriptions`, `customers`, `products`, `coupons`, `invoices`, `ops`) dispatched from `api/_lib/handlers/admin.ts`.
+## Hard rules
 
-### Admin API (`/api/admin`)
+- **Stripe is live.** Never create orders, refunds, cancellations, payouts or evidence in tests. Prefer `npm run test:unit` (mocked Stripe) and read-only endpoints.
+- **No hardcoded catalog.** Products, prices and images live in Stripe and are read via `/api/products`. Add/edit products in the Stripe Dashboard (`metadata.app_id`, `metadata.category` = `drinks` | `brewing-equipment`), then add editorial copy in `src/lib/productContent.ts`. Prices in docs rot — read them from Stripe, don't trust tables.
+- **No health claims.** Never write fermented/prebiotic/probiotic/gut/immunity. `tests/unit/brand-claims.test.ts` enforces it. Fizz = fresh Thai ginger, real lime, low sugar (no gram figures). Tea = the label's wording.
+- Never read `localStorage`/`window`/`Date` during render — prerendered HTML must equal the first client render, or hydration breaks. Restore in an effect (see `CartContext`, `I18nContext`, `Shop`).
 
-All calls go through `adminApi<T>({ method, resource, action, query, body })`. The handler dispatches on the `resource` query/body param; `action` selects the operation. Non-mutating = `GET`; mutating = `POST`.
+## Architecture
 
-| Resource | Read (`GET`) | Mutate (`POST`) |
-|----------|--------------|-----------------|
-| `orders` | `list`, `get` | `refund`, `cancel`, `note`, `tracking` |
-| `subscriptions` | `list`, `get`, `payment-methods`, `prices` | `cancel`, `pause`, `resume`, `update-items`, `create-checkout`, `create-direct` |
-| `customers` | `list`, `get` | `update`, `credit` |
-| `products` | `list`, `get` | `upload`, `create`, `update`, `archive`, `create-price`, `update-price` |
-| `coupons` | `list`, `get`, `promotion-codes` | `create`, `update`, `delete`, `create-promotion-code`, `update-promotion-code` |
-| `invoices` | `list`, `get` | `send`, `void` |
-| `ops` | `section=disputes\|payouts\|events` → `list`/`get`/`balance` | `section=disputes` → `evidence`; `section=payouts` → `create`/`cancel` |
-| `activity` | `list` (audit log) | — |
+- **API**: one catch-all function, `api/[...path].ts`, that lazy-imports a handler per first path segment from `api/_lib/handlers/*.ts`. New endpoint = add a handler file + a row in that `routes` map. `api/webhook.ts` is separate (needs the raw body for Stripe signature verification).
+- **Admin**: `/admin/*` renders the shell from `src/App.tsx`; API is `POST/GET /api/admin` dispatching on `resource` + `action` (`api/_lib/handlers/admin.ts` → `api/_lib/admin/*`). Every mutation requires an echoed `confirm` phrase, money actions a `reason`, and all are audit-logged.
+- **SEO/route table**: `src/seo/routes.ts` is the single source for every static route's title/description/image/indexable/Thai copy. It feeds the page `<SEO>`, `middleware.ts`, `scripts/prerender.mjs` (sitemap) and `scripts/seo-audit.mjs`. New page = add it there; don't duplicate strings elsewhere. Imports in that file must be relative — the edge middleware is outside Vite and cannot resolve `@/`.
+- **Prerender**: `vercel.json` rewrites every non-`/api` path to `/shell.html`; `middleware.ts` injects route meta and real 404 statuses for unknown routes. Non-prerendered routes fall back to the SPA shell, which still works.
+- **i18n**: English at `/…`, Thai at `/th/…` (router `basename`). Only routes with `titleTh`/`descriptionTh` in `src/seo/routes.ts` get Thai versions. All UI copy is a flat string map in `src/context/I18nContext.tsx` (en + th entries side by side) — a literal string in JSX is a bug; add a key.
+- **Images**: sources in `assets-src/`; `node scripts/build-images.mjs` regenerates `public/images/gen/*` + `src/lib/imageManifest.ts` (committed). Render with `<ResponsiveImage name="…">`, never raw `<img>` for catalog art.
 
-Legacy (no `resource`) endpoints are still supported for the storefront: `GET /api/admin` → `{ orders }`; `POST /api/admin` with `{ action: 'grant-credit' | 'grant-code' }` or a tracking update.
+## Gotchas
 
-### Safety rules (strict — do not weaken)
-
-- **Every mutation** requires `confirm` — the caller must echo a phrase exactly (case-insensitive). For orders the phrase is the order number; for payouts it is `PAYOUT`; for most other objects it is the object id.
-- **Money/irreversible actions** additionally require a `reason` of at least 3 characters (and an explicit `amount` where relevant).
-- **Every mutation is audit-logged** via `logAdminAction` into Redis key `admin_actions` (capped at 500, newest first), readable in the `activity` tab.
-- **Stripe is LIVE** — refunds, cancellations, payouts and evidence submissions move real money. Never trigger them in tests; verify via `npm run test:unit` (mocked Stripe) and read-only paths.
-- Product image uploads use `api/_lib/upload.ts` (`uploadDataUrl`) and require `BLOB_READ_WRITE_TOKEN`.
-
-### Tests
-
-`tests/unit/admin-api.test.ts` covers the dispatcher: auth gate (401), unknown resource (501), activity reads, resource dispatch, and that confirm/reason requirements block mutations (400) while valid mutations reach Stripe and write to the audit log.
-
-## Full Reference
-
-For complete documentation (all routes, API endpoints, email templates, equipment products), see `GINGERBROS_DEV_REFERENCE.md`.
+- Env vars actually read by code: `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`, `RESEND_API_KEY`, `ADMIN_EMAILS`, `CRON_SECRET`, `BLOB_READ_WRITE_TOKEN`, `UPSTASH_REDIS_REST_URL`/`_TOKEN`, `META_CAPI_ACCESS_TOKEN`, `VERCEL_DEPLOY_HOOK_URL`. `.env.example` is stale: it lists `ADMIN_SECRET`, but admin login is passwordless and gated by `ADMIN_EMAILS`.
+- ESLint disables `react-refresh/only-export-components` for `src/components/ui/**` on purpose (vendored shadcn); don't "fix" those files.
+- Localized copy lives in two places that must stay in sync: `I18nContext` strings and `src/seo/routes.ts` meta.
+- Order number shown to customers = last 8 chars of the Stripe `session_id`, uppercased.
