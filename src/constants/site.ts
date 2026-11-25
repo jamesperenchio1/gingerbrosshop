@@ -24,7 +24,7 @@ export const LOGO_URL = `${SITE_URL}/icon-512.png`;
 export const SOCIAL_LINKS = [
   'https://www.instagram.com/drinkgingerbros',
   'https://www.tiktok.com/@gingerbrosbrew',
-  'https://shopee.co.th/gingerbros',
+  'https://shopee.co.th/drinkgingerbros',
   'https://line.me/R/ti/p/@852nqred',
 ];
 
