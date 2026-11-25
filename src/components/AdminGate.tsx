@@ -1,7 +1,17 @@
 import { useCallback, useEffect, useState, type ReactNode } from 'react';
 import { Lock, MailCheck } from 'lucide-react';
+import { identifyUser, resetUser } from '@/lib/posthog';
 
 type Session = { state: 'loading' } | { state: 'out' } | { state: 'in'; email: string };
+
+/**
+ * Admin auth exposes no immutable user id, so email is the available stable
+ * identifier. It is also retained as a person property, never an event property.
+ * The wrapper no-ops until/unless PostHog is configured.
+ */
+function identifyAdmin(email: string) {
+  identifyUser(email, { email, role: 'admin' });
+}
 
 /**
  * Wraps an admin page: shows a passwordless email login until the browser has a
@@ -19,12 +29,29 @@ export default function AdminGate({
 
   useEffect(() => {
     fetch('/api/auth?action=me', { credentials: 'same-origin' })
-      .then(async (r) => (r.ok ? setSession({ state: 'in', email: ((await r.json()) as { email: string }).email }) : setSession({ state: 'out' })))
+      .then(async (r) => {
+        if (!r.ok) {
+          setSession({ state: 'out' });
+          return;
+        }
+
+        const { email } = (await r.json()) as { email?: string };
+        if (!email) {
+          setSession({ state: 'out' });
+          return;
+        }
+
+        identifyAdmin(email);
+        setSession({ state: 'in', email });
+      })
       .catch(() => setSession({ state: 'out' }));
   }, []);
 
   const logout = useCallback(() => {
-    fetch('/api/auth?action=logout', { method: 'POST', credentials: 'same-origin' }).finally(() => setSession({ state: 'out' }));
+    fetch('/api/auth?action=logout', { method: 'POST', credentials: 'same-origin' }).finally(() => {
+      resetUser();
+      setSession({ state: 'out' });
+    });
   }, []);
 
   if (session.state === 'loading') {
