@@ -2,6 +2,7 @@ import { useState, useRef, useEffect, useCallback } from 'react';
 import { setStoredPromo } from '@/lib/promo';
 import { setCartEmail } from '@/lib/cartEmail';
 import { trackPixelEvent } from '@/lib/metaPixel';
+import { capturePosthogEvent } from '@/lib/posthogCapture';
 import { Mail, CheckCircle, AlertCircle, ArrowRight, RefreshCw } from 'lucide-react';
 import { useI18n } from '@/context/I18nContext';
 
@@ -108,6 +109,7 @@ export default function Newsletter() {
       if (data.promoCode) setStoredPromo(data.promoCode);
       setCartEmail(email);
       trackPixelEvent('Subscribe', { content_name: 'newsletter' });
+      capturePosthogEvent('newsletter_subscribed', { signup_source: 'newsletter' });
       setStep('done');
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Verification failed');

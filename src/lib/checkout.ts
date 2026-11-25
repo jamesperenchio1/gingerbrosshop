@@ -2,6 +2,7 @@ import { getStoredPromo } from '@/lib/promo';
 import type { CartItem } from '@/types/cart';
 import { trackPixelEvent } from '@/lib/metaPixel';
 import { getStoredSource } from '@/lib/source';
+import { capturePosthogEvent, capturePosthogLog } from '@/lib/posthogCapture';
 
 // Set right before redirecting to the first (one-time) leg of a split checkout.
 // The success page reads it once to know it should pick up the subscription leg.
@@ -27,13 +28,29 @@ export type DeliveryMethod = 'standard' | 'hand-delivered';
 export const DELIVERY_METHOD_STORAGE_KEY = 'gbros-delivery-method';
 
 export function trackInitiateCheckout(items: CartItem[]): void {
+  const itemCount = items.reduce((sum, item) => sum + item.quantity, 0);
+  const value = items.reduce((sum, item) => sum + item.price * item.quantity, 0);
   trackPixelEvent('InitiateCheckout', {
     content_ids: items.map((i) => i.productId ?? i.id),
     contents: items.map((i) => ({ id: i.productId ?? i.id, quantity: i.quantity, item_price: i.price, name: i.name })),
     content_type: 'product',
-    num_items: items.reduce((sum, i) => sum + i.quantity, 0),
-    value: items.reduce((sum, i) => sum + i.price * i.quantity, 0),
+    num_items: itemCount,
+    value,
     currency: 'THB',
+  });
+  const hasSubscription = items.some((item) => item.isSubscription);
+  capturePosthogEvent('checkout_started', {
+    product_ids: items.map((item) => item.productId ?? item.id),
+    item_count: itemCount,
+    value,
+    currency: 'THB',
+    has_subscription: hasSubscription,
+  });
+  capturePosthogLog('checkout_initiated', {
+    item_count: itemCount,
+    value,
+    currency: 'THB',
+    has_subscription: hasSubscription,
   });
 }
 

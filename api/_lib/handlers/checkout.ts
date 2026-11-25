@@ -4,6 +4,7 @@ import { getStripe } from '../stripe.js';
 import { rateLimit, getClientIp } from '../rateLimit.js';
 import { getCredit } from '../credits.js';
 import { multiBuyDiscount, bottlesFromMetadata, type BottleLine } from '../multiBuy.js';
+import { emitPosthogLog } from '../posthogLogs.js';
 
 interface CheckoutLine {
   // The Stripe price ID to purchase. `id` is accepted as a legacy alias.
@@ -311,6 +312,12 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
             invoice_creation: { enabled: true },
           }
         : {}),
+    });
+    emitPosthogLog('checkout_session_created', {
+      checkout_mode: mode,
+      line_item_count: lineItems.length,
+      subtotal_minor: subtotalMinor,
+      has_subscription: hasSubscription,
     });
     res.status(200).json({ url: session.url });
   } catch (err) {

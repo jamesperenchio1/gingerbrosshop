@@ -2,6 +2,7 @@ import { createContext, useContext, useReducer, useCallback, useMemo, useEffect,
 import type { CartItem, CartState, CartAction } from '@/types/cart';
 import { trackPixelEvent } from '@/lib/metaPixel';
 import { multiBuyDiscount as computeMultiBuyDiscount } from '@/lib/multiBuy';
+import { capturePosthogEvent } from '@/lib/posthogCapture';
 
 import { getCartEmail } from '@/lib/cartEmail';
 const CART_STORAGE_KEY = 'gingerbros-cart';
@@ -160,6 +161,16 @@ export function CartProvider({ children }: { children: ReactNode }) {
       content_name: item.name,
       value: item.price * item.quantity,
       currency: 'THB',
+    });
+    capturePosthogEvent('product_added', {
+      product_id: item.productId ?? item.id,
+      price_id: item.priceId ?? item.id,
+      quantity: item.quantity,
+      unit_price: item.price,
+      value: item.price * item.quantity,
+      currency: 'THB',
+      is_subscription: Boolean(item.isSubscription),
+      delivery_interval: item.interval ?? null,
     });
   }, []);
 

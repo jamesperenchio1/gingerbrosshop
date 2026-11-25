@@ -6,6 +6,7 @@ import { useCart } from '@/context/CartContext';
 import { PENDING_SUBSCRIPTION_CHECKOUT_KEY, startCheckout } from '@/lib/checkout';
 import { trackPixelEvent } from '@/lib/metaPixel';
 import type { CartItem } from '@/types/cart';
+import { capturePosthogEvent } from '@/lib/posthogCapture';
 import SEO from '@/components/SEO';
 import CopyButton from '@/components/CopyButton';
 import ReferralCard from '@/components/ReferralCard';
@@ -108,6 +109,7 @@ export default function OrderSuccess() {
   const [continueError, setContinueError] = useState('');
   const { state, clearCart, removeItem } = useCart();
   const ran = useRef(false);
+  const orderTracked = useRef(false);
 
   useEffect(() => {
     if (ran.current) return;
@@ -179,6 +181,20 @@ export default function OrderSuccess() {
             { content_ids: contentIds, content_type: 'product', value, currency: data.currency },
             `${data.sessionId}-subscribe`,
           );
+        }
+        if (!orderTracked.current) {
+          orderTracked.current = true;
+          const itemCount = data.items.reduce((sum, item) => sum + item.quantity, 0);
+          const properties = {
+            order_id: data.sessionId,
+            product_ids: contentIds,
+            item_count: itemCount,
+            value,
+            currency: data.currency,
+            is_gift: data.isGift,
+          };
+          capturePosthogEvent('order_completed', properties);
+          if (data.isSubscription) capturePosthogEvent('subscription_started', properties);
         }
       })
       .catch((err) => {

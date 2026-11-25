@@ -3,6 +3,7 @@ import { toast } from 'sonner';
 import { useProductReviews } from '@/lib/reviews';
 import { useReveal } from '@/lib/reveal';
 import { Skeleton } from '@/components/ui/skeleton';
+import { capturePosthogEvent } from '@/lib/posthogCapture';
 import StarRating from '@/components/StarRating';
 
 interface Props {
@@ -36,6 +37,7 @@ export default function ProductReviews({ productId, productName }: Props) {
     setSubmitting(true);
     try {
       await submitReview({ name: formName.trim(), rating: formRating, text: formText.trim() });
+      capturePosthogEvent('product_review_submitted', { product_id: productId, rating: formRating });
       toast.success('Thanks for your review!');
       setFormRating(0);
       setFormName('');

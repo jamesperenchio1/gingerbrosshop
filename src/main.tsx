@@ -2,6 +2,8 @@ import { startTransition, useEffect, useState } from 'react'
 import { createRoot, hydrateRoot } from 'react-dom/client'
 import { BrowserRouter } from 'react-router'
 import { HelmetProvider } from 'react-helmet-async'
+import { PostHogErrorBoundary, PostHogProvider } from '@posthog/react'
+import posthog from 'posthog-js'
 import '@fontsource-variable/bricolage-grotesque'
 import '@fontsource-variable/inter'
 import '@fontsource-variable/anuphan'
@@ -10,6 +12,25 @@ import App from './App.tsx'
 import { capturePromoFromUrl } from '@/lib/promo'
 import { captureSourceFromUrl } from '@/lib/source'
 import { localeFromPath, basenameFor } from '@/lib/locale'
+
+const posthogKey = import.meta.env.VITE_POSTHOG_KEY
+const posthogHost = import.meta.env.VITE_POSTHOG_HOST
+
+if (posthogKey && posthogHost) {
+  posthog.init(posthogKey, {
+    api_host: posthogHost,
+    defaults: '2025-05-24',
+    logs: {
+      serviceName: 'gingerbros-web',
+      environment: import.meta.env.MODE,
+    },
+  })
+} else if (import.meta.env.DEV) {
+  const missingVariable = posthogKey ? 'VITE_POSTHOG_HOST' : 'VITE_POSTHOG_KEY'
+  throw new Error(
+    `${missingVariable} variable required by PostHog is missing or un-configured, this causes events to be silently missed. This error stops appearing once ${missingVariable} is configured`,
+  )
+}
 
 // Own scroll positioning ourselves. Left on 'auto', the browser restores the
 // previous scroll offset on back/forward *after* React has mounted the new
@@ -45,7 +66,13 @@ function Root() {
     </HelmetProvider>
   )
 }
-const app = <Root />
+const app = (
+  <PostHogProvider client={posthog}>
+    <PostHogErrorBoundary>
+      <Root />
+    </PostHogErrorBoundary>
+  </PostHogProvider>
+)
 
 const root = document.getElementById('root')!
 const normalise = (p: string) => p.replace(/\/$/, '') || '/'
