@@ -1,10 +1,11 @@
 /**
- * GingerBros drinks are not fermented, and the site must not make health or
- * medical claims (Thai FDA rules). `npm run build` runs this first
+ * GingerBros drinks are not fermented. The one allowed health-adjacent claim
+ * is prebiotic fibre (owner-confirmed), in the exact phrasings listed under
+ * ALLOWED below. `npm run build` runs this first
  * (`check:claims`), so any of that copy creeping back into storefront source,
  * meta or public files fails the deploy.
  *
- * KegLand equipment content legitimately talks about brewing and kombucha, so
+ * KegLand equipment content talks about brewing, so
  * the equipment entries in productContent.ts are excluded.
  */
 import { describe, it, expect } from 'vitest';
@@ -27,8 +28,12 @@ const ALLOWED: RegExp[] = [
   /Fermented ginger beer became hugely popular in 18th-century England/, // history post, about ginger beer in general
   /\*\*Ginger beer\*\* stayed true to its roots: fermented/,
   /ginger ale.*little or no fermentation/i,
-  /not here to sell you a remedy|like a (home )?remedy/i, // saying we are NOT a remedy is the point
-  /healthcare professional for personal guidance/i, // disclaimer
+  // Prebiotic fibre is owner-confirmed for both drinks (Fizz: 3.5 g per bottle).
+  // Only these exact phrasings are allowed; any other use still fails.
+  /3\.5 g (per bottle|of prebiotic fibre|per 330ml bottle)/i,
+  /label: 'Prebiotic fibre'/,
+  /(contains|has) prebiotic fibre/i,
+  /Prebiotic fibre \(owner-confirmed\)/,
   /\.digest\('hex'\)/, // crypto hash, not a claim
   /Gym \/ Wellness/, // wholesale venue type, not a claim
   /not medical advice/i,

@@ -18,7 +18,8 @@ Products are fetched dynamically from Stripe via `/api/products`. The frontend d
 ## Brand rules (Nov 2026 rebrand)
 
 - Tagline **Think Ginger. Drink Different.** Positioning: the modern ginger drink brand of Thailand. Lead with taste, not health.
-- **Neither drink is fermented.** No fermentation, prebiotic, probiotic, gut, immunity or other health claims anywhere. `tests/unit/brand-claims.test.ts` fails the build if they creep back.
+- **Neither drink is fermented.** No fermentation, probiotic, gut, immunity or other health claims anywhere. `tests/unit/brand-claims.test.ts` fails the build if they creep back.
+- **Prebiotic fibre is the one allowed claim** (owner-confirmed; both drinks come from the same batch). Fizz: "3.5 g of prebiotic fibre per bottle". Tea: only "contains prebiotic fibre", no figure, until its number is confirmed. Use those exact phrasings on product pages; the claims test allows nothing else and still blocks the word in meta/SEO text, the homepage and Thai copy.
 - Verified facts only: Fizz = fresh Thai ginger, real lime, low sugar (no sugar grams). Tea = the label's wording (real ginger slowly simmered with lemongrass, lime and spices; no artificial colours or flavours).
 - Design: charcoal `#1E1A17`, ginger yellow `#F2B632`, cream/amber/deep brown. Fonts self-hosted: Bricolage Grotesque (display, `.font-poster`), Inter (body), Anuphan (Thai).
 - Thai pages live under `/th` (router basename); only paths in `src/lib/locale.ts` `TH_PATHS` have Thai versions + hreflang.

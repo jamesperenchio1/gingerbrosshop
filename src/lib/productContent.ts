@@ -38,6 +38,7 @@ const FIZZ: ProductContent = {
   specs: [
     { label: 'Volume', value: '330ml per bottle' },
     { label: 'Style', value: 'Sparkling, low sugar' },
+    { label: 'Prebiotic fibre', value: '3.5 g per 330ml bottle' },
     { label: 'Packaging', value: 'Amber glass bottle with crown cap' },
     { label: 'Storage', value: 'Keep refrigerated; do not freeze' },
     { label: 'Serving', value: 'Ice cold, on its own or over ice' },
@@ -47,6 +48,7 @@ const FIZZ: ProductContent = {
     'Fresh Thai ginger and real lime',
     'Sparkling, bright, properly gingery',
     'Low in sugar',
+    '3.5 g of prebiotic fibre per bottle',
     'Made in Thailand',
   ],
 };
@@ -76,6 +78,7 @@ const TEA: ProductContent = {
     'Real ginger, slowly simmered',
     'Lemongrass, lime and Thai spices',
     'No artificial colours or flavours',
+    'Contains prebiotic fibre',
     'Great iced or warm',
   ],
 };
@@ -457,19 +460,24 @@ export const PRODUCT_CONTENT: Record<string, ProductContent> = {
   // Neither drink is fermented. Only state what's verified: fresh Thai ginger,
   // real lime, low sugar (Fizz); the Tea label's own wording (Tea). Nutrition
   // and shelf life stay off until confirmed against the current recipes.
+  // Prebiotic fibre (owner-confirmed): Fizz states 3.5 g per bottle; Tea says
+  // only "contains prebiotic fibre" (no figure) until its number is confirmed.
+  // brand-claims.test.ts allows only those exact phrasings.
 
   'ginger-fizz': {
     ...FIZZ,
     headline: 'Sparkling. Bright. A proper kick. Fresh Thai ginger and real lime, low in sugar.',
     longDescription:
-      "Ginger Fizz is what happens when you stop treating ginger like a remedy and start treating it like the main event. Fresh Thai ginger brings real heat, real lime keeps it bright, and a sharp, lively sparkle carries it all. It's low in sugar and big on bite, so it refreshes instead of cloying. Crack one ice cold on a hot afternoon, pour it next to anything off the grill, or use it as the best mixer in your fridge.",
+      "Ginger Fizz is what happens when you stop treating ginger like a remedy and start treating it like the main event. Fresh Thai ginger brings real heat, real lime keeps it bright, and a sharp, lively sparkle carries it all. It's low in sugar and big on bite, so it refreshes instead of cloying. Crack one ice cold on a hot afternoon, pour it next to anything off the grill, or use it as the best mixer in your fridge." +
+      ' Every bottle also carries 3.5 g of prebiotic fibre.',
     relatedProducts: ['ginger-tea', 'ginger-fizz-6pack', 'fizz-tea-duo'],
   },
   'ginger-tea': {
     ...TEA,
     headline: 'Slow-simmered. Warm spice. Smooth. Real ginger with lemongrass, lime and Thai spices.',
     longDescription:
-      'Ginger Tea · Thai Spice (ชาขิง) is real ginger, slowly simmered with lemongrass, lime and spices, then bottled still. Rich, rounded and warming, with no artificial colours or flavours. Pour it over a full glass of ice on a hot day, or warm it gently in a pan when the rain comes in. Same ginger kick, a whole different mood.',
+      'Ginger Tea · Thai Spice (ชาขิง) is real ginger, slowly simmered with lemongrass, lime and spices, then bottled still. Rich, rounded and warming, with no artificial colours or flavours. Pour it over a full glass of ice on a hot day, or warm it gently in a pan when the rain comes in. Same ginger kick, a whole different mood.' +
+      ' Like the Fizz, it contains prebiotic fibre.',
     relatedProducts: ['ginger-fizz', 'ginger-tea-6pack', 'fizz-tea-duo'],
   },
 
@@ -494,6 +502,7 @@ export const PRODUCT_CONTENT: Record<string, ProductContent> = {
       "Six bottles of Ginger Fizz: fresh Thai ginger, real lime, low sugar and a proper sparkle. Our best value per bottle, made for parties, office fridges, and anyone who knows they'll want another one.",
     specs: [
       { label: 'Volume', value: '6 × 330ml (1,980ml total)' },
+      { label: 'Prebiotic fibre', value: '3.5 g per bottle' },
       { label: 'Packaging', value: 'Six amber glass bottles with crown caps' },
       { label: 'Storage', value: 'Keep refrigerated; do not freeze' },
       { label: 'Origin', value: 'Made in Thailand' },
