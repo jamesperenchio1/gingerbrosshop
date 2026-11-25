@@ -17,6 +17,7 @@ import {
 } from './_lib/email.js';
 import { getStockAlertSubscribers, clearStockAlertSubscribers } from './_lib/stockAlerts.js';
 import { sendMetaPurchaseEvents } from './_lib/handlers/metaCapi.js';
+import { emitPosthogLog } from './_lib/posthogLogs.js';
 
 const stripeSecret = process.env.STRIPE_SECRET_KEY;
 const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
@@ -150,6 +151,14 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     };
 
     await saveOrder(order);
+    emitPosthogLog('checkout_fulfilled', {
+      checkout_mode: order.mode,
+      item_count: order.items.reduce((count, item) => count + item.quantity, 0),
+      total_minor: order.amountTotal,
+      currency: order.currency,
+      is_subscription: order.mode === 'subscription',
+      is_gift: order.isGift,
+    });
 
     // They bought: never send this customer an abandoned-cart reminder.
     if (order.customerEmail) {

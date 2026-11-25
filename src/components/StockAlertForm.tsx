@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { toast } from 'sonner';
+import { capturePosthogEvent } from '@/lib/posthogCapture';
 
 interface Props {
   productId: string;
@@ -23,6 +24,7 @@ export default function StockAlertForm({ productId, className = '' }: Props) {
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data?.error ?? 'Failed to subscribe');
+      capturePosthogEvent('stock_alert_subscribed', { product_id: productId });
       setSubmitted(true);
       toast.success("We'll email you when it's back in stock!");
     } catch (err) {
