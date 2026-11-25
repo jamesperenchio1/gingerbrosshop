@@ -71,8 +71,37 @@ export function anonymousId(req: { headers?: Record<string, string | string[] | 
   return `${prefix}:${Math.abs(hash).toString(36)}`;
 }
 
-/** Split a cart into the property shape analytics tools expect. */
-export function cartProperties(items: Array<{ id?: string; productId?: string; name?: string; price?: number; quantity?: number }>) {
+/**
+ * Report a server-side exception to PostHog Error Tracking. Fire-and-forget:
+ * a failing analytics call must never mask the real error.
+ */
+export function captureServerException(
+  error: unknown,
+  distinctId: string,
+  properties: ServerEventProperties = {},
+): void {
+  if (!KEY) return;
+  const err = error instanceof Error ? error : new Error(String(error));
+  const frames = (err.stack ?? '')
+    .split('\n')
+    .slice(1, 25)
+    .map((line) => ({ platform: 'custom', raw: line.trim() }));
+
+  captureServerEventSoon('$exception', distinctId || 'server', {
+    ...properties,
+    $exception_level: 'error',
+    $exception_list: [
+      {
+        type: err.name || 'Error',
+        value: err.message,
+        mechanism: { handled: false, synthetic: false },
+        stacktrace: { type: 'raw', frames },
+      },
+    ],
+  });
+}
+
+/** Split a cart into the property shape analytics tools expect. */export function cartProperties(items: Array<{ id?: string; productId?: string; name?: string; price?: number; quantity?: number }>) {
   const contents = items.map((item) => ({
     id: item.productId ?? item.id ?? 'unknown',
     quantity: item.quantity ?? 1,

@@ -175,3 +175,43 @@ Checklist:
 - Session replay masks email/name fields.
 - In production, requests go to `gingerbrosshop.com/ingest/...` (Network tab),
   not directly to `us.i.posthog.com`.
+
+---
+
+## What is enabled (all products, free tier)
+
+Everything below is configured on project 767811. Free-tier budgets in brackets;
+the site's volume is far below all of them.
+
+| Product | Configuration |
+|---|---|
+| Product analytics [1M events] | Autocapture, custom events (see catalogue), timezone Asia/Bangkok, primary dashboard 01 |
+| Session replay [5k recordings] | 100 % sample, 3 s minimum, 30-day retention, all inputs masked, `/admin` blocked, console logs captured |
+| Error tracking [100k exceptions] | Client `capture_exceptions`, `$exception` from `api/[...path].ts` via `captureServerException`, alert above 10/day |
+| Surveys [1.5k responses] | “Post-purchase rating” on `/order/success`, “Shop feedback” on `/shop` |
+| Feature flags [1M requests] | `site-banner` (live, JSON payload en/th → `AnnouncementBar`), `hero-copy-experiment` (paused, multivariate) |
+| Data warehouse [1M rows] | Stripe, Resend, Vercel sources |
+| Alerts | Revenue < ฿500/day, checkout→purchase < 40 %, cart abandonment > 90 %, errors > 10/day |
+| Cohorts | Purchasers, Subscribers, Newsletter verified, High-intent browsers, Cart abandoners |
+| Actions | Purchased, Subscription started, Checkout started, Newsletter verified, Cart abandoned |
+| Replay playlists | Purchasers, Checkout drop-off, Errors |
+| Subscriptions | Weekly digest of dashboard 01 to gingerbros.brew@gmail.com |
+| Annotations | “PostHog full product enablement” marker on the timeline |
+| Heatmaps | On (toolbar/clicks) |
+| AI (PostHog AI, replay vision) [credits] | Available in the UI; no code needed |
+
+### Deliberately not enabled
+
+- **LLM analytics** — the site calls no LLM.
+- **Logs** [10k MB] — only useful with an OTLP exporter; the server already reports
+  errors as `$exception`. Add `posthog-node`'s logger if server logs are ever needed.
+- **Experiments** — `hero-copy-experiment` exists but is paused until there is traffic
+  to measure; running one now would produce noise.
+- **Slack / Teams / CDP destinations** — need external credentials or an OAuth app, so
+  they cannot be switched on from the repo. Alerts already email the owner.
+
+### Privacy notes
+
+Replay masks every input and anything tagged `data-ph-mask`, `/admin` is blocked from
+recording, and network bodies are not captured. `respect_dnt` is `false` to match
+GA4/Meta coverage — flip it in `src/lib/posthog.ts` if policy changes.

@@ -31,6 +31,7 @@ const translations: Record<Locale, Record<string, string>> = {
     skipToContent: 'Skip to content',
     menu: 'Menu',
     closeMenu: 'Close menu',
+    dismissBanner: 'Dismiss announcement',
 
     // Cart
     cart: 'Cart',
@@ -210,6 +211,7 @@ const translations: Record<Locale, Record<string, string>> = {
     skipToContent: 'ข้ามไปยังเนื้อหา',
     menu: 'เมนู',
     closeMenu: 'ปิดเมนู',
+    dismissBanner: 'ปิดประกาศ',
 
     // Cart
     cart: 'ตะกร้า',

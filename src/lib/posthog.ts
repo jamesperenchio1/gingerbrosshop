@@ -61,6 +61,9 @@ export function initPostHog(): void {
         // GA4 and Meta already ignore DNT on this site; matching that keeps the
         // numbers consistent (and Chrome profiles with DNT on still report).
         respect_dnt: false,
+        // Error tracking: uncaught client errors plus console output in replays.
+        capture_exceptions: true,
+        enable_recording_console_log: true,
         // Session replay, with form fields and anything marked [data-ph-mask]
         // redacted. Card data never touches this site (Stripe Checkout is a
         // redirect), but emails/names still get masked.
@@ -70,8 +73,9 @@ export function initPostHog(): void {
           maskTextSelector: '[data-ph-mask], .ph-mask',
         },
         enable_heatmaps: true,
-        // Keep the bundle small; we don't use surveys/toolbar in production.
-        disable_surveys: true,
+        // Surveys power the post-purchase and shop-feedback prompts (free tier:
+        // 1,500 responses). The toolbar stays off in production.
+        disable_surveys: false,
         loaded: (ph) => {
           client = ph;
           ready = true;
@@ -133,4 +137,33 @@ export function identifyUser(distinctId: string, properties: EventProperties = {
 export function resetUser(): void {
   if (client && ready) client.reset();
   pendingIdentify = null;
+}
+
+/** Payload attached to a feature flag, or undefined when the flag is off. */
+export function getFeatureFlagPayload(key: string): unknown {
+  if (!client || !ready) return undefined;
+  return client.getFeatureFlagPayload(key);
+}
+
+/**
+ * Run a callback once the SDK is ready (flags included). Returns a cancel
+ * function. No-ops without a browser or a key, so SSR stays untouched.
+ */
+export function whenPostHogReady(cb: () => void): () => void {
+  if (!isBrowser() || !KEY) return () => {};
+  let cancelled = false;
+  const tick = (attempt: number): void => {
+    if (cancelled) return;
+    if (client && ready) {
+      cb();
+      return;
+    }
+    if (attempt > 40) return; // ~10s, then give up quietly
+    window.setTimeout(() => tick(attempt + 1), 250);
+  };
+  initPostHog();
+  tick(0);
+  return () => {
+    cancelled = true;
+  };
 }

@@ -68,6 +68,17 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return;
   }
 
-  const { default: fn } = await load();
-  return fn(req, res);
+  try {
+    const { default: fn } = await load();
+    return await fn(req, res);
+  } catch (error) {
+    // Feed PostHog Error Tracking from the one place every JSON endpoint funnels
+    // through, then rethrow so Vercel still logs and returns its normal 500.
+    const { captureServerException, anonymousId } = await import('./_lib/posthog.js');
+    captureServerException(error, anonymousId(req, 'api'), {
+      route: `/api/${route}`,
+      method: req.method,
+    });
+    throw error;
+  }
 }

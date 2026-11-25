@@ -8,6 +8,7 @@ import { prefersReducedMotion } from '@/lib/reveal';
 import Navigation from '@/sections/Navigation';
 import Footer from '@/sections/Footer';
 import PromoNotice from '@/components/PromoNotice';
+import AnnouncementBar from '@/components/AnnouncementBar';
 import CartDrawer from '@/sections/CartDrawer';
 import HomePage from '@/pages/HomePage';
 import { Toaster } from '@/components/ui/sonner';
@@ -235,6 +236,7 @@ export default function App() {
       <CartProvider>
         <ErrorBoundary>
           <SkipLink />
+          <AnnouncementBar />
           <Navigation />
           <main id="main" tabIndex={-1} className="outline-none">
             <AppContent />
