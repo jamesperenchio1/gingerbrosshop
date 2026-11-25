@@ -9,7 +9,9 @@ const INPUT =
 
 const BUSINESS_TYPES = ['Café', 'Restaurant', 'Bar', 'Hotel / Resort', 'Shop / Grocery', 'Gym / Wellness', 'Event / Catering', 'Other'];
 const VOLUMES = ['Just trying it', '1–5 cases / month', '5–20 cases / month', '20+ cases / month'];
-const MAX_SAMPLES_PER_DRINK = 6;
+const MAX_SAMPLES_PER_DRINK = 3;
+/** Flat shipping fee for a sample pack, in baht. Samples themselves are free. */
+const SAMPLE_SHIPPING_BAHT = 50;
 
 type Drink = 'Ginger Fizz' | 'Ginger Tea · Thai Spice';
 const DRINKS: { name: Drink; note: string }[] = [
@@ -154,6 +156,7 @@ function WholesaleForm() {
       lines.push(`Ginger Fizz: ${sampleFizz} bottle${sampleFizz === 1 ? '' : 's'}`);
       lines.push(`Ginger Tea · Thai Spice: ${sampleTea} bottle${sampleTea === 1 ? '' : 's'}`);
       lines.push(`Total: ${sampleTotal} bottles`);
+      lines.push(`Shipping: flat ฿${SAMPLE_SHIPPING_BAHT}, paid by the sender`);
       lines.push(`Send to: ${address.trim()}`);
     }
     if (message.trim()) lines.push('', 'Notes:', message.trim());
@@ -188,6 +191,7 @@ function WholesaleForm() {
         <p className="font-body text-[15px] leading-relaxed">
           Thanks, {contactName.split(' ')[0]}! We have your request for <strong>{businessName}</strong>
           {wantsSamples ? ` (including ${sampleTotal} sample bottle${sampleTotal === 1 ? '' : 's'})` : ''} and will reply within 24 hours.
+          {wantsSamples ? ` Samples are free; we will confirm how to pay the flat ฿${SAMPLE_SHIPPING_BAHT} shipping before we send them.` : ''}
         </p>
       </div>
     );
@@ -233,7 +237,7 @@ function WholesaleForm() {
         <StepTitle n={2}>What do you need?</StepTitle>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <TickCard checked={wantsQuote} onChange={setWantsQuote} title="A price quote" desc="Trade prices for your venue." />
-          <TickCard checked={wantsSamples} onChange={setWantsSamples} title="Taste it first (free samples)" desc="Try the drinks with your team. You only cover shipping." />
+          <TickCard checked={wantsSamples} onChange={setWantsSamples} title="Taste it first (free samples)" desc={`Try the drinks with your team. Up to ${MAX_SAMPLES_PER_DRINK} of each, for a flat ฿${SAMPLE_SHIPPING_BAHT} shipping fee.`} />
         </div>
       </section>
 
@@ -256,7 +260,7 @@ function WholesaleForm() {
             ))}
           </ul>
           <p className="mt-2 font-body text-[13px] text-cream/75">
-            {sampleTotal === 0 ? 'Pick at least one bottle.' : `${sampleTotal} bottle${sampleTotal === 1 ? '' : 's'} in total (up to ${MAX_SAMPLES_PER_DRINK} of each).`}
+            {sampleTotal === 0 ? 'Pick at least one bottle.' : `${sampleTotal} bottle${sampleTotal === 1 ? '' : 's'} in total (up to ${MAX_SAMPLES_PER_DRINK} of each). Samples are free; shipping is a flat ฿${SAMPLE_SHIPPING_BAHT}.`}
           </p>
           <label htmlFor="wholesale-address" className="mt-4 mb-1.5 block font-body text-[13px] text-cream/70">Where should we send them? *</label>
           <textarea id="wholesale-address" rows={2} value={address} onChange={(e) => setAddress(e.target.value)}
@@ -428,7 +432,7 @@ export default function WholesalePage() {
             <h2 className="font-poster text-[clamp(2rem,5vw,3.2rem)] mt-3 mb-6">Everything you need to sell it.</h2>
             <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
               {[
-                ['Free samples', 'Taste Fizz and Tea with your team before you commit. Samples are free; you cover the shipping.'],
+                ['Free samples', 'Taste Fizz and Tea with your team before you commit. Up to 3 of each drink. Samples are free; shipping is a flat ฿50.'],
                 ['Recipe card', 'Three signature serves your staff can make in seconds.'],
                 ['Menu copy', 'Ready-to-use descriptions in Thai and English.'],
                 ['Tabletop display', 'A small branded stand so guests notice it.'],
