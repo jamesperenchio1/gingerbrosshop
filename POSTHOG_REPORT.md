@@ -219,6 +219,27 @@ Delivery quality: is the site fast, are recordings arriving, what breaks.
    above ~5 % means the webhook missed events (check `$insert_id` presence) or the client
    copy is double-counting.
 
+## Other products switched on
+
+Beyond the seven dashboards, the project uses the rest of the free tier:
+
+- **Revenue analytics** — THB base currency, `purchase` counted from the `revenue`
+  property. Compare it with dashboard 01 when they disagree.
+- **Marketing analytics** — one conversion goal, “Purchase” (the `Purchased` action),
+  marked as both a customer and a revenue event, so CAC/ROAS tiles have a denominator
+  and a value. Authorized URLs are `gingerbrosshop.com` and `www.gingerbrosshop.com`.
+- **Logs** — console logs from the browser, JSON parsed and PII-scrubbed, useful for
+  correlating a replay with a client-side error.
+- **Support** — the self-driving inbox is enabled; the chat widget is not embedded, so
+  tickets would only arrive through the API or a forwarded mailbox.
+- **Workflows** — engagement events and default UTM tags are configured; sending waits
+  on a verified domain.
+- **Data pipelines** — GeoIP and a transformation that drops `/admin` events run on
+  every event before storage.
+
+Group analytics is a paid addon and stays off; LLM analytics, AI observability and
+Tracing have no traffic to observe.
+
 ## Known limitations
 
 - **Only test data so far.** Rates will move wildly on tiny samples; do not act on a

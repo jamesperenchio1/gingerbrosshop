@@ -186,11 +186,16 @@ the site's volume is far below all of them.
 | Product | Configuration |
 |---|---|
 | Product analytics [1M events] | Autocapture, custom events (see catalogue), timezone Asia/Bangkok, primary dashboard 01 |
-| Session replay [5k recordings] | 100 % sample, 3 s minimum, 30-day retention, all inputs masked, `/admin` blocked, console logs captured |
-| Error tracking [100k exceptions] | Client `capture_exceptions`, `$exception` from `api/[...path].ts` via `captureServerException`, alert above 10/day |
+| Session replay [5k recordings] | 100 % sample, 3 s minimum, 30-day retention, all inputs masked, `/admin` blocked, console logs + canvas + network timings captured (headers/bodies off) |
+| Error tracking [100k exceptions] | Client `capture_exceptions`, `$exception` from `api/[...path].ts` via `captureServerException`, alert above 10/day, GitHub integration connected |
 | Surveys [1.5k responses] | “Post-purchase rating” on `/order/success`, “Shop feedback” on `/shop` |
-| Feature flags [1M requests] | `site-banner` (live, JSON payload en/th → `AnnouncementBar`), `hero-copy-experiment` (paused, multivariate) |
+| Feature flags [1M requests] | `site-banner` (live, JSON payload en/th → `AnnouncementBar`), `hero-copy-experiment` (paused, multivariate), experiment “GB · Hero copy test” ready to launch |
 | Data warehouse [1M rows] | Stripe, Resend, Vercel sources |
+| Logs [10k MB] | Browser console logs sent to the Logs product; JSON parsing on; PII scrubbed at ingestion |
+| Revenue analytics | Base currency THB; revenue event `purchase` using the `revenue` property (THB) |
+| Marketing analytics | Conversion goal “Purchase” (action `Purchased`), counts as customer and revenue (THB, `revenue`); authorized URLs `gingerbrosshop.com` + `www` |
+| Support (self-driving inbox) | Inbox enabled; chat widget deliberately not embedded |
+| Workflows [10k emails] | Engagement events on; default UTM `utm_source=gingerbrosshop`, `utm_medium=email`; no sending domain connected |
 | Alerts | Revenue < ฿500/day, checkout→purchase < 40 %, cart abandonment > 90 %, errors > 10/day |
 | Cohorts | Purchasers, Subscribers, Newsletter verified, High-intent browsers, Cart abandoners |
 | Actions | Purchased, Subscription started, Checkout started, Newsletter verified, Cart abandoned |
@@ -202,13 +207,18 @@ the site's volume is far below all of them.
 
 ### Deliberately not enabled
 
-- **LLM analytics** — the site calls no LLM.
-- **Logs** [10k MB] — only useful with an OTLP exporter; the server already reports
-  errors as `$exception`. Add `posthog-node`'s logger if server logs are ever needed.
-- **Experiments** — `hero-copy-experiment` exists but is paused until there is traffic
-  to measure; running one now would produce noise.
+- **Group analytics** — a paid addon ("Subscribe to the Group analytics addon");
+  the project has no natural account entity anyway.
+- **LLM analytics / AI observability / Tracing** — the site calls no LLM and emits no
+  OTel spans, so these would stay empty. Add `posthog-node` tracing if that changes.
+- **CSP reporting** — would require sending a `report-uri`/`report-to` header; adding a
+  CSP header to a live shop is riskier than the value of the report stream.
+- **MCP analytics** — no MCP server in this project.
 - **Slack / Teams / CDP destinations** — need external credentials or an OAuth app, so
-  they cannot be switched on from the repo. Alerts already email the owner.
+  they cannot be switched on from the repo. Transformations (GeoIP, drop `/admin`
+  events) are enabled, and alerts already email the owner.
+- **Workflows email sending** — needs a verified sending domain; UTM and engagement
+  events are configured so it is ready when a domain exists.
 
 ### Privacy notes
 
