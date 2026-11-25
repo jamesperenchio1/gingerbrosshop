@@ -412,6 +412,16 @@ export function wholesaleSubject(ref: string, wants: { quote: boolean; samples: 
   return `${label} #${ref}`;
 }
 
+/**
+ * An address for use after "mailto:". The address is typed by an unverified
+ * visitor, so it must not be able to add mailto parameters (?bcc=, &body=, ...)
+ * to the seller's Reply link. Percent-encodes everything except the "@", which
+ * every mail client still reads fine and keeps the link readable.
+ */
+export function mailtoAddress(address: string): string {
+  return encodeURIComponent(address).replace(/%40/g, '@');
+}
+
 export function wholesaleInquiryHtml(inquiry: WholesaleInquiry, ref: string, wants?: { quote: boolean; samples: boolean }): string {
   const businessName = escapeHtml(inquiry.businessName);
 
@@ -425,7 +435,7 @@ export function wholesaleInquiryHtml(inquiry: WholesaleInquiry, ref: string, wan
       ])
     )}
     ${panel(`<span style="white-space:pre-wrap;">${escapeHtml(inquiry.message)}</span>`)}
-    ${button('Reply', `mailto:${inquiry.email}?subject=${encodeURIComponent(`Re: ${wholesaleSubject(ref, wants)}`)}`)}`,
+    ${button('Reply', `mailto:${mailtoAddress(inquiry.email)}?subject=${encodeURIComponent(`Re: ${wholesaleSubject(ref, wants)}`)}`)}`,
     `Wholesale inquiry from ${inquiry.businessName}`,
     `Wholesale inquiry from ${inquiry.businessName}`,
     { internal: true }

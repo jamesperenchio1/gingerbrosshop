@@ -4,7 +4,11 @@ import { rateLimit, getClientIp } from '../rateLimit.js';
 import { getResend, MAIL_FROM, SELLER_EMAIL, FROM_EMAIL, wholesaleSubject, wholesaleInquiryHtml, wholesaleConfirmationHtml, type WholesaleInquiry } from '../email.js';
 import { captureServerEvent } from '../posthog.js';
 
-const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+// The address ends up in the seller's Reply link and in outgoing mail headers,
+// so besides the basic shape it must not contain characters that act as
+// mailto/URL/header separators (? & = # % < > " , ; : \ /). Real addresses
+// almost never use them.
+export const EMAIL_RE = /^[^\s@?&=#%<>",;:\\/]+@[^\s@?&=#%<>",;:\\/]+\.[^\s@?&=#%<>",;:\\/]+$/;
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (req.method !== 'POST') {
@@ -34,7 +38,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     res.status(400).json({ error: 'Business name, contact name, email, and message are required.' });
     return;
   }
-  if (!EMAIL_RE.test(email)) {
+  if (!EMAIL_RE.test(email) || email.length > 254) {
     res.status(400).json({ error: 'Please enter a valid email address.' });
     return;
   }
