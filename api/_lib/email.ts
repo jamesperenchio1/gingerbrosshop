@@ -396,6 +396,16 @@ export interface WholesaleInquiry {
   message: string;
 }
 
+/**
+ * One subject for both the customer's confirmation and the seller's internal
+ * notification. Gmail's plain Reply on the notification becomes
+ * "Re: <this subject>", which lands in the same thread as the confirmation the
+ * customer already has.
+ */
+export function wholesaleSubject(businessName: string): string {
+  return `Wholesale inquiry: ${businessName}`;
+}
+
 export function wholesaleInquiryHtml(inquiry: WholesaleInquiry): string {
   const businessName = escapeHtml(inquiry.businessName);
 
@@ -409,7 +419,7 @@ export function wholesaleInquiryHtml(inquiry: WholesaleInquiry): string {
       ])
     )}
     ${panel(`<span style="white-space:pre-wrap;">${escapeHtml(inquiry.message)}</span>`)}
-    ${button('Reply', `mailto:${inquiry.email}`)}`,
+    ${button('Reply', `mailto:${inquiry.email}?subject=${encodeURIComponent(`Re: ${wholesaleSubject(inquiry.businessName)}`)}`)}`,
     `Wholesale inquiry from ${inquiry.businessName}`,
     `Wholesale inquiry from ${inquiry.businessName}`,
     { internal: true }
@@ -419,8 +429,18 @@ export function wholesaleInquiryHtml(inquiry: WholesaleInquiry): string {
 export function wholesaleConfirmationHtml(inquiry: WholesaleInquiry): string {
   return layout(
     `${heading('We received your wholesale inquiry')}
-    ${body(`Thanks, ${escapeHtml(inquiry.contactName)}. We'll reply about <strong>${escapeHtml(inquiry.businessName)}</strong> with trade pricing and delivery options within one business day.`)}
-    ${small('You can reply to this email if you want to add anything.')}`,
+    ${body(`Thanks, ${firstName(inquiry.contactName)}. We've got your enquiry for <strong>${escapeHtml(inquiry.businessName)}</strong> and will reply with trade pricing and delivery options within one business day.`)}
+    ${small('Here is a copy of what you sent us:')}
+    ${panel(
+      details([
+        ['Business', escapeHtml(inquiry.businessName)],
+        ['Contact', escapeHtml(inquiry.contactName)],
+        ['Email', escapeHtml(inquiry.email)],
+        ['Phone', escapeHtml(inquiry.phone)],
+      ])
+    )}
+    ${panel(`<span style="white-space:pre-wrap;">${escapeHtml(inquiry.message)}</span>`)}
+    ${small('Want to add something? Just reply to this email and it comes straight to us, in the same conversation.')}`,
     'We will reply within one business day',
     'Wholesale inquiry received'
   );

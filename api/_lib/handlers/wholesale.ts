@@ -1,6 +1,6 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { rateLimit, getClientIp } from '../rateLimit.js';
-import { getResend, MAIL_FROM, SELLER_EMAIL, wholesaleInquiryHtml, wholesaleConfirmationHtml, type WholesaleInquiry } from '../email.js';
+import { getResend, MAIL_FROM, SELLER_EMAIL, FROM_EMAIL, wholesaleSubject, wholesaleInquiryHtml, wholesaleConfirmationHtml, type WholesaleInquiry } from '../email.js';
 import { captureServerEvent } from '../posthog.js';
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -53,15 +53,19 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       from: MAIL_FROM,
       to: SELLER_EMAIL,
       replyTo: email,
-      subject: `Wholesale inquiry: ${businessName}`,
+      subject: wholesaleSubject(businessName),
       html: wholesaleInquiryHtml(inquiry),
     });
 
     // Best-effort confirmation to the submitter; failure here shouldn't fail the request.
+    // Same subject as the seller notification above, so the seller's plain
+    // Reply ("Re: <subject>") threads under this email in the customer's mailbox.
+    // Customer replies go to the sending address, which Cloudflare Email Routing forwards to the support inbox.
     await resend.emails.send({
       from: MAIL_FROM,
       to: email,
-      subject: 'We received your wholesale inquiry',
+      replyTo: FROM_EMAIL,
+      subject: wholesaleSubject(businessName),
       html: wholesaleConfirmationHtml(inquiry),
     }).catch((err) => console.error('Wholesale confirmation email failed:', err));
 
