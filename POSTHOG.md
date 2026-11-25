@@ -45,7 +45,9 @@ in `vercel.json` needs no extra origins. `posthog-js` is bundled by Vite, so
 - Events fired before the SDK is ready are queued and flushed on `loaded`.
 - `capture_pageview: false` — `PageViewTracker` in `src/App.tsx` sends
   `$pageview` on every route change (the SPA would otherwise double-count).
-- `person_profiles: 'identified_only'`, `respect_dnt: true`.
+- `person_profiles: 'identified_only'`; `respect_dnt: false` for consistency with
+  the GA4/Meta tags already on the site (both ignore DNT). Flip it to `true` if
+  you ever want to honour the DNT header.
 - Session replay is on with `maskAllInputs: true` and text matching
   `[data-ph-mask], .ph-mask`. Add `data-ph-mask` to anything sensitive that
   isn't an input.

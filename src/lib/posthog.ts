@@ -58,7 +58,9 @@ export function initPostHog(): void {
         autocapture: true,
         person_profiles: 'identified_only',
         persistence: 'localStorage+cookie',
-        respect_dnt: true,
+        // GA4 and Meta already ignore DNT on this site; matching that keeps the
+        // numbers consistent (and Chrome profiles with DNT on still report).
+        respect_dnt: false,
         // Session replay, with form fields and anything marked [data-ph-mask]
         // redacted. Card data never touches this site (Stripe Checkout is a
         // redirect), but emails/names still get masked.
