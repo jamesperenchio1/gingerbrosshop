@@ -237,10 +237,12 @@ function injectMeta(html: string, meta: RouteMeta, pathname: string): string {
 }
 
 export const config = {
-  // Skip API routes, the /q/ QR redirects, built assets, and anything that looks
-  // like a file (has an extension) — public/ files such as /analytics.js must be
-  // served as-is, not replaced with the SPA shell.
-  matcher: ['/((?!api(?:/|$)|q/|assets/|images/|\\.well-known/|.*\\.[a-zA-Z0-9]+$).*)'],
+  // Skip API routes, the /q/ QR redirects, built assets, the PostHog /ingest
+  // proxy, and anything that looks like a file (has an extension) — public/
+  // files such as /analytics.js must be served as-is, not replaced with the SPA
+  // shell. /ingest must skip too, or unknown-route 404 handling swallows
+  // PostHog's capture/decide requests (they have no file extension).
+  matcher: ['/((?!api(?:/|$)|q/|assets/|images/|ingest/|\\.well-known/|.*\\.[a-zA-Z0-9]+$).*)'],
 };
 
 async function handle(request: Request): Promise<Response> {
