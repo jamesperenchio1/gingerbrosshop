@@ -34,6 +34,8 @@ const ALLOWED: RegExp[] = [
   /label: 'Prebiotic fibre'/,
   /(contains|has) prebiotic fibre/i,
   /Prebiotic fibre \(owner-confirmed\)/,
+  /not here to sell you a remedy|like a (home )?remedy/i, // saying we are NOT a remedy is the point
+  /healthcare professional for personal guidance/i, // disclaimer
   /\.digest\('hex'\)/, // crypto hash, not a claim
   /Gym \/ Wellness/, // wholesale venue type, not a claim
   /not medical advice/i,
