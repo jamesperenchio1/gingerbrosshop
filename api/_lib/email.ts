@@ -402,15 +402,17 @@ export interface WholesaleInquiry {
  * "Re: <this subject>", which lands in the same thread as the confirmation the
  * customer already has.
  *
- * It is built from a server-generated reference only. The form is public and
- * the address is unverified, so no text the sender typed may appear in the
- * subject (or be echoed back to them) in an email sent from our domain.
+ * It is built from a server-generated reference plus a label chosen from two
+ * booleans only. The form is public and the address is unverified, so no text
+ * the sender typed may appear in the subject (or be echoed back to them) in an
+ * email sent from our domain.
  */
-export function wholesaleSubject(ref: string): string {
-  return `Wholesale inquiry #${ref}`;
+export function wholesaleSubject(ref: string, wants: { quote: boolean; samples: boolean } = { quote: true, samples: false }): string {
+  const label = wants.samples ? (wants.quote ? 'Wholesale quote + samples' : 'Sample request') : 'Wholesale inquiry';
+  return `${label} #${ref}`;
 }
 
-export function wholesaleInquiryHtml(inquiry: WholesaleInquiry, ref: string): string {
+export function wholesaleInquiryHtml(inquiry: WholesaleInquiry, ref: string, wants?: { quote: boolean; samples: boolean }): string {
   const businessName = escapeHtml(inquiry.businessName);
 
   return layout(
@@ -423,7 +425,7 @@ export function wholesaleInquiryHtml(inquiry: WholesaleInquiry, ref: string): st
       ])
     )}
     ${panel(`<span style="white-space:pre-wrap;">${escapeHtml(inquiry.message)}</span>`)}
-    ${button('Reply', `mailto:${inquiry.email}?subject=${encodeURIComponent(`Re: ${wholesaleSubject(ref)}`)}`)}`,
+    ${button('Reply', `mailto:${inquiry.email}?subject=${encodeURIComponent(`Re: ${wholesaleSubject(ref, wants)}`)}`)}`,
     `Wholesale inquiry from ${inquiry.businessName}`,
     `Wholesale inquiry from ${inquiry.businessName}`,
     { internal: true }

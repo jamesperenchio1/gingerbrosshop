@@ -23,6 +23,12 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   const email = (req.body?.email as string)?.toLowerCase().trim();
   const phone = (req.body?.phone as string)?.trim() || undefined;
   const message = (req.body?.message as string)?.trim();
+  // Which options the sender ticked on the form. Booleans only: these pick the
+  // subject label, so no sender-typed text can reach a subject line.
+  const wants = {
+    samples: req.body?.wantsSamples === true,
+    quote: req.body?.wantsQuote !== false,
+  };
 
   if (!businessName || !contactName || !email || !message) {
     res.status(400).json({ error: 'Business name, contact name, email, and message are required.' });
@@ -56,8 +62,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       from: MAIL_FROM,
       to: SELLER_EMAIL,
       replyTo: email,
-      subject: wholesaleSubject(ref),
-      html: wholesaleInquiryHtml(inquiry, ref),
+      subject: wholesaleSubject(ref, wants),
+      html: wholesaleInquiryHtml(inquiry, ref, wants),
     });
 
     // Best-effort confirmation to the submitter; failure here shouldn't fail the request.
@@ -68,7 +74,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       from: MAIL_FROM,
       to: email,
       replyTo: FROM_EMAIL,
-      subject: wholesaleSubject(ref),
+      subject: wholesaleSubject(ref, wants),
       html: wholesaleConfirmationHtml(inquiry, ref),
     }).catch((err) => console.error('Wholesale confirmation email failed:', err));
 
