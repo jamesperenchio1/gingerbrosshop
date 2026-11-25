@@ -1,6 +1,7 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { rateLimit, getClientIp } from '../rateLimit.js';
 import { getResend, MAIL_FROM, SELLER_EMAIL, wholesaleInquiryHtml, wholesaleConfirmationHtml, type WholesaleInquiry } from '../email.js';
+import { captureServerEvent } from '../posthog.js';
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -64,6 +65,11 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       html: wholesaleConfirmationHtml(inquiry),
     }).catch((err) => console.error('Wholesale confirmation email failed:', err));
 
+    await captureServerEvent('wholesale_inquiry_submitted', email, {
+      business_name: businessName,
+      contact_name: contactName,
+      has_phone: Boolean(phone),
+    });
     res.status(200).json({ success: true });
   } catch (err) {
     console.error('Wholesale inquiry error:', err);

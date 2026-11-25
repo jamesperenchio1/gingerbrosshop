@@ -2,6 +2,7 @@ import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { getStripe } from '../stripe.js';
 import { getOrders } from '../orders.js';
 import { rateLimit, getClientIp } from '../rateLimit.js';
+import { captureServerEvent } from '../posthog.js';
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (req.method !== 'GET') {
@@ -55,6 +56,11 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       amountTotal: li.amount_total,
     }));
 
+    await captureServerEvent('order_tracked', email, {
+      order_number: orderNum,
+      status: session.payment_status ?? order.status,
+      item_count: (lineItems ?? order.items).length,
+    });
     res.status(200).json({
       order: {
         sessionId: order.sessionId,

@@ -4,6 +4,7 @@ import { getStripe } from '../stripe.js';
 import { rateLimit, getClientIp } from '../rateLimit.js';
 import { getCredit } from '../credits.js';
 import { multiBuyDiscount, bottlesFromMetadata, type BottleLine } from '../multiBuy.js';
+import { captureServerEvent, anonymousId, cartProperties } from '../posthog.js';
 
 interface CheckoutLine {
   // The Stripe price ID to purchase. `id` is accepted as a legacy alias.
@@ -88,6 +89,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   let subInterval: { interval: string; intervalCount: number } | null = null;
   // One-time lines with their bottle counts, for multi-buy deal pricing.
   const bottleLines: BottleLine[] = [];
+  const analyticsItems: Array<{ id: string; name: string; price: number; quantity: number }> = [];
 
   try {
     const resolved = await Promise.all(
@@ -121,6 +123,13 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         : {};
       const bottlesFizz = bottlesFromMetadata(productMeta.bottles_fizz);
       const bottlesTea = bottlesFromMetadata(productMeta.bottles_tea);
+      const productName = product && typeof product === 'object' && 'name' in product ? (product as Stripe.Product).name : price.id;
+      analyticsItems.push({
+        id: productMeta.app_id || price.id,
+        name: productName,
+        price: (price.unit_amount ?? 0) / 100,
+        quantity: qty,
+      });
       if (bottlesFizz + bottlesTea > 0) hasDrinks = true;
       if (!price.recurring) {
         bottleLines.push({ price: (price.unit_amount ?? 0) / 100, quantity: qty, bottlesFizz, bottlesTea });
@@ -311,6 +320,17 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
             invoice_creation: { enabled: true },
           }
         : {}),
+    });
+    await captureServerEvent('checkout_session_created', customerEmail || anonymousId(req), {
+      ...cartProperties(analyticsItems),
+      session_id: session.id,
+      mode,
+      payment_method: paymentMethod,
+      promo_code: promoCodeInput || null,
+      referral_code: referralCode || null,
+      source: source || null,
+      delivery_method: deliveryMethod,
+      has_gift: Boolean(giftInfo?.isGift),
     });
     res.status(200).json({ url: session.url });
   } catch (err) {

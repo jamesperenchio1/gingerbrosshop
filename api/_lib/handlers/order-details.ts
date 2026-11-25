@@ -1,6 +1,7 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { getStripe, type SessionWithShipping } from '../stripe.js';
 import { getOrderBySessionId } from '../orders.js';
+import { captureServerEvent } from '../posthog.js';
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (req.method !== 'GET') {
@@ -49,6 +50,17 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     const invoice = typeof session.invoice === 'object' ? session.invoice : null;
 
     const sd = (session as SessionWithShipping).shipping_details;
+    await captureServerEvent(
+      'order_details_viewed',
+      session.customer_details?.email ?? `session:${session.id}`,
+      {
+        session_id: session.id,
+        mode: session.mode,
+        amount_total: (session.amount_total ?? 0) / 100,
+        currency: session.currency?.toUpperCase() ?? 'THB',
+        item_count: lineItems?.length ?? 0,
+      },
+    );
     res.status(200).json({
       sessionId: session.id,
       customerEmail: session.customer_details?.email ?? null,

@@ -3,6 +3,7 @@ import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { Redis } from '@upstash/redis';
 import { rateLimit, getClientIp } from '../rateLimit.js';
 import { getResend, MAIL_FROM_NEWSLETTER, UNSUBSCRIBE_HEADERS, welcomeWithCodeHtml, welcomeHtml } from '../email.js';
+import { captureServerEvent } from '../posthog.js';
 
 const audienceId = process.env.RESEND_AUDIENCE_ID;
 
@@ -56,6 +57,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         headers: UNSUBSCRIBE_HEADERS,
       });
 
+      await captureServerEvent('newsletter_subscribed', email, { verification_required: true });
       res.status(200).json({ success: true, verification: true });
     } else {
       // Redis not configured — fall back to plain welcome email
@@ -67,6 +69,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         headers: UNSUBSCRIBE_HEADERS,
       });
 
+      await captureServerEvent('newsletter_subscribed', email, { verification_required: false });
       res.status(200).json({ success: true, verification: false });
     }
   } catch (err) {

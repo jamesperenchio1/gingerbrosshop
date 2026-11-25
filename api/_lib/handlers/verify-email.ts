@@ -3,6 +3,7 @@ import { Redis } from '@upstash/redis';
 import Stripe from 'stripe';
 import { getResend, MAIL_FROM_NEWSLETTER, UNSUBSCRIBE_HEADERS, discountCodeHtml } from '../email.js';
 import { rateLimit, getClientIp } from '../rateLimit.js';
+import { captureServerEvent } from '../posthog.js';
 
 // The verification code is a 6-digit number (~900k values) that lives in Redis
 // for 24h. Without a cap, an attacker could brute-force it for any email that
@@ -112,5 +113,6 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     }
   }
 
+  await captureServerEvent('newsletter_verified', email, { promo_code_sent: !!promoCode });
   res.status(200).json({ success: true, sent: !!promoCode, promoCode: promoCode || undefined });
 }

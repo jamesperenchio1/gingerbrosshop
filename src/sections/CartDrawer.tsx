@@ -13,6 +13,7 @@ import { useAddProduct } from '@/components/shop/useAddProduct';
 import type { CartItem } from '@/types/cart';
 import { usePromo, promoDiscount } from '@/lib/promo';
 import { nextDealHint } from '@/lib/multiBuy';
+import { captureEvent } from '@/lib/posthog';
 
 /** localStorage read that is safe during server rendering. */
 function readLocal(key: string): string | null {
@@ -50,11 +51,14 @@ export default function CartDrawer() {
   const handleDeliveryMethodChange = (value: DeliveryMethod) => {
     setDeliveryMethod(value);
     localStorage.setItem(DELIVERY_METHOD_STORAGE_KEY, value);
+    captureEvent('delivery_method_selected', { delivery_method: value });
   };
 
   const handleNoteChange = (value: string) => {
     const next = value.slice(0, 500);
     setOrderNote(next);
+    // Only report the first time a note gains content, not every keystroke.
+    if (next && !orderNote) captureEvent('cart_note_added', { length: next.length });
     if (next) {
       localStorage.setItem('gingerbros-cart-note', next);
     } else {
@@ -74,6 +78,7 @@ export default function CartDrawer() {
       const data = await res.json();
       if (!res.ok) throw new Error(data?.error ?? 'Failed to generate link');
       await navigator.clipboard.writeText(data.url);
+      captureEvent('cart_shared', { item_count: state.items.length, shared_cart_id: data.id ?? null });
       toast.success('Cart link copied to clipboard! Valid for 7 days.');
     } catch {
       toast.error('Could not generate share link. Please try again.');
@@ -483,7 +488,11 @@ export default function CartDrawer() {
                   className="flex-1 bg-cream border border-soft-peach rounded-full px-4 py-2 font-body text-[13px] text-deep-brown placeholder:text-earth/80 focus:outline-none focus:ring-2 focus:ring-rust/30"
                 />
                 <button
-                  onClick={() => setReferralInput(false)}
+                  onClick={() => {
+                    setReferralInput(false);
+                    const code = referralCode.trim();
+                    if (code) captureEvent('referral_code_entered', { referral_code: code });
+                  }}
                   className="font-body text-[13px] text-rust hover:text-deep-brown"
                 >
                   Done

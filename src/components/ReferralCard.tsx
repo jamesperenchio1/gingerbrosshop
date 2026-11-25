@@ -1,6 +1,7 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Gift } from 'lucide-react';
 import CopyButton from '@/components/CopyButton';
+import { captureEvent } from '@/lib/posthog';
 
 interface ReferralInfo {
   code: string;
@@ -29,6 +30,17 @@ export default function ReferralCard({ email }: { email: string }) {
     };
   }, [email]);
 
+  const trackedView = useRef(false);
+  useEffect(() => {
+    if (!info || trackedView.current) return;
+    trackedView.current = true;
+    captureEvent('referral_card_viewed', {
+      referral_code: info.code,
+      credit_baht: info.creditBaht,
+      referrals: info.referrals,
+    });
+  }, [info]);
+
   if (!info) return null;
 
   const shareUrl = `${window.location.origin}/?ref=${info.code}`;
@@ -48,7 +60,10 @@ export default function ReferralCard({ email }: { email: string }) {
           </>
         )}
       </p>
-      <div className="flex items-center gap-3 flex-wrap">
+      <div className="flex items-center gap-3 flex-wrap" onClickCapture={(e) => {
+        const label = (e.target as HTMLElement).closest('button')?.textContent?.trim();
+        if (label) captureEvent('referral_share_clicked', { method: label === 'Copy code' ? 'copy_code' : 'copy_link', referral_code: info.code });
+      }}>
         <div className="bg-cream border border-soft-peach rounded-full px-5 py-2.5 font-display font-semibold text-deep-brown tracking-wide">
           {info.code}
         </div>

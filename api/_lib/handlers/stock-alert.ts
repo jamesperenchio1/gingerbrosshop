@@ -1,6 +1,7 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { rateLimit, getClientIp } from '../rateLimit.js';
 import { subscribeStockAlert } from '../stockAlerts.js';
+import { captureServerEvent } from '../posthog.js';
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -33,5 +34,6 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   }
 
   await subscribeStockAlert(productId, email);
+  await captureServerEvent('stock_alert_signup', email, { product_id: productId });
   res.status(200).json({ subscribed: true });
 }

@@ -5,6 +5,7 @@ import { CheckCircle, Package, Truck, Mail, FileText, Settings, Home, Gift } fro
 import { useCart } from '@/context/CartContext';
 import { PENDING_SUBSCRIPTION_CHECKOUT_KEY, startCheckout } from '@/lib/checkout';
 import { trackPixelEvent } from '@/lib/metaPixel';
+import { captureEvent, identifyUser } from '@/lib/posthog';
 import type { CartItem } from '@/types/cart';
 import SEO from '@/components/SEO';
 import CopyButton from '@/components/CopyButton';
@@ -179,6 +180,42 @@ export default function OrderSuccess() {
             { content_ids: contentIds, content_type: 'product', value, currency: data.currency },
             `${data.sessionId}-subscribe`,
           );
+        }
+
+        // Tie the browser session to the buyer so server-side and client-side
+        // events land on the same person.
+        if (data.customerEmail) {
+          identifyUser(data.customerEmail, {
+            email: data.customerEmail,
+            name: data.customerName ?? undefined,
+            phone: data.customerPhone ?? undefined,
+          });
+        }
+        captureEvent('purchase', {
+          // `$insert_id` matches the server-side capture in api/webhook.ts, so
+          // the two never double-count a single order.
+          $insert_id: `${data.sessionId}-purchase`,
+          order_id: data.sessionId,
+          session_id: data.sessionId,
+          product_ids: contentIds,
+          contents,
+          num_items: data.items.reduce((sum, item) => sum + item.quantity, 0),
+          value,
+          revenue: value,
+          currency: data.currency,
+          is_subscription: !!data.isSubscription,
+          has_gift: !!data.recipientEmail,
+          customer_email: data.customerEmail ?? undefined,
+        });
+        if (data.isSubscription) {
+          captureEvent('subscription_started', {
+            $insert_id: `${data.sessionId}-subscription`,
+            subscription_id: data.sessionId,
+            product_ids: contentIds,
+            value,
+            revenue: value,
+            currency: data.currency,
+          });
         }
       })
       .catch((err) => {

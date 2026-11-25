@@ -17,6 +17,7 @@ import { REFERRAL_CODE_STORAGE_KEY } from '@/lib/checkout';
 import { isLinkHost } from '@/lib/linkpage';
 import { localeFromPath } from '@/lib/locale';
 import { trackPageView } from '@/lib/metaPixel';
+import { capturePageView, captureEvent } from '@/lib/posthog';
 
 /** Loads a shared cart from `?cart=<uuid>` and pre-fills CartContext, then removes the param. */
 function CartLinkLoader() {
@@ -37,6 +38,10 @@ function CartLinkLoader() {
           // don't report AddToCart for each line.
           for (const item of data.items) addItem(item, { silent: true });
           openCart();
+          captureEvent('shared_cart_opened', {
+            shared_cart_id: id,
+            item_count: data.items.length,
+          });
         }
       })
       .catch(() => {});
@@ -45,12 +50,13 @@ function CartLinkLoader() {
   return null;
 }
 
-/** One page view per route (the first load included), for GA4 and Meta. */
+/** One page view per route (the first load included), for GA4, Meta and PostHog. */
 function PageViewTracker() {
   const { pathname } = useLocation();
   const href = useHref(pathname);
   useEffect(() => {
     trackPageView(href);
+    capturePageView(href);
   }, [href]);
   return null;
 }
@@ -60,7 +66,11 @@ function ReferralCapture() {
   const location = useLocation();
   useEffect(() => {
     const ref = new URLSearchParams(location.search).get('ref');
-    if (ref) localStorage.setItem(REFERRAL_CODE_STORAGE_KEY, ref.toUpperCase());
+    if (ref) {
+      const code = ref.toUpperCase();
+      localStorage.setItem(REFERRAL_CODE_STORAGE_KEY, code);
+      captureEvent('referral_link_visited', { referral_code: code });
+    }
   }, [location.search]);
   return null;
 }

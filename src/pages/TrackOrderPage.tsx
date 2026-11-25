@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router';
 import { ArrowLeft, Search, Package, Truck, CheckCircle, Mail } from 'lucide-react';
+import { identifyUser } from '@/lib/posthog';
 import SEO from '@/components/SEO';
 import CopyButton from '@/components/CopyButton';
 import ReorderButton from '@/components/ReorderButton';
@@ -44,6 +45,7 @@ export default function TrackOrderPage() {
       const data = await res.json();
       if (!res.ok) throw new Error(data.error ?? 'Order not found');
       setResult(data.order);
+      identifyUser(email.trim().toLowerCase(), { email: email.trim().toLowerCase() });
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Something went wrong');
     } finally {

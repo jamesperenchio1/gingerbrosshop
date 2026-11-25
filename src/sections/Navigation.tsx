@@ -4,6 +4,7 @@ import * as Dialog from '@radix-ui/react-dialog';
 import { useCart } from '@/context/CartContext';
 import { useI18n } from '@/context/I18nContext';
 import { CartIcon, MenuIcon, CloseIcon } from '@/components/Icons';
+import { captureEvent } from '@/lib/posthog';
 
 const navLinks = [
   { key: 'shop', to: '/shop' },
@@ -31,7 +32,11 @@ function LanguageToggle({ dark }: { dark: boolean }) {
           key={l}
           type="button"
           lang={l}
-          onClick={() => setLocale(l)}
+          onClick={() => {
+            if (l === locale) return;
+            captureEvent('language_switched', { from: locale, to: l });
+            setLocale(l);
+          }}
           aria-pressed={locale === l}
           className={`px-2.5 py-1 font-body text-[11px] font-semibold transition-colors ${locale === l ? on : idle}`}
         >

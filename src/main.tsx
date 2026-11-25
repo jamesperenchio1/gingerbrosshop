@@ -10,6 +10,7 @@ import App from './App.tsx'
 import { capturePromoFromUrl } from '@/lib/promo'
 import { captureSourceFromUrl } from '@/lib/source'
 import { localeFromPath, basenameFor } from '@/lib/locale'
+import { initPostHog } from '@/lib/posthog'
 
 // Own scroll positioning ourselves. Left on 'auto', the browser restores the
 // previous scroll offset on back/forward *after* React has mounted the new
@@ -22,6 +23,10 @@ capturePromoFromUrl()
 
 // Remember which ad/link brought the visitor so the order can be attributed.
 captureSourceFromUrl()
+
+// Analytics: load once, after the promo/source params are on record. The
+// wrapper no-ops during SSR and when no project key is configured.
+initPostHog()
 
 /**
  * The router's basename carries the locale ("/th" or ""). It is state here so

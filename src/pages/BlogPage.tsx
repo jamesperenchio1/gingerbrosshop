@@ -20,6 +20,7 @@ import {
 import SEO from '@/components/SEO';
 import Newsletter from '@/components/Newsletter';
 import { BLOG_SEO_META, type BlogSeoMeta } from '@/lib/blogSeoMeta';
+import { captureEvent } from '@/lib/posthog';
 
 type Category = 'Recipe' | 'Drinks' | 'Culture' | 'Guide';
 
@@ -1001,6 +1002,16 @@ export default function BlogPage() {
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: 'auto' });
   }, [slug]);
+
+  useEffect(() => {
+    if (!activePost) return;
+    captureEvent('article_viewed', {
+      article_slug: activePost.slug,
+      article_title: activePost.title,
+      article_category: activePost.category,
+      article_author: activePost.author,
+    });
+  }, [activePost]);
   const featured = POSTS.find((p) => p.featured) ?? POSTS[0];
 
   const counts = useMemo(() => {

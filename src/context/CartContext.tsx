@@ -1,6 +1,7 @@
 import { createContext, useContext, useReducer, useCallback, useMemo, useEffect, useRef, type ReactNode } from 'react';
 import type { CartItem, CartState, CartAction } from '@/types/cart';
 import { trackPixelEvent } from '@/lib/metaPixel';
+import { captureEvent, identifyUser } from '@/lib/posthog';
 import { multiBuyDiscount as computeMultiBuyDiscount } from '@/lib/multiBuy';
 
 import { getCartEmail } from '@/lib/cartEmail';
@@ -136,6 +137,10 @@ export function CartProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     const saved = loadState();
     if (saved.items.length > 0) dispatch({ type: 'HYDRATE', payload: saved });
+    // If we already know who this is (email captured at checkout/newsletter),
+    // tie the session to that person so server-side purchases join up.
+    const email = getCartEmail();
+    if (email) identifyUser(email, { email });
     restored.current = true;
   }, []);
 
@@ -161,35 +166,115 @@ export function CartProvider({ children }: { children: ReactNode }) {
       value: item.price * item.quantity,
       currency: 'THB',
     });
+    captureEvent('add_to_cart', {
+      product_id: item.productId ?? item.id,
+      price_id: item.priceId ?? item.id,
+      product_name: item.name,
+      variant: item.variant,
+      quantity: item.quantity,
+      price: item.price,
+      value: item.price * item.quantity,
+      currency: 'THB',
+      is_subscription: !!item.isSubscription,
+      subscription_interval: item.interval,
+      is_gift: !!item.isGift,
+    });
   }, []);
 
   const removeItem = useCallback((id: string) => {
+    const item = state.items.find((i) => i.id === id);
+    if (item) {
+      captureEvent('remove_from_cart', {
+        product_id: item.productId ?? item.id,
+        product_name: item.name,
+        quantity: item.quantity,
+        price: item.price,
+        value: item.price * item.quantity,
+        currency: 'THB',
+      });
+    }
     dispatch({ type: 'REMOVE_ITEM', payload: id });
-  }, []);
+  }, [state.items]);
 
   const updateQuantity = useCallback((id: string, quantity: number) => {
+    const item = state.items.find((i) => i.id === id);
+    if (item) {
+      captureEvent('cart_quantity_updated', {
+        product_id: item.productId ?? item.id,
+        product_name: item.name,
+        previous_quantity: item.quantity,
+        quantity,
+        price: item.price,
+        value: item.price * Math.max(quantity, 0),
+        currency: 'THB',
+      });
+    }
     dispatch({ type: 'UPDATE_QUANTITY', payload: { id, quantity } });
-  }, []);
+  }, [state.items]);
 
   const decrementOrRemove = useCallback((id: string) => {
+    const item = state.items.find((i) => i.id === id);
+    if (!item) {
+      dispatch({ type: 'DECREMENT_OR_REMOVE', payload: id });
+      return;
+    }
+    if (item.quantity <= 1) {
+      captureEvent('remove_from_cart', {
+        product_id: item.productId ?? item.id,
+        product_name: item.name,
+        quantity: 1,
+        price: item.price,
+        value: item.price,
+        currency: 'THB',
+      });
+    } else {
+      captureEvent('cart_quantity_updated', {
+        product_id: item.productId ?? item.id,
+        product_name: item.name,
+        previous_quantity: item.quantity,
+        quantity: item.quantity - 1,
+        price: item.price,
+        value: item.price * (item.quantity - 1),
+        currency: 'THB',
+      });
+    }
     dispatch({ type: 'DECREMENT_OR_REMOVE', payload: id });
-  }, []);
+  }, [state.items]);
 
   const toggleCart = useCallback(() => {
+    if (!state.isOpen) {
+      captureEvent('cart_opened', {
+        source: 'toggle',
+        item_count: state.items.reduce((sum, item) => sum + item.quantity, 0),
+        value: state.items.reduce((sum, item) => sum + item.price * item.quantity, 0),
+        currency: 'THB',
+      });
+    }
     dispatch({ type: 'TOGGLE_CART' });
-  }, []);
+  }, [state.isOpen, state.items]);
 
   const openCart = useCallback(() => {
+    captureEvent('cart_opened', {
+      source: 'open',
+      item_count: state.items.reduce((sum, item) => sum + item.quantity, 0),
+      value: state.items.reduce((sum, item) => sum + item.price * item.quantity, 0),
+      currency: 'THB',
+    });
     dispatch({ type: 'OPEN_CART' });
-  }, []);
+  }, [state.items]);
 
   const closeCart = useCallback(() => {
     dispatch({ type: 'CLOSE_CART' });
   }, []);
 
   const clearCart = useCallback(() => {
+    captureEvent('cart_cleared', {
+      item_count: state.items.reduce((sum, item) => sum + item.quantity, 0),
+      value: state.items.reduce((sum, item) => sum + item.price * item.quantity, 0),
+      currency: 'THB',
+    });
     dispatch({ type: 'CLEAR_CART' });
-  }, []);
+  }, [state.items]);
 
   const totalItems = useMemo(
     () => state.items.reduce((sum, item) => sum + item.quantity, 0),

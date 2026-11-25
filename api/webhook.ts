@@ -17,6 +17,7 @@ import {
 } from './_lib/email.js';
 import { getStockAlertSubscribers, clearStockAlertSubscribers } from './_lib/stockAlerts.js';
 import { sendMetaPurchaseEvents } from './_lib/handlers/metaCapi.js';
+import { captureServerEventSoon } from './_lib/posthog.js';
 
 const stripeSecret = process.env.STRIPE_SECRET_KEY;
 const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
@@ -150,6 +151,42 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     };
 
     await saveOrder(order);
+
+    // Authoritative purchase event: reaches PostHog even if the shopper's
+    // browser never loads OrderSuccess. `$insert_id` matches the client-side
+    // event so PostHog deduplicates the pair.
+    const analyticsDistinctId = order.customerEmail || `session:${order.sessionId}`;
+    captureServerEventSoon('purchase', analyticsDistinctId, {
+      $insert_id: `${order.sessionId}-purchase`,
+      order_id: order.sessionId,
+      session_id: order.sessionId,
+      revenue: order.amountTotal / 100,
+      value: order.amountTotal / 100,
+      currency: order.currency,
+      product_ids: order.items.map((i) => i.id),
+      contents: order.items.map((i) => ({
+        id: i.id,
+        quantity: i.quantity,
+        item_price: i.quantity ? (i.amountTotal / 100) / i.quantity : 0,
+        name: i.description,
+      })),
+      num_items: order.items.reduce((sum, i) => sum + i.quantity, 0),
+      mode: order.mode,
+      is_subscription: order.mode === 'subscription',
+      is_gift: order.isGift,
+      referral_code: order.referralCode || null,
+      source: order.source,
+      payment_method: session.payment_method_types?.[0] ?? null,
+    });
+    if (order.mode === 'subscription') {
+      captureServerEventSoon('subscription_created', analyticsDistinctId, {
+        $insert_id: `${order.sessionId}-subscription`,
+        subscription_id: order.subscriptionId ?? order.sessionId,
+        order_id: order.sessionId,
+        revenue: order.amountTotal / 100,
+        currency: order.currency,
+      });
+    }
 
     // They bought: never send this customer an abandoned-cart reminder.
     if (order.customerEmail) {

@@ -6,6 +6,7 @@ import {
   recordReferralUsage,
 } from '../referrals.js';
 import { getCredit, addCredit } from '../credits.js';
+import { captureServerEvent } from '../posthog.js';
 
 const REFERRAL_CREDIT_MINOR = 500; // ฿5, granted to both sides of a referral
 
@@ -54,6 +55,11 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     await addCredit(owner, REFERRAL_CREDIT_MINOR);
     await addCredit(email, REFERRAL_CREDIT_MINOR);
 
+    await captureServerEvent('referral_applied', email.toLowerCase(), {
+      referral_code: code.toUpperCase(),
+      credit_baht: REFERRAL_CREDIT_MINOR / 100,
+      referrer_credited: true,
+    });
     res.status(200).json({ success: true, creditBaht: REFERRAL_CREDIT_MINOR / 100 });
     return;
   }

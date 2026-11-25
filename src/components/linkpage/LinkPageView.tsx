@@ -12,6 +12,7 @@ import {
 } from '@/lib/linkpage';
 import SocialIcon from './SocialIcon';
 import StickerMedia from './StickerMedia';
+import { captureEvent, identifyUser } from '@/lib/posthog';
 
 const CORNER_PX = { square: 0, sm: 8, md: 16, pill: 9999 } as const;
 const THUMB_CORNER_PX = { square: 0, sm: 4, md: 10, pill: 9999 } as const;
@@ -85,6 +86,7 @@ export default function LinkPageView(props: LinkPageViewProps) {
     try {
       if (navigator.share) {
         await navigator.share({ title, url });
+        captureEvent('linkpage_share_clicked', { link_title: title, link_url: url, method: 'native' });
         return;
       }
     } catch {
@@ -92,6 +94,7 @@ export default function LinkPageView(props: LinkPageViewProps) {
     }
     try {
       await navigator.clipboard.writeText(url);
+      captureEvent('linkpage_share_clicked', { link_title: title, link_url: url, method: 'clipboard' });
       setToast('Link copied');
     } catch {
       setToast(url);
@@ -169,7 +172,10 @@ export default function LinkPageView(props: LinkPageViewProps) {
                 aria-label={SOCIAL_LABELS[s.type]}
                 onClick={(e) => {
                   if (preview) e.preventDefault();
-                  else props.onLinkClick?.(`social-${s.type}`);
+                  else {
+                    captureEvent('linkpage_social_clicked', { platform: s.type, page: props.pageUrl });
+                    props.onLinkClick?.(`social-${s.type}`);
+                  }
                 }}
                 className="w-10 h-10 flex items-center justify-center hover:scale-110 transition-transform"
               >
@@ -190,7 +196,10 @@ export default function LinkPageView(props: LinkPageViewProps) {
               products={props.products}
               preview={preview}
               srcTag={props.srcTag}
-              onClick={() => props.onLinkClick?.(block.id)}
+              onClick={() => {
+                captureEvent('linkpage_block_clicked', { block_id: block.id, block_type: block.type, page: props.pageUrl });
+                props.onLinkClick?.(block.id);
+              }}
               onShare={(title, url) => share(title, url)}
               onSignup={props.onSignup}
             />
@@ -633,6 +642,11 @@ function SignupForm({
     const result = await onSignup(email);
     setMessage(result.message);
     setState(result.ok ? 'done' : 'error');
+    if (result.ok) {
+      const cleanEmail = email.trim().toLowerCase();
+      identifyUser(cleanEmail, { email: cleanEmail, source: 'linkpage' });
+      captureEvent('linkpage_signup', { email: cleanEmail });
+    }
   };
 
   return (

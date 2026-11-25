@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { toast } from 'sonner';
+import { identifyUser } from '@/lib/posthog';
 
 interface Props {
   productId: string;
@@ -24,6 +25,8 @@ export default function StockAlertForm({ productId, className = '' }: Props) {
       const data = await res.json();
       if (!res.ok) throw new Error(data?.error ?? 'Failed to subscribe');
       setSubmitted(true);
+      const cleanEmail = email.trim().toLowerCase();
+      identifyUser(cleanEmail, { email: cleanEmail });
       toast.success("We'll email you when it's back in stock!");
     } catch (err) {
       toast.error(err instanceof Error ? err.message : 'Something went wrong');

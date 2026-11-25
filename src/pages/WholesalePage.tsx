@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Store, Truck, BadgeCheck, Mail, CheckCircle, Package, TrendingDown, Clock } from 'lucide-react';
 import SEO from '@/components/SEO';
 import { trackPixelEvent } from '@/lib/metaPixel';
+import { identifyUser } from '@/lib/posthog';
 
 function WholesaleForm() {
   const [businessName, setBusinessName] = useState('');
@@ -37,6 +38,7 @@ function WholesaleForm() {
       const data = await res.json().catch(() => ({}));
       if (!res.ok) throw new Error(data.error ?? 'Something went wrong. Please try again.');
       trackPixelEvent('Lead', { content_name: 'wholesale_quote' });
+      identifyUser(email.trim().toLowerCase(), { email: email.trim().toLowerCase(), business_name: businessName });
       setSent(true);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to send inquiry.');

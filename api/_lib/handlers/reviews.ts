@@ -3,6 +3,7 @@ import { randomUUID } from 'crypto';
 import { rateLimit, getClientIp } from '../rateLimit.js';
 import { getReviews, addReview, deleteReview, type Review } from '../reviews.js';
 import { isAdminAuthorized } from '../adminAuth.js';
+import { captureServerEvent, anonymousId } from '../posthog.js';
 
 function summarize(reviews: Review[]) {
   const count = reviews.length;
@@ -88,6 +89,12 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       return;
     }
 
+    await captureServerEvent('review_submitted', anonymousId(req, 'reviewer'), {
+      product_id: productId,
+      rating,
+      review_length: text.length,
+      has_name: Boolean(name),
+    });
     res.status(200).json({ review });
     return;
   }

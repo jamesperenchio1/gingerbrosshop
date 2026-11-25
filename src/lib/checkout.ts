@@ -2,6 +2,7 @@ import { getStoredPromo } from '@/lib/promo';
 import type { CartItem } from '@/types/cart';
 import { trackPixelEvent } from '@/lib/metaPixel';
 import { getStoredSource } from '@/lib/source';
+import { captureEvent } from '@/lib/posthog';
 
 // Set right before redirecting to the first (one-time) leg of a split checkout.
 // The success page reads it once to know it should pick up the subscription leg.
@@ -34,6 +35,15 @@ export function trackInitiateCheckout(items: CartItem[]): void {
     num_items: items.reduce((sum, i) => sum + i.quantity, 0),
     value: items.reduce((sum, i) => sum + i.price * i.quantity, 0),
     currency: 'THB',
+  });
+  captureEvent('checkout_started', {
+    product_ids: items.map((i) => i.productId ?? i.id),
+    contents: items.map((i) => ({ id: i.productId ?? i.id, quantity: i.quantity, item_price: i.price, name: i.name })),
+    num_items: items.reduce((sum, i) => sum + i.quantity, 0),
+    value: items.reduce((sum, i) => sum + i.price * i.quantity, 0),
+    currency: 'THB',
+    has_subscription: items.some((i) => i.isSubscription),
+    is_gift: items.some((i) => i.isGift),
   });
 }
 

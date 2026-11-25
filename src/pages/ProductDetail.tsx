@@ -20,6 +20,7 @@ import { getProductContent, IMAGE_ALT } from '@/lib/productContent';
 import { useReveal } from '@/lib/reveal';
 import { optimizedImageUrl } from '@/lib/image';
 import { trackPixelEvent } from '@/lib/metaPixel';
+import { captureEvent } from '@/lib/posthog';
 import ResponsiveImage from '@/components/ResponsiveImage';
 import CompactCard from '@/components/shop/CompactCard';
 import PackPicker from '@/components/shop/PackPicker';
@@ -310,8 +311,39 @@ export default function ProductDetail() {
       value: oneTimeForProduct?.unitAmount ?? defaultPrice(product)?.unitAmount ?? 0,
       currency: 'THB',
     });
+    captureEvent('product_viewed', {
+      product_id: product.id,
+      product_name: product.name,
+      category: product.category,
+      price: oneTimeForProduct?.unitAmount ?? defaultPrice(product)?.unitAmount ?? 0,
+      currency: 'THB',
+      stock_status: stockStatus(product),
+      is_subscription_available: product.prices.some((p) => p.recurring),
+      badge: product.badge || undefined,
+    });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [product?.id]);
+
+  // Report option changes (plan, size, type) once the shopper actually moves
+  // off the default — not on first paint.
+  const trackedPrice = useRef<{ productId: string; priceId: string } | null>(null);
+  useEffect(() => {
+    if (!product || !selectedPrice) return;
+    const prev = trackedPrice.current;
+    trackedPrice.current = { productId: product.id, priceId: selectedPrice.priceId };
+    if (!prev || prev.productId !== product.id || prev.priceId === selectedPrice.priceId) return;
+    captureEvent('product_option_selected', {
+      product_id: product.id,
+      product_name: product.name,
+      price_id: selectedPrice.priceId,
+      nickname: selectedPrice.nickname,
+      price: selectedPrice.unitAmount ?? 0,
+      currency: 'THB',
+      is_subscription: !!selectedPrice.recurring,
+      subscription_interval: selectedPrice.recurring ? intervalLabel(selectedPrice.recurring) : undefined,
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [product?.id, selectedPrice?.priceId]);
 
   const isVariantProduct = !!product && hasVariantPrices(product);
 
@@ -448,6 +480,16 @@ export default function ProductDetail() {
   const handleBuyNow = async () => {
     if (stock === 'out_of_stock' || buyingNow) return;
     setBuyingNow(true);
+    captureEvent('buy_now_clicked', {
+      product_id: product.id,
+      product_name: product.name,
+      price_id: selectedPrice.priceId,
+      quantity,
+      value: lineTotal,
+      currency: 'THB',
+      is_subscription: !!selectedPrice.recurring,
+      is_gift: isGift,
+    });
     try {
       const item = buildCartItem();
       trackInitiateCheckout([item]);

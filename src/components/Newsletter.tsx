@@ -2,6 +2,7 @@ import { useState, useRef, useEffect, useCallback } from 'react';
 import { setStoredPromo } from '@/lib/promo';
 import { setCartEmail } from '@/lib/cartEmail';
 import { trackPixelEvent } from '@/lib/metaPixel';
+import { captureEvent, identifyUser } from '@/lib/posthog';
 import { Mail, CheckCircle, AlertCircle, ArrowRight, RefreshCw } from 'lucide-react';
 import { useI18n } from '@/context/I18nContext';
 
@@ -53,6 +54,9 @@ export default function Newsletter() {
       } else {
         setStep('done');
       }
+      captureEvent('newsletter_signup_started', {
+        verification_required: Boolean(data.verification),
+      });
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to subscribe');
     } finally {
@@ -107,6 +111,7 @@ export default function Newsletter() {
       if (!res.ok) throw new Error(data.error ?? 'Something went wrong.');
       if (data.promoCode) setStoredPromo(data.promoCode);
       setCartEmail(email);
+      identifyUser(email.trim().toLowerCase(), { email: email.trim().toLowerCase(), newsletter: true });
       trackPixelEvent('Subscribe', { content_name: 'newsletter' });
       setStep('done');
     } catch (err) {

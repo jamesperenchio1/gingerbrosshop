@@ -1,8 +1,9 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { Link } from 'react-router';
 import * as Tabs from '@radix-ui/react-tabs';
 import { useI18n } from '@/context/I18nContext';
 import { useCatalog } from '@/lib/catalog';
+import { captureEvent } from '@/lib/posthog';
 import { packOptions, mixOptions, groupEquipment } from '@/lib/drinks';
 import { useReviewSummaries } from '@/lib/reviews';
 import DrinkCard from '@/components/shop/DrinkCard';
@@ -106,6 +107,18 @@ export default function Shop({ variant = 'home' }: { variant?: 'home' | 'page' }
   const { products } = useCatalog();
   const hasEquipment = products.some((p) => p.category === 'brewing-equipment');
   const [tab, setTab] = useState<Tab>('drinks');
+  const trackedList = useRef(false);
+
+  useEffect(() => {
+    if (!products.length || trackedList.current) return;
+    trackedList.current = true;
+    captureEvent('product_list_viewed', {
+      variant,
+      product_count: products.length,
+      product_ids: products.map((p) => p.id),
+      categories: [...new Set(products.map((p) => p.category))],
+    });
+  }, [products, variant]);
 
   // Restore the remembered tab after hydration so the first render matches the prerendered HTML.
   useEffect(() => {
@@ -118,6 +131,7 @@ export default function Shop({ variant = 'home' }: { variant?: 'home' | 'page' }
   const changeTab = (v: string) => {
     const next = v === 'equipment' ? 'equipment' : 'drinks';
     setTab(next);
+    captureEvent('shop_tab_changed', { tab: next });
     try { sessionStorage.setItem(TAB_KEY, next); } catch { /* ignore */ }
   };
 

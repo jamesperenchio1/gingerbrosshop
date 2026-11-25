@@ -1,6 +1,7 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { toast } from 'sonner';
 import { usePromo } from '@/lib/promo';
+import { captureEvent } from '@/lib/posthog';
 
 const TOASTED_KEY = 'gbros-promo-toasted';
 
@@ -14,6 +15,17 @@ function label(percentOff: number | null, amountOff: number | null) {
 export default function PromoNotice() {
   const promo = usePromo();
   const [hidden, setHidden] = useState(false);
+  const tracked = useRef(false);
+
+  useEffect(() => {
+    if (!promo || tracked.current) return;
+    tracked.current = true;
+    captureEvent('promo_notice_viewed', {
+      promo_code: promo.code,
+      percent_off: promo.percentOff ?? null,
+      amount_off: promo.amountOff ?? null,
+    });
+  }, [promo]);
 
   useEffect(() => {
     if (!promo) return;

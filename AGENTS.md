@@ -1,7 +1,7 @@
 # GingerBros Shop — Agent Notes
 
 React 19 + Vite SPA, prerendered to static HTML, deployed on Vercel. Stripe Checkout is **LIVE**.
-Deeper docs: `CLAUDE.md` (brand/hydration rules), `GINGERBROS_DEV_REFERENCE.md` (all routes, endpoints, price IDs).
+Deeper docs: `CLAUDE.md` (brand/hydration rules), `GINGERBROS_DEV_REFERENCE.md` (all routes, endpoints, price IDs), `POSTHOG.md` (analytics: env, events, warehouse).
 
 ## Commands
 
@@ -38,7 +38,8 @@ Build gotchas:
 
 ## Gotchas
 
-- Env vars actually read by code: `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`, `RESEND_API_KEY`, `ADMIN_EMAILS`, `CRON_SECRET`, `BLOB_READ_WRITE_TOKEN`, `UPSTASH_REDIS_REST_URL`/`_TOKEN`, `META_CAPI_ACCESS_TOKEN`, `VERCEL_DEPLOY_HOOK_URL`. `.env.example` is stale: it lists `ADMIN_SECRET`, but admin login is passwordless and gated by `ADMIN_EMAILS`.
+- **Analytics**: PostHog (client `src/lib/posthog.ts`, server `api/_lib/posthog.ts`), proxied same-origin through `/ingest` (rewrites in `vercel.json`). Every capture is a no-op without `VITE_POSTHOG_KEY`/`POSTHOG_API_KEY`. Event names are in `POSTHOG.md` — reuse them, don't invent parallel ones.
+- Env vars actually read by code: `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`, `RESEND_API_KEY`, `ADMIN_EMAILS`, `CRON_SECRET`, `BLOB_READ_WRITE_TOKEN`, `UPSTASH_REDIS_REST_URL`/`_TOKEN`, `META_CAPI_ACCESS_TOKEN`, `VERCEL_DEPLOY_HOOK_URL`, `VITE_POSTHOG_KEY`, `POSTHOG_API_KEY`. `.env.example` is stale: it lists `ADMIN_SECRET`, but admin login is passwordless and gated by `ADMIN_EMAILS`.
 - ESLint disables `react-refresh/only-export-components` for `src/components/ui/**` on purpose (vendored shadcn); don't "fix" those files.
 - Localized copy lives in two places that must stay in sync: `I18nContext` strings and `src/seo/routes.ts` meta.
 - Order number shown to customers = last 8 chars of the Stripe `session_id`, uppercased.
