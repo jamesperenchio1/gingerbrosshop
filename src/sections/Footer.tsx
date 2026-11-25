@@ -44,7 +44,7 @@ export default function Footer() {
     { label: 'Instagram', href: 'https://www.instagram.com/drinkgingerbros' },
     { label: 'TikTok', href: 'https://www.tiktok.com/@gingerbrosbrew' },
     { label: 'LINE', href: 'https://line.me/R/ti/p/@852nqred' },
-    { label: 'Shopee', href: 'https://shopee.co.th/gingerbros' },
+    { label: 'Shopee', href: 'https://shopee.co.th/drinkgingerbros' },
   ];
 
   return (

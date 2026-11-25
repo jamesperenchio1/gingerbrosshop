@@ -24,7 +24,8 @@ Build gotchas:
 
 - **Stripe is live.** Never create orders, refunds, cancellations, payouts or evidence in tests. Prefer `npm run test:unit` (mocked Stripe) and read-only endpoints.
 - **No hardcoded catalog.** Products, prices and images live in Stripe and are read via `/api/products`. Add/edit products in the Stripe Dashboard (`metadata.app_id`, `metadata.category` = `drinks` | `brewing-equipment`), then add editorial copy in `src/lib/productContent.ts`. Prices in docs rot — read them from Stripe, don't trust tables.
-- **No health claims.** Never write fermented/prebiotic/probiotic/gut/immunity. `tests/unit/brand-claims.test.ts` enforces it. Fizz = fresh Thai ginger, real lime, low sugar (no gram figures). Tea = the label's wording.
+- **No health claims.** Never write fermented/probiotic/gut/immunity. `tests/unit/brand-claims.test.ts` enforces it. Fizz = fresh Thai ginger, real lime, low sugar. Tea = the label's wording.
+- **Prebiotic fibre is the one allowed claim (owner-confirmed; both drinks come from the same batch).** Fizz: "3.5 g of prebiotic fibre per bottle". Tea: only "contains prebiotic fibre" (no figure) until its number is confirmed. Use those exact phrasings; the claims test allows nothing else and still blocks the word anywhere else (including meta/SEO text and Thai copy).
 - Never read `localStorage`/`window`/`Date` during render — prerendered HTML must equal the first client render, or hydration breaks. Restore in an effect (see `CartContext`, `I18nContext`, `Shop`).
 
 ## Architecture

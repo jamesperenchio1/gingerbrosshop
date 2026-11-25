@@ -1,6 +1,7 @@
+import { randomBytes } from 'node:crypto';
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { rateLimit, getClientIp } from '../rateLimit.js';
-import { getResend, MAIL_FROM, SELLER_EMAIL, wholesaleInquiryHtml, wholesaleConfirmationHtml, type WholesaleInquiry } from '../email.js';
+import { getResend, MAIL_FROM, SELLER_EMAIL, FROM_EMAIL, wholesaleSubject, wholesaleInquiryHtml, wholesaleConfirmationHtml, type WholesaleInquiry } from '../email.js';
 import { captureServerEvent } from '../posthog.js';
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -22,6 +23,12 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   const email = (req.body?.email as string)?.toLowerCase().trim();
   const phone = (req.body?.phone as string)?.trim() || undefined;
   const message = (req.body?.message as string)?.trim();
+  // Which options the sender ticked on the form. Booleans only: these pick the
+  // subject label, so no sender-typed text can reach a subject line.
+  const wants = {
+    samples: req.body?.wantsSamples === true,
+    quote: req.body?.wantsQuote !== false,
+  };
 
   if (!businessName || !contactName || !email || !message) {
     res.status(400).json({ error: 'Business name, contact name, email, and message are required.' });
@@ -37,6 +44,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   }
 
   const inquiry: WholesaleInquiry = { businessName, contactName, email, phone, message };
+  // Server-made reference used in both email subjects (never sender-typed text).
+  const ref = randomBytes(3).toString('hex').toUpperCase();
 
   const resend = getResend();
   if (!resend) {
@@ -53,16 +62,20 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       from: MAIL_FROM,
       to: SELLER_EMAIL,
       replyTo: email,
-      subject: `Wholesale inquiry: ${businessName}`,
-      html: wholesaleInquiryHtml(inquiry),
+      subject: wholesaleSubject(ref, wants),
+      html: wholesaleInquiryHtml(inquiry, ref, wants),
     });
 
     // Best-effort confirmation to the submitter; failure here shouldn't fail the request.
+    // Same subject as the seller notification above, so the seller's plain
+    // Reply ("Re: <subject>") threads under this email in the customer's mailbox.
+    // Customer replies go to the sending address, which Cloudflare Email Routing forwards to the support inbox.
     await resend.emails.send({
       from: MAIL_FROM,
       to: email,
-      subject: 'We received your wholesale inquiry',
-      html: wholesaleConfirmationHtml(inquiry),
+      replyTo: FROM_EMAIL,
+      subject: wholesaleSubject(ref, wants),
+      html: wholesaleConfirmationHtml(inquiry, ref),
     }).catch((err) => console.error('Wholesale confirmation email failed:', err));
 
     await captureServerEvent('wholesale_inquiry_submitted', email, {

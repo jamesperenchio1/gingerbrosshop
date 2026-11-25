@@ -1,8 +1,99 @@
 import { useState } from 'react';
-import { Store, Truck, BadgeCheck, Mail, CheckCircle, Package, TrendingDown, Clock } from 'lucide-react';
+import { Store, Truck, BadgeCheck, Mail, CheckCircle, Package, TrendingDown, Clock, Minus, Plus, Check } from 'lucide-react';
 import SEO from '@/components/SEO';
 import { trackPixelEvent } from '@/lib/metaPixel';
 import { identifyUser } from '@/lib/posthog';
+
+const INPUT =
+  'w-full bg-cream border border-soft-peach rounded-xl px-4 py-3 font-body text-deep-brown placeholder:text-earth/80 focus:outline-none focus:ring-2 focus:ring-amber/40';
+
+const BUSINESS_TYPES = ['Café', 'Restaurant', 'Bar', 'Hotel / Resort', 'Shop / Grocery', 'Gym / Wellness', 'Event / Catering', 'Other'];
+const VOLUMES = ['Just trying it', '1–5 cases / month', '5–20 cases / month', '20+ cases / month'];
+const MAX_SAMPLES_PER_DRINK = 6;
+
+type Drink = 'Ginger Fizz' | 'Ginger Tea · Thai Spice';
+const DRINKS: { name: Drink; note: string }[] = [
+  { name: 'Ginger Fizz', note: 'Sparkling · fresh ginger + real lime' },
+  { name: 'Ginger Tea · Thai Spice', note: 'Still · ginger, lemongrass + spices' },
+];
+
+function Chip({ active, onClick, children }: { active: boolean; onClick: () => void; children: React.ReactNode }) {
+  return (
+    <button
+      type="button"
+      aria-pressed={active}
+      onClick={onClick}
+      className={`px-3.5 py-2 rounded-full text-[13px] font-body transition-colors border ${
+        active ? 'bg-amber text-deep-brown border-amber font-medium' : 'bg-cream/10 text-cream/85 border-cream/30 hover:bg-cream/20'
+      }`}
+    >
+      {children}
+    </button>
+  );
+}
+
+function TickCard({
+  checked, onChange, title, desc,
+}: { checked: boolean; onChange: (v: boolean) => void; title: string; desc: string }) {
+  return (
+    <button
+      type="button"
+      role="checkbox"
+      aria-checked={checked}
+      onClick={() => onChange(!checked)}
+      className={`flex items-start gap-3 text-left rounded-2xl border-2 px-4 py-3.5 transition-colors ${
+        checked ? 'border-amber bg-amber/15' : 'border-cream/25 bg-cream/5 hover:border-cream/50'
+      }`}
+    >
+      <span
+        className={`mt-0.5 flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-md border-2 ${
+          checked ? 'bg-amber border-amber text-deep-brown' : 'border-cream/50'
+        }`}
+      >
+        {checked && <Check className="h-3.5 w-3.5" strokeWidth={3} />}
+      </span>
+      <span>
+        <span className="block font-body text-[15px] font-semibold text-cream">{title}</span>
+        <span className="block font-body text-[13px] text-cream/70">{desc}</span>
+      </span>
+    </button>
+  );
+}
+
+function Stepper({ label, value, onChange }: { label: string; value: number; onChange: (n: number) => void }) {
+  return (
+    <div className="flex items-center gap-1">
+      <button
+        type="button"
+        aria-label={`Fewer ${label}`}
+        onClick={() => onChange(Math.max(0, value - 1))}
+        className="flex h-9 w-9 items-center justify-center rounded-full bg-cream/15 text-cream hover:bg-cream/25 disabled:opacity-40"
+        disabled={value <= 0}
+      >
+        <Minus className="h-4 w-4" />
+      </button>
+      <span className="w-8 text-center font-body text-[17px] font-semibold text-cream" aria-live="polite">{value}</span>
+      <button
+        type="button"
+        aria-label={`More ${label}`}
+        onClick={() => onChange(Math.min(MAX_SAMPLES_PER_DRINK, value + 1))}
+        className="flex h-9 w-9 items-center justify-center rounded-full bg-amber text-deep-brown hover:bg-warm-gold disabled:opacity-40"
+        disabled={value >= MAX_SAMPLES_PER_DRINK}
+      >
+        <Plus className="h-4 w-4" />
+      </button>
+    </div>
+  );
+}
+
+function StepTitle({ n, children }: { n: number; children: React.ReactNode }) {
+  return (
+    <h3 className="mb-3 flex items-center gap-2.5 font-body text-[15px] font-semibold text-cream">
+      <span className="flex h-6 w-6 items-center justify-center rounded-full bg-amber text-[12px] font-bold text-deep-brown">{n}</span>
+      {children}
+    </h3>
+  );
+}
 
 function WholesaleForm() {
   const [businessName, setBusinessName] = useState('');
@@ -10,34 +101,77 @@ function WholesaleForm() {
   const [email, setEmail] = useState('');
   const [phone, setPhone] = useState('');
   const [businessType, setBusinessType] = useState('');
-  const [monthlyVolume, setMonthlyVolume] = useState('');
-  const [products, setProducts] = useState<string[]>([]);
+
+  const [wantsQuote, setWantsQuote] = useState(true);
+  const [wantsSamples, setWantsSamples] = useState(false);
+
+  // Quote details
+  const [drinks, setDrinks] = useState<Drink[]>([]);
+  const [sixPacks, setSixPacks] = useState(false);
+  const [volume, setVolume] = useState('');
   const [coldChain, setColdChain] = useState(false);
+
+  // Sample details
+  const [sampleFizz, setSampleFizz] = useState(2);
+  const [sampleTea, setSampleTea] = useState(2);
+  const [address, setAddress] = useState('');
+
   const [message, setMessage] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [sent, setSent] = useState(false);
 
-  const toggleProduct = (p: string) => {
-    setProducts((prev) => prev.includes(p) ? prev.filter((x) => x !== p) : [...prev, p]);
-  };
+  const toggleDrink = (d: Drink) => setDrinks((prev) => (prev.includes(d) ? prev.filter((x) => x !== d) : [...prev, d]));
+  const sampleTotal = sampleFizz + sampleTea;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setLoading(true);
     setError('');
+    if (!wantsQuote && !wantsSamples) {
+      setError('Tick at least one: a price quote or free samples.');
+      return;
+    }
+    if (wantsSamples && sampleTotal === 0) {
+      setError('Choose how many sample bottles you would like.');
+      return;
+    }
+    if (wantsSamples && !address.trim()) {
+      setError('Add an address so we know where to send your samples.');
+      return;
+    }
+
+    const lines: string[] = [];
+    lines.push(`Request: ${[wantsQuote && 'Price quote', wantsSamples && 'Free samples'].filter(Boolean).join(' + ')}`);
+    if (businessType) lines.push(`Business type: ${businessType}`);
+    if (wantsQuote) {
+      lines.push('', '— QUOTE —');
+      lines.push(`Drinks: ${drinks.join(', ') || 'Not specified'}${sixPacks ? ' (+ interested in retail 6-packs)' : ''}`);
+      lines.push(`Volume: ${volume || 'Not specified'}`);
+      lines.push(`Delivery: ${coldChain ? 'Cold-chain (insulated, with ice packs)' : 'Standard courier'}`);
+    }
+    if (wantsSamples) {
+      lines.push('', '— SAMPLES —');
+      lines.push(`Ginger Fizz: ${sampleFizz} bottle${sampleFizz === 1 ? '' : 's'}`);
+      lines.push(`Ginger Tea · Thai Spice: ${sampleTea} bottle${sampleTea === 1 ? '' : 's'}`);
+      lines.push(`Total: ${sampleTotal} bottles`);
+      lines.push(`Send to: ${address.trim()}`);
+    }
+    if (message.trim()) lines.push('', 'Notes:', message.trim());
+
+    setLoading(true);
     try {
       const res = await fetch('/api/wholesale', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           businessName, contactName, email, phone,
-          message: `Business type: ${businessType}\nMonthly volume estimate: ${monthlyVolume}\nProducts interested: ${products.join(', ') || 'Not specified'}\nDelivery: ${coldChain ? 'Cold-chain (insulated, with ice packs)' : 'Standard courier'}\n\n${message}`,
+          wantsQuote, wantsSamples,
+          message: lines.join('\n'),
         }),
       });
       const data = await res.json().catch(() => ({}));
       if (!res.ok) throw new Error(data.error ?? 'Something went wrong. Please try again.');
-      trackPixelEvent('Lead', { content_name: 'wholesale_quote' });
+      trackPixelEvent('Lead', { content_name: wantsSamples ? 'wholesale_samples' : 'wholesale_quote' });
       identifyUser(email.trim().toLowerCase(), { email: email.trim().toLowerCase(), business_name: businessName });
       setSent(true);
     } catch (err) {
@@ -49,139 +183,123 @@ function WholesaleForm() {
 
   if (sent) {
     return (
-      <div className="flex items-center gap-3 text-cream">
-        <CheckCircle className="w-6 h-6 text-green-ink flex-shrink-0" />
-        <p className="font-body text-[15px]">
-          Thanks! We have received your inquiry for <strong>{businessName}</strong> and will reply within 24 hours.
+      <div className="flex items-start gap-3 text-cream">
+        <CheckCircle className="mt-0.5 w-6 h-6 text-green-ink flex-shrink-0" />
+        <p className="font-body text-[15px] leading-relaxed">
+          Thanks, {contactName.split(' ')[0]}! We have your request for <strong>{businessName}</strong>
+          {wantsSamples ? ` (including ${sampleTotal} sample bottle${sampleTotal === 1 ? '' : 's'})` : ''} and will reply within 24 hours.
         </p>
       </div>
     );
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <label htmlFor="wholesale-business-name" className="sr-only">Business name</label>
-        <input
-          id="wholesale-business-name"
-          required
-          value={businessName}
-          onChange={(e) => setBusinessName(e.target.value)}
-          placeholder="Business name *"
-          className="bg-cream border border-soft-peach rounded-xl px-4 py-3 font-body text-deep-brown placeholder:text-earth/80 focus:outline-none focus:ring-2 focus:ring-amber/40"
-        />
-        <label htmlFor="wholesale-contact-name" className="sr-only">Contact name</label>
-        <input
-          id="wholesale-contact-name"
-          required
-          value={contactName}
-          onChange={(e) => setContactName(e.target.value)}
-          placeholder="Contact name *"
-          className="bg-cream border border-soft-peach rounded-xl px-4 py-3 font-body text-deep-brown placeholder:text-earth/80 focus:outline-none focus:ring-2 focus:ring-amber/40"
-        />
-        <label htmlFor="wholesale-email" className="sr-only">Email</label>
-        <input
-          id="wholesale-email"
-          required
-          type="email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          placeholder="Email *"
-          className="bg-cream border border-soft-peach rounded-xl px-4 py-3 font-body text-deep-brown placeholder:text-earth/80 focus:outline-none focus:ring-2 focus:ring-amber/40"
-        />
-        <label htmlFor="wholesale-phone" className="sr-only">Phone</label>
-        <input
-          id="wholesale-phone"
-          value={phone}
-          onChange={(e) => setPhone(e.target.value)}
-          placeholder="Phone (optional)"
-          className="bg-cream border border-soft-peach rounded-xl px-4 py-3 font-body text-deep-brown placeholder:text-earth/80 focus:outline-none focus:ring-2 focus:ring-amber/40"
-        />
-      </div>
-
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <label htmlFor="wholesale-business-type" className="sr-only">Business type</label>
-        <select
-          id="wholesale-business-type"
-          value={businessType}
-          onChange={(e) => setBusinessType(e.target.value)}
-          className="bg-cream border border-soft-peach rounded-xl px-4 py-3 font-body text-deep-brown focus:outline-none focus:ring-2 focus:ring-amber/40 appearance-none"
-        >
-          <option value="">Business type (optional)</option>
-          <option value="Cafe / Coffee Shop">Cafe / Coffee Shop</option>
-          <option value="Restaurant">Restaurant</option>
-          <option value="Bar / Pub">Bar / Pub</option>
-          <option value="Hotel / Resort">Hotel / Resort</option>
-          <option value="Gym / Wellness">Gym / Wellness</option>
-          <option value="Retail / Grocery">Retail / Grocery</option>
-          <option value="Office / Corporate">Office / Corporate</option>
-          <option value="Event / Catering">Event / Catering</option>
-          <option value="Other">Other</option>
-        </select>
-        <label htmlFor="wholesale-monthly-volume" className="sr-only">Monthly volume</label>
-        <select
-          id="wholesale-monthly-volume"
-          value={monthlyVolume}
-          onChange={(e) => setMonthlyVolume(e.target.value)}
-          className="bg-cream border border-soft-peach rounded-xl px-4 py-3 font-body text-deep-brown focus:outline-none focus:ring-2 focus:ring-amber/40 appearance-none"
-        >
-          <option value="">Monthly volume (optional)</option>
-          <option value="1–5 cases">1–5 cases</option>
-          <option value="5–20 cases">5–20 cases</option>
-          <option value="20–50 cases">20–50 cases</option>
-          <option value="50+ cases">50+ cases</option>
-        </select>
-      </div>
-
-      <div>
-        <p className="font-body text-[13px] text-cream/70 mb-2">Products you are interested in:</p>
+    <form onSubmit={handleSubmit} className="space-y-8">
+      {/* 1 — who */}
+      <section>
+        <StepTitle n={1}>Who are you?</StepTitle>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div>
+            <label htmlFor="wholesale-business-name" className="sr-only">Business name</label>
+            <input id="wholesale-business-name" required autoComplete="organization" value={businessName}
+              onChange={(e) => setBusinessName(e.target.value)} placeholder="Business name *" className={INPUT} />
+          </div>
+          <div>
+            <label htmlFor="wholesale-contact-name" className="sr-only">Your name</label>
+            <input id="wholesale-contact-name" required autoComplete="name" value={contactName}
+              onChange={(e) => setContactName(e.target.value)} placeholder="Your name *" className={INPUT} />
+          </div>
+          <div>
+            <label htmlFor="wholesale-email" className="sr-only">Email</label>
+            <input id="wholesale-email" required type="email" autoComplete="email" value={email}
+              onChange={(e) => setEmail(e.target.value)} placeholder="Email *" className={INPUT} />
+          </div>
+          <div>
+            <label htmlFor="wholesale-phone" className="sr-only">Phone or LINE</label>
+            <input id="wholesale-phone" autoComplete="tel" value={phone}
+              onChange={(e) => setPhone(e.target.value)} placeholder="Phone or LINE (optional)" className={INPUT} />
+          </div>
+        </div>
+        <p className="mt-4 mb-2 font-body text-[13px] text-cream/70">What kind of place is it? (optional)</p>
         <div className="flex flex-wrap gap-2">
-          {['Ginger Fizz Single Bottles', 'Ginger Fizz 6-Pack', 'Both'].map((p) => (
-            <button
-              key={p}
-              type="button"
-              onClick={() => toggleProduct(p)}
-              className={`px-3 py-1.5 rounded-full text-[13px] font-body transition-colors border ${
-                products.includes(p)
-                  ? 'bg-amber text-deep-brown border-amber'
-                  : 'bg-cream/20 text-cream/80 border-cream/30 hover:bg-cream/30'
-              }`}
-            >
-              {p}
-            </button>
+          {BUSINESS_TYPES.map((b) => (
+            <Chip key={b} active={businessType === b} onClick={() => setBusinessType(businessType === b ? '' : b)}>{b}</Chip>
           ))}
         </div>
-      </div>
+      </section>
 
-      <div className="flex items-center justify-between gap-4 rounded-xl border border-cream/30 bg-cream/10 px-4 py-3">
-        <div>
-          <p className="font-body text-[14px] font-medium text-cream">Cold-chain delivery</p>
-          <p className="font-body text-[12px] text-cream/70">
-            {coldChain ? 'Insulated box with ice packs (extra charge).' : 'Standard courier delivery (default).'}
-          </p>
+      {/* 2 — what */}
+      <section>
+        <StepTitle n={2}>What do you need?</StepTitle>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <TickCard checked={wantsQuote} onChange={setWantsQuote} title="A price quote" desc="Trade prices for your venue." />
+          <TickCard checked={wantsSamples} onChange={setWantsSamples} title="Taste it first (free samples)" desc="Try the drinks with your team. You only cover shipping." />
         </div>
-        <button
-          type="button"
-          role="switch"
-          aria-checked={coldChain}
-          aria-label="Cold-chain delivery"
-          onClick={() => setColdChain((v) => !v)}
-          className={`relative h-6 w-11 flex-shrink-0 rounded-full transition-colors ${coldChain ? 'bg-amber' : 'bg-cream/30'}`}
-        >
-          <span className={`absolute left-0.5 top-0.5 h-5 w-5 rounded-full bg-cream shadow transition-transform ${coldChain ? 'translate-x-5' : ''}`} />
-        </button>
-      </div>
+      </section>
 
-      <label htmlFor="wholesale-message" className="sr-only">Message</label>
-      <textarea
-        id="wholesale-message"
-        value={message}
-        onChange={(e) => setMessage(e.target.value)}
-        placeholder="Anything else? Your venue, estimated volume, special requirements (optional)"
-        rows={4}
-        className="w-full bg-cream border border-soft-peach rounded-xl px-4 py-3 font-body text-deep-brown placeholder:text-earth/80 focus:outline-none focus:ring-2 focus:ring-amber/40 resize-none"
-      />
-      {error && <p className="font-body text-[13px] text-rust">{error}</p>}
+      {/* 3a — samples */}
+      {wantsSamples && (
+        <section className="rounded-2xl border border-cream/20 bg-cream/5 p-4 sm:p-5">
+          <StepTitle n={3}>How many sample bottles?</StepTitle>
+          <ul className="divide-y divide-cream/15">
+            {[
+              { name: 'Ginger Fizz', note: DRINKS[0].note, value: sampleFizz, set: setSampleFizz },
+              { name: 'Ginger Tea · Thai Spice', note: DRINKS[1].note, value: sampleTea, set: setSampleTea },
+            ].map((d) => (
+              <li key={d.name} className="flex items-center justify-between gap-4 py-3 first:pt-0">
+                <div>
+                  <p className="font-body text-[15px] font-medium text-cream">{d.name}</p>
+                  <p className="font-body text-[12px] text-cream/65">{d.note}</p>
+                </div>
+                <Stepper label={d.name} value={d.value} onChange={d.set} />
+              </li>
+            ))}
+          </ul>
+          <p className="mt-2 font-body text-[13px] text-cream/75">
+            {sampleTotal === 0 ? 'Pick at least one bottle.' : `${sampleTotal} bottle${sampleTotal === 1 ? '' : 's'} in total (up to ${MAX_SAMPLES_PER_DRINK} of each).`}
+          </p>
+          <label htmlFor="wholesale-address" className="mt-4 mb-1.5 block font-body text-[13px] text-cream/70">Where should we send them? *</label>
+          <textarea id="wholesale-address" rows={2} value={address} onChange={(e) => setAddress(e.target.value)}
+            placeholder="Venue name, street, district, province, postcode" className={`${INPUT} resize-none`} />
+        </section>
+      )}
+
+      {/* 3b — quote */}
+      {wantsQuote && (
+        <section className="rounded-2xl border border-cream/20 bg-cream/5 p-4 sm:p-5">
+          <StepTitle n={wantsSamples ? 4 : 3}>Tell us about your quote</StepTitle>
+          <p className="mb-2 font-body text-[13px] text-cream/70">Which drinks? Tap all that apply.</p>
+          <div className="flex flex-wrap gap-2">
+            {DRINKS.map((d) => (
+              <Chip key={d.name} active={drinks.includes(d.name)} onClick={() => toggleDrink(d.name)}>{d.name}</Chip>
+            ))}
+            <Chip active={sixPacks} onClick={() => setSixPacks((v) => !v)}>6-packs for retail shelves</Chip>
+          </div>
+          <p className="mt-4 mb-2 font-body text-[13px] text-cream/70">Roughly how much per month?</p>
+          <div className="flex flex-wrap gap-2">
+            {VOLUMES.map((v) => (
+              <Chip key={v} active={volume === v} onClick={() => setVolume(volume === v ? '' : v)}>{v}</Chip>
+            ))}
+          </div>
+          <label className="mt-4 flex cursor-pointer items-start gap-3">
+            <input type="checkbox" checked={coldChain} onChange={(e) => setColdChain(e.target.checked)}
+              className="mt-1 h-4 w-4 accent-[#F2B632]" />
+            <span className="font-body text-[14px] text-cream">
+              Cold-chain delivery
+              <span className="block text-[12px] text-cream/65">Insulated box with ice packs (extra charge). Otherwise standard courier.</span>
+            </span>
+          </label>
+        </section>
+      )}
+
+      {/* last — anything else */}
+      <section>
+        <label htmlFor="wholesale-message" className="mb-2 block font-body text-[13px] text-cream/70">Anything else we should know? (optional)</label>
+        <textarea id="wholesale-message" value={message} onChange={(e) => setMessage(e.target.value)}
+          placeholder="Your venue, timing, questions…" rows={3} className={`${INPUT} resize-none`} />
+      </section>
+
+      {error && <p role="alert" className="font-body text-[14px] text-amber">{error}</p>}
       <button
         type="submit"
         disabled={loading}
@@ -192,7 +310,7 @@ function WholesaleForm() {
         ) : (
           <Mail className="w-5 h-5" />
         )}
-        {loading ? 'Sending…' : 'Request Wholesale Quote'}
+        {loading ? 'Sending…' : wantsQuote && wantsSamples ? 'Send quote + samples request' : wantsSamples ? 'Request free samples' : 'Request my quote'}
       </button>
     </form>
   );
@@ -254,9 +372,14 @@ export default function WholesalePage() {
   ];
 
   const products = [
-    { product: 'Ginger Fizz Single Bottle', unit: '330ml', caseQty: '24 bottles', sku: 'GB-GF-330' },
-    { product: 'Ginger Fizz 6-Pack', unit: '6 × 330ml', caseQty: '4 packs (24 bottles)', sku: 'GB-GF-6PK' },
-    { product: 'Ginger Tea · Thai Spice', unit: '330ml', caseQty: '24 bottles', sku: 'GB-GT-330' },
+    {
+      product: 'Ginger Fizz',
+      what: 'Sparkling ginger drink. Fresh Thai ginger, real lime, low sugar. Best served ice cold, or in cocktails and mocktails.',
+    },
+    {
+      product: 'Ginger Tea · Thai Spice',
+      what: 'Still, not fizzy. Real ginger slowly simmered with lemongrass, lime and spices. Serve iced or warm.',
+    },
   ];
 
   const jsonLd = {
@@ -355,33 +478,26 @@ export default function WholesalePage() {
             </p>
           </div>
 
-          {/* Products Table */}
+          {/* Products */}
           <div className="bg-cream rounded-xxl p-8 md:p-10 mb-12">
-            <h2 className="font-display font-semibold text-deep-brown text-[1.35rem] mb-6">
+            <h2 className="font-display font-semibold text-deep-brown text-[1.35rem] mb-2">
               Wholesale Products
             </h2>
-            <div className="overflow-x-auto">
-              <table className="w-full">
-                <thead>
-                  <tr className="border-b border-soft-peach/50">
-                    <th className="text-left font-body font-semibold text-[13px] uppercase tracking-[0.08em] text-rust pb-3">Product</th>
-                    <th className="text-left font-body font-semibold text-[13px] uppercase tracking-[0.08em] text-rust pb-3">Unit</th>
-                    <th className="text-left font-body font-semibold text-[13px] uppercase tracking-[0.08em] text-rust pb-3">Case Qty</th>
-                    <th className="text-left font-body font-semibold text-[13px] uppercase tracking-[0.08em] text-rust pb-3">SKU</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {products.map((row) => (
-                    <tr key={row.sku} className="border-b border-soft-peach/30 last:border-0">
-                      <td className="font-body text-deep-brown py-4">{row.product}</td>
-                      <td className="font-body text-earth py-4">{row.unit}</td>
-                      <td className="font-body text-earth py-4">{row.caseQty}</td>
-                      <td className="font-body text-earth/80 py-4 font-mono text-[13px]">{row.sku}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+            <p className="font-body text-[14px] text-earth mb-6">
+              Two drinks. Both come in a 330ml bottle, 24 bottles to a case. Mix and match.
+            </p>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              {products.map((row) => (
+                <div key={row.product} className="bg-warm-white rounded-2xl p-5 border-2 border-soft-peach/40">
+                  <p className="font-display font-bold text-deep-brown text-lg">{row.product}</p>
+                  <p className="font-body text-rust font-semibold text-[13px] mt-1">330ml bottle · 24 per case</p>
+                  <p className="font-body text-earth text-[14px] mt-3 leading-relaxed">{row.what}</p>
+                </div>
+              ))}
             </div>
+            <p className="font-body text-[13px] text-earth/80 mt-5">
+              Selling in a shop? Ask for 6-packs (6 × 330ml, 4 packs per case). Same bottles, just packed for shelves.
+            </p>
           </div>
 
           {/* How to Order */}

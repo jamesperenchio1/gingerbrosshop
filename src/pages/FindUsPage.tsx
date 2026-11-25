@@ -5,7 +5,7 @@ import { SITE_URL } from '@/constants/site';
 const CHANNELS = [
   { name: 'gingerbrosshop.com', desc: 'The full range, every pack size and the best deals. Delivered across Thailand, with a cold-chain option.', href: '/shop', cta: 'Shop online', internal: true },
   { name: 'LINE', desc: 'Order, ask questions or check on a delivery. Add us and say hi.', href: 'https://line.me/R/ti/p/@852nqred', cta: 'Add @852nqred' },
-  { name: 'Shopee', desc: 'Prefer to shop on Shopee? Find the GingerBros store there.', href: 'https://shopee.co.th/gingerbros', cta: 'Open Shopee' },
+  { name: 'Shopee', desc: 'Prefer to shop on Shopee? Find the GingerBros store there.', href: 'https://shopee.co.th/drinkgingerbros', cta: 'Open Shopee' },
   { name: 'Instagram & TikTok', desc: 'Pop-ups, markets and where we are this week: we post it first on socials.', href: 'https://www.instagram.com/drinkgingerbros', cta: 'Follow @drinkgingerbros' },
 ];
 
