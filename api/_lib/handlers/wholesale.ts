@@ -1,3 +1,4 @@
+import { randomBytes } from 'node:crypto';
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { rateLimit, getClientIp } from '../rateLimit.js';
 import { getResend, MAIL_FROM, SELLER_EMAIL, FROM_EMAIL, wholesaleSubject, wholesaleInquiryHtml, wholesaleConfirmationHtml, type WholesaleInquiry } from '../email.js';
@@ -37,6 +38,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   }
 
   const inquiry: WholesaleInquiry = { businessName, contactName, email, phone, message };
+  // Server-made reference used in both email subjects (never sender-typed text).
+  const ref = randomBytes(3).toString('hex').toUpperCase();
 
   const resend = getResend();
   if (!resend) {
@@ -53,8 +56,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       from: MAIL_FROM,
       to: SELLER_EMAIL,
       replyTo: email,
-      subject: wholesaleSubject(businessName),
-      html: wholesaleInquiryHtml(inquiry),
+      subject: wholesaleSubject(ref),
+      html: wholesaleInquiryHtml(inquiry, ref),
     });
 
     // Best-effort confirmation to the submitter; failure here shouldn't fail the request.
@@ -65,8 +68,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       from: MAIL_FROM,
       to: email,
       replyTo: FROM_EMAIL,
-      subject: wholesaleSubject(businessName),
-      html: wholesaleConfirmationHtml(inquiry),
+      subject: wholesaleSubject(ref),
+      html: wholesaleConfirmationHtml(inquiry, ref),
     }).catch((err) => console.error('Wholesale confirmation email failed:', err));
 
     await captureServerEvent('wholesale_inquiry_submitted', email, {

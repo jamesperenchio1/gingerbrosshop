@@ -401,12 +401,16 @@ export interface WholesaleInquiry {
  * notification. Gmail's plain Reply on the notification becomes
  * "Re: <this subject>", which lands in the same thread as the confirmation the
  * customer already has.
+ *
+ * It is built from a server-generated reference only. The form is public and
+ * the address is unverified, so no text the sender typed may appear in the
+ * subject (or be echoed back to them) in an email sent from our domain.
  */
-export function wholesaleSubject(businessName: string): string {
-  return `Wholesale inquiry: ${businessName}`;
+export function wholesaleSubject(ref: string): string {
+  return `Wholesale inquiry #${ref}`;
 }
 
-export function wholesaleInquiryHtml(inquiry: WholesaleInquiry): string {
+export function wholesaleInquiryHtml(inquiry: WholesaleInquiry, ref: string): string {
   const businessName = escapeHtml(inquiry.businessName);
 
   return layout(
@@ -419,28 +423,20 @@ export function wholesaleInquiryHtml(inquiry: WholesaleInquiry): string {
       ])
     )}
     ${panel(`<span style="white-space:pre-wrap;">${escapeHtml(inquiry.message)}</span>`)}
-    ${button('Reply', `mailto:${inquiry.email}?subject=${encodeURIComponent(`Re: ${wholesaleSubject(inquiry.businessName)}`)}`)}`,
+    ${button('Reply', `mailto:${inquiry.email}?subject=${encodeURIComponent(`Re: ${wholesaleSubject(ref)}`)}`)}`,
     `Wholesale inquiry from ${inquiry.businessName}`,
     `Wholesale inquiry from ${inquiry.businessName}`,
     { internal: true }
   );
 }
 
-export function wholesaleConfirmationHtml(inquiry: WholesaleInquiry): string {
+export function wholesaleConfirmationHtml(inquiry: WholesaleInquiry, ref: string): string {
+  // Deliberately no copy of the sender's message or phone: this goes to an
+  // address nobody has verified, from our own domain.
   return layout(
     `${heading('We received your wholesale inquiry')}
     ${body(`Thanks, ${firstName(inquiry.contactName)}. We've got your enquiry for <strong>${escapeHtml(inquiry.businessName)}</strong> and will reply with trade pricing and delivery options within one business day.`)}
-    ${small('Here is a copy of what you sent us:')}
-    ${panel(
-      details([
-        ['Business', escapeHtml(inquiry.businessName)],
-        ['Contact', escapeHtml(inquiry.contactName)],
-        ['Email', escapeHtml(inquiry.email)],
-        ['Phone', escapeHtml(inquiry.phone)],
-      ])
-    )}
-    ${panel(`<span style="white-space:pre-wrap;">${escapeHtml(inquiry.message)}</span>`)}
-    ${small('Want to add something? Just reply to this email and it comes straight to us, in the same conversation.')}`,
+    ${small(`Your reference is #${escapeHtml(ref)}. Want to add something? Just reply to this email and it comes straight to us, in the same conversation.`)}`,
     'We will reply within one business day',
     'Wholesale inquiry received'
   );
