@@ -1,0 +1,44 @@
+name: Checks
+
+# Runs on every push and PR so a failing check can't drift quietly into main
+# again — the lint errors and duplicate head tags this guards against were only
+# found by hand, weeks after they landed.
+#
+# `npm run build` is deliberately not run here: prerendering fetches the live
+# catalog from https://gingerbrosshop.com/api/products, so it needs the public
+# internet and a deployed site. Vercel runs the full build on deploy.
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: checks-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+
+      - run: npm ci
+
+      - name: Brand claims
+        run: npm run check:claims
+
+      - name: Typecheck
+        run: npx tsc -b
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Unit tests
+        run: npm run test:unit

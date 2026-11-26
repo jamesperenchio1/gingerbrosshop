@@ -4,14 +4,12 @@ import { HelmetProvider, type HelmetServerState } from 'react-helmet-async';
 import { prerender } from 'react-dom/static';
 import App from './App';
 import { seedCatalog, type CatalogProduct } from '@/lib/catalog';
-import { BLOG_SLUGS } from '@/pages/BlogPage';
 import { localeFromPath, basenameFor } from '@/lib/locale';
 
 export { TH_PATHS } from '@/lib/locale';
 export { ROUTE_SEO, PRERENDER_PATHS, SITEMAP_PATHS, THAI_PATHS } from '@/seo/routes';
 
-export { BLOG_SLUGS };
-export { BLOG_SEO_META } from '@/lib/blogSeoMeta';
+export { BLOG_SLUGS, BLOG_SEO_META } from '@/lib/blogSeoMeta';
 export { getProductContent } from '@/lib/productContent';
 
 export interface RenderResult {

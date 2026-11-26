@@ -34,7 +34,7 @@ export interface AddressInput {
 const clean = (v: unknown, max: number) => (typeof v === 'string' ? v.trim().slice(0, max) : '');
 
 /** Validate the delivery details. Returns the cleaned fields or an error message. */
-export function validateDelivery(body: Record<string, any>):
+export function validateDelivery(body: Record<string, unknown>):
   | { ok: true; email: string; name: string; phone: string; address: { line1: string; line2: string; city: string; state: string; postal_code: string; country: 'TH' }; note: string }
   | { ok: false; error: string } {
   const email = clean(body.email, 200).toLowerCase();

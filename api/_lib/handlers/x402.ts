@@ -30,17 +30,23 @@ interface Line {
 
 const SELLER = SELLER_EMAIL || 'gingerbros.brew@gmail.com';
 
+/** Shape of the three public FX feeds — each only needs the USD rate. */
+interface RatesResponse {
+  rates?: { USD?: number };
+  thb?: { usd?: number };
+}
+
 const fromFrankfurter = async () => {
   const r = await fetch('https://api.frankfurter.dev/v1/latest?base=THB&symbols=USD', { signal: AbortSignal.timeout(4000) });
-  return Number(((await r.json()) as any)?.rates?.USD);
+  return Number(((await r.json()) as RatesResponse)?.rates?.USD);
 };
 const fromErApi = async () => {
   const r = await fetch('https://open.er-api.com/v6/latest/THB', { signal: AbortSignal.timeout(4000) });
-  return Number(((await r.json()) as any)?.rates?.USD);
+  return Number(((await r.json()) as RatesResponse)?.rates?.USD);
 };
 const fromFawaz = async () => {
   const r = await fetch('https://cdn.jsdelivr.net/npm/@fawazahmed0/currency-api@latest/v1/currencies/thb.json', { signal: AbortSignal.timeout(4000) });
-  return Number(((await r.json()) as any)?.thb?.usd);
+  return Number(((await r.json()) as RatesResponse)?.thb?.usd);
 };
 
 /**
@@ -125,6 +131,20 @@ function challenge(res: VercelResponse, r: ReturnType<typeof requirements>, erro
   res.status(402).json({ x402Version: 1, error, accepts: [r] });
 }
 
+/** The decoded X-PAYMENT header. Only the nonce is read here — the facilitator verifies the rest. */
+interface PaymentPayload {
+  payload?: { authorization?: { nonce?: string } };
+}
+
+/** What the x402 facilitator returns: `isValid`/`invalidReason` on verify, `success`/`errorReason`/`transaction` on settle. */
+interface FacilitatorResult {
+  isValid?: boolean;
+  invalidReason?: string;
+  success?: boolean;
+  errorReason?: string;
+  transaction?: string;
+}
+
 async function facilitator(path: 'verify' | 'settle', payload: unknown) {
   const r = await fetch(`${FACILITATOR}/${path}`, {
     method: 'POST',
@@ -132,7 +152,7 @@ async function facilitator(path: 'verify' | 'settle', payload: unknown) {
     body: JSON.stringify(payload),
     signal: AbortSignal.timeout(25000),
   });
-  return (await r.json()) as Record<string, any>;
+  return (await r.json()) as FacilitatorResult;
 }
 
 /** Price the cart from Stripe's own prices (never the client's) and the deal rules. */
@@ -217,10 +237,13 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return;
   }
 
-  const body = (req.body ?? {}) as Record<string, any>;
+  const body = (req.body ?? {}) as Record<string, unknown>;
   const items = (Array.isArray(body.items) ? body.items : [])
-    .map((i: any) => ({ priceId: String(i?.priceId ?? i?.id ?? ''), quantity: Number(i?.quantity) }))
-    .filter((i: Line) => i.priceId) as Line[];
+    .map((raw) => {
+      const i = (raw ?? {}) as Record<string, unknown>;
+      return { priceId: String(i.priceId ?? i.id ?? ''), quantity: Number(i.quantity) };
+    })
+    .filter((i: Line) => i.priceId);
   if (items.length === 0 || items.length > 20) {
     res.status(400).json({ error: 'items must be 1-20 entries of { priceId, quantity }' });
     return;
@@ -245,7 +268,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   const payment = Array.isArray(header) ? header[0] : header;
   if (!payment) return challenge(res, accepts, 'X-PAYMENT header is required');
 
-  let payload: any;
+  let payload: PaymentPayload;
   try {
     payload = JSON.parse(Buffer.from(payment, 'base64').toString('utf8'));
   } catch {

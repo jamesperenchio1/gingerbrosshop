@@ -35,7 +35,7 @@ export const BLOG_SEO_META: BlogSeoMeta[] = [
   },
   {
     slug: 'ginger-and-thai-food',
-    title: 'What to Drink with Thai Food: A Ginger Pairing Cheat Sheet',
+    title: 'What to Drink with Thai Food: A Ginger Guide',
     excerpt: 'Som tam, pad kra pao, khao man gai, tom yum: which GingerBros drink goes with which Thai dish, and why ginger works so well.',
     date: '2026-10-30',
     author: 'The GingerBros Kitchen',
@@ -51,7 +51,7 @@ export const BLOG_SEO_META: BlogSeoMeta[] = [
   },
   {
     slug: 'thai-ginger-101',
-    title: 'Thai Ginger 101: Khing, Kha, Krachai and Why Ginger Burns',
+    title: 'Thai Ginger 101: Khing, Kha, Krachai, Galangal',
     excerpt: 'Ginger vs galangal vs fingerroot, young vs mature ginger, and the science behind the heat. A crash course in Thai ginger.',
     date: '2026-10-25',
     author: 'GingerBros Stories',
@@ -154,3 +154,12 @@ export const BLOG_SEO_META: BlogSeoMeta[] = [
     image: '/images/gen/life-cheers.jpg',
   },
 ];
+
+/**
+ * Slugs of every guide post, used by the build to prerender /guide/:slug.
+ *
+ * Lives here rather than in BlogPage.tsx so entry-server.tsx can import it
+ * without statically pulling in the page component — which is also lazily
+ * imported by App.tsx and would otherwise be bundled twice.
+ */
+export const BLOG_SLUGS: string[] = BLOG_SEO_META.map((m) => m.slug);

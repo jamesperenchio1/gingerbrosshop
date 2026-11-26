@@ -106,18 +106,35 @@ function resourceHints(route, html, manifest) {
 const escapeJson = (obj) => JSON.stringify(obj).replace(/</g, '\\u003c');
 
 /**
- * React renders each page's <title>/<meta>/<link> (from react-helmet-async)
- * where the component sits, i.e. inside #root. Crawlers only trust them in
- * <head>, so lift them out. React 19 treats these as hoistable and matches
- * them in <head> on hydration, so moving them is hydration-safe. JSON-LD
- * <script>s are left in place (valid anywhere).
+ * React renders each page's <title>/<meta>/<link>/JSON-LD (from
+ * react-helmet-async) where the component sits, i.e. inside #root. Crawlers
+ * only trust them in <head>, so lift them out.
+ *
+ * Every hoisted tag is stamped with data-rh="true". Helmet v3 does not adopt
+ * prerendered tags (it re-renders them as React elements and lets React 19
+ * hoist), so src/main.tsx removes the marked copies just before hydrating;
+ * crawlers still get them in the delivered HTML.
  */
+/**
+ * Stamp the marker on the OPENING tag only. A naive "insert before the final
+ * >" corrupts elements that wrap content (<title>…</title>) and breaks the
+ * JSON-LD script close, which the SEO audit then reads as invalid JSON.
+ */
+const markManaged = (tag) => {
+  if (tag.startsWith('<title>')) return tag.replace('<title>', '<title data-rh="true">');
+  if (tag.startsWith('<script')) return tag.replace('<script ', '<script data-rh="true" ');
+  return tag.replace(/\s*\/?>$/, (end) => ` data-rh="true"${end}`);
+};
+
 function hoistHead(html) {
   const tags = [];
-  const body = html.replace(/<title>[\s\S]*?<\/title>|<meta\b[^>]*\/?>|<link\b[^>]*rel="(?:canonical|alternate)"[^>]*\/?>/gi, (m) => {
-    tags.push(m);
-    return '';
-  });
+  const body = html.replace(
+    /<title>[\s\S]*?<\/title>|<script type="application\/ld\+json">[\s\S]*?<\/script>|<meta\b[^>]*\/?>|<link\b[^>]*rel="(?:canonical|alternate)"[^>]*\/?>/gi,
+    (m) => {
+      tags.push(markManaged(m));
+      return '';
+    },
+  );
   return { body, head: tags.join('\n') };
 }
 

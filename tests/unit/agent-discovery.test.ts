@@ -47,7 +47,19 @@ describe('discovery documents', () => {
   });
   it('openapi declares x-payment-info with intent, method, amount', () => {
     const api = json('openapi.json');
-    const infos = Object.values<any>(api.paths).flatMap((p) => Object.values<any>(p)).map((o) => o['x-payment-info']).filter(Boolean);
+    interface PayInfo {
+      intent?: string;
+      method?: string;
+      amount?: unknown;
+    }
+    interface Operation {
+      'x-payment-info'?: PayInfo;
+    }
+    const paths = api.paths as Record<string, Record<string, Operation>>;
+    const infos = Object.values(paths)
+      .flatMap((p) => Object.values(p))
+      .map((o) => o['x-payment-info'])
+      .filter((i): i is PayInfo => Boolean(i));
     expect(infos.length).toBeGreaterThan(0);
     for (const i of infos) {
       expect(['charge', 'session']).toContain(i.intent);

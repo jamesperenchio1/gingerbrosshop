@@ -37,7 +37,7 @@ const routeOf = (file) => {
 const urlOf = (route) => (route === '/' ? SITE : `${SITE}${route}`);
 
 function parsePage(html) {
-  const titles = [...html.matchAll(/<title>([\s\S]*?)<\/title>/gi)].map((m) => decode(m[1]));
+  const titles = [...html.matchAll(/<title[^>]*>([\s\S]*?)<\/title>/gi)].map((m) => decode(m[1]));
   const metas = [...html.matchAll(/<meta\b[^>]*>/gi)].map((m) => m[0]);
   const links = [...html.matchAll(/<link\b[^>]*>/gi)].map((m) => m[0]);
   const descriptions = metas.filter((t) => attr(t, 'name') === 'description').map((t) => decode(attr(t, 'content') ?? ''));

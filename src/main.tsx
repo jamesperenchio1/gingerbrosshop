@@ -1,15 +1,11 @@
-import { startTransition, useEffect, useState } from 'react'
 import { createRoot, hydrateRoot } from 'react-dom/client'
-import { BrowserRouter } from 'react-router'
-import { HelmetProvider } from 'react-helmet-async'
 import '@fontsource-variable/bricolage-grotesque'
 import '@fontsource-variable/inter'
 import '@fontsource-variable/anuphan'
 import './index.css'
-import App from './App.tsx'
+import Root from './Root.tsx'
 import { capturePromoFromUrl } from '@/lib/promo'
 import { captureSourceFromUrl } from '@/lib/source'
-import { localeFromPath, basenameFor } from '@/lib/locale'
 import { initPostHog } from '@/lib/posthog'
 
 // Own scroll positioning ourselves. Left on 'auto', the browser restores the
@@ -28,28 +24,6 @@ captureSourceFromUrl()
 // wrapper no-ops during SSR and when no project key is configured.
 initPostHog()
 
-/**
- * The router's basename carries the locale ("/th" or ""). It is state here so
- * the language switch (see I18nContext) can change it and the URL together
- * without reloading the page, keeping scroll position and cart state.
- */
-function Root() {
-  const [locale, setLocale] = useState(() => localeFromPath(location.pathname))
-  useEffect(() => {
-    // Runs alongside the router's own popstate listener (back/forward and
-    // the language switch), as a transition so both land in the same render.
-    const sync = () => startTransition(() => setLocale(localeFromPath(location.pathname)))
-    window.addEventListener('popstate', sync)
-    return () => window.removeEventListener('popstate', sync)
-  }, [])
-  return (
-    <HelmetProvider>
-      <BrowserRouter basename={basenameFor(locale)}>
-        <App />
-      </BrowserRouter>
-    </HelmetProvider>
-  )
-}
 const app = <Root />
 
 const root = document.getElementById('root')!
@@ -57,6 +31,14 @@ const normalise = (p: string) => p.replace(/\/$/, '') || '/'
 if (root.getAttribute('data-prerendered') === normalise(location.pathname)) {
   // Prerendered at build time: attach to the existing HTML instead of
   // rebuilding it. Anything that can't be prerendered still gets client-rendered.
+  //
+  // react-helmet-async 3 renders <title>/<meta>/<link> as React elements and
+  // lets React 19 hoist them, so it never adopts the copies scripts/prerender.mjs
+  // lifted into <head> (they carry data-rh="true" but nothing reads them). Drop
+  // them first, otherwise every page keeps two titles, two canonicals and two
+  // descriptions once hydrated. Crawlers still see the prerendered tags in the
+  // HTML the server sends.
+  document.head.querySelectorAll('[data-rh]').forEach((el) => el.remove())
   hydrateRoot(root, app)
 } else {
   createRoot(root).render(app)
