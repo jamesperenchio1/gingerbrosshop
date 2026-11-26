@@ -271,7 +271,7 @@ export default function OrderSuccess() {
         path="/order/success"
         noindex
       />
-      <div className="max-w-lg mx-auto px-6 py-12 sm:py-16">
+      <div className="max-w-lg mx-auto px-6 pb-12 pt-28 sm:pb-16">
         {/* Hero */}
         <div className="text-center mb-10">
           <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-5">

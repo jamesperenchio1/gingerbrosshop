@@ -1,25 +1,13 @@
-import { useNavigate } from 'react-router';
-import { ArrowLeft, AlertTriangle, Mail, ShieldCheck } from 'lucide-react';
+import { AlertTriangle, Mail, ShieldCheck } from 'lucide-react';
 import SEO from '@/components/SEO';
 
 export default function ReturnsPage() {
-  const navigate = useNavigate();
   return (
     <div className="min-h-screen bg-warm-white">
       <SEO
         route="/returns"
       />
-      <div className="sticky top-0 z-50 bg-warm-white/95 backdrop-blur-xl border-b border-soft-peach/50">
-        <div className="max-w-[1280px] mx-auto px-6 h-14 flex items-center justify-between">
-          <button onClick={() => navigate('/')} className="flex items-center gap-2 font-body font-medium text-sm text-earth hover:text-deep-brown transition-colors">
-            <ArrowLeft className="w-4 h-4" /> Back to Shop
-          </button>
-          <span className="font-display font-bold text-lg text-deep-brown">GingerBros</span>
-          <div className="w-20" />
-        </div>
-      </div>
-
-      <div className="max-w-[800px] mx-auto px-6 py-16">
+      <div className="max-w-[800px] mx-auto px-6 pb-16 pt-28">
         <h1 className="font-display font-bold text-deep-brown text-3xl md:text-4xl mb-4 text-center">Returns & Refunds</h1>
         <p className="font-body text-earth text-center mb-12">Our commitment to quality and your satisfaction.</p>
 

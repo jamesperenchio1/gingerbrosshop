@@ -1,10 +1,7 @@
-import { useNavigate } from 'react-router';
-import { ArrowLeft, FileText, Package, Truck, RotateCcw, CreditCard, Scale, Copyright, AlertTriangle, Gavel, Mail, Lock, UserX } from 'lucide-react';
+import { FileText, Package, Truck, RotateCcw, CreditCard, Scale, Copyright, AlertTriangle, Gavel, Mail, Lock, UserX } from 'lucide-react';
 import SEO from '@/components/SEO';
 
 export default function TermsPage() {
-  const navigate = useNavigate();
-
   const sections = [
     {
       icon: <FileText className="w-6 h-6 text-amber" />,
@@ -101,17 +98,7 @@ Our total liability to you for any claim arising from your purchase shall not ex
       <SEO
         route="/terms"
       />
-      <div className="sticky top-0 z-50 bg-warm-white/95 backdrop-blur-xl border-b border-soft-peach/50">
-        <div className="max-w-[1280px] mx-auto px-6 h-14 flex items-center justify-between">
-          <button onClick={() => navigate('/')} className="flex items-center gap-2 font-body font-medium text-sm text-earth hover:text-deep-brown transition-colors">
-            <ArrowLeft className="w-4 h-4" /> Back to Shop
-          </button>
-          <span className="font-display font-bold text-lg text-deep-brown">GingerBros</span>
-          <div className="w-20" />
-        </div>
-      </div>
-
-      <div className="max-w-[800px] mx-auto px-6 py-16">
+      <div className="max-w-[800px] mx-auto px-6 pb-16 pt-28">
         <h1 className="font-display font-bold text-deep-brown text-3xl md:text-4xl mb-4 text-center">Terms of Service</h1>
         <p className="font-body text-earth text-center mb-12">Last updated: August 2025</p>
 

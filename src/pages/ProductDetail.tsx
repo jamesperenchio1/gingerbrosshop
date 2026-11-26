@@ -412,7 +412,7 @@ export default function ProductDetail() {
   if (loading && !product) {
     return (
       <div className="min-h-screen bg-warm-white">
-        <div className="max-w-[1100px] mx-auto px-6 py-10 md:py-16 grid grid-cols-1 md:grid-cols-2 gap-10">
+        <div className="max-w-[1100px] mx-auto px-6 pb-10 pt-24 md:pb-16 md:pt-28 grid grid-cols-1 md:grid-cols-2 gap-10">
           <div>
             <Skeleton className="w-full h-[480px] md:h-[600px] rounded-xxl mb-4" />
             <div className="flex gap-3">
