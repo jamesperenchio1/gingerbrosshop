@@ -1,6 +1,6 @@
 import { useState } from 'react';
-import { useNavigate, useSearchParams } from 'react-router';
-import { ArrowLeft, Search, Package, Truck, CheckCircle, Mail } from 'lucide-react';
+import { useSearchParams } from 'react-router';
+import { Search, Package, Truck, CheckCircle, Mail } from 'lucide-react';
 import { identifyUser } from '@/lib/posthog';
 import SEO from '@/components/SEO';
 import CopyButton from '@/components/CopyButton';
@@ -20,7 +20,6 @@ interface OrderResult {
 }
 
 export default function TrackOrderPage() {
-  const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const [email, setEmail] = useState(searchParams.get('email') ?? '');
   const [orderNum, setOrderNum] = useState(searchParams.get('order') ?? '');
@@ -79,17 +78,7 @@ export default function TrackOrderPage() {
       <SEO
         route="/track"
       />
-      <div className="sticky top-0 z-50 bg-warm-white/95 backdrop-blur-xl border-b border-soft-peach/50">
-        <div className="max-w-[1280px] mx-auto px-6 h-14 flex items-center justify-between">
-          <button onClick={() => navigate('/')} className="flex items-center gap-2 font-body font-medium text-sm text-earth hover:text-deep-brown transition-colors">
-            <ArrowLeft className="w-4 h-4" /> Back to Shop
-          </button>
-          <span className="font-display font-bold text-lg text-deep-brown">GingerBros</span>
-          <div className="w-20" />
-        </div>
-      </div>
-
-      <div className="max-w-lg mx-auto px-6 py-16">
+      <div className="max-w-lg mx-auto px-6 pb-16 pt-28">
         <div className="text-center mb-10">
           <Package className="w-10 h-10 text-deep-brown mx-auto mb-4" />
           <h1 className="font-display font-bold text-deep-brown text-2xl md:text-3xl mb-2">Track Your Order</h1>

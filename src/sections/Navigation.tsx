@@ -72,10 +72,13 @@ export default function Navigation() {
       isActive ? 'after:absolute after:-bottom-1.5 after:left-0 after:h-0.5 after:w-full after:bg-ginger' : 'opacity-90 hover:opacity-100'
     }`;
 
+  // Sticky rather than fixed, so the header starts below the announcement bar
+  // and sticks once that scrolls away. The matching negative margin keeps pages
+  // running underneath it.
   return (
     <header
-      className={`fixed inset-x-0 top-0 z-50 transition-[background-color,box-shadow,height] duration-300 ${
-        dark ? 'h-[72px] bg-transparent' : 'h-16 bg-warm-white/95 shadow-sm backdrop-blur-xl'
+      className={`sticky top-0 z-50 transition-[background-color,box-shadow,height,margin] duration-300 ${
+        dark ? '-mb-[72px] h-[72px] bg-transparent' : '-mb-16 h-16 bg-warm-white/95 shadow-sm backdrop-blur-xl'
       }`}
     >
       <nav aria-label="Main" className="mx-auto flex h-full max-w-[1280px] items-center justify-between gap-4 px-4 sm:px-6">

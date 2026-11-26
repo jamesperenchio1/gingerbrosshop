@@ -1116,20 +1116,6 @@ export default function BlogPage() {
         <SEO route="/guide" jsonLd={[blogListSchema]} />
       )}
 
-      {/* Sticky top bar */}
-      <div className="sticky top-0 z-50 bg-warm-white/95 backdrop-blur-xl border-b border-soft-peach/50">
-        <div className="max-w-[1280px] mx-auto px-6 h-14 flex items-center justify-between">
-          <button
-            onClick={() => navigate('/')}
-            className="flex items-center gap-2 font-body font-medium text-sm text-earth hover:text-deep-brown transition-colors"
-          >
-            <ArrowLeft className="w-4 h-4" /> Back to Shop
-          </button>
-          <span className="font-display font-bold text-lg text-deep-brown">GingerBros</span>
-          <div className="w-20" />
-        </div>
-      </div>
-
       {!activePost ? (
         <>
           {/* Hero header */}
@@ -1141,7 +1127,7 @@ export default function BlogPage() {
             <div className="absolute -top-20 -right-16 w-72 h-72 rounded-full bg-amber/20 blur-3xl" />
             <div className="absolute -bottom-24 -left-16 w-72 h-72 rounded-full bg-accent-green/15 blur-3xl" />
 
-            <div className="relative max-w-[1280px] mx-auto px-6 pt-16 pb-12 text-center">
+            <div className="relative max-w-[1280px] mx-auto px-6 pt-32 pb-12 text-center">
               <h1 className="font-poster text-deep-brown text-[clamp(3rem,9vw,6.5rem)] mb-4">
                 The Ginger Guide
               </h1>
@@ -1307,7 +1293,7 @@ export default function BlogPage() {
                 <div className="absolute inset-0 bg-gradient-to-t from-deep-brown/80 via-deep-brown/30 to-transparent" />
               </>
             )}
-            <div className="relative max-w-[760px] mx-auto px-6 pt-10 pb-12 md:pt-14 md:pb-16">
+            <div className="relative max-w-[760px] mx-auto px-6 pt-24 pb-12 md:pt-28 md:pb-16">
               <button
                 onClick={closePost}
                 data-testid="blog-back"
