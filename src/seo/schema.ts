@@ -21,6 +21,12 @@ export function organizationNode() {
     slogan: TAGLINE,
     description: 'GingerBros makes modern ginger drinks in Thailand: Ginger Fizz and Ginger Tea, made with fresh Thai ginger.',
     areaServed: { '@type': 'Country', name: 'Thailand' },
+    // City-level only: there is no public street address to publish, and an
+    // invented one would be worse than none.
+    address: { '@type': 'PostalAddress', addressLocality: 'Bangkok', addressCountry: 'TH' },
+    currenciesAccepted: 'THB',
+    paymentAccepted: 'Credit Card, PromptPay, Cash on Delivery',
+    priceRange: '฿฿',
     sameAs: SOCIAL_LINKS,
     contactPoint: {
       '@type': 'ContactPoint',

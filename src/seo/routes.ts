@@ -68,16 +68,24 @@ export const ROUTE_SEO: Record<string, RouteSeo> = {
   '/find-us': {
     title: 'Where to Buy GingerBros | Online, LINE, Shopee & Stockists',
     description: 'Order GingerBros online with nationwide delivery in Thailand, or find us on LINE, Shopee, at markets and at our stockists.',
+    titleTh: 'ซื้อ GingerBros ได้ที่ไหน | ออนไลน์ LINE Shopee และร้านค้า',
+    descriptionTh: 'สั่ง GingerBros ออนไลน์ จัดส่งทั่วประเทศไทย หรือพบเราบน LINE, Shopee ตลาดนัด และร้านค้าที่เป็นตัวแทนจำหน่าย',
   },
   '/guide': {
     title: 'Ginger Guide: Mocktails & Thai Food Pairings | GingerBros',
     description:
       'How to serve Ginger Fizz and Ginger Tea, ginger mocktails and cocktails, Thai food pairings and everything worth knowing about Thai ginger.',
+    titleTh: 'คู่มือขิง: ม็อกเทลและการจับคู่กับอาหารไทย | GingerBros',
+    descriptionTh:
+      'วิธีเสิร์ฟน้ำขิงซ่าและชาขิง ม็อกเทลและค็อกเทลจากขิง การจับคู่กับอาหารไทย และทุกเรื่องที่ควรรู้เกี่ยวกับขิงไทย',
   },
   '/business': {
     title: 'Wholesale Ginger Drinks for Cafés & Bars | GingerBros',
     description:
       'Wholesale ginger drinks for cafés, bars, restaurants and hotels in Thailand. Free samples, recipe cards, menu copy and trade pricing. Request a quote.',
+    titleTh: 'ขายส่งเครื่องดื่มขิงสำหรับคาเฟ่และบาร์ | GingerBros',
+    descriptionTh:
+      'ขายส่งเครื่องดื่มขิงสำหรับคาเฟ่ บาร์ ร้านอาหาร และโรงแรมในประเทศไทย ตัวอย่างฟรี การ์ดสูตร เมนู และราคาขายส่ง ขอใบเสนอราคาได้เลย',
   },
   '/returns': {
     title: 'Returns & Refund Policy | GingerBros',
