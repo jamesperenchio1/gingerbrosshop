@@ -29,6 +29,16 @@ data/
 test-results/
 playwright-report/
 playwright/.cache/
+.playwright-mcp/
+
+# Local scratch / ad-hoc assets (not part of the deployed site)
+homepage-*.png
+temp upload/
+hi/
+public/images/shopee/
+public/images/bottle-fizz.png
+public/images/bottle-tea.png
+scripts/shopee-assets/
 
 .superpowers/
 .env
