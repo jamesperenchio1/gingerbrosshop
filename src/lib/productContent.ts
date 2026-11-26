@@ -6,6 +6,8 @@
 
 export interface ProductContent {
   headline?: string;
+  /** Meta description for non-drink products, whose Stripe copy is often a one-liner. */
+  seoDescription?: string;
   longDescription?: string;
   video?: string;
   ingredients?: string[];
@@ -89,6 +91,8 @@ export const PRODUCT_CONTENT: Record<string, ProductContent> = {
 
   kl24235: {
     headline: 'Precision push-fit liquid disconnect for 6.35mm beer lines.',
+    seoDescription:
+      'KegLand KL24235 compact 6.35mm Duotight liquid disconnect. No clamps or threaded fittings, hand-cleans in seconds and is rated to 150 psi.',
     longDescription:
       'The KL24235 is KegLand\'s most compact liquid ball lock disconnect, built for reliable, leak-free performance. The integrated Duotight push-fit eliminates threaded fittings and hose clamps entirely. Hand-disassemble in seconds for cleaning, reconnect in one motion. Built from engineering polyketone resin with stainless springs and EPDM seals that resist phosphoric acid, caustic soda, and peroxide.',
     features: [
@@ -121,6 +125,8 @@ export const PRODUCT_CONTENT: Record<string, ProductContent> = {
 
   kl20763: {
     headline: 'High-flow liquid disconnect engineered for 9.5mm draft lines.',
+    seoDescription:
+      'KegLand KL20763 high-flow 9.5mm Duotight liquid disconnect for draft beer. Tool-free install, hand-clean in seconds, chemical-resistant body.',
     longDescription:
       'The KL20763 brings Duotight\'s push-fit engineering to 9.5mm liquid lines. The result is a high-flow disconnect that installs without tools and cleans in seconds. The same stainless-and-polyketone construction found in professional draught systems, at a price that makes sense for the homebrewer. Chemical-resistant to every sanitizer you\'ll throw at it.',
     features: [
@@ -185,6 +191,8 @@ export const PRODUCT_CONTENT: Record<string, ProductContent> = {
 
   kl20770: {
     headline: 'Reliable gas-side disconnect built for 9.5mm CO₂ and mixed gas lines.',
+    seoDescription:
+      'KegLand KL20770 gas disconnect for 9.5mm CO₂ and mixed-gas lines. Duotight push-fit, 150 psi rated, disassembles by hand for cleaning.',
     longDescription:
       'The KL20770 is the gas-side counterpart to the KL20763 liquid disconnect. Push-fit Duotight connection, 150 psi pressure rating, and the same chemical-resistant polyketone construction that makes these disconnects last. Whether you\'re running CO₂, nitrogen, or a mixed gas blend, this disconnect handles it without complaint.',
     features: [
@@ -249,6 +257,8 @@ export const PRODUCT_CONTENT: Record<string, ProductContent> = {
 
   kl21418: {
     headline: 'Dial in perfect pour pressure, keg-side.',
+    seoDescription:
+      'KegLand KL21418 flow control ball lock disconnect with an adjustable restrictor and 8mm Duotight push-fit. Fixes foamy pours at the keg.',
     longDescription:
       'The KL21418 Flow Control Disconnect replaces your standard liquid disconnect with an adjustable flow restrictor built directly into the body. Instead of dialling in line length or tap resistance, you turn a single knob at the keg to control how fast your beverage flows, eliminating foam from over-carbonated or high-gravity pours. The integrated Duotight push-fit means no extra fittings required, and the entire unit hand-disassembles for cleaning.',
     features: [
@@ -350,6 +360,8 @@ export const PRODUCT_CONTENT: Record<string, ProductContent> = {
 
   'pet-keg-4l': {
     headline: 'Portable pressure-ready keg system for on-the-go dispensing.',
+    seoDescription:
+      '4L PET keg kit with ball lock tapping head, dip tube and pressure relief valve. Under 1kg empty, rated to 4 bar for portable draft pours.',
     longDescription:
       'The 4L PCO38 PET keg kit brings professional-grade pressurised dispensing to a format that weighs under 1kg. Built from Oxebar Mono, a high-barrier PET polymer with 3× better oxygen and CO₂ transmission properties than standard PET, it keeps carbonation sharp and shelf life long. The included tapping head kit adds ball lock posts, a dip tube, and a pressure relief valve. Serve directly at events, markets, or wherever a steel keg won\'t go.',
     features: [

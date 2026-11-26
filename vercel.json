@@ -12,6 +12,41 @@
       "permanent": true
     },
     {
+      "source": "/product/probiotic-ginger-beer",
+      "destination": "/product/ginger-fizz",
+      "permanent": true
+    },
+    {
+      "source": "/products/ginger-beer",
+      "destination": "/product/ginger-fizz",
+      "permanent": true
+    },
+    {
+      "source": "/products/ginger-shot",
+      "destination": "/product/ginger-tea",
+      "permanent": true
+    },
+    {
+      "source": "/products/:slug",
+      "destination": "/shop",
+      "permanent": true
+    },
+    {
+      "source": "/th/products/ginger-beer",
+      "destination": "/product/ginger-fizz",
+      "permanent": true
+    },
+    {
+      "source": "/th/products/ginger-shot",
+      "destination": "/product/ginger-tea",
+      "permanent": true
+    },
+    {
+      "source": "/th/products/:slug",
+      "destination": "/th/shop",
+      "permanent": true
+    },
+    {
       "source": "/wholesale",
       "destination": "/business",
       "permanent": true

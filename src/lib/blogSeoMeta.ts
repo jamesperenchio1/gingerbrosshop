@@ -27,7 +27,7 @@ export const BLOG_SEO_META: BlogSeoMeta[] = [
   },
   {
     slug: 'ginger-tea-hot-or-iced',
-    title: 'Ginger Tea: Hot or Iced? How to Serve It Both Ways',
+    title: 'Ginger Tea: Hot or Iced? How to Serve Both',
     excerpt: 'Ginger Tea · Thai Spice is still, not sparkling, so it works over ice or gently warmed. Here is how to do both.',
     date: '2026-11-01',
     author: 'The GingerBros Kitchen',
@@ -92,7 +92,7 @@ export const BLOG_SEO_META: BlogSeoMeta[] = [
   {
     slug: 'ginger-glazed-chicken',
     title: 'Ginger Glazed Chicken Wings Recipe',
-    excerpt: 'Reduce GingerBros into a sticky, spicy glaze for oven or grill.',
+    excerpt: 'Reduce GingerBros into a sticky, spicy glaze for oven-baked or grilled chicken wings. Ready in 20 minutes, with a honey, lime and ginger finish.',
     date: '2026-04-26',
     author: 'The GingerBros Kitchen',
     image: '/images/gen/life-limes-overhead.jpg',
@@ -131,7 +131,7 @@ export const BLOG_SEO_META: BlogSeoMeta[] = [
   },
   {
     slug: 'ginger-fizz-bar-menu',
-    title: 'Building a Ginger Fizz Cocktail Menu for Your Bar',
+    title: 'Building a Ginger Fizz Menu for Your Bar',
     excerpt: 'How bars and restaurants can build a focused, profitable ginger fizz menu, from signature serves to garnish stations and staff training.',
     date: '2026-06-12',
     author: 'The GingerBros Trade Team',
@@ -147,7 +147,7 @@ export const BLOG_SEO_META: BlogSeoMeta[] = [
   },
   {
     slug: 'zero-proof-restaurant-drinks',
-    title: 'Zero-Proof Drinks That Restaurants Can Actually Sell',
+    title: 'Zero-Proof Drinks Restaurants Can Sell',
     excerpt: 'Why the mocktail menu matters, how to price it, and three zero-proof builds that work on a restaurant floor.',
     date: '2026-06-07',
     author: 'The GingerBros Trade Team',

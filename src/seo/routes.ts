@@ -32,7 +32,7 @@ export const ROUTE_SEO: Record<string, RouteSeo> = {
     title: 'GingerBros | Ginger Fizz & Ginger Tea from Thailand',
     description:
       'Modern ginger drinks made in Thailand. Ginger Fizz and Ginger Tea with fresh Thai ginger, real lime and low sugar. Order online, delivered nationwide.',
-    titleTh: 'GingerBros | น้ำขิงซ่า & ชาขิง เครื่องดื่มขิงยุคใหม่ ผลิตในไทย',
+    titleTh: 'GingerBros | น้ำขิงซ่าและชาขิง ผลิตในไทย',
     descriptionTh: 'คิดแบบขิง ดื่มให้แตกต่าง น้ำขิงซ่าและชาขิงจากขิงไทยสด มะนาวแท้ หวานน้อย สั่งออนไลน์ส่งทั่วไทย',
   },
   '/shop': {
@@ -53,7 +53,7 @@ export const ROUTE_SEO: Record<string, RouteSeo> = {
     title: 'FAQ: Delivery, Subscriptions & Storage | GingerBros',
     description:
       'Answers on GingerBros delivery, cold-chain shipping, subscriptions, storage, payments and wholesale. Ginger Fizz and Ginger Tea, made in Thailand.',
-    titleTh: 'คำถามที่พบบ่อย: การจัดส่ง สมัครสมาชิก การเก็บรักษา | GingerBros',
+    titleTh: 'คำถามที่พบบ่อย: จัดส่งและสมาชิก | GingerBros',
     descriptionTh:
       'คำตอบเรื่องการจัดส่ง Cold-chain การสมัครสมาชิก การเก็บรักษา การชำระเงิน และขายส่ง GingerBros น้ำขิงซ่าและชาขิง ผลิตในประเทศไทย',
   },

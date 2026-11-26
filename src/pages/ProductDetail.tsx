@@ -588,7 +588,7 @@ export default function ProductDetail() {
     <div className="min-h-screen bg-warm-white">
       <SEO
         title={drinkSeo(product.id, product.name)?.title ?? product.name}
-        description={(drinkSeo(product.id, product.name)?.description ?? content.headline ?? description).slice(0, 300)}
+        description={(drinkSeo(product.id, product.name)?.description ?? content.seoDescription ?? content.headline ?? description).slice(0, 300)}
         path={`/product/${product.id}`}
         image={ogCard ?? absImages[0] ?? undefined}
         imageWidth={ogCard ? 1200 : undefined}
