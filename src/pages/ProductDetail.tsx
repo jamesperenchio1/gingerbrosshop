@@ -8,7 +8,7 @@ import { ChevronLeft, ChevronRight } from 'lucide-react';
 import SEO from '@/components/SEO';
 import NotFound from '@/pages/NotFound';
 import { useCatalog, defaultPrice, bottleCounts, intervalLabel, oneTimePrice, savingsPercent, stockStatus, hasVariantPrices, type CatalogProduct } from '@/lib/catalog';
-import { getDeliveryEstimateMessage, FREE_SHIPPING_THRESHOLD } from '@/constants/store';
+import { getDeliveryEstimateMessage, FREE_SHIPPING_THRESHOLD, SUBSCRIPTION_DELIVERY_FEE } from '@/constants/store';
 import { startCheckout, trackInitiateCheckout } from '@/lib/checkout';
 import type { CartItem } from '@/types/cart';
 import { useRecentlyViewed, getRecentlyViewed } from '@/hooks/use-recently-viewed';
@@ -813,6 +813,10 @@ export default function ProductDetail() {
                         <span className="flex-1 flex flex-col">
                           <span className="font-body font-medium text-[14px] text-deep-brown capitalize">{label}</span>
                           {save > 0 && <span className="font-body font-semibold text-[11px] text-green-ink">Save {save}%</span>}
+                          {/* The ฿100 chilled delivery fee is charged on every
+                              subscription delivery; showing it here keeps the
+                              discount honest instead of it appearing at checkout. */}
+                          {p.recurring && <span className="font-body text-[11px] text-earth/70 mt-0.5">+ ฿{SUBSCRIPTION_DELIVERY_FEE} chilled delivery</span>}
                         </span>
                         <span className="flex items-baseline gap-1.5">
                           {save > 0 && oneTimeForProduct?.unitAmount != null && <span className="font-body text-[12px] text-earth/80 line-through">฿{oneTimeForProduct.unitAmount}</span>}
@@ -829,18 +833,18 @@ export default function ProductDetail() {
                     </p>
                     <ul className="font-body text-[12px] text-earth/80 space-y-1.5">
                       <li className="flex items-start gap-2"><CheckIcon className="text-green-ink flex-shrink-0 mt-0.5" /> Delivered {intervalLabel(selectedPrice.recurring)}, never run out</li>
-                      <li className="flex items-start gap-2"><CheckIcon className="text-green-ink flex-shrink-0 mt-0.5" /> A lower price than one-time, locked in</li>
+                      <li className="flex items-start gap-2"><CheckIcon className="text-green-ink flex-shrink-0 mt-0.5" /> ฿{selectedPrice.unitAmount} + ฿{SUBSCRIPTION_DELIVERY_FEE} chilled delivery = ฿{(selectedPrice.unitAmount ?? 0) + SUBSCRIPTION_DELIVERY_FEE} per delivery</li>
                       <li className="flex items-start gap-2"><CheckIcon className="text-green-ink flex-shrink-0 mt-0.5" /> Pause or cancel anytime</li>
                     </ul>
                   </div>
                 ) : oneTimeForProduct && maxSavings > 0 && (
+                  // The plan cards above already list every subscription price, so
+                  // this stays a single inline nudge instead of a second full-width
+                  // "Subscribe & Save" block competing with them.
                   <button onClick={() => { const c = product.prices.filter((p) => p.recurring).sort((a, b) => (a.unitAmount ?? 0) - (b.unitAmount ?? 0))[0]; if (c) setSelectedPriceId(c.priceId); }}
-                    className="mt-3 w-full flex items-center justify-between gap-3 rounded-xl border-2 border-amber bg-amber/10 px-4 py-3.5 text-left hover:bg-amber/20 transition-colors group">
-                    <div>
-                      <p className="font-display font-bold text-deep-brown text-[15px] leading-tight">Subscribe &amp; Save {maxSavings}%</p>
-                      <p className="font-body text-[12px] text-earth/80 mt-0.5">Auto-delivery · pause or cancel anytime</p>
-                    </div>
-                    <span className="flex-shrink-0 bg-deep-brown text-cream font-body font-semibold text-[12px] uppercase tracking-[0.06em] px-3.5 py-1.5 rounded-full group-hover:bg-rust transition-colors">Switch →</span>
+                    className="mt-3 inline-flex items-center gap-2 font-body text-[13px] text-earth hover:text-rust transition-colors">
+                    <span className="font-semibold text-deep-brown">Save {maxSavings}%</span> with a subscription — pick a plan above
+                    <span aria-hidden="true">→</span>
                   </button>
                 )}
               </div>
