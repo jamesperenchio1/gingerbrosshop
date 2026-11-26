@@ -18,6 +18,8 @@ import {
   ExternalLink,
 } from 'lucide-react';
 import SEO from '@/components/SEO';
+import ResponsiveImage from '@/components/ResponsiveImage';
+import { manifestNameForUrl } from '@/lib/image';
 import Newsletter from '@/components/Newsletter';
 import { BLOG_SEO_META, type BlogSeoMeta } from '@/lib/blogSeoMeta';
 import { captureEvent } from '@/lib/posthog';
@@ -892,9 +894,11 @@ function renderContent(content: string) {
       const [, alt, src] = imgMatch;
       return (
         <figure key={i} className="my-8 -mx-2 sm:mx-0">
-          <img
+          <ResponsiveImage
+            name={manifestNameForUrl(src)}
             src={src}
             alt={alt}
+            sizes="(min-width: 768px) 720px, 100vw"
             loading="lazy"
             className="w-full rounded-2xl border border-soft-peach/60 shadow-sm object-cover max-h-[420px]"
           />
@@ -941,9 +945,11 @@ function PostCard({ post }: { post: Post }) {
     >
       <div className={`relative h-44 w-full overflow-hidden bg-gradient-to-br ${meta.gradient}`}>
         {post.image ? (
-          <img
+          <ResponsiveImage
+            name={manifestNameForUrl(post.image)}
             src={post.image}
             alt={post.title}
+            sizes="(min-width: 1024px) 380px, (min-width: 640px) 50vw, 100vw"
             loading="lazy"
             className="absolute inset-0 w-full h-full object-cover opacity-90 group-hover:scale-105 transition-transform duration-500"
           />
@@ -1181,9 +1187,12 @@ export default function BlogPage() {
                 >
                   <div className={`relative min-h-[260px] lg:min-h-[380px] bg-gradient-to-br ${CATEGORY_META[featured.category].gradient}`}>
                     {featured.image ? (
-                      <img
+                      <ResponsiveImage
+                        name={manifestNameForUrl(featured.image)}
                         src={featured.image}
                         alt={featured.title}
+                        sizes="(min-width: 1024px) 50vw, 100vw"
+                        priority
                         className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
                       />
                     ) : (
@@ -1287,7 +1296,14 @@ export default function BlogPage() {
           <div className={`relative overflow-hidden bg-gradient-to-br ${CATEGORY_META[activePost.category].gradient}`}>
             {activePost.image && (
               <>
-                <img src={activePost.image} alt={activePost.title} className="absolute inset-0 w-full h-full object-cover" />
+                <ResponsiveImage
+                  name={manifestNameForUrl(activePost.image)}
+                  src={activePost.image}
+                  alt={activePost.title}
+                  sizes="100vw"
+                  priority
+                  className="absolute inset-0 w-full h-full object-cover"
+                />
                 <div className="absolute inset-0 bg-gradient-to-t from-deep-brown/80 via-deep-brown/30 to-transparent" />
               </>
             )}

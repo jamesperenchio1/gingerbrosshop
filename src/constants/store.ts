@@ -10,6 +10,14 @@ export const FREE_SHIPPING_THRESHOLD = 500;
 export const CURRENCY_SYMBOL = '฿';
 
 /**
+ * Chilled delivery fee charged on every subscription delivery, in Baht.
+ * Stripe Checkout's subscription mode can't use `shipping_options`, so the fee
+ * is injected as a recurring line item (`price_1TlT9f…` weekly, etc.) — those
+ * prices are ฿100, and this constant must stay in step with them.
+ */
+export const SUBSCRIPTION_DELIVERY_FEE = 100;
+
+/**
  * Delivery estimate rules.
  * Cut-off is 14:00 Thailand time. Orders before cut-off deliver on the next
  * shipping day; orders after cut-off deliver on the shipping day after that.

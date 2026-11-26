@@ -124,6 +124,10 @@
     {
       "path": "/api/abandoned-cart-check",
       "schedule": "0 14 * * *"
+    },
+    {
+      "path": "/api/review-request",
+      "schedule": "0 9 * * *"
     }
   ],
   "headers": [

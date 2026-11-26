@@ -22,6 +22,7 @@ const routes: Record<string, Loader> = {
   'verify-email': () => import('./_lib/handlers/verify-email.js'),
   'shipping-rate': () => import('./_lib/handlers/shipping-rate.js'),
   'abandoned-cart-check': () => import('./_lib/handlers/abandoned-cart-check.js'),
+  'review-request': () => import('./_lib/handlers/review-request.js'),
   'credit': () => import('./_lib/handlers/credit.js'),
   'wholesale': () => import('./_lib/handlers/wholesale.js'),
   'stock-alert': () => import('./_lib/handlers/stock-alert.js'),

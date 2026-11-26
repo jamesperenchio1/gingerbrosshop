@@ -560,6 +560,39 @@ export function abandonedCartHtml(snapshot: CartSnapshot): string {
   );
 }
 
+/**
+ * Sent by the review-request cron a week after delivery. One primary button for
+ * the first product and plain links for the rest — several full-width buttons
+ * read as spam and none of them gets tapped.
+ */
+export function reviewRequestHtml(
+  customerName: string | null,
+  items: Array<{ name: string; url: string }>
+): string {
+  const first = items[0];
+  const rest = items.slice(1, 3);
+  const firstName = escapeHtml((customerName ?? '').trim().split(/\s+/)[0] ?? '');
+
+  const otherLinks = rest
+    .map(
+      (item) =>
+        `<a href="${item.url}" style="color:${BRAND.brown};text-decoration:underline;">${escapeHtml(item.name)}</a>`
+    )
+    .join(' &middot; ');
+
+  return layout(
+    `${heading(firstName ? `${firstName}, how was your ginger?` : 'How was your ginger?')}
+    ${body('It has had a few days in the fridge by now. A minute of your time helps the next person decide, and we read every review.')}
+    ${button(`Review ${escapeHtml(first.name)}`, first.url)}
+    ${rest.length > 0 ? small(`Also ordered: ${otherLinks}`) : ''}
+    ${rule()}
+    ${small('No account needed — your name and a few words is enough.')}`,
+    'Tell us how it went',
+    'How was your ginger?',
+    { marketing: true }
+  );
+}
+
 // ---------------------------------------------------------------------------
 // Admin login
 // ---------------------------------------------------------------------------

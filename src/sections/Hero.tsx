@@ -30,13 +30,17 @@ export default function Hero() {
       {/* Warm glow + grain, pure CSS. */}
       <div aria-hidden="true" className="pointer-events-none absolute inset-0 bg-[radial-gradient(60%_55%_at_75%_55%,rgba(242,182,50,0.35),transparent_70%),radial-gradient(40%_40%_at_10%_90%,rgba(139,90,43,0.35),transparent_70%)]" />
 
-      <div className="relative mx-auto grid max-w-[1280px] grid-cols-1 items-center gap-6 px-4 pb-14 pt-28 sm:px-6 md:grid-cols-[1.15fr_1fr] md:pb-20 md:pt-32 lg:min-h-[min(100svh,880px)]">
+      <div className="relative mx-auto grid max-w-[1280px] grid-cols-1 items-center gap-6 px-4 pb-14 pt-24 sm:px-6 md:grid-cols-[1.15fr_1fr] md:pb-16 md:pt-28 lg:min-h-[min(100svh,880px)]">
         <div className="relative z-10">
           <p className="mb-5 inline-flex items-center gap-2 rounded-full border border-cream/25 px-4 py-1.5 font-body text-[12px] font-semibold uppercase tracking-[0.14em] text-cream/90">
             <span aria-hidden="true" className="h-2 w-2 rounded-full bg-ginger" />
             {t('heroBadge')}
           </p>
-          <h1 id="hero-title" className="font-poster text-[clamp(3.4rem,11vw,8.75rem)]">
+          {/* Sized against both the text column (~45vw) and the viewport height,
+              so the four-line headline never pushes the CTAs below the fold.
+              `11vw` scaled with the screen instead of the column, which put the
+              buttons ~500px off-screen on a 1400x800 laptop. */}
+          <h1 id="hero-title" className="font-poster text-[clamp(3.4rem,min(8.5vw,12.5svh),7.4rem)]">
             <span className="block">{t('heroHeadline1')}</span>
             <span className="block text-ginger">{t('heroHeadline2')}</span>
           </h1>
