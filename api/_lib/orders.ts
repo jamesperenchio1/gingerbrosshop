@@ -23,6 +23,11 @@ export interface Order {
   trackingCarrier: string | null;
   orderNote?: string | null;
   source?: string | null;
+  /**
+   * When the post-delivery review-request email went out. Absent means it never
+   * has, which is what the review-request cron keys off.
+   */
+  reviewRequestedAt?: string | null;
 }
 
 const redis = Redis.fromEnv();
