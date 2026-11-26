@@ -99,7 +99,7 @@ export default function DrinkCard({ kind, options, review, priority, headingLeve
         {review && review.count > 0 && (
           <div className="mt-2 flex items-center gap-1.5">
             <StarRating value={Math.round(review.average)} size={14} />
-            <span className={`font-body text-[12px] ${theme.sub}`}>({review.count})</span>
+            <span className={`font-body text-[12px] ${theme.sub}`}>{t('reviewsCount').replace('{n}', String(review.count))}</span>
           </div>
         )}
         <p className={`mt-4 font-body text-[15px] leading-relaxed ${theme.sub}`}>{t(kind === 'fizz' ? 'fizzDesc' : 'teaDesc')}</p>
