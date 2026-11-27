@@ -116,20 +116,23 @@ const escapeJson = (obj) => JSON.stringify(obj).replace(/</g, '\\u003c');
  * crawlers still get them in the delivered HTML.
  */
 /**
+ * JSON-LD scripts stay where React rendered them. Unlike title/meta/link, React
+ * does not hoist a <script>, so moving it breaks hydration (error #418) and the
+ * whole page is rebuilt in the browser. Search engines read it in the body.
+ *
  * Stamp the marker on the OPENING tag only. A naive "insert before the final
  * >" corrupts elements that wrap content (<title>…</title>) and breaks the
  * JSON-LD script close, which the SEO audit then reads as invalid JSON.
  */
 const markManaged = (tag) => {
   if (tag.startsWith('<title>')) return tag.replace('<title>', '<title data-rh="true">');
-  if (tag.startsWith('<script')) return tag.replace('<script ', '<script data-rh="true" ');
   return tag.replace(/\s*\/?>$/, (end) => ` data-rh="true"${end}`);
 };
 
 function hoistHead(html) {
   const tags = [];
   const body = html.replace(
-    /<title>[\s\S]*?<\/title>|<script type="application\/ld\+json">[\s\S]*?<\/script>|<meta\b[^>]*\/?>|<link\b[^>]*rel="(?:canonical|alternate)"[^>]*\/?>/gi,
+    /<title>[\s\S]*?<\/title>|<meta\b[^>]*\/?>|<link\b[^>]*rel="(?:canonical|alternate)"[^>]*\/?>/gi,
     (m) => {
       tags.push(markManaged(m));
       return '';

@@ -46,7 +46,10 @@ function parsePage(html) {
   const alternates = links.filter((t) => attr(t, 'rel') === 'alternate' && attr(t, 'hreflang')).map((t) => ({ lang: attr(t, 'hreflang'), href: attr(t, 'href') }));
   const h1s = (html.match(/<h1[\s>]/gi) ?? []).length;
   const jsonld = [...html.matchAll(/<script[^>]*type="application\/ld\+json"[^>]*>([\s\S]*?)<\/script>/gi)].map((m) => m[1]);
-  return { titles, descriptions, robots, canonicals, alternates, h1s, jsonld };
+  // A boundary left pending is finished by an inline script, which our CSP blocks.
+  const pending = html.includes('<!--$?-->');
+  const movedScript = /<head>[\s\S]*<script data-rh="true"[\s\S]*<\/head>/.test(html);
+  return { titles, descriptions, robots, canonicals, alternates, h1s, jsonld, pending, movedScript };
 }
 
 async function main() {
@@ -84,6 +87,8 @@ async function main() {
   const seenTitles = new Map();
   const seenDescriptions = new Map();
   for (const [route, p] of pages) {
+    if (p.pending) err(route, 'prerendered with a pending Suspense boundary (blocked inline script, client re-render)');
+    if (p.movedScript) err(route, 'a rendered <script> was moved into <head> (hydration mismatch)');
     const noindex = p.robots.some((r) => /noindex/i.test(r));
     const inSitemap = sitemapSet.has(urlOf(route));
 

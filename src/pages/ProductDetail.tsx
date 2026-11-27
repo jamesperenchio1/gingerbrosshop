@@ -159,10 +159,11 @@ function SpecCard({ spec }: { spec: { label: string; value: string } }) {
 
 function RecentlyViewed({ currentProductId }: { currentProductId: string }) {
   const { products } = useCatalog();
-  const recentlyViewedIds = useMemo(
-    () => getRecentlyViewed(currentProductId),
-    [currentProductId],
-  );
+  // Storage is read after mount: the prerendered page has no browsing history.
+  const [recentlyViewedIds, setRecentlyViewedIds] = useState<string[]>([]);
+  useEffect(() => {
+    setRecentlyViewedIds(getRecentlyViewed(currentProductId));
+  }, [currentProductId]);
   const recentlyViewed = useMemo(
     () => recentlyViewedIds.map((id) => products.find((p) => p.id === id)).filter((p): p is CatalogProduct => !!p),
     [recentlyViewedIds, products],

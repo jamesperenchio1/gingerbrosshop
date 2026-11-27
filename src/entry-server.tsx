@@ -30,6 +30,9 @@ export async function render(url: string, catalog: CatalogProduct[] | null): Pro
         <App />
       </StaticRouter>
     </HelmetProvider>,
+    // Never split large pages into later chunks: React finishes those with an
+    // inline script, which the Content-Security-Policy blocks.
+    { progressiveChunkSize: Infinity },
   );
   const html = await new Response(prelude).text();
   const h = helmetContext.helmet;
