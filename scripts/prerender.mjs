@@ -184,7 +184,7 @@ function llmsTxt(catalog, posts) {
     '',
     '## Business',
     `- [For cafés, bars & restaurants](${SITE}/business): wholesale pricing and the Signature Serve programme.`,
-    '- Contact: gingerbros.brew@gmail.com',
+    '- Contact: order@gingerbrosshop.com',
     '',
   ];
   return lines.join('\n');

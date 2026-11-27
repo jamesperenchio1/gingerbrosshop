@@ -15,6 +15,7 @@ export default function Newsletter() {
   const [digits, setDigits] = useState(['', '', '', '', '', '']);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [unsentCode, setUnsentCode] = useState('');
   const [resendCooldown, setResendCooldown] = useState(0);
 
   const digitRefs = useRef<(HTMLInputElement | null)[]>([]);
@@ -110,6 +111,8 @@ export default function Newsletter() {
       const data = await res.json().catch(() => ({}));
       if (!res.ok) throw new Error(data.error ?? 'Something went wrong.');
       if (data.promoCode) setStoredPromo(data.promoCode);
+      // The email didn't go out: show the code here instead of promising it.
+      setUnsentCode(data.sent === false && data.promoCode ? data.promoCode : '');
       setCartEmail(email);
       identifyUser(email.trim().toLowerCase(), { email: email.trim().toLowerCase(), newsletter: true });
       trackPixelEvent('Subscribe', { content_name: 'newsletter' });
@@ -254,10 +257,11 @@ export default function Newsletter() {
         {step === 'done' && (
           <div className="py-4">
             <CheckCircle className="w-12 h-12 text-green-ink mx-auto mb-5" />
-            <h2 className="font-display font-bold text-deep-brown text-2xl mb-2">{t('newsletterDoneTitle')}</h2>
+            <h2 className="font-display font-bold text-deep-brown text-2xl mb-2">{unsentCode ? t('newsletterCodeTitle') : t('newsletterDoneTitle')}</h2>
             <p className="font-body text-earth">
-              {t('newsletterDoneSub')}
+              {unsentCode ? t('newsletterCodeSub') : t('newsletterDoneSub')}
             </p>
+            {unsentCode && <p className="mt-4 font-mono text-2xl font-bold tracking-widest text-deep-brown">{unsentCode}</p>}
           </div>
         )}
 

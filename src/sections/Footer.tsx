@@ -71,8 +71,8 @@ export default function Footer() {
                 </li>
               ))}
             </ul>
-            <a href="mailto:gingerbros.brew@gmail.com" className="mt-4 inline-block font-body text-[14px] text-cream/90 underline underline-offset-4 hover:text-ginger">
-              gingerbros.brew@gmail.com
+            <a href="mailto:order@gingerbrosshop.com" className="mt-4 inline-block font-body text-[14px] text-cream/90 underline underline-offset-4 hover:text-ginger">
+              order@gingerbrosshop.com
             </a>
           </div>
           {columns.map((col) => (

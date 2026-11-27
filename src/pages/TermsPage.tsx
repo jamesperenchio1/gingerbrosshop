@@ -128,7 +128,7 @@ Our total liability to you for any claim arising from your purchase shall not ex
             If anything is unclear or you need clarification on any of these terms, we are happy to help.
           </p>
           <a
-            href="mailto:gingerbros.brew@gmail.com"
+            href="mailto:order@gingerbrosshop.com"
             className="inline-flex items-center gap-2 bg-amber text-deep-brown font-body font-medium text-sm uppercase tracking-[0.08em] px-7 py-3 rounded-full hover:bg-warm-gold transition-colors"
           >
             <Mail className="w-4 h-4" />

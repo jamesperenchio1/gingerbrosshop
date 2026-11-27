@@ -15,7 +15,8 @@ import {
   giftEmailHtml,
   backInStockHtml,
 } from './_lib/email.js';
-import { getStockAlertSubscribers, clearStockAlertSubscribers } from './_lib/stockAlerts.js';
+import { getStockAlertSubscribers, removeStockAlertSubscriber } from './_lib/stockAlerts.js';
+import { sendOrQueue, withUnsubscribe } from './_lib/mailer.js';
 import { sendMetaPurchaseEvents } from './_lib/handlers/metaCapi.js';
 import { captureServerEventSoon } from './_lib/posthog.js';
 
@@ -80,22 +81,19 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     const stockStatus = product.metadata?.stock_status ?? 'in_stock';
     if (stockStatus !== 'out_of_stock') {
       const subscribers = await getStockAlertSubscribers(product.id);
-      if (subscribers.length > 0) {
-        const resend = getResend();
+      if (subscribers.length > 0 && getResend()) {
         const productUrl = `https://gingerbrosshop.com/product/${product.metadata?.app_id ?? product.id}`;
-        if (resend) {
-          await Promise.allSettled(
-            subscribers.map((email) =>
-              resend.emails.send({
-                from: MAIL_FROM,
-                to: email,
-                subject: `${product.name} is back in stock at GingerBros`,
-                html: backInStockHtml(product.name, productUrl),
-              })
-            )
-          );
+        // One at a time, and only forget an address once its alert is sent or queued.
+        for (const email of subscribers) {
+          const message = await withUnsubscribe({
+            from: MAIL_FROM,
+            to: email,
+            subject: `${product.name} is back in stock at GingerBros`,
+            html: backInStockHtml(product.name, productUrl),
+          });
+          const outcome = await sendOrQueue(message, { context: 'back-in-stock', marketing: true });
+          if (outcome !== 'lost') await removeStockAlertSubscriber(product.id, email);
         }
-        await clearStockAlertSubscribers(product.id);
       }
     }
   }
@@ -225,16 +223,15 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
     // Send seller notification
     if (resend && SELLER_EMAIL) {
-      try {
-        await resend.emails.send({
+      await sendOrQueue(
+        {
           from: `GingerBros Orders <${FROM_EMAIL}>`,
           to: SELLER_EMAIL,
           subject: `New order #${session.id.slice(-8).toUpperCase()} from ${session.customer_details?.name ?? 'a customer'}, ฿${money(session.amount_total)}`,
           html: sellerNotificationHtml(session, lineItems, orderNote),
-        });
-      } catch (err) {
-        console.error('Failed to send seller email:', err);
-      }
+        },
+        { context: 'seller-order' },
+      );
     } else {
       // Don't log the full order object — it carries customer PII (email, name,
       // phone, shipping address). A summary is enough to confirm the order landed
@@ -247,17 +244,16 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
     // Send gift email to recipient
     if (resend && isGift && recipientEmail) {
-      try {
-        await resend.emails.send({
+      await sendOrQueue(
+        {
           from: MAIL_FROM,
           to: recipientEmail,
           replyTo: SUPPORT_REPLY_TO,
           subject: `${session.customer_details?.name ?? 'Someone'} sent you a gift of GingerBros ginger fizz`,
           html: giftEmailHtml(session, lineItems, recipientName, giftMessage, session.customer_details?.name ?? 'A friend'),
-        });
-      } catch (err) {
-        console.error('Failed to send gift email:', err);
-      }
+        },
+        { context: 'gift' },
+      );
     }
 
     // Record referral if code was used. Rewards are granted as real store credit

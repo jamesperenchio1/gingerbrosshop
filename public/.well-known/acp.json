@@ -15,7 +15,7 @@
     "url": "https://gingerbrosshop.com",
     "country": "TH",
     "currency": "THB",
-    "support_email": "gingerbros.brew@gmail.com"
+    "support_email": "order@gingerbrosshop.com"
   },
   "documentation": "https://gingerbrosshop.com/docs/api.md",
   "openapi": "https://gingerbrosshop.com/openapi.json"

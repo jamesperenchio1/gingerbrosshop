@@ -30,11 +30,8 @@ export function getResend(): Resend | null {
 export const MAIL_FROM = `GingerBros <${FROM_EMAIL}>`;
 export const MAIL_FROM_NEWSLETTER = `GingerBros <${FROM_EMAIL_NEWSLETTER}>`;
 
-// Standard List-Unsubscribe headers for newsletter sends
-export const UNSUBSCRIBE_HEADERS = {
-  'List-Unsubscribe': `<mailto:${FROM_EMAIL_NEWSLETTER}?subject=Unsubscribe>`,
-  'List-Unsubscribe-Post': 'List-Unsubscribe=One-Click',
-};
+/** Stands in for the per-recipient link until `withUnsubscribe` (mailer.ts) fills it. */
+export const UNSUBSCRIBE_PLACEHOLDER = '{{unsubscribe_url}}';
 
 // ---------------------------------------------------------------------------
 // Brand
@@ -110,15 +107,19 @@ interface LayoutOptions {
   marketing?: boolean;
   /** Set for internal (seller/admin) mail so the footer skips customer copy. */
   internal?: boolean;
+  /** Mail the owner replies to: the footer gets quoted to the customer, so say nothing. */
+  quotable?: boolean;
 }
 
 function layout(inner: string, preheader: string, title: string, opts: LayoutOptions = {}): string {
   const filler = '&#8204;&nbsp;'.repeat(60);
-  const footer = opts.internal
-    ? `GingerBros internal notification`
-    : opts.marketing
-      ? `You're getting this because you signed up at gingerbrosshop.com.<br><a href="mailto:${FROM_EMAIL_NEWSLETTER}?subject=Unsubscribe&amp;body=Please%20remove%20me%20from%20the%20GingerBros%20mailing%20list." style="color:${BRAND.muted};text-decoration:underline;">Unsubscribe</a>`
-      : `Questions about your order? Reply to this email.`;
+  const footer = opts.quotable
+    ? ''
+    : opts.internal
+      ? `GingerBros internal notification<br>`
+      : opts.marketing
+        ? `You're getting this because you shopped or signed up at gingerbrosshop.com.<br><a href="${UNSUBSCRIBE_PLACEHOLDER}" style="color:${BRAND.muted};text-decoration:underline;">Unsubscribe</a><br>`
+        : `Questions about your order? Reply to this email.<br>`;
 
   return `<!DOCTYPE html>
 <html lang="en" xmlns="http://www.w3.org/1999/xhtml">
@@ -169,7 +170,7 @@ function layout(inner: string, preheader: string, title: string, opts: LayoutOpt
       </tr>
       <tr>
         <td class="muted" style="padding:20px 8px 0;text-align:center;font-family:${FONT};font-size:12px;line-height:1.7;color:${BRAND.muted};">
-          ${footer}<br>
+          ${footer}
           GingerBros &middot; Bangkok, Thailand &middot; <a href="${SITE_URL}" style="color:${BRAND.muted};">gingerbrosshop.com</a>
         </td>
       </tr>
@@ -438,7 +439,7 @@ export function wholesaleInquiryHtml(inquiry: WholesaleInquiry, ref: string, wan
     ${button('Reply', `mailto:${mailtoAddress(inquiry.email)}?subject=${encodeURIComponent(`Re: ${wholesaleSubject(ref, wants)}`)}`)}`,
     `Wholesale inquiry from ${inquiry.businessName}`,
     `Wholesale inquiry from ${inquiry.businessName}`,
-    { internal: true }
+    { quotable: true }
   );
 }
 
@@ -523,8 +524,7 @@ export function boxReturnRewardHtml(amountBaht: number, code?: string | null): s
     }
     ${button('Shop GingerBros', `${SITE_URL}/#shop`)}`,
     `฿${amountBaht} credit for your next order`,
-    'Box return credit',
-    { marketing: true }
+    'Box return credit'
   );
 }
 
@@ -606,6 +606,25 @@ export function adminLoginHtml(link: string): string {
     ${small(`If you didn't request this, ignore it. The link is useless without access to this inbox.`)}`,
     'Your one-time login link',
     'GingerBros admin login',
+    { internal: true }
+  );
+}
+
+/** Tells the owner that an email did not arrive. Every value may be sender-typed. */
+export function deliveryAlertHtml(event: { problem: string; to: string; from: string; subject: string; reason: string }): string {
+  return layout(
+    `${heading(`Email not delivered: ${escapeHtml(event.problem)}`)}
+    ${panel(
+      details([
+        ['To', escapeHtml(event.to)],
+        ['From', escapeHtml(event.from)],
+        ['Subject', escapeHtml(event.subject)],
+        ['Reason', escapeHtml(event.reason)],
+      ])
+    )}
+    ${body('Check the address for a typo, then send it again or reach the person another way.')}`,
+    `${event.to}: ${event.problem}`,
+    'Email not delivered',
     { internal: true }
   );
 }

@@ -34,4 +34,4 @@ Everything under `/admin` and the order-management endpoints require an administ
 
 ## Contact
 
-gingerbros.brew@gmail.com
+order@gingerbrosshop.com

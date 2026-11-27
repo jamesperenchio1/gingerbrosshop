@@ -8,7 +8,7 @@ import { LOGO_URL, SITE_NAME, SITE_URL, SOCIAL_LINKS, TAGLINE } from '../constan
 export const ORG_ID = `${SITE_URL}/#organization`;
 export const WEBSITE_ID = `${SITE_URL}/#website`;
 
-export const CONTACT_EMAIL = 'gingerbros.brew@gmail.com';
+export const CONTACT_EMAIL = 'order@gingerbrosshop.com';
 
 export function organizationNode() {
   return {

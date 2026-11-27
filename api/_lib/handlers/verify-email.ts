@@ -1,7 +1,9 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { Redis } from '@upstash/redis';
 import Stripe from 'stripe';
-import { getResend, MAIL_FROM_NEWSLETTER, UNSUBSCRIBE_HEADERS, discountCodeHtml } from '../email.js';
+import { MAIL_FROM_NEWSLETTER, discountCodeHtml } from '../email.js';
+import { sendEmail, withUnsubscribe } from '../mailer.js';
+import { addSubscriber } from '../subscribers.js';
 import { rateLimit, getClientIp } from '../rateLimit.js';
 import { captureServerEvent } from '../posthog.js';
 
@@ -57,7 +59,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return;
   }
 
-  if (storedCode !== code) {
+  if (String(storedCode) !== code) {
     // Atomically count the failed attempt; after MAX_ATTEMPTS, burn the code so
     // it can no longer be guessed and the user must request a fresh one.
     const attempts = await redis.incr(attemptsKey);
@@ -94,25 +96,33 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       promoCode = promo.code;
     } catch (err) {
       console.error('Stripe promo code creation failed:', err);
+      // The code was right: give it back so the same one works on retry.
+      await redis.set(key, storedCode, { ex: CODE_TTL_SECONDS });
+      res.status(502).json({ error: 'We could not create your discount just now. Please try again.' });
+      return;
     }
   }
 
+  await addSubscriber(email).catch((err) => console.error('Saving subscriber failed:', err));
+
   // Send the discount email
-  const resend = getResend();
-  if (resend && promoCode) {
+  let emailed = false;
+  if (promoCode) {
     try {
-      await resend.emails.send({
-        from: MAIL_FROM_NEWSLETTER,
-        to: email,
-        subject: `Your 10% off code: ${promoCode}`,
-        html: discountCodeHtml(promoCode),
-        headers: UNSUBSCRIBE_HEADERS,
-      });
+      await sendEmail(
+        await withUnsubscribe({
+          from: MAIL_FROM_NEWSLETTER,
+          to: email,
+          subject: `Your 10% off code: ${promoCode}`,
+          html: discountCodeHtml(promoCode),
+        }),
+      );
+      emailed = true;
     } catch (err) {
       console.error('Discount email send failed:', err);
     }
   }
 
-  await captureServerEvent('newsletter_verified', email, { promo_code_sent: !!promoCode });
-  res.status(200).json({ success: true, sent: !!promoCode, promoCode: promoCode || undefined });
+  await captureServerEvent('newsletter_verified', email, { promo_code_sent: emailed });
+  res.status(200).json({ success: true, sent: emailed, promoCode: promoCode || undefined });
 }

@@ -122,7 +122,7 @@ Transactional emails (order confirmations, shipping updates, password resets) ar
 • Withdraw consent for marketing communications
 • Request a copy of your data in a portable format
 
-To exercise any of these rights, contact us at gingerbros.brew@gmail.com. We will respond within 30 days.`,
+To exercise any of these rights, contact us at order@gingerbrosshop.com. We will respond within 30 days.`,
     },
     {
       icon: <HardDrive className="w-6 h-6 text-amber" />,
@@ -192,7 +192,7 @@ For significant changes that materially affect your rights, we will notify you v
             If you have any questions about this privacy policy or how we handle your data, please get in touch.
           </p>
           <a
-            href="mailto:gingerbros.brew@gmail.com"
+            href="mailto:order@gingerbrosshop.com"
             className="inline-flex items-center gap-2 bg-amber text-deep-brown font-body font-medium text-sm uppercase tracking-[0.08em] px-7 py-3 rounded-full hover:bg-warm-gold transition-colors"
           >
             <Mail className="w-4 h-4" />

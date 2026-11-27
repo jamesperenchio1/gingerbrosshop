@@ -34,7 +34,7 @@ export default class ErrorBoundary extends Component<Props, State> {
             </h1>
             <p className="font-body text-earth mb-6">
               Sorry about that. Please try reloading the page. If it keeps happening,{' '}
-              <a href="mailto:gingerbros.brew@gmail.com" className="text-rust underline hover:text-deep-brown">
+              <a href="mailto:order@gingerbrosshop.com" className="text-rust underline hover:text-deep-brown">
                 let us know
               </a>
               .

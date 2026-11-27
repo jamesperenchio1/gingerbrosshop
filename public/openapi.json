@@ -5,7 +5,7 @@
     "version": "1.0.0",
     "description": "Public storefront API for GingerBros (ginger drinks, Thailand). Read the catalog, estimate shipping, and create a hosted Stripe Checkout session. Payment is completed by the buyer on the returned Stripe-hosted page; no card details are ever sent to this API.",
     "contact": {
-      "email": "gingerbros.brew@gmail.com",
+      "email": "order@gingerbrosshop.com",
       "url": "https://gingerbrosshop.com/faq"
     }
   },

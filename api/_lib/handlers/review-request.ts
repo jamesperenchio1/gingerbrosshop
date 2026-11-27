@@ -1,6 +1,8 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { getOrders, updateOrder } from '../orders.js';
 import { getResend, MAIL_FROM, reviewRequestHtml } from '../email.js';
+import { sendEmail, flushOutbox, withUnsubscribe } from '../mailer.js';
+import { isSuppressed } from '../subscribers.js';
 import { getStripe } from '../stripe.js';
 
 const SITE_URL = 'https://gingerbrosshop.com';
@@ -54,6 +56,11 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return;
   }
 
+  const outbox = await flushOutbox().catch((err) => {
+    console.error('review-request: outbox flush failed:', err);
+    return null;
+  });
+
   const orders = await getOrders();
   const now = Date.now();
 
@@ -83,7 +90,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     .slice(0, MAX_SENDS_PER_RUN);
 
   if (due.length === 0) {
-    res.status(200).json({ checked: orders.length, due: 0, sent: 0 });
+    res.status(200).json({ checked: orders.length, due: 0, sent: 0, outbox });
     return;
   }
 
@@ -106,12 +113,18 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       items.length === 1 ? `How was your ${order.items[0]?.description ?? 'ginger'}?` : 'How was your ginger?';
 
     try {
-      await resend.emails.send({
-        from: MAIL_FROM,
-        to: order.customerEmail!,
-        subject,
-        html: reviewRequestHtml(order.customerName, targets),
-      });
+      if (await isSuppressed(order.customerEmail!)) {
+        await updateOrder(order.sessionId, { reviewRequestedAt: new Date().toISOString() });
+        continue;
+      }
+      await sendEmail(
+        await withUnsubscribe({
+          from: MAIL_FROM,
+          to: order.customerEmail!,
+          subject,
+          html: reviewRequestHtml(order.customerName, targets),
+        }),
+      );
       await updateOrder(order.sessionId, { reviewRequestedAt: new Date().toISOString() });
       alreadyAsked.add(order.customerEmail!.toLowerCase());
       sent++;
@@ -120,5 +133,5 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     }
   }
 
-  res.status(200).json({ checked: orders.length, due: due.length, sent });
+  res.status(200).json({ checked: orders.length, due: due.length, sent, outbox });
 }

@@ -214,15 +214,15 @@ Orders placed before this feature have no source. This is separate from the link
 - **Key**: `RESEND_API_KEY` env var
 - **Templates**: `api/_lib/email.ts`
 
-### Email Templates
+### Sending rules
 
-| Template | Function | Used By |
-|----------|----------|---------|
-| `orderConfirmationEmailHtml` | Order confirmation | Webhook (checkout complete) |
-| `subscriptionConfirmationEmailHtml` | Subscription signup | Webhook (checkout complete) |
-| `wholesaleInquiryEmailHtml` | Wholesale inquiry | `/api/wholesale` |
-| `stockAlertEmailHtml` | Back-in-stock notification | `/api/stock-alert` (future) |
-| `trackingInfoEmailHtml` | Tracking status email | `/api/email-tracking` |
+- Send only through `api/_lib/mailer.ts`. The Resend SDK returns errors instead of throwing, so a direct `resend.emails.send` call hides failures.
+  - `sendEmail` throws on failure. `sendOrQueue` keeps a failed email in the Redis list `email:outbox`; both daily crons retry it.
+  - Marketing mail goes through `withUnsubscribe` (footer link + one-click `List-Unsubscribe`). Check `isSuppressed` first for mail the person did not ask for.
+- `/api/unsubscribe?t=…` — GET confirms, POST unsubscribes (`api/_lib/subscribers.ts`). Newsletter subscribers: Redis set `newsletter:subscribers`.
+- `/api/resend-webhook` — Resend posts bounce/complaint/failed/suppressed events; the owner (`SELLER_EMAIL`) gets an alert. Only Resend's published webhook IPs are accepted.
+- Public contact address is `order@gingerbrosshop.com`; `tests/unit/email-flows.test.ts` fails if the Gmail address returns to the site.
+- Templates: `api/_lib/email.ts`. Stripe sends customers their receipts.
 
 ---
 

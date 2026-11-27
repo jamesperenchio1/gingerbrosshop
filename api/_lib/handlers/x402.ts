@@ -5,7 +5,8 @@ import { getStripe } from '../stripe.js';
 import { rateLimit, getClientIp } from '../rateLimit.js';
 import { multiBuyDiscount, bottlesFromMetadata, type BottleLine } from '../multiBuy.js';
 import { saveOrder, type Order } from '../orders.js';
-import { getResend, MAIL_FROM, FROM_EMAIL, SELLER_EMAIL } from '../email.js';
+import { MAIL_FROM, FROM_EMAIL, SELLER_EMAIL } from '../email.js';
+import { sendOrQueue } from '../mailer.js';
 import {
   resolveRate,
   USDC_BASE,
@@ -326,31 +327,29 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       console.error('x402 saveOrder failed:', err);
     }
 
-    const resend = getResend();
     const summary = `${priced.lines.map((l) => `${l.quantity}x ${esc(l.description)}`).join('<br>')}<br><br>Total: ฿${priced.totalThb} (${usdc} USDC)<br>Tx: ${esc(tx)}`;
     const ship = `${esc(delivery.name)}<br>${esc(delivery.address.line1)} ${esc(delivery.address.line2)}<br>${esc(delivery.address.city)} ${esc(delivery.address.state)} ${esc(delivery.address.postal_code)}<br>${esc(delivery.phone)} · ${esc(delivery.email)}`;
-    if (resend) {
-      resend.emails
-        .send({
+    // Awaited: work left running after the response can be cut off by the platform.
+    await Promise.all([
+      sendOrQueue(
+        {
           from: `GingerBros Orders <${FROM_EMAIL}>`,
           to: SELLER,
           subject: `New x402 (USDC) order ${orderId.slice(-8).toUpperCase()}, ฿${priced.totalThb}`,
           html: `<p><strong>Paid in USDC on Base. Please fulfil.</strong>${coldChain ? ' Cold-chain delivery.' : ''}</p><p>${summary}</p><p><strong>Ship to</strong><br>${ship}</p>${delivery.note ? `<p>Note: ${esc(delivery.note)}</p>` : ''}`,
-        })
-        .catch((err) => console.error('x402 seller email failed:', err));
-    } else {
-      console.warn('[x402] RESEND_API_KEY missing — order', orderId, 'was paid but the seller was not emailed');
-    }
-    if (resend) {
-      resend.emails
-        .send({
+        },
+        { context: 'x402-seller' },
+      ),
+      sendOrQueue(
+        {
           from: MAIL_FROM,
           to: delivery.email,
           subject: `Your GingerBros order ${orderId.slice(-8).toUpperCase()}`,
           html: `<p>Thanks for your order! We received your payment of ${usdc} USDC.</p><p>${summary}</p><p>We'll ship to:<br>${ship}</p><p>Track it at https://gingerbrosshop.com/track with this email and order number ${orderId.slice(-8).toUpperCase()}.</p>`,
-        })
-        .catch((err) => console.error('x402 customer email failed:', err));
-    }
+        },
+        { context: 'x402-customer' },
+      ),
+    ]);
 
     res.setHeader('X-PAYMENT-RESPONSE', Buffer.from(JSON.stringify(settled)).toString('base64'));
     res.setHeader('Cache-Control', 'no-store');

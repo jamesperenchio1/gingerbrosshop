@@ -102,13 +102,13 @@ const FAQS: FAQItem[] = [
             For Business page
           </Link>{' '}
           or email{' '}
-          <a href="mailto:gingerbros.brew@gmail.com" className="text-rust font-semibold underline underline-offset-2 hover:text-amber transition-colors">
-            gingerbros.brew@gmail.com
+          <a href="mailto:order@gingerbrosshop.com" className="text-rust font-semibold underline underline-offset-2 hover:text-amber transition-colors">
+            order@gingerbrosshop.com
           </a>{' '}
           with your venue details and estimated volume.
         </>
       ),
-      aText: 'Absolutely. We offer wholesale pricing for businesses. Visit our For Business page (/business) or email gingerbros.brew@gmail.com with your venue details and estimated volume.',
+      aText: 'Absolutely. We offer wholesale pricing for businesses. Visit our For Business page (/business) or email order@gingerbrosshop.com with your venue details and estimated volume.',
       category: 'wholesale',
     },
     {
@@ -149,14 +149,14 @@ export default function FAQPage() {
         ...f,
         q: FAQ_TH[i].q,
         aText: i === 9
-          ? `${FAQ_TH[i].a} (/business, gingerbros.brew@gmail.com)`
+          ? `${FAQ_TH[i].a} (/business, order@gingerbrosshop.com)`
           : FAQ_TH[i].a,
         a: i === 9 ? (
           <>
             {FAQ_UI_TH.wholesaleA1}{' '}
             <Link to="/business" className="text-rust font-semibold underline underline-offset-2 hover:text-amber transition-colors">{FAQ_UI_TH.wholesaleLink}</Link>{' '}
             {FAQ_UI_TH.wholesaleA2}{' '}
-            <a href="mailto:gingerbros.brew@gmail.com" className="text-rust font-semibold underline underline-offset-2 hover:text-amber transition-colors">gingerbros.brew@gmail.com</a>{' '}
+            <a href="mailto:order@gingerbrosshop.com" className="text-rust font-semibold underline underline-offset-2 hover:text-amber transition-colors">order@gingerbrosshop.com</a>{' '}
             {FAQ_UI_TH.wholesaleA3}
           </>
         ) : FAQ_TH[i].a,
@@ -306,7 +306,7 @@ export default function FAQPage() {
                   {th ? FAQ_UI_TH.stillBody : 'We are happy to help with anything not covered here. Drop us a line and we will get back to you within 24 hours.'}
                 </p>
                 <a
-                  href="mailto:gingerbros.brew@gmail.com"
+                  href="mailto:order@gingerbrosshop.com"
                   className="inline-flex items-center gap-2 bg-amber text-deep-brown font-body font-medium text-sm uppercase tracking-[0.08em] px-7 py-3 rounded-full hover:bg-warm-gold transition-colors"
                 >
                   {th ? FAQ_UI_TH.email : 'Email Us'}

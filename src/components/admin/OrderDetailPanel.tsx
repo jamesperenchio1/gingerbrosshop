@@ -49,12 +49,12 @@ export default function OrderDetailPanel({
     load();
   }, [load]);
 
-  const post = async (body: Record<string, unknown>, successMessage: string) => {
+  const post = async (body: Record<string, unknown>, successMessage: string | ((data: unknown) => string)) => {
     setBusy(true);
     setMessage('');
     try {
-      await adminApi({ resource: 'orders', method: 'POST', body: { ...body, sessionId } });
-      setMessage(successMessage);
+      const data = await adminApi({ resource: 'orders', method: 'POST', body: { ...body, sessionId } });
+      setMessage(typeof successMessage === 'function' ? successMessage(data) : successMessage);
       await load();
       onChanged();
       return true;
@@ -70,7 +70,11 @@ export default function OrderDetailPanel({
     if (!trackingNumber.trim()) return;
     await post(
       { action: 'tracking', trackingNumber: trackingNumber.trim(), trackingCarrier: trackingCarrier.trim() || undefined },
-      'Tracking saved. Customer emailed if it changed.'
+      (data) => {
+        const { emailed, emailQueued } = data as { emailed?: boolean; emailQueued?: boolean };
+        if (emailQueued) return 'Tracking saved. The customer email failed and will retry automatically.';
+        return emailed ? 'Tracking saved. Customer emailed.' : 'Tracking saved. No email sent.';
+      }
     );
   };
 
@@ -89,8 +93,8 @@ export default function OrderDetailPanel({
     if (!confirm(`Give ${email} a ฿50 box-return credit and email it to them now?`)) return;
     setBusy(true);
     try {
-      await adminApi({ method: 'POST', body: { action: 'grant-credit', email } });
-      setMessage(`฿50 credit granted to ${email}.`);
+      const data = await adminApi<{ emailed?: boolean }>({ method: 'POST', body: { action: 'grant-credit', email } });
+      setMessage(`฿50 credit granted to ${email}.${data.emailed ? '' : ' The email failed and will retry automatically.'}`);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to grant credit');
     } finally {
@@ -102,11 +106,12 @@ export default function OrderDetailPanel({
     if (!confirm('Generate a one-time ฿50 box-return code to hand this customer?')) return;
     setBusy(true);
     try {
-      const data = await adminApi<{ code: string }>({
+      const data = await adminApi<{ code: string; emailed?: boolean }>({
         method: 'POST',
         body: { action: 'grant-code', email: detail?.customerEmail || undefined },
       });
-      setMessage(`Code: ${data.code} (single use, ฿50).`);
+      const emailFailed = detail?.customerEmail && !data.emailed;
+      setMessage(`Code: ${data.code} (single use, ฿50).${emailFailed ? ' The email failed and will retry automatically.' : ''}`);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to generate code');
     } finally {

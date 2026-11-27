@@ -1,7 +1,8 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { getOrders, getOrderBySessionId, updateTracking, updateOrder, type Order } from '../orders.js';
 import { rateLimit, getClientIp } from '../rateLimit.js';
-import { getResend, MAIL_FROM, SUPPORT_REPLY_TO, shippingNotificationHtml, boxReturnRewardHtml } from '../email.js';
+import { MAIL_FROM, SUPPORT_REPLY_TO, shippingNotificationHtml, boxReturnRewardHtml } from '../email.js';
+import { sendOrQueue } from '../mailer.js';
 import { addCredit, consumeCredit } from '../credits.js';
 import { getStripe } from '../stripe.js';
 import { isAdminAuthorized, getAdminEmail } from '../adminAuth.js';
@@ -1321,7 +1322,7 @@ async function handleTracking(body: Record<string, unknown>, res: VercelResponse
     detail: `${trackingCarrier ?? ''} ${trackingNumber}`.trim(),
   });
 
-  res.status(200).json({ success: true, order, emailed });
+  res.status(200).json({ success: true, order, emailed, emailQueued: trackingChanged && !emailed && !!order.customerEmail });
 }
 
 async function handleGrantCredit(body: Record<string, unknown>, res: VercelResponse, adminEmail: string | null) {
@@ -1333,22 +1334,17 @@ async function handleGrantCredit(body: Record<string, unknown>, res: VercelRespo
   const amount = Number.isFinite(body.amount) && (body.amount as number) > 0 ? Math.round(body.amount as number) : BOX_RETURN_CREDIT;
   const balance = await addCredit(email, amount);
 
-  let emailed = false;
-  const resend = getResend();
-  if (resend) {
-    try {
-      await resend.emails.send({
+  const emailed =
+    (await sendOrQueue(
+      {
         from: MAIL_FROM,
         to: email,
         replyTo: SUPPORT_REPLY_TO,
         subject: `Your ฿${Math.round(amount / 100)} box-return reward is ready`,
         html: boxReturnRewardHtml(Math.round(amount / 100)),
-      });
-      emailed = true;
-    } catch (err) {
-      console.error('Failed to send box-return reward email:', err);
-    }
-  }
+      },
+      { context: 'box-reward-credit' },
+    )) === 'sent';
 
   await logAdminAction({
     email: adminEmail,
@@ -1385,22 +1381,18 @@ async function handleGrantCode(body: Record<string, unknown>, res: VercelRespons
     });
 
     const email = (body.email as string | undefined)?.trim().toLowerCase();
-    let emailed = false;
-    const resend = getResend();
-    if (email && resend) {
-      try {
-        await resend.emails.send({
+    const emailed =
+      !!email &&
+      (await sendOrQueue(
+        {
           from: MAIL_FROM,
           to: email,
           replyTo: SUPPORT_REPLY_TO,
           subject: `Your ฿${Math.round(amount / 100)} box-return reward is ready`,
           html: boxReturnRewardHtml(Math.round(amount / 100), promo.code),
-        });
-        emailed = true;
-      } catch (err) {
-        console.error('Failed to send box-return code email:', err);
-      }
-    }
+        },
+        { context: 'box-reward-code' },
+      )) === 'sent';
 
     await logAdminAction({
       email: adminEmail,
@@ -1422,17 +1414,10 @@ async function handleGrantCode(body: Record<string, unknown>, res: VercelRespons
 
 /**
  * Notify the customer (and gift recipient, if any) that their order has shipped.
- * Failures are logged but never block the tracking update — the order is the
- * source of truth, the email is best-effort. Returns whether at least one email
- * was sent.
+ * Failures never block the tracking update (the order is the source of truth);
+ * a failed email is queued for retry. Returns whether at least one was sent now.
  */
 async function sendShippingNotification(order: Order): Promise<boolean> {
-  const resend = getResend();
-  if (!resend) {
-    console.warn('[SHIPPING NOTIFICATION] RESEND_API_KEY not configured — skipping email for', order.sessionId);
-    return false;
-  }
-
   const recipients = new Set<string>();
   if (order.customerEmail) recipients.add(order.customerEmail);
   if (order.isGift && order.recipientEmail) recipients.add(order.recipientEmail);
@@ -1442,18 +1427,17 @@ async function sendShippingNotification(order: Order): Promise<boolean> {
   const html = shippingNotificationHtml(order);
   let sent = false;
   for (const to of recipients) {
-    try {
-      await resend.emails.send({
+    const outcome = await sendOrQueue(
+      {
         from: MAIL_FROM,
         to,
         replyTo: SUPPORT_REPLY_TO,
         subject: `Order #${orderId} has shipped${order.trackingNumber ? `, tracking ${order.trackingNumber}` : ''}`,
         html,
-      });
-      sent = true;
-    } catch (err) {
-      console.error('Failed to send shipping email to', to, err);
-    }
+      },
+      { context: 'shipping' },
+    );
+    if (outcome === 'sent') sent = true;
   }
   return sent;
 }

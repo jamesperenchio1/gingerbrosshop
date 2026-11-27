@@ -190,8 +190,8 @@ export default function OrdersPage() {
               <Mail className="w-5 h-5 text-rust flex-shrink-0 mt-0.5" />
               <p className="font-body text-earth text-[14px]">
                 Email us at{' '}
-                <a href="mailto:gingerbros.brew@gmail.com" className="text-rust font-semibold underline">
-                  gingerbros.brew@gmail.com
+                <a href="mailto:order@gingerbrosshop.com" className="text-rust font-semibold underline">
+                  order@gingerbrosshop.com
                 </a>{' '}
                 with your order number and we will sort it out.
               </p>

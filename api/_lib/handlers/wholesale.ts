@@ -1,6 +1,7 @@
 import { randomBytes } from 'node:crypto';
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { rateLimit, getClientIp } from '../rateLimit.js';
+import { sendEmail } from '../mailer.js';
 import { getResend, MAIL_FROM, SELLER_EMAIL, FROM_EMAIL, wholesaleSubject, wholesaleInquiryHtml, wholesaleConfirmationHtml, type WholesaleInquiry } from '../email.js';
 import { captureServerEvent } from '../posthog.js';
 
@@ -9,6 +10,10 @@ import { captureServerEvent } from '../posthog.js';
 // mailto/URL/header separators (? & = # % < > " , ; : \ /). Real addresses
 // almost never use them.
 export const EMAIL_RE = /^[^\s@?&=#%<>",;:\\/]+@[^\s@?&=#%<>",;:\\/]+\.[^\s@?&=#%<>",;:\\/]+$/;
+
+// Names are echoed in the confirmation, which goes to an unverified address.
+const LINK_RE = /https?:\/\/|www\./i;
+const SEND_FAILED = `We couldn't send your inquiry. Please email ${FROM_EMAIL} instead.`;
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (req.method !== 'POST') {
@@ -47,12 +52,16 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return;
   }
 
+  if (LINK_RE.test(businessName) || LINK_RE.test(contactName)) {
+    res.status(400).json({ error: 'Please leave links out of the name fields.' });
+    return;
+  }
+
   const inquiry: WholesaleInquiry = { businessName, contactName, email, phone, message };
   // Server-made reference used in both email subjects (never sender-typed text).
   const ref = randomBytes(3).toString('hex').toUpperCase();
 
-  const resend = getResend();
-  if (!resend) {
+  if (!getResend()) {
     res.status(500).json({ error: 'Inquiry service is not configured.' });
     return;
   }
@@ -62,7 +71,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   }
 
   try {
-    await resend.emails.send({
+    await sendEmail({
       from: MAIL_FROM,
       to: SELLER_EMAIL,
       replyTo: email,
@@ -74,13 +83,18 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     // Same subject as the seller notification above, so the seller's plain
     // Reply ("Re: <subject>") threads under this email in the customer's mailbox.
     // Customer replies go to the sending address, which Cloudflare Email Routing forwards to the support inbox.
-    await resend.emails.send({
-      from: MAIL_FROM,
-      to: email,
-      replyTo: FROM_EMAIL,
-      subject: wholesaleSubject(ref, wants),
-      html: wholesaleConfirmationHtml(inquiry, ref),
-    }).catch((err) => console.error('Wholesale confirmation email failed:', err));
+    // Capped per address and per day, so the form can't be used to mail strangers.
+    const toAddress = await rateLimit({ key: `wholesale-confirm:${email}`, limit: 1, windowSeconds: 86400 });
+    const overall = toAddress.allowed && (await rateLimit({ key: 'wholesale-confirm', limit: 20, windowSeconds: 86400 })).allowed;
+    if (overall) {
+      await sendEmail({
+        from: MAIL_FROM,
+        to: email,
+        replyTo: FROM_EMAIL,
+        subject: wholesaleSubject(ref, wants),
+        html: wholesaleConfirmationHtml(inquiry, ref),
+      }).catch((err) => console.error('Wholesale confirmation email failed:', err));
+    }
 
     await captureServerEvent('wholesale_inquiry_submitted', email, {
       business_name: businessName,
@@ -90,6 +104,6 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     res.status(200).json({ success: true });
   } catch (err) {
     console.error('Wholesale inquiry error:', err);
-    res.status(500).json({ error: 'Failed to send inquiry. Please try again later.' });
+    res.status(500).json({ error: SEND_FAILED });
   }
 }

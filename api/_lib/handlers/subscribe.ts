@@ -2,10 +2,10 @@ import { randomInt } from 'crypto';
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { Redis } from '@upstash/redis';
 import { rateLimit, getClientIp } from '../rateLimit.js';
-import { getResend, MAIL_FROM_NEWSLETTER, UNSUBSCRIBE_HEADERS, welcomeWithCodeHtml, welcomeHtml } from '../email.js';
+import { getResend, MAIL_FROM_NEWSLETTER, welcomeWithCodeHtml, welcomeHtml } from '../email.js';
+import { sendEmail, withUnsubscribe } from '../mailer.js';
+import { addSubscriber } from '../subscribers.js';
 import { captureServerEvent } from '../posthog.js';
-
-const audienceId = process.env.RESEND_AUDIENCE_ID;
 
 function getRedis(): Redis | null {
   if (!process.env.UPSTASH_REDIS_REST_URL || !process.env.UPSTASH_REDIS_REST_TOKEN) return null;
@@ -30,18 +30,19 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return;
   }
 
-  const resend = getResend();
-  if (!resend) {
+  // Per address too, so the form can't be used to flood someone's inbox.
+  const perAddress = await rateLimit({ key: `subscribe:email:${email}`, limit: 5, windowSeconds: 3600 });
+  if (!perAddress.allowed) {
+    res.status(429).json({ error: 'We have already sent several emails to that address. Try again in an hour.' });
+    return;
+  }
+
+  if (!getResend()) {
     res.status(500).json({ error: 'Newsletter service is not configured.' });
     return;
   }
 
   try {
-    if (audienceId) {
-      const { error } = await resend.contacts.create({ email, audienceId, unsubscribed: false });
-      if (error) console.error('Resend audience error:', error);
-    }
-
     const redis = getRedis();
     const verificationEnabled = redis !== null;
 
@@ -49,25 +50,28 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       const code = randomInt(100000, 999999).toString();
       await redis.set(`verify:${email}`, code, { ex: 86400 }); // 24h TTL
 
-      await resend.emails.send({
-        from: MAIL_FROM_NEWSLETTER,
-        to: email,
-        subject: 'Confirm your email to get 10% off',
-        html: welcomeWithCodeHtml(code),
-        headers: UNSUBSCRIBE_HEADERS,
-      });
+      await sendEmail(
+        await withUnsubscribe({
+          from: MAIL_FROM_NEWSLETTER,
+          to: email,
+          subject: 'Confirm your email to get 10% off',
+          html: welcomeWithCodeHtml(code),
+        }),
+      );
 
       await captureServerEvent('newsletter_subscribed', email, { verification_required: true });
       res.status(200).json({ success: true, verification: true });
     } else {
       // Redis not configured — fall back to plain welcome email
-      await resend.emails.send({
-        from: MAIL_FROM_NEWSLETTER,
-        to: email,
-        subject: 'You are on the GingerBros list',
-        html: welcomeHtml(),
-        headers: UNSUBSCRIBE_HEADERS,
-      });
+      await addSubscriber(email).catch((err) => console.error('Saving subscriber failed:', err));
+      await sendEmail(
+        await withUnsubscribe({
+          from: MAIL_FROM_NEWSLETTER,
+          to: email,
+          subject: 'You are on the GingerBros list',
+          html: welcomeHtml(),
+        }),
+      );
 
       await captureServerEvent('newsletter_subscribed', email, { verification_required: false });
       res.status(200).json({ success: true, verification: false });

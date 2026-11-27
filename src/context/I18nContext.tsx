@@ -198,6 +198,8 @@ const translations: Record<Locale, Record<string, string>> = {
     newsletterResend: 'Resend code',
     newsletterDoneTitle: 'Your discount is on its way.',
     newsletterDoneSub: 'Check your inbox for your 10% off code. It\'s valid for 24 hours.',
+    newsletterCodeTitle: 'Here is your 10% off code',
+    newsletterCodeSub: 'We couldn\'t email it, so copy it now. It\'s applied at checkout and valid for 24 hours.',
 
     // Footer
     footerBrandBlurb: 'Modern ginger drinks, made in Thailand. Fresh Thai ginger, real lime, low sugar. Think ginger. Drink different.',
@@ -398,6 +400,8 @@ const translations: Record<Locale, Record<string, string>> = {
     newsletterResend: 'ส่งรหัสใหม่',
     newsletterDoneTitle: 'ส่วนลดของคุณกำลังมา',
     newsletterDoneSub: 'ตรวจสอบกล่องขาเข้าของคุณสำหรับรหัสส่วนลด 10% ใช้ได้ภายใน 24 ชั่วโมง',
+    newsletterCodeTitle: 'โค้ดส่วนลด 10% ของคุณ',
+    newsletterCodeSub: 'เราส่งอีเมลไม่สำเร็จ กรุณาคัดลอกโค้ดนี้ไว้ ระบบจะใช้ให้ตอนชำระเงิน ใช้ได้ 24 ชั่วโมง',
 
     // Footer
     footerBrandBlurb: 'เครื่องดื่มขิงยุคใหม่ ผลิตในประเทศไทย ขิงไทยสด มะนาวแท้ หวานน้อย คิดแบบขิง ดื่มให้แตกต่าง',

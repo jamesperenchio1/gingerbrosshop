@@ -71,8 +71,8 @@ export default function ReturnsPage() {
             <Mail className="w-5 h-5 text-rust" />
             <span className="font-body font-semibold text-deep-brown">Contact us within 24 hours</span>
           </div>
-          <a href="mailto:gingerbros.brew@gmail.com" className="inline-block bg-deep-brown text-cream font-body font-medium px-8 py-3 rounded-full hover:bg-rust transition-colors">
-            gingerbros.brew@gmail.com
+          <a href="mailto:order@gingerbrosshop.com" className="inline-block bg-deep-brown text-cream font-body font-medium px-8 py-3 rounded-full hover:bg-rust transition-colors">
+            order@gingerbrosshop.com
           </a>
         </div>
       </div>
