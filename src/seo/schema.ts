@@ -68,6 +68,24 @@ export function breadcrumbList(items: Crumb[]) {
   };
 }
 
+/**
+ * A plain page node for the static pages (returns, privacy, terms) that carry
+ * no products or reviews. It tells crawlers the page belongs to the site and
+ * who publishes it, which is all a policy page can honestly claim.
+ */
+export function webPageNode(crumb: { path: string; name: string; description: string }) {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'WebPage',
+    name: crumb.name,
+    description: crumb.description,
+    url: crumb.path === '/' ? SITE_URL : `${SITE_URL}${crumb.path}`,
+    isPartOf: { '@id': WEBSITE_ID },
+    publisher: { '@id': ORG_ID },
+    inLanguage: crumb.path.startsWith('/th') ? 'th' : 'en',
+  };
+}
+
 /** Wrap nodes (each without its own @context) in a single @graph document. */
 export function graph(...nodes: object[]) {
   return { '@context': 'https://schema.org', '@graph': nodes };

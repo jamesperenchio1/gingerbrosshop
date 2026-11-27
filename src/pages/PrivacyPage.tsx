@@ -4,6 +4,7 @@ import {
   HardDrive, FileText, Scale
 } from 'lucide-react';
 import SEO from '@/components/SEO';
+import { webPageNode } from '@/seo/schema';
 
 export default function PrivacyPage() {
   const sections = [
@@ -161,6 +162,7 @@ For significant changes that materially affect your rights, we will notify you v
     <div className="min-h-screen bg-warm-white">
       <SEO
         route="/privacy"
+        jsonLd={webPageNode({ path: '/privacy', name: 'Privacy Policy', description: 'What personal data GingerBros collects, how it is used, how long it is kept and how to have it removed.' })}
       />
       <div className="max-w-[800px] mx-auto px-6 pb-16 pt-28">
         <h1 className="font-display font-bold text-deep-brown text-3xl md:text-4xl mb-4 text-center">Privacy Policy</h1>

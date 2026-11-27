@@ -1,11 +1,13 @@
 import { AlertTriangle, Mail, ShieldCheck } from 'lucide-react';
 import SEO from '@/components/SEO';
+import { webPageNode } from '@/seo/schema';
 
 export default function ReturnsPage() {
   return (
     <div className="min-h-screen bg-warm-white">
       <SEO
         route="/returns"
+        jsonLd={webPageNode({ path: '/returns', name: 'Returns & Refunds', description: 'How GingerBros handles damaged, missing or incorrect orders, and how to ask for a refund.' })}
       />
       <div className="max-w-[800px] mx-auto px-6 pb-16 pt-28">
         <h1 className="font-display font-bold text-deep-brown text-3xl md:text-4xl mb-4 text-center">Returns & Refunds</h1>

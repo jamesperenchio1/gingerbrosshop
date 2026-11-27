@@ -1,5 +1,6 @@
 import { FileText, Package, Truck, RotateCcw, CreditCard, Scale, Copyright, AlertTriangle, Gavel, Mail, Lock, UserX } from 'lucide-react';
 import SEO from '@/components/SEO';
+import { webPageNode } from '@/seo/schema';
 
 export default function TermsPage() {
   const sections = [
@@ -97,6 +98,7 @@ Our total liability to you for any claim arising from your purchase shall not ex
     <div className="min-h-screen bg-warm-white">
       <SEO
         route="/terms"
+        jsonLd={webPageNode({ path: '/terms', name: 'Terms of Service', description: 'The terms that govern shopping on gingerbrosshop.com, including delivery, payment and order cancellation.' })}
       />
       <div className="max-w-[800px] mx-auto px-6 pb-16 pt-28">
         <h1 className="font-display font-bold text-deep-brown text-3xl md:text-4xl mb-4 text-center">Terms of Service</h1>
