@@ -443,12 +443,12 @@ export function wholesaleInquiryHtml(inquiry: WholesaleInquiry, ref: string, wan
   );
 }
 
-export function wholesaleConfirmationHtml(inquiry: WholesaleInquiry, ref: string): string {
-  // Deliberately no copy of the sender's message or phone: this goes to an
-  // address nobody has verified, from our own domain.
+export function wholesaleConfirmationHtml(ref: string): string {
+  // Deliberately nothing the sender typed: this goes to an address nobody has
+  // verified, from our own domain, and mail apps turn "evil.com" into a link.
   return layout(
     `${heading('We received your wholesale inquiry')}
-    ${body(`Thanks, ${firstName(inquiry.contactName)}. We've got your enquiry for <strong>${escapeHtml(inquiry.businessName)}</strong> and will reply with trade pricing and delivery options within one business day.`)}
+    ${body(`Thanks. We've got your enquiry and will reply with trade pricing and delivery options within one business day.`)}
     ${small(`Your reference is #${escapeHtml(ref)}. Want to add something? Just reply to this email and it comes straight to us, in the same conversation.`)}`,
     'We will reply within one business day',
     'Wholesale inquiry received'

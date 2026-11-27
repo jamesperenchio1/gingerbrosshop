@@ -1,3 +1,4 @@
+import { createHmac, timingSafeEqual } from 'node:crypto';
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { Redis } from '@upstash/redis';
 import { getClientIp } from '../rateLimit.js';
@@ -10,12 +11,57 @@ import { captureServerException } from '../posthog.js';
  * Resend calls this when mail does not arrive (sent from the site or from a mail
  * app through Resend), so a bounce is never silent: the owner gets an email.
  *
- * Callers are checked against Resend's published webhook source addresses
- * (resend.com/docs/webhooks). Vercel sets x-forwarded-for itself, so a caller
- * cannot fake it.
+ * With RESEND_WEBHOOK_SECRET set, only correctly signed events are accepted
+ * (Svix signatures). Until then callers are checked against Resend's published
+ * webhook addresses; Vercel sets x-forwarded-for itself, so it can't be faked.
  */
 const RESEND_IPV4 = new Set(['44.228.126.217', '50.112.21.217', '52.24.126.164', '54.148.139.208']);
 const RESEND_IPV6 = /^2600:1f24:0?0?64:8[0-9a-f]{3}:/i; // 2600:1f24:64:8000::/52
+const MAX_AGE_SECONDS = 300;
+
+async function rawBody(req: VercelRequest): Promise<string> {
+  const chunks: Buffer[] = [];
+  for await (const chunk of req) chunks.push(Buffer.from(chunk));
+  return Buffer.concat(chunks).toString('utf8');
+}
+
+function signedBySecret(req: VercelRequest, body: string, secret: string): boolean {
+  const header = (name: string) => String(req.headers[name] ?? '');
+  const timestamp = header('svix-timestamp');
+  if (!(Math.abs(Date.now() / 1000 - Number(timestamp)) <= MAX_AGE_SECONDS)) return false;
+  const hmac = createHmac('sha256', Buffer.from(secret.replace(/^whsec_/, ''), 'base64'));
+  hmac.update(`${header('svix-id')}.${timestamp}.${body}`);
+  const expected = Buffer.from(hmac.digest('hex'), 'hex');
+  return header('svix-signature')
+    .split(' ')
+    .some((part) => {
+      const given = Buffer.from(part.split(',')[1] ?? '', 'base64');
+      return given.length === expected.length && timingSafeEqual(given, expected);
+    });
+}
+
+/** The event, or null if the caller can't be trusted. */
+async function verifiedEvent(req: VercelRequest): Promise<ResendEvent | null> {
+  const secret = process.env.RESEND_WEBHOOK_SECRET;
+  if (!secret) {
+    const ip = getClientIp(req);
+    return RESEND_IPV4.has(ip) || RESEND_IPV6.test(ip) ? ((req.body ?? {}) as ResendEvent) : null;
+  }
+  // Read before anything touches req.body: the signature covers the exact bytes.
+  const body = await rawBody(req);
+  if (!signedBySecret(req, body, secret)) return null;
+  try {
+    return JSON.parse(body) as ResendEvent;
+  } catch {
+    return null;
+  }
+}
+
+/** `Name <a@b.co>` or `a@b.co` -> `b.co`. The address is the last <...> part. */
+function senderDomain(from: string): string {
+  const address = from.match(/<([^<>]*)>\s*$/)?.[1] ?? from;
+  return address.trim().split('@').pop()!.toLowerCase();
+}
 
 const PROBLEMS: Record<string, string> = {
   'email.bounced': 'Bounced',
@@ -45,18 +91,17 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return;
   }
 
-  const ip = getClientIp(req);
-  if (!RESEND_IPV4.has(ip) && !RESEND_IPV6.test(ip)) {
+  const event = await verifiedEvent(req);
+  if (!event) {
     res.status(401).json({ error: 'Unauthorized' });
     return;
   }
 
-  const event = (req.body ?? {}) as ResendEvent;
   const problem = PROBLEMS[event.type ?? ''];
   const data = event.data;
   const recipients = data?.to ?? [];
   // Other projects share this Resend account; only this domain's mail is ours.
-  if (!problem || !data?.email_id || recipients.length === 0 || !/@gingerbrosshop\.com\b/i.test(data.from ?? '')) {
+  if (!problem || !data?.email_id || recipients.length === 0 || senderDomain(data.from ?? '') !== 'gingerbrosshop.com') {
     res.status(200).json({ ignored: true });
     return;
   }

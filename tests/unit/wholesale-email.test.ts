@@ -25,12 +25,9 @@ describe('wholesale email subjects', () => {
     expect(wholesaleSubject('A1B2C3', { quote: false, samples: true })).toBe('Sample request #A1B2C3');
   });
 
-  it('customer confirmation does not echo the message or address', () => {
-    const html = wholesaleConfirmationHtml(inquiry, 'A1B2C3');
-    expect(html).not.toContain('PHISH-MARKER');
-    expect(html).not.toContain('Sukhumvit');
-    expect(html).not.toContain('081-234-5678');
-    expect(html).toContain('#A1B2C3');
+  it('customer confirmation carries the reference and nothing the sender typed', () => {
+    expect(wholesaleConfirmationHtml('A1B2C3')).toContain('#A1B2C3');
+    expect(wholesaleConfirmationHtml.length).toBe(1);
   });
 
   it('seller notification still carries the full enquiry', () => {

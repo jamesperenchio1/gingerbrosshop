@@ -220,7 +220,7 @@ Orders placed before this feature have no source. This is separate from the link
   - `sendEmail` throws on failure. `sendOrQueue` keeps a failed email in the Redis list `email:outbox`; both daily crons retry it.
   - Marketing mail goes through `withUnsubscribe` (footer link + one-click `List-Unsubscribe`). Check `isSuppressed` first for mail the person did not ask for.
 - `/api/unsubscribe?t=…` — GET confirms, POST unsubscribes (`api/_lib/subscribers.ts`). Newsletter subscribers: Redis set `newsletter:subscribers`.
-- `/api/resend-webhook` — Resend posts bounce/complaint/failed/suppressed events; the owner (`SELLER_EMAIL`) gets an alert. Only Resend's published webhook IPs are accepted.
+- `/api/resend-webhook` — Resend posts bounce/complaint/failed/suppressed events; the owner (`SELLER_EMAIL`) gets an alert. Set `RESEND_WEBHOOK_SECRET` (the webhook's signing secret) to require signatures; without it only Resend's published webhook IPs are accepted.
 - Public contact address is `order@gingerbrosshop.com`; `tests/unit/email-flows.test.ts` fails if the Gmail address returns to the site.
 - Templates: `api/_lib/email.ts`. Stripe sends customers their receipts.
 

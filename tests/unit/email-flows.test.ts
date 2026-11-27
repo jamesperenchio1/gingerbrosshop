@@ -1,6 +1,7 @@
+import { createHmac } from 'node:crypto';
 import { readdirSync, readFileSync, statSync } from 'node:fs';
 import { join } from 'node:path';
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 
 const h = vi.hoisted(() => {
   process.env.RESEND_API_KEY = 're_test';
@@ -62,6 +63,9 @@ const h = vi.hoisted(() => {
     contactCreate: vi.fn(async () => ({ data: { id: 'c' }, error: null })),
     contactUpdate: vi.fn(async () => ({ data: { id: 'c' }, error: null })),
     promoCreate: vi.fn(async () => ({ code: 'SAVE10' })),
+    prices: [
+      { id: 'price_fizz', unit_amount: 14000, product: { name: 'Ginger Fizz', active: true, images: ['https://gingerbrosshop.com/images/gen/ginger-fizz.jpg'], metadata: {} } },
+    ],
     orders: [] as Array<Record<string, unknown>>,
     updateOrder: vi.fn(),
   };
@@ -79,6 +83,7 @@ vi.mock('stripe', () => ({
       coupons: { create: vi.fn(async () => ({ id: 'co' })) },
       promotionCodes: { create: h.promoCreate },
       products: { list: () => ({ autoPagingToArray: async () => [] }) },
+      prices: { list: () => ({ autoPagingToArray: async () => h.prices }) },
     };
   }),
 }));
@@ -90,7 +95,7 @@ vi.mock('../../api/_lib/orders.js', () => ({
 import { sendEmail, sendOrQueue, flushOutbox, withUnsubscribe } from '../../api/_lib/mailer';
 import { suppressEmail, isSuppressed } from '../../api/_lib/subscribers';
 import { welcomeHtml, boxReturnRewardHtml, wholesaleInquiryHtml, MAIL_FROM } from '../../api/_lib/email';
-import { sanitizeCart } from '../../api/_lib/carts';
+import { rebuildCart } from '../../api/_lib/carts';
 import unsubscribe from '../../api/_lib/handlers/unsubscribe';
 import resendWebhook from '../../api/_lib/handlers/resend-webhook';
 import wholesale from '../../api/_lib/handlers/wholesale';
@@ -252,6 +257,47 @@ describe('bounce alerts', () => {
   });
   const fromResend = { 'x-forwarded-for': '44.228.126.217' };
 
+  it('ignores look-alike sender domains', async () => {
+    for (const from of ['x@gingerbrosshop.com.evil.test', '"a@gingerbrosshop.com" <x@evil.test>', 'x@evilgingerbrosshop.com']) {
+      const e = event();
+      e.data.from = from;
+      await call(resendWebhook, { headers: fromResend, body: e });
+    }
+    expect(h.send).not.toHaveBeenCalled();
+  });
+
+  describe('with a signing secret', () => {
+    const key = Buffer.from('test-signing-key');
+    beforeEach(() => vi.stubEnv('RESEND_WEBHOOK_SECRET', `whsec_${key.toString('base64')}`));
+    afterEach(() => vi.unstubAllEnvs());
+
+    const signed = (body: string, at = Math.floor(Date.now() / 1000), signWith = key) => ({
+      headers: {
+        'svix-id': 'msg_1',
+        'svix-timestamp': String(at),
+        'svix-signature': `v1,${createHmac('sha256', signWith).update(`msg_1.${at}.${body}`).digest('base64')}`,
+      },
+      async *[Symbol.asyncIterator]() {
+        yield Buffer.from(body);
+      },
+    });
+
+    it('accepts a correctly signed event', async () => {
+      const r = await call(resendWebhook, signed(JSON.stringify(event())));
+      expect(r.statusCode).toBe(200);
+      expect(h.send).toHaveBeenCalledTimes(1);
+    });
+
+    it('rejects a wrong key, an old timestamp, and an unsigned call from a Resend address', async () => {
+      const body = JSON.stringify(event());
+      const wrong = await call(resendWebhook, signed(body, undefined, Buffer.from('other')));
+      const old = await call(resendWebhook, signed(body, Math.floor(Date.now() / 1000) - 3600));
+      const unsigned = await call(resendWebhook, { ...signed(body), headers: fromResend });
+      expect([wrong.statusCode, old.statusCode, unsigned.statusCode]).toEqual([401, 401, 401]);
+      expect(h.send).not.toHaveBeenCalled();
+    });
+  });
+
   it('rejects callers that are not Resend', async () => {
     const r = await call(resendWebhook, { headers: { 'x-forwarded-for': '1.2.3.4' }, body: event() });
     expect(r.statusCode).toBe(401);
@@ -315,10 +361,10 @@ describe('wholesale form', () => {
     expect(confirmations).toHaveLength(1);
   });
 
-  it('refuses links in the names that get echoed back', async () => {
-    const r = await call(wholesale, { body: { ...body, contactName: 'see http://evil.test' } });
-    expect(r.statusCode).toBe(400);
-    expect(h.send).not.toHaveBeenCalled();
+  it('puts nothing the sender typed into the confirmation', async () => {
+    await call(wholesale, { body: { ...body, businessName: 'evil.com', contactName: 'Visit evil.com/login' } });
+    const confirmation = h.send.mock.calls.find((c) => c[0].to === 's@example.com')![0];
+    expect(confirmation.html + confirmation.subject).not.toContain('evil.com');
   });
 
   it('the lead alert has no internal footer to leak into a reply', () => {
@@ -330,7 +376,7 @@ describe('cart reminders', () => {
   const cron = { method: 'GET', headers: { authorization: 'Bearer cron' } };
   const cart = (over: Record<string, unknown> = {}) => ({
     email: 'c@example.com',
-    items: [{ name: 'Ginger Fizz', price: 140, quantity: 1, image: '/images/gen/ginger-fizz.jpg' }],
+    items: [{ id: 'price_fizz', name: 'Ginger Fizz', price: 140, quantity: 1, image: '/x.jpg' }],
     subtotal: 140,
     url: 'https://gingerbrosshop.com/shop',
     createdAt: new Date(Date.now() - 2 * 3600_000).toISOString(),
@@ -338,22 +384,21 @@ describe('cart reminders', () => {
   });
   const saved = () => h.store.get('abandoned_carts:c@example.com') as { recovered?: boolean };
 
-  it('rewrites off-site links and link text from a forged cart', () => {
-    const clean = sanitizeCart(
-      cart({
-        url: 'https://evil.test/login',
-        items: [{ name: 'Verify at http://evil.test now', price: 1, quantity: 1, image: 'https://evil.test/x.png' }],
-      }) as never,
-    );
-    expect(JSON.stringify(clean)).not.toContain('evil.test');
+  const catalog = new Map([['price_fizz', { name: 'Ginger Fizz', price: 140, image: 'https://gingerbrosshop.com/images/gen/ginger-fizz.jpg' }]]);
+
+  it('takes names, prices and images from the catalog, never from the saved cart', () => {
+    const forged = { id: 'price_fizz', name: 'Verify at evil.test', price: 1, quantity: 2, image: 'https://res.cloudinary.com/yqbe4rnq/../x.png' };
+    const clean = rebuildCart(cart({ url: 'https://evil.test/login', items: [forged] }) as never, catalog)!;
+    expect(JSON.stringify(clean)).not.toMatch(/evil|cloudinary/);
+    expect(clean.items[0]).toEqual({ ...catalog.get('price_fizz'), quantity: 2 });
     expect(clean.url).toBe('https://gingerbrosshop.com/shop');
   });
 
-  it('keeps our own product photos', () => {
-    for (const image of ['/images/gen/x.jpg', 'https://res.cloudinary.com/yqbe4rnq/image/upload/kl.jpg']) {
-      const item = { name: 'Tap', price: 1, quantity: 1, image };
-      expect(sanitizeCart(cart({ items: [item] }) as never).items[0].image).toBe(image);
-    }
+  it('sends nothing for a cart with no real products', async () => {
+    h.store.set('abandoned_carts:c@example.com', cart({ items: [{ id: 'made_up', name: 'evil.test', price: 1, quantity: 1, image: '' }] }));
+    await call(abandonedCart, cron);
+    expect(h.send).not.toHaveBeenCalled();
+    expect(saved().recovered).toBe(true);
   });
 
   it('leaves the cart pending when the send fails', async () => {

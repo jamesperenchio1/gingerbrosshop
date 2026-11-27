@@ -11,8 +11,6 @@ import { captureServerEvent } from '../posthog.js';
 // almost never use them.
 export const EMAIL_RE = /^[^\s@?&=#%<>",;:\\/]+@[^\s@?&=#%<>",;:\\/]+\.[^\s@?&=#%<>",;:\\/]+$/;
 
-// Names are echoed in the confirmation, which goes to an unverified address.
-const LINK_RE = /https?:\/\/|www\./i;
 const SEND_FAILED = `We couldn't send your inquiry. Please email ${FROM_EMAIL} instead.`;
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
@@ -52,11 +50,6 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return;
   }
 
-  if (LINK_RE.test(businessName) || LINK_RE.test(contactName)) {
-    res.status(400).json({ error: 'Please leave links out of the name fields.' });
-    return;
-  }
-
   const inquiry: WholesaleInquiry = { businessName, contactName, email, phone, message };
   // Server-made reference used in both email subjects (never sender-typed text).
   const ref = randomBytes(3).toString('hex').toUpperCase();
@@ -92,7 +85,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         to: email,
         replyTo: FROM_EMAIL,
         subject: wholesaleSubject(ref, wants),
-        html: wholesaleConfirmationHtml(inquiry, ref),
+        html: wholesaleConfirmationHtml(ref),
       }).catch((err) => console.error('Wholesale confirmation email failed:', err));
     }
 
