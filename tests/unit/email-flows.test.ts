@@ -361,6 +361,14 @@ describe('wholesale form', () => {
     expect(confirmations).toHaveLength(1);
   });
 
+  // A mail app treats mail from one of its own addresses as "reply to myself".
+  it('the owner can hit Reply on a lead: sent from a website-only address, answering the customer', async () => {
+    await call(wholesale, { body });
+    const alert = h.send.mock.calls.find((c) => c[0].to === 'owner@example.com')![0];
+    expect(alert.from).toBe('GingerBros Website <website@gingerbrosshop.com>');
+    expect(alert.replyTo).toBe('s@example.com');
+  });
+
   it('puts nothing the sender typed into the confirmation', async () => {
     await call(wholesale, { body: { ...body, businessName: 'evil.com', contactName: 'Visit evil.com/login' } });
     const confirmation = h.send.mock.calls.find((c) => c[0].to === 's@example.com')![0];

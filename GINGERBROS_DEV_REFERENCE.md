@@ -222,6 +222,7 @@ Orders placed before this feature have no source. This is separate from the link
 - `/api/unsubscribe?t=…` — GET confirms, POST unsubscribes (`api/_lib/subscribers.ts`). Newsletter subscribers: Redis set `newsletter:subscribers`.
 - `/api/resend-webhook` — Resend posts bounce/complaint/failed/suppressed events; the owner (`SELLER_EMAIL`) gets an alert. Set `RESEND_WEBHOOK_SECRET` (the webhook's signing secret) to require signatures; without it only Resend's published webhook IPs are accepted.
 - Public contact address is `order@gingerbrosshop.com`; `tests/unit/email-flows.test.ts` fails if the Gmail address returns to the site.
+- Mail to the owner is sent from `website@gingerbrosshop.com` (`MAIL_FROM_WEBSITE`) with Reply-To set to the customer. Don't use an address the owner sends from, or Reply goes back to the owner.
 - Templates: `api/_lib/email.ts`. Stripe sends customers their receipts.
 
 ---

@@ -2,7 +2,7 @@ import { randomBytes } from 'node:crypto';
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { rateLimit, getClientIp } from '../rateLimit.js';
 import { sendEmail } from '../mailer.js';
-import { getResend, MAIL_FROM, SELLER_EMAIL, FROM_EMAIL, wholesaleSubject, wholesaleInquiryHtml, wholesaleConfirmationHtml, type WholesaleInquiry } from '../email.js';
+import { getResend, MAIL_FROM, MAIL_FROM_WEBSITE, SELLER_EMAIL, FROM_EMAIL, wholesaleSubject, wholesaleInquiryHtml, wholesaleConfirmationHtml, type WholesaleInquiry } from '../email.js';
 import { captureServerEvent } from '../posthog.js';
 
 // The address ends up in the seller's Reply link and in outgoing mail headers,
@@ -65,7 +65,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
   try {
     await sendEmail({
-      from: MAIL_FROM,
+      from: MAIL_FROM_WEBSITE,
       to: SELLER_EMAIL,
       replyTo: email,
       subject: wholesaleSubject(ref, wants),

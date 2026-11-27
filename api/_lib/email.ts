@@ -29,6 +29,11 @@ export function getResend(): Resend | null {
 
 export const MAIL_FROM = `GingerBros <${FROM_EMAIL}>`;
 export const MAIL_FROM_NEWSLETTER = `GingerBros <${FROM_EMAIL_NEWSLETTER}>`;
+/**
+ * Sender for mail to the owner. It must not be an address the owner sends from:
+ * the mail app would then address a reply to the owner, not to Reply-To.
+ */
+export const MAIL_FROM_WEBSITE = 'GingerBros Website <website@gingerbrosshop.com>';
 
 /** Stands in for the per-recipient link until `withUnsubscribe` (mailer.ts) fills it. */
 export const UNSUBSCRIBE_PLACEHOLDER = '{{unsubscribe_url}}';

@@ -5,7 +5,7 @@ import { getStripe } from '../stripe.js';
 import { rateLimit, getClientIp } from '../rateLimit.js';
 import { multiBuyDiscount, bottlesFromMetadata, type BottleLine } from '../multiBuy.js';
 import { saveOrder, type Order } from '../orders.js';
-import { MAIL_FROM, FROM_EMAIL, SELLER_EMAIL } from '../email.js';
+import { MAIL_FROM, MAIL_FROM_WEBSITE, SELLER_EMAIL } from '../email.js';
 import { sendOrQueue } from '../mailer.js';
 import {
   resolveRate,
@@ -333,8 +333,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     await Promise.all([
       sendOrQueue(
         {
-          from: `GingerBros Orders <${FROM_EMAIL}>`,
+          from: MAIL_FROM_WEBSITE,
           to: SELLER,
+          replyTo: delivery.email,
           subject: `New x402 (USDC) order ${orderId.slice(-8).toUpperCase()}, ฿${priced.totalThb}`,
           html: `<p><strong>Paid in USDC on Base. Please fulfil.</strong>${coldChain ? ' Cold-chain delivery.' : ''}</p><p>${summary}</p><p><strong>Ship to</strong><br>${ship}</p>${delivery.note ? `<p>Note: ${esc(delivery.note)}</p>` : ''}`,
         },

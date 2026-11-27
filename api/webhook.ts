@@ -7,8 +7,8 @@ import { markCartRecovered } from './_lib/carts.js';
 import {
   getResend,
   MAIL_FROM,
+  MAIL_FROM_WEBSITE,
   SELLER_EMAIL,
-  FROM_EMAIL,
   SUPPORT_REPLY_TO,
   money,
   sellerNotificationHtml,
@@ -225,8 +225,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     if (resend && SELLER_EMAIL) {
       await sendOrQueue(
         {
-          from: `GingerBros Orders <${FROM_EMAIL}>`,
+          from: MAIL_FROM_WEBSITE,
           to: SELLER_EMAIL,
+          replyTo: order.customerEmail ?? undefined,
           subject: `New order #${session.id.slice(-8).toUpperCase()} from ${session.customer_details?.name ?? 'a customer'}, ฿${money(session.amount_total)}`,
           html: sellerNotificationHtml(session, lineItems, orderNote),
         },

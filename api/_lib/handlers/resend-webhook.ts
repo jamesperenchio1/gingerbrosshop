@@ -2,7 +2,7 @@ import { createHmac, timingSafeEqual } from 'node:crypto';
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { Redis } from '@upstash/redis';
 import { getClientIp } from '../rateLimit.js';
-import { deliveryAlertHtml, FROM_EMAIL, SELLER_EMAIL } from '../email.js';
+import { deliveryAlertHtml, MAIL_FROM_WEBSITE, SELLER_EMAIL } from '../email.js';
 import { sendEmail } from '../mailer.js';
 import { suppressEmail } from '../subscribers.js';
 import { captureServerException } from '../posthog.js';
@@ -127,7 +127,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     if (permanent) for (const address of recipients) await suppressEmail(address);
 
     await sendEmail({
-      from: `GingerBros Alerts <${FROM_EMAIL}>`,
+      from: MAIL_FROM_WEBSITE,
       to: owner,
       subject: `${ALERT_PREFIX}: ${recipients.join(', ')}`,
       html: deliveryAlertHtml({
