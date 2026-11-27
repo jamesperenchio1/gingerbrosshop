@@ -23,6 +23,7 @@ const routes: Record<string, Loader> = {
   'shipping-rate': () => import('./_lib/handlers/shipping-rate.js'),
   'abandoned-cart-check': () => import('./_lib/handlers/abandoned-cart-check.js'),
   'review-request': () => import('./_lib/handlers/review-request.js'),
+  'merchant-feed': () => import('./_lib/handlers/merchant-feed.js'),
   'credit': () => import('./_lib/handlers/credit.js'),
   'wholesale': () => import('./_lib/handlers/wholesale.js'),
   'stock-alert': () => import('./_lib/handlers/stock-alert.js'),

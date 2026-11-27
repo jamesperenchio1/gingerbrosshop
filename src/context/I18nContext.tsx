@@ -33,6 +33,25 @@ const translations: Record<Locale, Record<string, string>> = {
     closeMenu: 'Close menu',
     dismissBanner: 'Dismiss announcement',
 
+    // Homepage guide module + footer guide column
+    guidesLabel: 'From the kitchen',
+    guidesTitle: 'Read before you pour.',
+    guidesSub: 'Recipes, pairings and the small things that make a bottle taste better.',
+    guidesCta: 'All guides',
+    guidesRead: 'Read the guide',
+    popularGuides: 'Popular guides',
+    guideBack: 'Back to the guide',
+    guideReadTime: '{n} read',
+    guideBy: 'By {n}',
+    guideReferences: 'References & further reading',
+    guideMore: 'Keep reading',
+    guideTags: 'Tags',
+    catAll: 'All',
+    catRecipe: 'Recipe',
+    catDrinks: 'Drinks',
+    catCulture: 'Culture',
+    catGuide: 'Guide',
+
     // Cart
     cart: 'Cart',
     addToCart: 'Add to Cart',
@@ -213,6 +232,25 @@ const translations: Record<Locale, Record<string, string>> = {
     menu: 'เมนู',
     closeMenu: 'ปิดเมนู',
     dismissBanner: 'ปิดประกาศ',
+
+    // Homepage guide module + footer guide column
+    guidesLabel: 'จากห้องครัวของเรา',
+    guidesTitle: 'อ่านก่อนริน',
+    guidesSub: 'สูตรอาหาร การจับคู่ และเรื่องเล็ก ๆ ที่ทำให้ทุกขวดอร่อยขึ้น',
+    guidesCta: 'คู่มือทั้งหมด',
+    guidesRead: 'อ่านบทความ',
+    popularGuides: 'คู่มือยอดนิยม',
+    guideBack: 'กลับไปหน้าคู่มือ',
+    guideReadTime: 'อ่าน {n}',
+    guideBy: 'โดย {n}',
+    guideReferences: 'แหล่งอ้างอิงและอ่านเพิ่มเติม',
+    guideMore: 'อ่านต่อ',
+    guideTags: 'แท็ก',
+    catAll: 'ทั้งหมด',
+    catRecipe: 'สูตรอาหาร',
+    catDrinks: 'เครื่องดื่ม',
+    catCulture: 'วัฒนธรรม',
+    catGuide: 'คู่มือ',
 
     // Cart
     cart: 'ตะกร้า',

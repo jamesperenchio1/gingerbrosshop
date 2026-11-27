@@ -3,6 +3,7 @@ import Hero from '@/sections/Hero';
 import Ticker from '@/sections/home/Ticker';
 import Shop from '@/sections/Shop';
 import Compare from '@/sections/home/Compare';
+import HomeGuides from '@/sections/home/HomeGuides';
 import HomeFaq from '@/sections/home/HomeFaq';
 import Manifesto from '@/sections/home/Manifesto';
 import { HOME_FAQ } from '@/lib/homeContent';
@@ -47,6 +48,7 @@ export default function HomePage() {
       <Ticker />
       <Shop variant="home" />
       <Compare />
+      <HomeGuides />
       <Manifesto />
       <GingerWay />
       <HomeFaq />

@@ -22,6 +22,8 @@ import ResponsiveImage from '@/components/ResponsiveImage';
 import { manifestNameForUrl } from '@/lib/image';
 import Newsletter from '@/components/Newsletter';
 import { BLOG_SEO_META, type BlogSeoMeta } from '@/lib/blogSeoMeta';
+import { guideTranslation } from '@/lib/guideTranslations';
+import { useI18n } from '@/context/I18nContext';
 import { captureEvent } from '@/lib/posthog';
 
 type Category = 'Recipe' | 'Drinks' | 'Culture' | 'Guide';
@@ -935,6 +937,10 @@ function renderContent(content: string) {
 }
 
 function PostCard({ post }: { post: Post }) {
+  const { locale, t } = useI18n();
+  const translated = locale === "th" ? guideTranslation(post.slug) : undefined;
+  const title = translated?.title ?? post.title;
+  const excerpt = translated?.excerpt ?? post.excerpt;
   const meta = CATEGORY_META[post.category];
   const Icon = post.icon;
   return (
@@ -948,7 +954,7 @@ function PostCard({ post }: { post: Post }) {
           <ResponsiveImage
             name={manifestNameForUrl(post.image)}
             src={post.image}
-            alt={post.title}
+            alt={title}
             sizes="(min-width: 1024px) 380px, (min-width: 640px) 50vw, 100vw"
             loading="lazy"
             className="absolute inset-0 w-full h-full object-cover opacity-90 group-hover:scale-105 transition-transform duration-500"
@@ -960,7 +966,7 @@ function PostCard({ post }: { post: Post }) {
         )}
         <span className="absolute top-3 left-3 inline-flex items-center gap-1.5 font-body font-semibold text-[11px] uppercase tracking-wider px-3 py-1 rounded-full bg-warm-white/90 backdrop-blur text-rust">
           <Icon className="w-3 h-3" />
-          {post.category}
+          {t(`cat${post.category}`)}
         </span>
       </div>
       <div className="flex flex-col flex-1 p-5">
@@ -973,11 +979,11 @@ function PostCard({ post }: { post: Post }) {
           </span>
         </div>
         <h3 className="font-display font-semibold text-deep-brown text-lg leading-snug mb-2 group-hover:text-rust transition-colors">
-          {post.title}
+          {title}
         </h3>
-        <p className="font-body text-earth text-[14px] leading-relaxed mb-4 line-clamp-3">{post.excerpt}</p>
+        <p className="font-body text-earth text-[14px] leading-relaxed mb-4 line-clamp-3">{excerpt}</p>
         <span className="mt-auto inline-flex items-center gap-1.5 font-body font-medium text-sm text-rust">
-          Read article
+          {t("guidesRead")}
           <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
         </span>
       </div>
@@ -988,10 +994,19 @@ function PostCard({ post }: { post: Post }) {
 export default function BlogPage() {
   const navigate = useNavigate();
   const { slug } = useParams<{ slug?: string }>();
+  const { locale, t } = useI18n();
   const [filter, setFilter] = useState<'All' | Category>('All');
   const [query, setQuery] = useState('');
 
   const activePost = slug ? POSTS.find((p) => p.slug === slug) ?? null : null;
+
+  // A handful of guides have a Thai translation. The English metadata still
+  // drives taxonomy (category, tags, related posts); only the reader-facing
+  // copy switches language.
+  const translation = activePost && locale === 'th' ? guideTranslation(activePost.slug) : undefined;
+  const postTitle = translation?.title ?? activePost?.title ?? '';
+  const postExcerpt = translation?.excerpt ?? activePost?.excerpt ?? '';
+  const postContent = translation?.content ?? activePost?.content ?? '';
 
   const closePost = () => navigate('/guide');
 
@@ -1016,6 +1031,9 @@ export default function BlogPage() {
     });
   }, [activePost]);
   const featured = POSTS.find((p) => p.featured) ?? POSTS[0];
+  const featuredTranslation = locale === "th" ? guideTranslation(featured.slug) : undefined;
+  const featuredTitle = featuredTranslation?.title ?? featured.title;
+  const featuredExcerpt = featuredTranslation?.excerpt ?? featured.excerpt;
 
   const counts = useMemo(() => {
     const map: Record<string, number> = { All: POSTS.length };
@@ -1039,10 +1057,28 @@ export default function BlogPage() {
     });
   }, [filter, query]);
 
-  const relatedPosts = useMemo(() => {
+  // Scored on every render rather than memoised: there are 17 posts, and the
+  // React compiler cannot prove `activePost` (a module constant) is immutable.
+  const relatedPosts = (() => {
     if (!activePost) return [];
-    return POSTS.filter((p) => p.slug !== activePost.slug && p.category === activePost.category).slice(0, 3);
-  }, [activePost]);
+    const tags = new Set(activePost.tags);
+    // Score by shared tags first (a post about serving drinks is a better next
+    // read than any post in the same category), then by category, so every
+    // article ends up linking to three genuinely related ones.
+    const scored = POSTS.filter((p) => p.slug !== activePost.slug)
+      .map((p) => ({
+        post: p,
+        score: p.tags.filter((t) => tags.has(t)).length * 3 + (p.category === activePost.category ? 2 : 0),
+      }))
+      .sort((a, b) => b.score - a.score || (a.post.date < b.post.date ? 1 : -1));
+    const picked = scored.filter((s) => s.score > 0).map((s) => s.post);
+    // Pad with the most recent posts so the block is never half-empty.
+    for (const s of scored) {
+      if (picked.length >= 3) break;
+      if (!picked.includes(s.post)) picked.push(s.post);
+    }
+    return picked.slice(0, 3);
+  })();
 
   const blogListSchema = {
     '@context': 'https://schema.org',
@@ -1068,7 +1104,7 @@ export default function BlogPage() {
         itemListElement: [
           { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://gingerbrosshop.com' },
           { '@type': 'ListItem', position: 2, name: 'Ginger Guide', item: 'https://gingerbrosshop.com/guide' },
-          { '@type': 'ListItem', position: 3, name: activePost.title, item: `https://gingerbrosshop.com/guide/${activePost.slug}` },
+          { '@type': 'ListItem', position: 3, name: postTitle, item: `https://gingerbrosshop.com/guide/${activePost.slug}` },
         ],
       }
     : null;
@@ -1077,8 +1113,8 @@ export default function BlogPage() {
     ? {
         '@context': 'https://schema.org',
         '@type': 'BlogPosting',
-        headline: activePost.title,
-        description: activePost.excerpt,
+        headline: postTitle,
+        description: postExcerpt,
         inLanguage: 'en',
         datePublished: activePost.date,
         dateModified: activePost.date,
@@ -1102,8 +1138,8 @@ export default function BlogPage() {
     <div className="min-h-screen bg-warm-white">
       {activePost ? (
         <SEO
-          title={activePost.title}
-          description={activePost.excerpt}
+          title={postTitle}
+          description={postExcerpt}
           path={`/guide/${activePost.slug}`}
           type="article"
           image={activePost.image ? `https://gingerbrosshop.com${activePost.image}` : undefined}
@@ -1173,7 +1209,7 @@ export default function BlogPage() {
                       <ResponsiveImage
                         name={manifestNameForUrl(featured.image)}
                         src={featured.image}
-                        alt={featured.title}
+                        alt={featuredTitle}
                         sizes="(min-width: 1024px) 50vw, 100vw"
                         priority
                         className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
@@ -1187,16 +1223,16 @@ export default function BlogPage() {
                   <div className="flex flex-col justify-center p-8 lg:p-12">
                     <div className="flex items-center gap-3 mb-4">
                       <span className="inline-flex items-center gap-1.5 font-body font-semibold text-[11px] uppercase tracking-wider px-3 py-1 rounded-full bg-amber/20 text-rust">
-                        <featured.icon className="w-3 h-3" /> {featured.category}
+                        <featured.icon className="w-3 h-3" /> {t(`cat${featured.category}`)}
                       </span>
                       <span className="inline-flex items-center gap-1 font-body text-[12px] text-earth/80">
                         <Clock className="w-3 h-3" /> {featured.readTime} read
                       </span>
                     </div>
                     <h3 className="font-display font-bold text-deep-brown text-2xl md:text-3xl leading-tight mb-3 group-hover:text-rust transition-colors">
-                      {featured.title}
+                      {featuredTitle}
                     </h3>
-                    <p className="font-body text-earth leading-relaxed mb-6">{featured.excerpt}</p>
+                    <p className="font-body text-earth leading-relaxed mb-6">{featuredExcerpt}</p>
                     <span className="inline-flex items-center gap-2 font-body font-medium text-rust">
                       Read the full story
                       <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
@@ -1218,7 +1254,7 @@ export default function BlogPage() {
                   type="button"
                   onClick={() => setFilter(cat)}
                   aria-pressed={filter === cat}
-                  aria-label={`${cat} (${counts[cat]} ${counts[cat] === 1 ? 'article' : 'articles'})`}
+                  aria-label={`${t(`cat${cat}`)} (${counts[cat]} ${counts[cat] === 1 ? 'article' : 'articles'})`}
                   data-testid={`blog-filter-${cat}`}
                   className={`font-body font-medium text-sm px-4 py-2 rounded-full border transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-rust/40 ${
                     filter === cat
@@ -1226,7 +1262,7 @@ export default function BlogPage() {
                       : 'bg-warm-white text-earth border-soft-peach hover:border-amber hover:text-deep-brown'
                   }`}
                 >
-                  {cat} <span className="opacity-60" aria-hidden="true">({counts[cat]})</span>
+                  {t(`cat${cat}`)} <span className="opacity-60" aria-hidden="true">({counts[cat]})</span>
                 </button>
               ))}
             </div>
@@ -1282,7 +1318,7 @@ export default function BlogPage() {
                 <ResponsiveImage
                   name={manifestNameForUrl(activePost.image)}
                   src={activePost.image}
-                  alt={activePost.title}
+                  alt={postTitle}
                   sizes="100vw"
                   priority
                   className="absolute inset-0 w-full h-full object-cover"
@@ -1298,18 +1334,18 @@ export default function BlogPage() {
                   activePost.image ? 'text-cream/90 hover:text-cream' : 'text-earth hover:text-deep-brown'
                 }`}
               >
-                <ArrowLeft className="w-4 h-4" /> Back to Journal
+                <ArrowLeft className="w-4 h-4" /> {t('guideBack')}
               </button>
               <div className="flex flex-wrap items-center gap-3 mb-4">
                 <span className="inline-flex items-center gap-1.5 font-body font-semibold text-[11px] uppercase tracking-wider px-3 py-1 rounded-full bg-warm-white/90 backdrop-blur text-rust">
-                  <activePost.icon className="w-3 h-3" /> {activePost.category}
+                  <activePost.icon className="w-3 h-3" /> {t(`cat${activePost.category}`)}
                 </span>
                 <span
                   className={`inline-flex items-center gap-1 font-body text-[12px] ${
                     activePost.image ? 'text-cream/80' : 'text-earth/80'
                   }`}
                 >
-                  <Clock className="w-3 h-3" /> {activePost.readTime} read
+                  <Clock className="w-3 h-3" /> {t('guideReadTime').replace('{n}', locale === 'th' ? activePost.readTime.replace('min', 'นาที') : activePost.readTime)}
                 </span>
               </div>
               <h1
@@ -1317,14 +1353,14 @@ export default function BlogPage() {
                   activePost.image ? 'text-cream' : 'text-deep-brown'
                 }`}
               >
-                {activePost.title}
+                {postTitle}
               </h1>
               <div
                 className={`flex flex-wrap items-center gap-x-4 gap-y-1 font-body text-sm ${
                   activePost.image ? 'text-cream/80' : 'text-earth/80'
                 }`}
               >
-                <span>By {activePost.author}</span>
+                <span>{t('guideBy').replace('{n}', activePost.author)}</span>
                 <span className="inline-flex items-center gap-1">
                   <Calendar className="w-3.5 h-3.5" /> {formatDate(activePost.date)}
                 </span>
@@ -1335,15 +1371,15 @@ export default function BlogPage() {
           {/* Article body */}
           <div data-testid="blog-article-content" className="max-w-[720px] mx-auto px-6 pt-10">
             <p className="font-body text-lg text-earth leading-relaxed mb-8 pb-8 border-b border-soft-peach">
-              {activePost.excerpt}
+              {postExcerpt}
             </p>
-            <div className="prose-blog">{renderContent(activePost.content)}</div>
+            <div className="prose-blog">{renderContent(postContent)}</div>
 
             {/* References */}
             {activePost.references && activePost.references.length > 0 && (
               <div className="mt-12 pt-8 border-t border-soft-peach">
                 <h2 className="flex items-center gap-2 font-display font-bold text-deep-brown text-xl mb-4">
-                  <BookOpen className="w-5 h-5 text-rust" /> References &amp; further reading
+                  <BookOpen className="w-5 h-5 text-rust" /> {t('guideReferences')}
                 </h2>
                 <ol className="space-y-3">
                   {activePost.references.map((ref, i) => (
@@ -1403,7 +1439,7 @@ export default function BlogPage() {
           {relatedPosts.length > 0 && (
             <div className="max-w-[1280px] mx-auto px-6 mt-20">
               <h2 className="font-display font-bold text-deep-brown text-2xl mb-6 text-center">
-                More from {activePost.category}
+                {t('guideMore')}
               </h2>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                 {relatedPosts.map((post) => (

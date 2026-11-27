@@ -1,5 +1,6 @@
 import { Link } from 'react-router';
 import { useI18n } from '@/context/I18nContext';
+import { POPULAR_GUIDE_SLUGS, GUIDE_SHORT_LABELS, guidesFor } from '@/lib/guideIndex';
 
 const CURRENT_YEAR = new Date().getFullYear();
 
@@ -38,6 +39,13 @@ export default function Footer() {
         { label: t('manageSubscription'), href: '/api/portal' },
       ],
     },
+    {
+      title: t('popularGuides'),
+      links: guidesFor(POPULAR_GUIDE_SLUGS).map((g) => ({
+        label: GUIDE_SHORT_LABELS[g.slug] ?? g.title,
+        to: `/guide/${g.slug}`,
+      })),
+    },
   ];
 
   const socials = [
@@ -50,7 +58,7 @@ export default function Footer() {
   return (
     <footer id="footer" className="overflow-hidden bg-charcoal text-cream">
       <div className="mx-auto max-w-[1280px] px-4 pb-10 pt-16 sm:px-6 md:pt-20">
-        <div className="grid grid-cols-2 gap-10 md:grid-cols-[1.4fr_1fr_1fr_1fr]">
+        <div className="grid grid-cols-2 gap-10 md:grid-cols-[1.3fr_1fr_1fr_1fr_1fr]">
           <div className="col-span-2 md:col-span-1">
             <p className="font-poster text-[2.2rem] normal-case">GingerBros<span className="text-ginger">.</span></p>
             <p className="mt-4 max-w-[340px] font-body text-[14px] leading-relaxed text-cream/85">{t('footerBrandBlurb')}</p>

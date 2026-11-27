@@ -87,6 +87,31 @@ export const ROUTE_SEO: Record<string, RouteSeo> = {
     descriptionTh:
       'ขายส่งเครื่องดื่มขิงสำหรับคาเฟ่ บาร์ ร้านอาหาร และโรงแรมในประเทศไทย ตัวอย่างฟรี การ์ดสูตร เมนู และราคาขายส่ง ขอใบเสนอราคาได้เลย',
   },
+  // Thai guide articles. The English posts are generated from src/lib/blogSeoMeta.ts,
+  // so these entries exist only to give the three translated guides a Thai route:
+  // THAI_PATHS drives the /th prerender, the hreflang pair and the sitemap alternates.
+  // prerender stays false so the blog pipeline (which renders every slug) owns them.
+  '/guide/how-to-serve-ginger-fizz': {
+    title: 'How to Serve Ginger Fizz | GingerBros',
+    description: 'Cold, over ice, with a squeeze of lime: how to serve Ginger Fizz so the bottle tastes the way it should.',
+    titleTh: 'เสิร์ฟน้ำขิงซ่าให้อร่อยที่สุด | GingerBros',
+    descriptionTh: 'ความเย็น น้ำแข็ง มะนาว และการจับคู่อาหาร: วิธีเสิร์ฟน้ำขิงซ่าให้อร่อยที่สุด พร้อมวิธีเก็บรักษา',
+    prerender: false,
+  },
+  '/guide/ginger-and-thai-food': {
+    title: 'What to Drink with Thai Food | GingerBros',
+    description: 'A pairing guide for ginger drinks and Thai food, from som tam and gai yang to tom yum and pad thai.',
+    titleTh: 'ดื่มอะไรกับอาหารไทย | GingerBros',
+    descriptionTh: 'คู่มือจับคู่น้ำขิงกับอาหารไทย ตั้งแต่ส้มตำ ไก่ย่าง ไปจนถึงต้มยำและผัดไทย พร้อมเหตุผลว่าทำไมถึงเข้ากัน',
+    prerender: false,
+  },
+  '/guide/ginger-mocktails': {
+    title: 'Four Easy Ginger Mocktails | GingerBros',
+    description: 'Four ginger mocktail recipes built on Ginger Fizz and Ginger Tea, ready in five minutes and easy to scale.',
+    titleTh: 'ม็อกเทลขิง 4 สูตรทำง่ายที่บ้าน | GingerBros',
+    descriptionTh: 'สี่สูตรม็อกเทลขิงจากน้ำขิงซ่าและชาขิง ทำได้ในห้านาที วัตถุดิบหาง่าย และไม่มีแอลกอฮอล์',
+    prerender: false,
+  },
   '/returns': {
     title: 'Returns & Refund Policy | GingerBros',
     description:
