@@ -1,6 +1,7 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { getOrders } from '../orders.js';
 import { rateLimit, getClientIp } from '../rateLimit.js';
+import { str } from '../input.js';
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -16,7 +17,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return;
   }
 
-  const email = (req.query.email as string | undefined)?.toLowerCase().trim();
+  const email = str(req.query.email).toLowerCase().trim();
   if (!email || !EMAIL_RE.test(email)) {
     res.status(400).json({ error: 'A valid email is required.' });
     return;

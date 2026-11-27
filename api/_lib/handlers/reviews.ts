@@ -4,6 +4,7 @@ import { rateLimit, getClientIp } from '../rateLimit.js';
 import { getReviews, addReview, deleteReview, type Review } from '../reviews.js';
 import { isAdminAuthorized } from '../adminAuth.js';
 import { captureServerEvent, anonymousId } from '../posthog.js';
+import { str } from '../input.js';
 
 function summarize(reviews: Review[]) {
   const count = reviews.length;
@@ -13,7 +14,7 @@ function summarize(reviews: Review[]) {
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (req.method === 'GET') {
-    const productIdsParam = (req.query.productIds as string | undefined)?.trim();
+    const productIdsParam = str(req.query.productIds).trim();
     if (productIdsParam) {
       const ids = productIdsParam.split(',').map((id) => id.trim()).filter(Boolean);
       const reviewLists = await Promise.all(ids.map((id) => getReviews(id)));
@@ -25,7 +26,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       return;
     }
 
-    const productId = (req.query.productId as string | undefined)?.trim();
+    const productId = str(req.query.productId).trim();
     if (!productId) {
       res.status(400).json({ error: 'Product ID is required.' });
       return;
@@ -46,10 +47,10 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       return;
     }
 
-    const productId = (req.body?.productId as string | undefined)?.trim();
-    const name = (req.body?.name as string | undefined)?.trim();
+    const productId = str(req.body?.productId).trim();
+    const name = str(req.body?.name).trim();
     const rating = req.body?.rating;
-    const text = (req.body?.text as string | undefined)?.trim();
+    const text = str(req.body?.text).trim();
 
     if (!productId) {
       res.status(400).json({ error: 'Product ID is required.' });

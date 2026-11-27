@@ -3,10 +3,11 @@ import { randomUUID } from 'crypto';
 import { rateLimit, getClientIp } from '../rateLimit.js';
 import { saveSharedCart, getSharedCart } from '../carts.js';
 import { captureServerEvent, anonymousId } from '../posthog.js';
+import { str } from '../input.js';
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (req.method === 'GET') {
-    const id = (req.query.id as string | undefined)?.trim();
+    const id = str(req.query.id).trim();
     if (!id) {
       res.status(400).json({ error: 'Cart ID is required' });
       return;

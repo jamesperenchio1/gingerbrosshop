@@ -86,6 +86,12 @@ function orderRef(sessionId: string): string {
   return sessionId.slice(-8).toUpperCase();
 }
 
+/** Which of our drinks an item is, if it is one (equipment is not). */
+function drinkSlug(description: string): 'ginger-fizz' | 'ginger-tea' | null {
+  if (/ginger tea/i.test(description)) return 'ginger-tea';
+  return /ginger fizz|fizz.*tea/i.test(description) ? 'ginger-fizz' : null;
+}
+
 function subscriptionInterval(items: Stripe.LineItem[]): string | null {
   for (const li of items) {
     const recurring = (li.price as Stripe.Price | null | undefined)?.recurring;
@@ -313,8 +319,6 @@ export function sellerNotificationHtml(session: SessionWithShipping, items: Stri
     ? `<p style="margin:16px 0 0;font-size:15px;line-height:1.6;color:${BRAND.text};"><strong>Ship to</strong><br>${addressLine(session.shipping_details)}</p>`
     : '';
 
-  const adminBase = process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : SITE_URL;
-
   return layout(
     `${heading(`New order #${orderId}`)}
     ${body(
@@ -323,7 +327,7 @@ export function sellerNotificationHtml(session: SessionWithShipping, items: Stri
     ${panel(details([['Email', escapeHtml(cd?.email)], ['Phone', escapeHtml(cd?.phone)]]))}
     ${itemsTable(stripeRows(items), `฿${total}${interval ? ` / ${escapeHtml(interval)}` : ''}`)}
     ${giftHtml}${noteHtml}${shipHtml}
-    ${button('Add tracking', `${adminBase}/admin/orders`)}`,
+    ${button('Add tracking', `${SITE_URL}/admin/orders`)}`,
     `฿${total} from ${cd?.name ?? 'a customer'}`,
     `New order #${orderId}`,
     { internal: true }
@@ -342,12 +346,12 @@ export function giftEmailHtml(
 
   return layout(
     `${heading(`${sender} sent you a gift`)}
-    ${body(`Hi ${firstName(recipientName)}, ${sender} ordered GingerBros ginger fizz for you. It ships to you directly and you'll get tracking details by email.`)}
+    ${body(`Hi ${firstName(recipientName)}, ${sender} ordered a GingerBros gift for you. It ships to you directly and you'll get tracking details by email.`)}
     ${message ? panel(`<em>&ldquo;${escapeHtml(message)}&rdquo;</em><br><span class="muted" style="color:${BRAND.muted};">${sender}</span>`) : ''}
     ${itemsTable(plainRows(items.map((li) => ({ description: li.description ?? '', quantity: li.quantity }))))}
     ${rule()}
-    ${small(`Order #${orderId}. For the best experience, put it in the fridge as soon as it arrives.`)}`,
-    `${senderName} ordered you GingerBros ginger fizz`,
+    ${small(`Order #${orderId}.${items.some((li) => drinkSlug(li.description ?? '')) ? ' Put the drinks in the fridge as soon as they arrive.' : ''}`)}`,
+    `${senderName} ordered you a GingerBros gift`,
     `A gift from ${senderName}`
   );
 }
@@ -358,7 +362,7 @@ export function shippingNotificationHtml(order: Order): string {
 
   return layout(
     `${heading(`Order #${orderId} has shipped`)}
-    ${body(`Hi ${firstName(order.customerName)}, your order is on its way. Keep it refrigerated once it arrives.`)}
+    ${body(`Hi ${firstName(order.customerName)}, your order is on its way.${order.items.some((i) => drinkSlug(i.description)) ? ' Keep the drinks refrigerated once they arrive.' : ''}`)}
     ${panel(details([['Tracking', escapeHtml(order.trackingNumber)], ['Carrier', escapeHtml(carrier)]]))}
     ${itemsTable(plainRows(order.items))}
     ${button('Track your order', `${SITE_URL}/track`)}
@@ -372,6 +376,7 @@ export function trackingInfoEmailHtml(order: Order): string {
   const orderId = orderRef(order.sessionId);
   const carrier = order.trackingCarrier?.trim();
   const hasTracking = !!order.trackingNumber;
+  const drink = order.items.map((i) => drinkSlug(i.description)).find(Boolean);
 
   return layout(
     `${heading(`Order #${orderId} status`)}
@@ -384,7 +389,7 @@ export function trackingInfoEmailHtml(order: Order): string {
     ${itemsTable(plainRows(order.items))}
     ${button('Track your order', `${SITE_URL}/track`)}
     ${small(`On the tracking page, enter your email and order number ${orderId}.`)}
-    ${hasTracking ? small(`<br />Once it arrives and you have tried it, we would love a review: <a href="${SITE_URL}/product/ginger-fizz#reviews" style="color:${BRAND.brown};">leave a review</a>.`) : ''}`,
+    ${hasTracking && drink ? small(`<br />Once it arrives and you have tried it, we would love a review: <a href="${SITE_URL}/product/${drink}#reviews" style="color:${BRAND.brown};">leave a review</a>.`) : ''}`,
     `Order #${orderId} status`,
     `Order #${orderId} status`
   );
@@ -474,7 +479,7 @@ export function welcomeWithCodeHtml(code: string): string {
     `${heading('Confirm your email for 10% off')}
     ${body(`Thanks for signing up. Enter this code on the site to confirm your email and get 10% off your first order. We'll also send you restock and new-flavour announcements.`)}
     ${codeBox(display, 'Valid for 24 hours, one use')}
-    ${button('Enter your code', `${SITE_URL}/#newsletter`)}
+    ${button('Enter your code', `${SITE_URL}/?verify=1#newsletter`)}
     ${rule()}
     ${small(`If you didn't sign up, ignore this email and nothing will happen.`)}`,
     `Your code: ${code.slice(0, 3)} ${code.slice(3)}`,

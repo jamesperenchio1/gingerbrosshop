@@ -5,6 +5,7 @@ import { rateLimit, getClientIp } from '../rateLimit.js';
 import { getCredit } from '../credits.js';
 import { multiBuyDiscount, bottlesFromMetadata, type BottleLine } from '../multiBuy.js';
 import { captureServerEvent, anonymousId, cartProperties } from '../posthog.js';
+import { str } from '../input.js';
 
 interface CheckoutLine {
   // The Stripe price ID to purchase. `id` is accepted as a legacy alias.
@@ -43,16 +44,16 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return;
   }
 
-  const paymentMethod = (req.body?.paymentMethod as string | undefined) ?? 'card';
-  const referralCode = (req.body?.referralCode as string | undefined) ?? '';
-  const customerEmail = (req.body?.email as string | undefined)?.trim().toLowerCase() || '';
-  const promoCodeInput = ((req.body?.promoCode as string | undefined) ?? '').trim().slice(0, 40);
-  const source = ((req.body?.source as string | undefined) ?? '').toLowerCase().replace(/[^a-z0-9_-]/g, '').slice(0, 48);
-  const orderNote = ((req.body?.orderNote as string | undefined) ?? '').trim().slice(0, 500);
+  const paymentMethod = str(req.body?.paymentMethod) || 'card';
+  const referralCode = str(req.body?.referralCode);
+  const customerEmail = str(req.body?.email).trim().toLowerCase();
+  const promoCodeInput = str(req.body?.promoCode).trim().slice(0, 40);
+  const source = str(req.body?.source).toLowerCase().replace(/[^a-z0-9_-]/g, '').slice(0, 48);
+  const orderNote = str(req.body?.orderNote).trim().slice(0, 500);
   const giftInfo = req.body?.giftInfo as { isGift: boolean; recipientEmail?: string; recipientName?: string; message?: string } | undefined;
   // Chosen in the cart drawer. Only meaningful for subscriptions, where Stripe
   // Checkout has no shipping_options — one-time orders pick it on Stripe's page.
-  const deliveryMethod = (req.body?.deliveryMethod as string | undefined) ?? 'standard';
+  const deliveryMethod = str(req.body?.deliveryMethod) || 'standard';
 
   const stripe = getStripe(secret);
 

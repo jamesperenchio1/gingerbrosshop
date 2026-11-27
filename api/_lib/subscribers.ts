@@ -52,10 +52,11 @@ export async function suppressEmail(email: string): Promise<void> {
   const address = normalise(email);
   const db = redis();
   await db.sadd(SUPPRESSED_KEY, address);
-  await db.srem(SUBSCRIBERS_KEY, address);
+  const wasSubscriber = (await db.srem(SUBSCRIBERS_KEY, address)) === 1;
   await removeFromAllStockAlerts(address);
   const resend = getResend();
-  if (resend) await syncContact(() => resend.contacts.update({ email: address, unsubscribed: true }));
+  // Resend only has a contact for people who subscribed; asking about anyone else is a 404.
+  if (resend && wasSubscriber) await syncContact(() => resend.contacts.update({ email: address, unsubscribed: true }));
 }
 
 /** Call only once the person has proved they own the address. */

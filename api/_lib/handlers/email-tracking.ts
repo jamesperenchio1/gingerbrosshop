@@ -2,6 +2,7 @@ import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { getOrders } from '../orders.js';
 import { getResend, trackingInfoEmailHtml, MAIL_FROM, SUPPORT_REPLY_TO } from '../email.js';
 import { rateLimit, getClientIp } from '../rateLimit.js';
+import { str } from '../input.js';
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (req.method !== 'POST') {
@@ -21,8 +22,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return;
   }
 
-  const email = (req.body?.email ?? req.query?.email)?.toLowerCase().trim();
-  const orderNum = (req.body?.order ?? req.query?.order)?.toUpperCase().trim();
+  const email = str(req.body?.email ?? req.query?.email).toLowerCase().trim();
+  const orderNum = str(req.body?.order ?? req.query?.order).toUpperCase().trim();
 
   if (!email || !orderNum) {
     res.status(400).json({ error: 'Email and order number are required' });

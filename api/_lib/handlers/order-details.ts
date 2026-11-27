@@ -2,6 +2,7 @@ import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { getStripe, type SessionWithShipping } from '../stripe.js';
 import { getOrderBySessionId } from '../orders.js';
 import { captureServerEvent } from '../posthog.js';
+import { str } from '../input.js';
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (req.method !== 'GET') {
@@ -15,7 +16,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return;
   }
 
-  const sessionId = req.query.session_id as string | undefined;
+  const sessionId = str(req.query.session_id);
   if (!sessionId) {
     res.status(400).json({ error: 'Missing session_id' });
     return;

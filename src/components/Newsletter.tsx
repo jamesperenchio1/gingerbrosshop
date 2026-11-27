@@ -8,6 +8,19 @@ import { useI18n } from '@/context/I18nContext';
 
 type Step = 'subscribe' | 'verify' | 'done';
 
+/** Who is waiting for a code on this device, so the email's button can resume. */
+const PENDING_KEY = 'gingerbros-pending-email';
+
+function pendingEmail(next?: string | null): string {
+  try {
+    if (next === null) localStorage.removeItem(PENDING_KEY);
+    else if (next) localStorage.setItem(PENDING_KEY, next);
+    return localStorage.getItem(PENDING_KEY) ?? '';
+  } catch {
+    return ''; // storage blocked: the address is asked for instead
+  }
+}
+
 export default function Newsletter() {
   const { t } = useI18n();
   const [step, setStep] = useState<Step>('subscribe');
@@ -19,6 +32,18 @@ export default function Newsletter() {
   const [resendCooldown, setResendCooldown] = useState(0);
 
   const digitRefs = useRef<(HTMLInputElement | null)[]>([]);
+  // The code step without a known address (the email was opened on another device).
+  const [askEmail, setAskEmail] = useState(false);
+
+  // `?verify=1` is the confirmation email's "Enter your code" button. Read after
+  // mount, so the prerendered HTML and the first render stay identical.
+  useEffect(() => {
+    if (!new URLSearchParams(window.location.search).has('verify')) return;
+    const saved = pendingEmail();
+    setEmail(saved);
+    setAskEmail(!saved);
+    setStep('verify');
+  }, []);
 
   // Cooldown timer for resend
   useEffect(() => {
@@ -50,6 +75,8 @@ export default function Newsletter() {
       if (!res.ok) throw new Error(data.error ?? 'Something went wrong.');
 
       if (data.verification) {
+        pendingEmail(email.trim());
+        setAskEmail(false);
         setStep('verify');
         setResendCooldown(60);
       } else {
@@ -98,7 +125,7 @@ export default function Newsletter() {
   const handleVerify = async (e: React.FormEvent) => {
     e.preventDefault();
     const code = digits.join('');
-    if (code.length < 6 || loading) return;
+    if (code.length < 6 || loading || !email.trim()) return;
     setLoading(true);
     setError('');
 
@@ -116,6 +143,7 @@ export default function Newsletter() {
       setCartEmail(email);
       identifyUser(email.trim().toLowerCase(), { email: email.trim().toLowerCase(), newsletter: true });
       trackPixelEvent('Subscribe', { content_name: 'newsletter' });
+      pendingEmail(null);
       setStep('done');
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Verification failed');
@@ -193,10 +221,27 @@ export default function Newsletter() {
               <Mail className="w-5 h-5 text-deep-brown" />
             </div>
             <h2 className="font-display font-bold text-deep-brown text-2xl mb-2">{t('newsletterCheckInbox')}</h2>
-            <p className="font-body text-earth mb-1">
-              {t('newsletterCodeSentTo')}
-            </p>
-            <p className="font-body font-semibold text-deep-brown mb-8 break-all">{email}</p>
+            {askEmail ? (
+              <>
+                <label htmlFor="newsletter-verify-email" className="sr-only">Email address</label>
+                <input
+                  id="newsletter-verify-email"
+                  type="email"
+                  autoComplete="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder={t('newsletterEmailPlaceholder')}
+                  className="w-full mb-6 rounded-full border-2 border-soft-peach bg-warm-white px-5 py-3 text-center font-body text-deep-brown focus:border-deep-brown focus:outline-none"
+                />
+              </>
+            ) : (
+              <>
+                <p className="font-body text-earth mb-1">
+                  {t('newsletterCodeSentTo')}
+                </p>
+                <p className="font-body font-semibold text-deep-brown mb-8 break-all">{email}</p>
+              </>
+            )}
 
             <form onSubmit={handleVerify}>
               {/* OTP digit inputs */}
@@ -229,7 +274,7 @@ export default function Newsletter() {
 
               <button
                 type="submit"
-                disabled={digits.join('').length < 6 || loading}
+                disabled={digits.join('').length < 6 || loading || !email.trim()}
                 className="w-full bg-deep-brown text-cream font-body font-medium px-6 py-3.5 rounded-full hover:bg-rust transition-colors disabled:opacity-40 mb-4"
               >
                 {loading ? t('newsletterVerifyingBtn') : t('newsletterClaimBtn')}

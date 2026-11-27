@@ -6,6 +6,7 @@ import { sendEmail, withUnsubscribe } from '../mailer.js';
 import { addSubscriber } from '../subscribers.js';
 import { rateLimit, getClientIp } from '../rateLimit.js';
 import { captureServerEvent } from '../posthog.js';
+import { str } from '../input.js';
 
 // The verification code is a 6-digit number (~900k values) that lives in Redis
 // for 24h. Without a cap, an attacker could brute-force it for any email that
@@ -25,8 +26,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return;
   }
 
-  const email = (req.body?.email as string)?.toLowerCase().trim();
-  const code = (req.body?.code as string)?.replace(/\s/g, '').trim();
+  const email = str(req.body?.email).toLowerCase().trim();
+  const code = str(req.body?.code).replace(/\s/g, '').trim();
 
   if (!email || !code) {
     res.status(400).json({ error: 'Email and code are required.' });

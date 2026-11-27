@@ -250,7 +250,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
           from: MAIL_FROM,
           to: recipientEmail,
           replyTo: SUPPORT_REPLY_TO,
-          subject: `${session.customer_details?.name ?? 'Someone'} sent you a gift of GingerBros ginger fizz`,
+          subject: `${session.customer_details?.name ?? 'Someone'} sent you a GingerBros gift`,
           html: giftEmailHtml(session, lineItems, recipientName, giftMessage, session.customer_details?.name ?? 'A friend'),
         },
         { context: 'gift' },

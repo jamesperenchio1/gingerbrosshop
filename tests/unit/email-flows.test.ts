@@ -33,7 +33,7 @@ const h = vi.hoisted(() => {
     keys: async (pattern: string) =>
       [...store.keys(), ...sets.keys()].filter((k) => k.startsWith(pattern.replace('*', ''))),
     sadd: async (k: string, v: string) => void set(k).add(v),
-    srem: async (k: string, v: string) => void set(k).delete(v),
+    srem: async (k: string, v: string) => (set(k).delete(v) ? 1 : 0), // real Redis returns the count removed
     sismember: async (k: string, v: string) => (set(k).has(v) ? 1 : 0),
     smembers: async (k: string) => [...set(k)],
     rpush: async (k: string, v: unknown) => list(k).push(v),
@@ -94,7 +94,10 @@ vi.mock('../../api/_lib/orders.js', () => ({
 
 import { sendEmail, sendOrQueue, flushOutbox, withUnsubscribe } from '../../api/_lib/mailer';
 import { suppressEmail, isSuppressed } from '../../api/_lib/subscribers';
-import { welcomeHtml, boxReturnRewardHtml, wholesaleInquiryHtml, MAIL_FROM } from '../../api/_lib/email';
+import {
+  welcomeHtml, welcomeWithCodeHtml, boxReturnRewardHtml, wholesaleInquiryHtml, MAIL_FROM,
+  sellerNotificationHtml, giftEmailHtml, trackingInfoEmailHtml, shippingNotificationHtml,
+} from '../../api/_lib/email';
 import { rebuildCart } from '../../api/_lib/carts';
 import unsubscribe from '../../api/_lib/handlers/unsubscribe';
 import resendWebhook from '../../api/_lib/handlers/resend-webhook';
@@ -225,6 +228,7 @@ describe('unsubscribe', () => {
 
   it('POST unsubscribes and removes stock alerts', async () => {
     await h.redis.sadd('stock_alerts:prod_1', 'a@example.com');
+    await h.redis.sadd('newsletter:subscribers', 'a@example.com');
     const { url } = await linkFor('A@Example.com');
     const r = await call(unsubscribe, { query: { t: url.searchParams.get('t') } });
     expect(r.statusCode).toBe(200);
@@ -236,6 +240,11 @@ describe('unsubscribe', () => {
   it('rejects an unknown token', async () => {
     const r = await call(unsubscribe, { query: { t: 'nope' } });
     expect(r.statusCode).toBe(404);
+  });
+
+  it('does not call Resend Contacts for someone who was never a subscriber', async () => {
+    await suppressEmail('stranger@example.com');
+    expect(h.contactUpdate).not.toHaveBeenCalled();
   });
 
   it('transactional mail has no unsubscribe placeholder', () => {
@@ -483,5 +492,38 @@ describe('public contact address', () => {
       readFileSync(f, 'utf8').includes('gingerbros.brew@'),
     );
     expect(offenders).toEqual([]);
+  });
+});
+
+describe('what the emails say and link to', () => {
+  const order = (description: string) =>
+    ({ sessionId: 'cs_test_12345678', customerName: 'Som', items: [{ id: 'p', description, quantity: 1, amountTotal: 100 }], trackingNumber: 'TH1' }) as never;
+  const session = { id: 'cs_test_12345678', amount_total: 100, mode: 'payment', metadata: {}, customer_details: { name: 'Som' } } as never;
+
+  it('the order alert links to the real admin, not a protected deployment address', () => {
+    vi.stubEnv('VERCEL_URL', 'gingerbrosshop-abc-team.vercel.app');
+    const html = sellerNotificationHtml(session, [], '');
+    vi.unstubAllEnvs();
+    expect(html).toContain('href="https://gingerbrosshop.com/admin/orders"');
+    expect(html).not.toContain('vercel.app');
+  });
+
+  it('the confirmation button opens the code entry', () => {
+    expect(welcomeWithCodeHtml('123456')).toContain('https://gingerbrosshop.com/?verify=1#newsletter');
+  });
+
+  it('a gift email does not claim every gift is ginger fizz', () => {
+    expect(giftEmailHtml(session, [], 'Nok', null, 'Som')).not.toMatch(/fizz/i);
+  });
+
+  it('asks for a review of the drink that was bought', () => {
+    expect(trackingInfoEmailHtml(order('Ginger Tea · Thai Spice'))).toContain('/product/ginger-tea#reviews');
+    expect(trackingInfoEmailHtml(order('Ginger Fizz'))).toContain('/product/ginger-fizz#reviews');
+    expect(trackingInfoEmailHtml(order('Keg coupler'))).not.toContain('#reviews');
+  });
+
+  it('only tells people to refrigerate drinks', () => {
+    expect(shippingNotificationHtml(order('Keg coupler'))).not.toMatch(/refrigerat/i);
+    expect(shippingNotificationHtml(order('Ginger Fizz'))).toMatch(/refrigerat/i);
   });
 });

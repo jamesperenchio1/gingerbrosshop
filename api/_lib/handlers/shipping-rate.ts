@@ -1,4 +1,5 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
+import { str } from '../input.js';
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (req.method !== 'GET') {
@@ -6,7 +7,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return;
   }
 
-  const province = (req.query.province as string)?.toLowerCase().trim() ?? '';
+  const province = str(req.query.province).toLowerCase().trim();
   const subtotal = Number(req.query.subtotal ?? 0);
 
   // Free shipping over ฿500

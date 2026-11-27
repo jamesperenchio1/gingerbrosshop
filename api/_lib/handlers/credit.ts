@@ -1,6 +1,7 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { getCredit } from '../credits.js';
 import { rateLimit, getClientIp } from '../rateLimit.js';
+import { str } from '../input.js';
 
 // Public lookup so the cart can show "฿100 box-return credit available" once a
 // shopper enters their email. Returns only a balance — no personal data.
@@ -16,7 +17,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return;
   }
 
-  const email = (req.query.email as string | undefined)?.trim();
+  const email = str(req.query.email).trim();
   if (!email) {
     res.status(400).json({ error: 'Email required' });
     return;

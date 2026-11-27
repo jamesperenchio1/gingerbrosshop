@@ -6,6 +6,7 @@ import { getResend, MAIL_FROM_NEWSLETTER, welcomeWithCodeHtml, welcomeHtml } fro
 import { sendEmail, withUnsubscribe } from '../mailer.js';
 import { addSubscriber } from '../subscribers.js';
 import { captureServerEvent } from '../posthog.js';
+import { str } from '../input.js';
 
 function getRedis(): Redis | null {
   if (!process.env.UPSTASH_REDIS_REST_URL || !process.env.UPSTASH_REDIS_REST_TOKEN) return null;
@@ -24,7 +25,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return;
   }
 
-  const email = (req.body?.email as string)?.toLowerCase().trim();
+  const email = str(req.body?.email).toLowerCase().trim();
   if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
     res.status(400).json({ error: 'Please enter a valid email address.' });
     return;

@@ -2,6 +2,7 @@ import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { rateLimit, getClientIp } from '../rateLimit.js';
 import { subscribeStockAlert } from '../stockAlerts.js';
 import { captureServerEvent } from '../posthog.js';
+import { str } from '../input.js';
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -21,8 +22,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return;
   }
 
-  const email = (req.body?.email as string | undefined)?.trim().toLowerCase();
-  const productId = (req.body?.productId as string | undefined)?.trim();
+  const email = str(req.body?.email).trim().toLowerCase();
+  const productId = str(req.body?.productId).trim();
 
   if (!email || !EMAIL_RE.test(email)) {
     res.status(400).json({ error: 'A valid email is required.' });

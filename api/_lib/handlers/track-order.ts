@@ -3,6 +3,7 @@ import { getStripe } from '../stripe.js';
 import { getOrders } from '../orders.js';
 import { rateLimit, getClientIp } from '../rateLimit.js';
 import { captureServerEvent } from '../posthog.js';
+import { str } from '../input.js';
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (req.method !== 'GET') {
@@ -22,8 +23,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return;
   }
 
-  const email = (req.query.email as string)?.toLowerCase().trim();
-  const orderNum = (req.query.order as string)?.toUpperCase().trim();
+  const email = str(req.query.email).toLowerCase().trim();
+  const orderNum = str(req.query.order).toUpperCase().trim();
 
   if (!email || !orderNum) {
     res.status(400).json({ error: 'Email and order number are required' });

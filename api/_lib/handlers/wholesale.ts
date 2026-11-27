@@ -4,6 +4,7 @@ import { rateLimit, getClientIp } from '../rateLimit.js';
 import { sendEmail } from '../mailer.js';
 import { getResend, MAIL_FROM, MAIL_FROM_WEBSITE, SELLER_EMAIL, FROM_EMAIL, wholesaleSubject, wholesaleInquiryHtml, wholesaleConfirmationHtml, type WholesaleInquiry } from '../email.js';
 import { captureServerEvent } from '../posthog.js';
+import { str } from '../input.js';
 
 // The address ends up in the seller's Reply link and in outgoing mail headers,
 // so besides the basic shape it must not contain characters that act as
@@ -25,11 +26,11 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return;
   }
 
-  const businessName = (req.body?.businessName as string)?.trim();
-  const contactName = (req.body?.contactName as string)?.trim();
-  const email = (req.body?.email as string)?.toLowerCase().trim();
-  const phone = (req.body?.phone as string)?.trim() || undefined;
-  const message = (req.body?.message as string)?.trim();
+  const businessName = str(req.body?.businessName).trim();
+  const contactName = str(req.body?.contactName).trim();
+  const email = str(req.body?.email).toLowerCase().trim();
+  const phone = str(req.body?.phone).trim() || undefined;
+  const message = str(req.body?.message).trim();
   // Which options the sender ticked on the form. Booleans only: these pick the
   // subject label, so no sender-typed text can reach a subject line.
   const wants = {
